@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4317291297136895557}
   - component: {fileID: 2566303382376736775}
   - component: {fileID: 7804639849082737395}
-  - component: {fileID: 6636132701635344505}
+  - component: {fileID: 756795109741238610}
   m_Layer: 0
   m_Name: TestSpawnableObject
   m_TagString: Untagged
@@ -73,7 +73,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
---- !u!114 &6636132701635344505
+--- !u!114 &756795109741238610
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

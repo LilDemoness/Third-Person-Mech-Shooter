@@ -53,7 +53,7 @@ namespace Gameplay.Actions.Effects
         {
             s_defaultObjectParent ??= new GameObject("SpawnObjectEffectPool").transform;
 
-            SpawnableObject_Server objectInstance = GameObject.Instantiate<SpawnableObject_Server>(_prefab, s_defaultObjectParent); // Note: Initial parent setting doesn't seem to work.
+            SpawnableObject_Server objectInstance = GameObject.Instantiate<SpawnableObject_Server>(_prefab); // Note: Initial parent setting doesn't seem to work.
             objectInstance.NetworkObject.Spawn();
             return objectInstance;
         }
@@ -107,6 +107,7 @@ namespace Gameplay.Actions.Effects
                     spawnedObject.Setup(owner, parentTargetNetworkObject, destroyFXGraphicIndex, _lifetime);
                 else
                     spawnedObject.Setup(owner, destroyFXGraphicIndex, _lifetime);
+
 
                 spawnedObject.OnShouldReturnToPool += ReturnToPool;
             }

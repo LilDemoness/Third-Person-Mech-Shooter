@@ -74,9 +74,9 @@ namespace Gameplay.GameplayObjects.Projectiles.Seeking
 
 
                 // Check if the target is valid.
-                if (potentialTargets[i].HasParent(m_targetCheckOriginTransform))
+                if (potentialTargets[i].IsChildOf(m_targetCheckOriginTransform))
                     continue;   // This target is the origin target.
-                if (potentialTargets[i].HasParent(m_owner))
+                if (potentialTargets[i].IsChildOf(m_owner))
                     continue;   // This target is the owner.
 
 

@@ -47,7 +47,7 @@ MonoBehaviour:
     Speed: 45
     TargetableLayers:
       serializedVersion: 2
-      m_Bits: 73
+      m_Bits: 329
     MaxRange: 100
     MaxLifetime: 0
     MaxHits: 0

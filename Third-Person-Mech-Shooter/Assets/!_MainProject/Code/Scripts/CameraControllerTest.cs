@@ -182,7 +182,7 @@ public class CameraControllerTest : NetworkBehaviour
         if (_graphicsHitCache.Length > 0)
         {
             // Check that we've not only hit this player.
-            bool isFirstHitThis = _graphicsHitCache[0].transform.HasParent(this.transform);
+            bool isFirstHitThis = _graphicsHitCache[0].transform.IsChildOf(this.transform);
             if (!isFirstHitThis || _graphicsHitCache.Length > 1)
             {
                 // We've hit something other than this player. Use that as our obstruction.

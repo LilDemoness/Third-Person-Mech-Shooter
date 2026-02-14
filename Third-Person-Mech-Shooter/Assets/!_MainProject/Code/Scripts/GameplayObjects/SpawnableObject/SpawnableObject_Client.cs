@@ -13,12 +13,12 @@ namespace Gameplay.Actions.Effects
         private Vector3 _localUp;
         private Vector3 _localForward;
 
-        private int _destroyFXIndex;
+        private int _onDestroyFXIndex;
 
 
         public override void OnNetworkSpawn()
         {
-            if (IsServer)
+            if (!IsClient)
             {
                 this.enabled = false;
                 return;
@@ -37,7 +37,7 @@ namespace Gameplay.Actions.Effects
             this.transform.rotation = Quaternion.LookRotation(forward, up);
 
 
-            this._destroyFXIndex = destroyFXIndex;
+            this._onDestroyFXIndex = destroyFXIndex;
         }
         [Rpc(SendTo.ClientsAndHost)]
         public void SpawnRpc(ulong attachmentObjectID, Vector3 localPos, Vector3 localForward, Vector3 localUp, int destroyFXIndex)
@@ -51,7 +51,7 @@ namespace Gameplay.Actions.Effects
             this._localUp = localUp;
 
 
-            this._destroyFXIndex = destroyFXIndex;
+            this._onDestroyFXIndex = destroyFXIndex;
         }
         [Rpc(SendTo.ClientsAndHost)]
         public void ReturnedToPoolRpc()
@@ -60,13 +60,13 @@ namespace Gameplay.Actions.Effects
             _attachedTransform = null;
             this.gameObject.SetActive(false);
 
-            PlayFXGraphic(SpecialFXPoolManager.GetFromPrefab(SpecialFXList.AllOptionsDatabase.SpecialFXGraphics[_destroyFXIndex]));
+            PlayFXGraphic(SpecialFXPoolManager.GetFromPrefab(SpecialFXList.AllOptionsDatabase.SpecialFXGraphics[_onDestroyFXIndex]));
         }
 
 
         private void PlayFXGraphic(SpecialFXGraphic graphic)
         {
-            graphic.SpecialFXListIndex = _destroyFXIndex;
+            graphic.SpecialFXListIndex = _onDestroyFXIndex;
             graphic.OnShutdownComplete += SpecialFXGraphic_OnShutdownComplete;
             graphic.transform.position = transform.position;
             graphic.transform.rotation = transform.rotation;

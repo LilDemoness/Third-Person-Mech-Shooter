@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using Gameplay.GameplayObjects.Projectiles.Seeking;
+using System;
+using Gameplay.Actions.Effects;
 
 namespace Gameplay.GameplayObjects.Projectiles
 {
@@ -21,6 +24,12 @@ namespace Gameplay.GameplayObjects.Projectiles
         [SerializeField] private LayerMask _explosionLayers;
 
 
+
+        public override void Initialise(ulong ownerNetworkID, in ProjectileInfo projectileInfo, SeekingFunction seekingFunction, Action<ActionHitInformation> onHitCallback)
+        {
+            base.Initialise(ownerNetworkID, projectileInfo, seekingFunction, onHitCallback);
+            _explosionLayers = projectileInfo.TargetableLayers;
+        }
 
         protected override void EndProjectile()
         {

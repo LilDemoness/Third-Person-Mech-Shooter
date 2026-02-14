@@ -115,7 +115,7 @@ namespace Gameplay.Actions.Definitions
             ///     Is this target valid given an owner check?
             /// </summary>
             /// <returns> True if the target isn't a child of the owner, OR we're not caring about owner checks. Otherwise, false.</returns>
-            protected bool IsValidForOwnerCheck(ServerCharacter owner, Transform potentialTarget) => CanTargetOwner || !potentialTarget.HasParent(owner.transform);
+            protected bool IsValidForOwnerCheck(ServerCharacter owner, Transform potentialTarget) => CanTargetOwner || !potentialTarget.IsChildOf(owner.transform);
             /// <summary>
             ///     Is this target valid given an obstruction check?
             /// </summary>

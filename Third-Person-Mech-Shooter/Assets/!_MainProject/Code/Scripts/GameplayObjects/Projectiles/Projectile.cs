@@ -41,7 +41,7 @@ namespace Gameplay.GameplayObjects.Projectiles
         public float GetAdditionalSpawnDistance() => _collider.radius;
 
 
-        public void Initialise(ulong ownerNetworkID, in ProjectileInfo projectileInfo, SeekingFunction seekingFunction, System.Action<ActionHitInformation> onHitCallback)
+        public virtual void Initialise(ulong ownerNetworkID, in ProjectileInfo projectileInfo, SeekingFunction seekingFunction, System.Action<ActionHitInformation> onHitCallback)
         {
             this._ownerNetworkID = ownerNetworkID;
             this._projectileInfo = projectileInfo;

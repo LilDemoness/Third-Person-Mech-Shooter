@@ -51,6 +51,12 @@ public class HitEffectManager : NetworkSingleton<HitEffectManager>
     
 
 
+    public static void PlayHitEffectsOnAll(ulong triggeringClientId, Vector3 hitPoint, Vector3 hitNormal, float chargePercentage, ActionID actionId)
+    {
+        PlayHitEffectsOnTriggeringClient(triggeringClientId, hitPoint, hitNormal, chargePercentage, actionId);
+        PlayHitEffectsOnNonTriggeringClients(triggeringClientId, hitPoint, hitNormal, chargePercentage, actionId);
+    }
+
     /// <summary>
     ///     Play Anticipated Start HitEffects on the calling client.
     /// </summary>
@@ -62,6 +68,7 @@ public class HitEffectManager : NetworkSingleton<HitEffectManager>
             definition.HitVisuals[i].OnClientStart(null, hitPoint, hitNormal);
         }
     }
+
     /// <summary>
     ///     Play 'Update' HitEffects on the calling client.<br/>
     ///     Also triggers Hit Visuals if the client is the action's triggering client.
@@ -78,11 +85,13 @@ public class HitEffectManager : NetworkSingleton<HitEffectManager>
         if (isTriggeringClient)
             Instance.ShowHitEffectVisual(hitPoint);
     }
+    
     /// <summary>
     ///     Calls a RPC to play the Update effect on the action's triggering client.
     /// </summary>
     public static void PlayHitEffectsOnTriggeringClient(ulong triggeringClientId, Vector3 hitPoint, Vector3 hitNormal, float chargePercentage, ActionID actionId)
         => Instance.PlayHitEffectsOnTriggeringClientRpc(hitPoint, hitNormal, chargePercentage, actionId, Instance.RpcTarget.Group( new ulong[] { triggeringClientId }, RpcTargetUse.Temp));
+    
     /// <summary>
     ///     Triggers the OnClientUpdate function of the passed action's HitVisuals,
     ///     along with triggering the TriggeringClient-Specific Hit Effects (E.g. HitMarkers).
@@ -101,27 +110,48 @@ public class HitEffectManager : NetworkSingleton<HitEffectManager>
 
         ShowHitEffectVisual(hitPoint);
     }
+
     /// <summary>
     ///     Calls an RPC to play the Update effect on all clients BUT the action's triggering client.
     /// </summary>
-    public static void PlayHitEffectsOnNonTriggeringClients(ulong triggeringClientId, in ActionHitInformation hitInfo, float chargePercentage, ActionID actionId)
+    public static void PlayHitEffectsOnNonTriggeringClients(ulong triggeringClientId, Vector3 hitPoint, Vector3 hitNormal, float chargePercentage, ActionID actionId)
     {
         List<ulong> clientIds = new List<ulong>(NetworkManager.Singleton.ConnectedClientsIds);
         clientIds.Remove(triggeringClientId);
-        Instance.PlayHitEffectsClientRpc(new NetworkActionHitInformation(hitInfo), chargePercentage, actionId, Instance.RpcTarget.Group(clientIds.ToArray(), RpcTargetUse.Temp));
+        Instance.PlayHitEffectsClientRpc(hitPoint, hitNormal, chargePercentage, actionId, Instance.RpcTarget.Group(clientIds.ToArray(), RpcTargetUse.Temp));
     }
+
     /// <summary>
     ///     Triggers the OnClientUpdate function of the passed action's HitVisuals.
     /// </summary>
     [Rpc(SendTo.SpecifiedInParams)]
-    private void PlayHitEffectsClientRpc(NetworkActionHitInformation hitInfo, float chargePercentage, ActionID actionId, RpcParams rpcParams = default)
+    private void PlayHitEffectsClientRpc(Vector3 hitPoint, Vector3 hitNormal, float chargePercentage, ActionID actionId, RpcParams rpcParams = default)
     {
         ActionDefinition definition = GameDataSource.Instance.GetActionDefinitionByID(actionId);
         for(int i = 0; i < definition.HitVisuals.Length; ++i)
         {
-            definition.HitVisuals[i].OnClientUpdate(null, hitInfo.HitPoint, hitInfo.HitNormal);
+            definition.HitVisuals[i].OnClientUpdate(null, hitPoint, hitNormal);
         }
     }
+
+
+    /// <summary>
+    ///     Triggers the <paramref name="hitVisuals"/> on the local client,
+    ///     along with triggering the Triggering-Client speicic hit effects
+    ///     (E.g. Hit Markers) if this is the triggering client
+    /// </summary>
+    public static void PlayHitEffectsLocally(ActionVisual[] hitVisuals, ulong triggeringClientId, Vector3 hitPoint, Vector3 hitNormal, float chargePercentage)
+    {
+        for(int i = 0; i < hitVisuals.Length; ++i)
+        {
+            hitVisuals[i].OnClientUpdate(null, hitPoint, hitNormal);
+        }
+
+        if (triggeringClientId == NetworkManager.Singleton.LocalClientId)
+            Instance.ShowHitEffectVisual(hitPoint);
+    }
+
+
 
     /// <summary>
     ///     Spawn a HitMarker at the specified position.

@@ -45,7 +45,7 @@ MonoBehaviour:
   <MaxRange>k__BackingField: 100
   <ValidLayers>k__BackingField:
     serializedVersion: 2
-    m_Bits: 73
+    m_Bits: 329
   <Pierces>k__BackingField: 0
   references:
     version: 2

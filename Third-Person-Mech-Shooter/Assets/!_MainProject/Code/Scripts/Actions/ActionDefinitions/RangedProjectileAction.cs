@@ -90,7 +90,7 @@ namespace Gameplay.Actions.Definitions
             // Note: We don't perform anticipation on projectiles as they are non-instant (Unlike raycasts),
             //      so ALL clients are having the visuals called from the server through RPCs.
             HitEffectManager.PlayHitEffectsOnTriggeringClient(owner.OwnerClientId, hitInfo.HitPoint, hitInfo.HitNormal, chargePercentage, ActionID);
-            HitEffectManager.PlayHitEffectsOnNonTriggeringClients(owner.OwnerClientId, hitInfo, chargePercentage, ActionID);
+            HitEffectManager.PlayHitEffectsOnNonTriggeringClients(owner.OwnerClientId, hitInfo.HitPoint, hitInfo.HitNormal, chargePercentage, ActionID);
 
             // Perform this action's effects (Damage, Applying Statuses, etc) on the server (Changes are perpetuated to clients).
             for (int i = 0; i < ActionEffects.Length; ++i)

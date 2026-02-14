@@ -2,6 +2,7 @@
 using UnityEngine;
 using Unity.Netcode;
 using Gameplay.GameplayObjects.Character;
+using UnityEngine.Events;
 
 namespace Gameplay.Actions.Effects
 {
@@ -9,8 +10,8 @@ namespace Gameplay.Actions.Effects
     [RequireComponent(typeof(SpawnableObject_Client))]
     public class SpawnableObject_Server : NetworkBehaviour
     {
-        private ServerCharacter _owner;
-        private SpawnableObject_Client _clientScript;
+        protected ServerCharacter Owner;
+        protected SpawnableObject_Client ClientScript;
 
 
         // Attachment.
@@ -26,17 +27,13 @@ namespace Gameplay.Actions.Effects
         private Coroutine _handleLifetimeCoroutine;
 
 
-        // Special FX.
-        private int _specialFXIndex;
-
-
         public event System.Action<ServerCharacter, SpawnableObject_Server> OnShouldReturnToPool;
-        public event System.Action<SpawnableObject_Server> OnReturnedToPool;
+        public UnityEvent<SpawnableObject_Server> OnReturnedToPool;
 
 
         private void Awake()
         {
-            _clientScript = this.GetComponent<SpawnableObject_Client>();
+            ClientScript = this.GetComponent<SpawnableObject_Client>();
         }
         public override void OnNetworkSpawn()
         {
@@ -46,10 +43,15 @@ namespace Gameplay.Actions.Effects
                 return;
             }
         }
+        /// <summary>
+        ///     Setup a SpawnableObject instance after being instantiated or retrieved from an ObjectPool..
+        /// </summary>
+        /// <param name="owner"> The ServerCharacter who created this object.</param>
+        /// <param name="specialFXIndex"> The SpecialFXList's SpecialFXGraphics Index of the OnDestroy VFX.</param>
+        /// <param name="lifetime"> How long this object lasts before destroying itself. Leave at 0.0f for infinite duration.</param>
         public void Setup(ServerCharacter owner, int specialFXIndex, float lifetime = 0.0f)
         {
-            this._owner = owner;
-            this._specialFXIndex = specialFXIndex;
+            this.Owner = owner;
 
             if (_handleLifetimeCoroutine != null)
                 StopCoroutine(_handleLifetimeCoroutine);
@@ -58,26 +60,38 @@ namespace Gameplay.Actions.Effects
                 _handleLifetimeCoroutine = StartCoroutine(HandleLifetime(lifetime));
             }
 
-            this._clientScript.SpawnRpc(transform.position, transform.forward, transform.up, specialFXIndex);
+            this.ClientScript.SpawnRpc(transform.position, transform.forward, transform.up, specialFXIndex);
+            FinishSetup();
         }
+        /// <inheritdoc cref="Setup(ServerCharacter, int, float)"/>
+        /// <param name="parentObject"> The NetworkObject this SpawnableObject is to be "parented" to.</param>
         public void Setup(ServerCharacter owner, NetworkObject parentObject, int specialFXIndex, float lifetime = 0.0f)
         {
-            this._owner = owner;
-            this._specialFXIndex = specialFXIndex;
+            this.Owner = owner;
 
             if (_handleLifetimeCoroutine != null)
-            {
                 StopCoroutine(_handleLifetimeCoroutine);
-            }
             if (lifetime > 0.0f)
             {
                 _handleLifetimeCoroutine = StartCoroutine(HandleLifetime(lifetime));
             }
 
+            // Note: Also handles calling 'ClientScript.SpawnRpc()'.
             AttachToTransform(parentObject, specialFXIndex);
-        }
 
-        public void ReturnedToPool()
+            // Run any child-specific logic.
+            FinishSetup();
+        }
+        /// <summary>
+        ///     Override to perform any child-specific logic during setup.
+        /// </summary>
+        protected virtual void FinishSetup() { }
+
+        /// <summary>
+        ///     Called when the SpawnableObject is returned to its ObjectPool.</br>
+        ///     Resets all variables & notifies the Client-side Script.
+        /// </summary>
+        public virtual void ReturnedToPool()
         {
             // Notify attached objects that we've been returned to the pool.
             OnReturnedToPool?.Invoke(this);
@@ -91,7 +105,7 @@ namespace Gameplay.Actions.Effects
 
 
             // Notify client-only visuals script.
-            _clientScript.ReturnedToPoolRpc();
+            ClientScript.ReturnedToPoolRpc();
         }
 
 
@@ -109,12 +123,12 @@ namespace Gameplay.Actions.Effects
                 {
                     // We're trying to parent to a SpawnableObject that is disabled (Meaning that the spawning of this object caused it to despawn).
                     // Despawn.
-                    this.OnShouldReturnToPool?.Invoke(_owner, this);
+                    TriggerReturnToPool();
                     return;
                 }
 
                 // Despawn when our parent is returned to the pool (We would lose our parent reference, but due to it being pooled this is how we are checking).
-                parentSpawnableObject.OnReturnedToPool += ParentSpawnableObject_OnReturnedToPool;
+                parentSpawnableObject.OnReturnedToPool.AddListener(ParentSpawnableObject_OnReturnedToPool);
             }
             
 
@@ -124,40 +138,62 @@ namespace Gameplay.Actions.Effects
 
 
             // Notify client-only visuals script.
-            this._clientScript.SpawnRpc(parentObject.NetworkObjectId, _localPosition, _localForward, _localUp, specialFXIndex);
+            this.ClientScript.SpawnRpc(parentObject.NetworkObjectId, _localPosition, _localForward, _localUp, specialFXIndex);
         }
 
 
+        /// <summary>
+        ///     Called when the "Parent" SpawnableObject is returned to its ObjectPool.
+        /// </summary>
         private void ParentSpawnableObject_OnReturnedToPool(SpawnableObject_Server parentInstance)
         {
-            parentInstance.OnReturnedToPool -= ParentSpawnableObject_OnReturnedToPool;
-            this.OnShouldReturnToPool?.Invoke(_owner, this);
+            parentInstance.OnReturnedToPool.RemoveListener(ParentSpawnableObject_OnReturnedToPool);
+            TriggerReturnToPool();
         }
 
         private void LateUpdate()
         {
-            // Check that our attached transform is still valid.
-            if (_attachedTransform == null)
+            if (_attachedTransform == null) // Check that our attached transform is still valid.
             {
-                if (_hasAttachedTransform)
+                // We don't have an attached transform.
+                if (_hasAttachedTransform)  // If we used to have an attached transform, then our parent was destroyed and we should destroy ourself.
                 {
-                    // We've just lost our attached transform. Notify for returning to the pool only once.
-                    OnShouldReturnToPool?.Invoke(_owner, this);
+                    // Notify for returning to the pool only once.
+                    TriggerReturnToPool();
                     _hasAttachedTransform = false;
+                    return; // We're wishing to destroy ourselves, so don't want to call further logic. [To Confirm]
                 }
-                return;
             }
-
+            else
+            {
+                // We have a parent transform. Keep our local position consistent.
+                HandleParentMotion();
+            }
+        }
+        /// <summary>
+        ///     Moves & Rotates this SpawnableObject to match that of it's attached transform.
+        /// </summary>
+        private void HandleParentMotion()
+        {
             transform.position = _attachedTransform.TransformPoint(_localPosition);
             transform.rotation = Quaternion.LookRotation(_attachedTransform.TransformDirection(_localForward), _attachedTransform.TransformDirection(_localUp));
         }
+
         /// <summary>
         ///     Return ourselves to the pool once the specified lifetime has elapsed.
         /// </summary>
         private IEnumerator HandleLifetime(float lifetime)
         {
             yield return new WaitForSeconds(lifetime);
-            OnShouldReturnToPool?.Invoke(_owner, this);
+            OnLifetimeElapsed();
+            TriggerReturnToPool();
         }
+        protected virtual void OnLifetimeElapsed() { }
+
+
+        /// <summary>
+        ///     Notifies that this SpawnableObject should return to its object pool.
+        /// </summary>
+        protected void TriggerReturnToPool() => this.OnShouldReturnToPool?.Invoke(Owner, this);
     }
 }

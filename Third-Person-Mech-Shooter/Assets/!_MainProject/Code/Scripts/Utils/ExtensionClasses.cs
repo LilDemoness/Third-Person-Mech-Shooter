@@ -21,18 +21,46 @@ public static class ComponentExtensions
     }
 
     /// <summary>
-    ///     Returns true if this component is a child of (Or on the same object of) the object with the passed transform.
+    ///     Returns true if this component is any child of (Or on the same object of) the object with the passed transform.
     /// </summary>
-    public static bool HasParent(this Component activeComponent, Transform parentToCheck)
+    public static bool IsChildOf(this Component activeComponent, Transform transformToCheck)
     {
-        if (activeComponent.transform == parentToCheck)
+        if (activeComponent.transform == transformToCheck)
             return true;
 
         if (activeComponent.transform.parent == null)
             return false;
 
-        return activeComponent.transform.parent.HasParent(parentToCheck);
+        return activeComponent.transform.parent.IsChildOf(transformToCheck);
     }
+    /// <summary>
+    ///     Returns true if this component is any parent of (Or on the same object of) the object with the passed transform.
+    /// </summary>
+    public static bool IsParentOf(this Component activeComponent, Transform transformToCheck)
+    {
+        if (activeComponent.transform == transformToCheck)
+            return true;
+
+        if (activeComponent.transform.childCount == 0)
+            return false;
+
+        // Check each child.
+        for(int i = 0; i < activeComponent.transform.childCount; ++i)
+        {
+            if (activeComponent.transform.GetChild(i).IsParentOf(transformToCheck))
+                return true;    // This child contains the transformToCheck
+        }
+
+        // No child contains the transformToCheck.
+        return false;
+    }
+
+
+
+    /// <summary>
+    ///     Returns true if this component is any child, any parent, or is on the same object as the passed transform.
+    /// </summary>
+    public static bool IsParentOrChildOf(this Component activeComponent, Transform transformToCheck) => activeComponent.IsParentOf(transformToCheck) || activeComponent.IsChildOf(transformToCheck);
 }
 
 

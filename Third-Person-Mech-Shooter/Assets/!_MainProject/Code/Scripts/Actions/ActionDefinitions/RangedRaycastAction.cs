@@ -4,8 +4,6 @@ using UnityEngine;
 using Unity.Netcode;
 using Gameplay.GameplayObjects.Character;
 using Gameplay.Actions.Effects;
-using UnityEngine.UIElements;
-using static UnityEngine.Analytics.IAnalytic;
 
 namespace Gameplay.Actions.Definitions
 {
@@ -93,7 +91,7 @@ namespace Gameplay.Actions.Definitions
         {
             // Play the contents of HitEffects on all Non-Triggering Clients (Triggering client is handled in anticipation).
             //  This does mean that these clients will have a slight delay in their displaying of hit information, however they will always display accurate information no matter their local values.
-            HitEffectManager.PlayHitEffectsOnNonTriggeringClients(owner.OwnerClientId, hitInfo, chargePercentage, ActionID);
+            HitEffectManager.PlayHitEffectsOnNonTriggeringClients(owner.OwnerClientId, hitInfo.HitPoint, hitInfo.HitNormal, chargePercentage, ActionID);
 
             // Perform this action's effects (Damage, Applying Statuses, etc) on the server (Changes are perpetuated to clients).
             for (int i = 0; i < ActionEffects.Length; ++i)

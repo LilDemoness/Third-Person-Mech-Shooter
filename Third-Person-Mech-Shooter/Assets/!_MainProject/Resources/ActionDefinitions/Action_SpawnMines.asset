@@ -50,14 +50,14 @@ MonoBehaviour:
         _spawnType:
           rid: 9030112632148066305
         _parentToHitTransform: 0
-        _prefab: {fileID: 6636132701635344505, guid: 758cb40804652f244a4f0657fadd9ff7, type: 3}
+        _prefab: {fileID: 2329262802798749061, guid: b6d9a9270e487684c980728859557ed1, type: 3}
         _maxCount: 10
-        _lifetime: 3
-        _destroyFX: {fileID: -2805019255976686636, guid: 93485fd5fc2ccf2439cb3239186f6382, type: 3}
+        _lifetime: 0
+        _destroyFX: {fileID: 7886655476902268161, guid: 20b31fcfaed0cb842a56fbbe2419428f, type: 3}
     - rid: 9030112632148066305
       type: {class: FixedSpread, ns: Gameplay.Actions.Effects, asm: Assembly-CSharp}
       data:
-        _spawnCount: 3
+        _spawnCount: 1
         _spawnRadius: 1
         _randomisationAngle: 0
         _randomiseOnlyDefaultVector: 1
