@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 namespace UI
 {
@@ -58,14 +59,18 @@ namespace UI
         [SerializeField][TextArea] private string _textFormattingString = "{0}";
 
 
+        [Header("Icon Updating")]
+        [SerializeField] private Image _iconDisplayImage;
+
+
         private void Awake()
         {
-            if (_iconDisplayText != null && _inputAction != null)
+            if (_inputAction != null)
             {
-                InputIconManager.OnShouldUpdateSpriteIdentifiers += UpdateIconDisplayText;
+                InputIconManager.OnShouldUpdateSpriteIdentifiers += UpdateIconIdentifiers;
                 InputIconManager.OnSpriteAssetChanged += UpdateIconDisplayText;
 
-                UpdateIconDisplayText();
+                UpdateIconIdentifiers();
             }
         }
         private void OnEnable()
@@ -83,7 +88,7 @@ namespace UI
         }
         private void OnDestroy()
         {
-            InputIconManager.OnShouldUpdateSpriteIdentifiers -= UpdateIconDisplayText;
+            InputIconManager.OnShouldUpdateSpriteIdentifiers -= UpdateIconIdentifiers;
             InputIconManager.OnSpriteAssetChanged -= UpdateIconDisplayText;
         }
 
@@ -132,10 +137,23 @@ namespace UI
         };
 
 
+        private void UpdateIconIdentifiers()
+        {
+            UpdateIconDisplayText();
+            UpdateIconDisplayImage();
+        }
         private void UpdateIconDisplayText()
         {
+            if (_iconDisplayText == null)
+                return;
             _iconDisplayText.text = InputIconManager.FormatTextForIconFromInputAction(_textFormattingString, _inputAction);
             _iconDisplayText.spriteAsset = InputIconManager.GetSpriteAsset();
+        }
+        private void UpdateIconDisplayImage()
+        {
+            if (_iconDisplayImage == null)
+                return;
+            _iconDisplayImage.sprite = InputIconManager.GetIconForAction(_inputAction);
         }
 
 

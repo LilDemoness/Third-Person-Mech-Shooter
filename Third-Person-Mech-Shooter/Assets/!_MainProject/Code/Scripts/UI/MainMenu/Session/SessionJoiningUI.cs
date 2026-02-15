@@ -154,13 +154,16 @@ namespace Gameplay.UI.MainMenu.Session
         public void Show()
         {
             _canvasGroup.alpha = 1.0f;
-            _canvasGroup.blocksRaycasts = false;
+            _canvasGroup.interactable = true;
+            _canvasGroup.blocksRaycasts = true;
+
             _joinCodeField.text = "";
             _updateRunner.Subscribe(PeriodicRefresh, 10.0f);
         }
         public void Hide()
         {
             _canvasGroup.alpha = 0.0f;
+            _canvasGroup.interactable = false;
             _canvasGroup.blocksRaycasts = false;
             _updateRunner.Unsubscribe(PeriodicRefresh);
         }
