@@ -20,7 +20,7 @@ namespace Gameplay.UI.Menus
     {
         [Header("Lobby List")]
         [SerializeField] private LobbyListItemUI _lobbyListItemPrototype;
-        private List<LobbyListItemUI> _lobbyListItems = new List<LobbyListItemUI>();
+        private List<LobbyListItemUI> _lobbyListItems;
 
         [SerializeField] private Graphic _noLobbiesLabel;
 
@@ -48,6 +48,8 @@ namespace Gameplay.UI.Menus
             this._updateRunner = updateRunner;
             this._localSessionsRefreshedSubscriber = localSessionsRefreshedSubscriber;
 
+            _lobbyListItems ??= new List<LobbyListItemUI>();
+
             //_updateRunner.Subscribe(PeriodicRefresh, 20.0f);
             _localSessionsRefreshedSubscriber.Subscribe(UpdateUI);
         }
@@ -62,6 +64,8 @@ namespace Gameplay.UI.Menus
         {
             if (_updateRunner != null)
                 _updateRunner.Unsubscribe(PeriodicRefresh);
+            if (_localSessionsRefreshedSubscriber != null)
+                _localSessionsRefreshedSubscriber.Unsubscribe(UpdateUI);
         }
 
 
@@ -102,6 +106,8 @@ namespace Gameplay.UI.Menus
         private void EnsureNumberOfActiveUISlots(int requiredNumber)
         {
             int delta = requiredNumber - _lobbyListItems.Count;
+            Debug.Log("Delta: " + delta);
+            Debug.Log("Req: " + requiredNumber);
 
             // Create required new instances.
             for (int i = 0; i < delta; ++i)
@@ -112,6 +118,7 @@ namespace Gameplay.UI.Menus
             // Enable/Disable instances.
             for (int i = 0; i < _lobbyListItems.Count; ++i)
             {
+                Debug.Log(i < requiredNumber ? "Enable" : "Disable");
                 _lobbyListItems[i].gameObject.SetActive(i < requiredNumber);
             }
         }

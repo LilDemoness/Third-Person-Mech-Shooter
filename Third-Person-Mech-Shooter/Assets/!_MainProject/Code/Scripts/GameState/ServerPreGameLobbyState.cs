@@ -66,7 +66,10 @@ namespace Gameplay.GameState
             NetworkLobbyState.OnClientChangedReadyState += OnClientChangedReadyState;
 
             NetworkManager.Singleton.SceneManager.OnSceneEvent += OnSceneEvent;
-            
+
+
+            // Default GameMode & Map.
+            _persistentGameState.Init();
         }
         private void OnNetworkDespawn()
         {
@@ -277,8 +280,7 @@ namespace Gameplay.GameState
         /// </summary>
         private void TransitionToGameplay()
         {
-            const string DEFAULT_MAP_NAME = "TestGameMap";
-            SceneLoader.Instance.LoadGameModeAndMap(_persistentGameState.GameMode, DEFAULT_MAP_NAME);
+            SceneLoader.Instance.LoadGameModeAndMap(_persistentGameState.GameMode, _persistentGameState.MapName);
         }
 
 

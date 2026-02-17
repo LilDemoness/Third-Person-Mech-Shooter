@@ -300,6 +300,9 @@ namespace SceneLoading
             LoadNetworkScene(GetGameModePostGameScene(gameMode), LoadSceneMode.Single);
         }
 
+
+        public static bool IsValidMapName(string mapName) => SceneUtility.GetBuildIndexByScenePath(mapName) != -1;
+
 #endregion
     }
 }

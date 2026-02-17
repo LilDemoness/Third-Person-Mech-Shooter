@@ -5,7 +5,6 @@ using VContainer;
 using VContainer.Unity;
 using Unity.Services.Multiplayer;
 using System.Threading.Tasks;
-using static UnityEngine.Analytics.AnalyticsSessionInfo;
 using System.Collections.Generic;
 using Unity.Services.Lobbies.Models;
 
@@ -28,6 +27,8 @@ namespace UnityServices.Sessions
         IPublisher<UnityServiceErrorMessage> _unityServiceErrorMessagePublisher;
         [Inject]
         IPublisher<SessionListFetchedMessage> _sessionListFetchedPublisher;
+        [Inject]
+        private Gameplay.GameState.PersistentGameState _persistentGameState;
 
 
         private LifetimeScope _serviceScope;
@@ -80,8 +81,9 @@ namespace UnityServices.Sessions
         public void SetRemoteSession(ISession session)
         {
             CurrentUnitySession = session;
-            UpdateSessionInformation(Gameplay.GameMode.FreeForAll, "Map1"); // Temp.
             _localSession.ApplyRemoteData(session);
+
+            BeginTracking();
         }
 
         /// <summary>
@@ -94,6 +96,7 @@ namespace UnityServices.Sessions
                 return; // We're already tracking.
 
             _isTracking = true;
+            _persistentGameState.SubscribeToChangeAndCall(UpdateSessionInformation);
             SubscribeToJoinedSession();
         }
         /// <summary>
@@ -106,6 +109,7 @@ namespace UnityServices.Sessions
             {
                 _isTracking = false;
             }
+            _persistentGameState.OnGameStateDataChanged -= UpdateSessionInformation;
 
             if (CurrentUnitySession != null)
             {
@@ -506,6 +510,7 @@ namespace UnityServices.Sessions
 
 
 
+        public void UpdateSessionInformation() => UpdateSessionInformation(_persistentGameState.GameMode, _persistentGameState.MapName);
         public async void UpdateSessionInformation(Gameplay.GameMode gameMode, string mapName)
         {
             if (!CurrentUnitySession.IsHost)

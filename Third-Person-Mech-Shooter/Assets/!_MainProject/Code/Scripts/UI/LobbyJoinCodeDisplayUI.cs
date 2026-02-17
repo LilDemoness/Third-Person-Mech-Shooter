@@ -19,7 +19,6 @@ namespace Gameplay.UI
             MultiplayerServicesFacade multiplayerServicesFacade)
         {
             this._multiplayerServicesFacade = multiplayerServicesFacade;
-            Debug.Log("Subscribe");
 
             if (_multiplayerServicesFacade.CurrentUnitySession != null)
                 SubscribeToSession();

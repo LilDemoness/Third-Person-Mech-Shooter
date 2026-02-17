@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Unity.Services.Matchmaker.Models;
+using SceneLoading;
 using UnityEngine;
 
 namespace Gameplay.GameState
@@ -9,9 +9,48 @@ namespace Gameplay.GameState
     /// </summary>
     public class PersistentGameState
     {
-        public GameMode GameMode { get; set; }
+        const GameMode DEFAULT_GAME_MODE = GameMode.FreeForAll;
+        const string DEFAULT_MAP_NAME = "TestGameMap";
+
+
+        private GameMode m_gameMode;
+        public GameMode GameMode
+        {
+            get => m_gameMode;
+            set
+            {
+                m_gameMode = value;
+                OnGameStateDataChanged?.Invoke();
+            }
+        }
+
+        private string m_mapName;
+        public string MapName
+        {
+            get => m_mapName;
+            set
+            {
+                if (!SceneLoader.IsValidMapName(value))
+                {
+                    Debug.LogWarning($"Map name \"{value}\" is invalid");
+                    return;
+                }
+
+                m_mapName = value;
+                OnGameStateDataChanged?.Invoke();
+            }
+        }
+
+
 
         private PersistentDataContainer _test;
+
+
+        public void Init()
+        {
+            GameMode = DEFAULT_GAME_MODE;
+            MapName = DEFAULT_MAP_NAME;
+        }
 
 
         public void SetContainer<T>() where T : PersistentDataContainer, new() => _test = new T();
@@ -28,6 +67,14 @@ namespace Gameplay.GameState
         public void Reset()
         {
             _test = null;
+        }
+
+
+        public event System.Action OnGameStateDataChanged;
+        public void SubscribeToChangeAndCall(System.Action onDataChangedCallback)
+        {
+            OnGameStateDataChanged += onDataChangedCallback;
+            onDataChangedCallback();
         }
     }
 

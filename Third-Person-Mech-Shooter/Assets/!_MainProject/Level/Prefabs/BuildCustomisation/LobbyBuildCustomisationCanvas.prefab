@@ -808,7 +808,7 @@ MonoBehaviour:
   _isInteractable: 1
   _inputAction: {fileID: 0}
   _inputActionType: 0
-  _allowInputWhenNotInFocus: 0
+  _allowInputWhenNotInFocus: 1
   _onButtonTriggered:
     m_PersistentCalls:
       m_Calls:
