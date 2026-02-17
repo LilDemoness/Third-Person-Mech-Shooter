@@ -8,8 +8,8 @@ using UnityServices.Sessions;
 using Utils;
 using VContainer;
 using VContainer.Unity;
-using Gameplay.UI.MainMenu;
-using Gameplay.UI.MainMenu.Session;
+using Gameplay.UI.Menus;
+using Gameplay.UI.Menus.Session;
 using Gameplay.UI.Tooltips;
 using UI;
 
@@ -30,13 +30,21 @@ namespace Gameplay.GameState
 
 
         [SerializeField] private NameGenerationData _nameGenerationData;
-        [SerializeField] private SessionUIMediator _sessionUIMediator;
-        [SerializeField] private IPUIMediator _IPUIMediator;
         [SerializeField] private Button _sessionButton;
         [SerializeField] private GameObject _signInSpinner;
         [SerializeField] private UIProfileSelector _uiProfileSelector;
         [SerializeField] private UITooltipDetector _ugsSetupTooltipDetector;
-        [SerializeField] private SettingsMenu _settingsMenu;
+
+
+        [Header("Menu References")]
+        [SerializeField] private Menu _playGameMenu;
+        [SerializeField] private Menu _profileMenu;
+        [SerializeField] private Menu _optionsMenu;
+
+
+        [Header("Component References")]
+        [SerializeField] private LobbyUIMediator _lobbyUIMediator;
+        [SerializeField] private IPUIMediator _ipUIMediator;
 
 
         [Inject]
@@ -54,7 +62,7 @@ namespace Gameplay.GameState
             base.Awake();
 
             _sessionButton.interactable = false;
-            _sessionUIMediator.Hide();
+            _playGameMenu.Hide();
 
             if (string.IsNullOrEmpty(Application.cloudProjectId))
             {
@@ -77,8 +85,8 @@ namespace Gameplay.GameState
         {
             base.Configure(builder);
             builder.RegisterComponent(_nameGenerationData);
-            builder.RegisterComponent(_sessionUIMediator);
-            builder.RegisterComponent(_IPUIMediator);
+            builder.RegisterComponent(_lobbyUIMediator);
+            builder.RegisterComponent(_ipUIMediator);
         }
 
 
@@ -145,27 +153,42 @@ namespace Gameplay.GameState
         }
 
 
-        public void OnStartClicked()
+
+        #region UI Button Functions
+
+        public void OnQuickJoinPressed()
         {
-            _sessionUIMediator.OpenJoinSessionUI();
-            _sessionUIMediator.Show();
+            _lobbyUIMediator.QuickJoinRequest(ignoreFilters: true);
         }
-        public void OnDirectIPClicked()
+        public void OnPlayGamePressed()
         {
-            _sessionUIMediator.Hide();
-            _IPUIMediator.Show();
+            MenuManager.SetActiveMenu(_playGameMenu);
         }
+        public void OnArmouryPressed()
+        {
+
+        }
+        public void OnProfilePressed()
+        {
+            MenuManager.SetActiveMenu(_profileMenu);
+        }
+        public void OnOptionsPressed()
+        {
+            MenuManager.SetActiveMenu(_optionsMenu);
+        }
+        public void OnQuitGamePressed()
+        {
+            Application.Quit();
+        }
+
+        #endregion
+
         public void OnChangeProfileClicked()
         {
             _uiProfileSelector.Show();
         }
         public void OnOpenSettingsClicked()
         {
-            _settingsMenu.Show();
-        }
-        public void OnQuitClicked()
-        {
-            Application.Quit();
         }
     }
 }

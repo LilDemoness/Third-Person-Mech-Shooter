@@ -56,23 +56,30 @@ namespace Gameplay.UI
 
         private void HandleSessionError(UnityServiceErrorMessage error)
         {
-            if (error.OriginalException is not System.AggregateException { InnerException: SessionException sessionException })
-                return; // We're only wanting to handle AggregateExceptions containing SessionExceptions.
-
-            switch (sessionException.Error)
+            if (error.OriginalException is System.AggregateException { InnerException: SessionException sessionException })
             {
-                case SessionError.SessionNotFound:
-                    PopupManager.ShowPopupPanel("Session Not Found", "Requested Session not found. The join code is incorrect or the session has ended.");
-                    break;
-                case SessionError.NotAuthorized:
-                    PopupManager.ShowPopupPanel("Session Error", "Received HTTP error 401: Unauthorized; from Session Service.");
-                    break;
-                case SessionError.MatchmakerAssignmentTimeout:  // This can occur while using Quick Join.
-                    PopupManager.ShowPopupPanel("Session Error", "Received HTTP error 408: Request Timed Out; from Session Service.");
-                    break;
-                default:
-                    PopupManager.ShowPopupPanel("Unknown Error", sessionException.Message);
-                    break;
+                switch (sessionException.Error)
+                {
+                    case SessionError.SessionNotFound:
+                        PopupManager.ShowPopupPanel("Session Not Found", "Requested Session not found. The join code is incorrect or the session has ended.");
+                        break;
+                    case SessionError.NotAuthorized:
+                        PopupManager.ShowPopupPanel("Session Error", "Received HTTP error 401: Unauthorized; from Session Service.");
+                        break;
+                    case SessionError.MatchmakerAssignmentTimeout:  // This can occur while using Quick Join.
+                        PopupManager.ShowPopupPanel("Session Error", "Received HTTP error 408: Request Timed Out; from Session Service.");
+                        break;
+                    default:
+                        PopupManager.ShowPopupPanel("Unknown Error", sessionException.Message);
+                        break;
+                }
+            }
+            else
+            {
+                // Default handling method for other exception types.
+                // We're not throwing so that they don't crash the game, but we still want to know that they're occuring.
+                PopupManager.ShowPopupPanel(error.Title, error.Message);
+                Debug.LogError(error.OriginalException);
             }
         }
     }

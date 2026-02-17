@@ -66,6 +66,11 @@ MonoBehaviour:
   _onButtonTriggered:
     m_PersistentCalls:
       m_Calls: []
+  _graphic: {fileID: 7245292150828920828}
+  _normalColor: {r: 1, g: 1, b: 1, a: 1}
+  _highlightedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
+  _pressedColor: {r: 0.6, g: 0.6, b: 0.6, a: 1}
+  _disabledColor: {r: 0.8, g: 0.8, b: 0.8, a: 0.5}
   _iconDisplayText: {fileID: 7245292150828920828}
   _textFormattingString: '{0} Action'
   _iconDisplayImage: {fileID: 0}
@@ -89,7 +94,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: <sprite name=""> Action
+  m_text: '{0} Action'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

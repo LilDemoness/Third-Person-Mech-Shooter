@@ -3,7 +3,7 @@ using UnityEngine;
 using Utils;
 using VContainer;
 
-namespace Gameplay.UI.MainMenu
+namespace Gameplay.UI.Menus
 {
     public class ProfileListItemUI : MonoBehaviour
     {

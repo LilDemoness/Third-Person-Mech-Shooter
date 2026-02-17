@@ -39,7 +39,11 @@ namespace UI
         public bool IsInteractable
         {
             get => _isInteractable;
-            set => _isInteractable = true;
+            set
+            {
+                _isInteractable = true;
+                _graphic.CrossFadeColor(_isInteractable ? _normalColor : _disabledColor, 0.0f, true, true);
+            }
         }
 
 
@@ -54,12 +58,20 @@ namespace UI
         [SerializeField] private UnityEvent _onButtonTriggered;
 
 
+        [Header("Hover Iteraction Indication")]
+        [SerializeField] private Graphic _graphic;
+        [SerializeField] private Color _normalColor = Color.white;
+        [SerializeField] private Color _highlightedColor = new Color(0.8f, 0.8f, 0.8f);
+        [SerializeField] private Color _pressedColor = new Color(0.6f, 0.6f, 0.6f);
+        [SerializeField] private Color _disabledColor = new Color(0.8f, 0.8f, 0.8f, 0.5f);
+
+
         [Header("Text Updating")]
         [SerializeField] private TMP_Text _iconDisplayText;
         [SerializeField][TextArea] private string _textFormattingString = "{0}";
 
 
-        [Header("Icon Updating")]
+        [Header("Text Updating")]
         [SerializeField] private Image _iconDisplayImage;
 
 
@@ -67,11 +79,13 @@ namespace UI
         {
             if (_inputAction != null)
             {
-                InputIconManager.OnShouldUpdateSpriteIdentifiers += UpdateIconIdentifiers;
+                InputIconManager.OnShouldUpdateSpriteIdentifiers += UpdateSpriteIdentifiers;
                 InputIconManager.OnSpriteAssetChanged += UpdateIconDisplayText;
 
-                UpdateIconIdentifiers();
+                UpdateSpriteIdentifiers();
             }
+
+            _graphic.CrossFadeColor(_isInteractable ? _normalColor : _disabledColor, 0.0f, true, true);
         }
         private void OnEnable()
         {
@@ -88,15 +102,13 @@ namespace UI
         }
         private void OnDestroy()
         {
-            InputIconManager.OnShouldUpdateSpriteIdentifiers -= UpdateIconIdentifiers;
+            InputIconManager.OnShouldUpdateSpriteIdentifiers -= UpdateSpriteIdentifiers;
             InputIconManager.OnSpriteAssetChanged -= UpdateIconDisplayText;
         }
 
 
         private void Action_performed(InputAction.CallbackContext ctx)
         {
-            Debug.Log("Action Performed");
-
             if (!_isInteractable)
                 return; // The action is not interractable.
 
@@ -112,12 +124,25 @@ namespace UI
         public void OnPointerClick(PointerEventData eventData)
         {
             if (!_isInteractable)
-                return; // The action is not interractable.
+                return; // The button is not interractable.
 
+            _graphic.CrossFadeColor(_pressedColor, 0.0f, true, true);
             _onButtonTriggered?.Invoke();
         }
-        public void OnPointerEnter(PointerEventData eventData) { }  // Required for IPointerClickHandler().
-        public void OnPointerExit(PointerEventData eventData) { }   // Required for IPointerClickHandler().
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            if (!_isInteractable)
+                return; // The button is not interractable.
+
+            _graphic.CrossFadeColor(_highlightedColor, 0.0f, true, true);
+        }
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            if (!_isInteractable)
+                return; // The button is not interractable.
+
+            _graphic.CrossFadeColor(_normalColor, 0.0f, true, true);
+        }
 
 
         private bool IsValidActionInput(ref InputAction.CallbackContext ctx) => _inputActionType switch
@@ -137,40 +162,32 @@ namespace UI
         };
 
 
-        private void UpdateIconIdentifiers()
+        private void UpdateSpriteIdentifiers()
         {
-            UpdateIconDisplayText();
-            UpdateIconDisplayImage();
+            if (_iconDisplayText)
+                UpdateIconDisplayText();
+            if (_iconDisplayImage)
+                UpdateIconDisplayImage();
         }
         private void UpdateIconDisplayText()
         {
-            if (_iconDisplayText == null)
-                return;
             _iconDisplayText.text = InputIconManager.FormatTextForIconFromInputAction(_textFormattingString, _inputAction);
             _iconDisplayText.spriteAsset = InputIconManager.GetSpriteAsset();
         }
-        private void UpdateIconDisplayImage()
-        {
-            if (_iconDisplayImage == null)
-                return;
-            _iconDisplayImage.sprite = InputIconManager.GetIconForAction(_inputAction);
-        }
+        private void UpdateIconDisplayImage() => _iconDisplayImage.sprite = InputIconManager.GetIconForAction(_inputAction);
 
 
 #if UNITY_EDITOR
 
         private void OnValidate()
         {
-            if (_iconDisplayText != null && _inputAction != null)
+            if (_graphic == null)
+                Debug.LogWarning($"NonNavigableButton '{this.gameObject.name}' has no graphic set", this.gameObject);
+
+            if (_iconDisplayText != null)
             {
-                if (Editor_IsFormattingStringValid())
-                {
-                    _iconDisplayText.text = _textFormattingString;
-                }
-                else
-                {
-                    _iconDisplayText.text = "!INVALID!";
-                }
+                if (!Editor_IsFormattingStringValid())
+                    Debug.LogWarning("NonNavigableButton has an invalid entry string", this.gameObject);
             }
         }
 

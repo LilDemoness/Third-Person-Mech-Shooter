@@ -1,4 +1,4 @@
-using Gameplay.UI.MainMenu;
+using Gameplay.UI.Menus;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,13 +6,14 @@ using VContainer;
 
 namespace Gameplay.UI
 {
-    public class IPJoiningUI : MonoBehaviour
+    public class IPHostingUI : MonoBehaviour
     {
         [SerializeField] private CanvasGroup _canvasGroup;
 
         [SerializeField] private TMP_InputField _ipInputField;
         [SerializeField] private TMP_InputField _portInputField;
-        [SerializeField] private Button _joinButton;
+
+        [SerializeField] private Button _hostButton;
 
         [Inject]
         private IPUIMediator _ipUIMediator;
@@ -24,7 +25,6 @@ namespace Gameplay.UI
             _ipInputField.text = IPUIMediator.DEFAULT_IP;
             _portInputField.text = IPUIMediator.DEFAULT_PORT.ToString();
         }
-
 
         public void Show()
         {
@@ -38,10 +38,10 @@ namespace Gameplay.UI
         }
 
 
-        // Triggered through UI Button.
-        public void OnJoinButtonPressed()
+        // Called through UI Button.
+        public void OnHostButtonPressed()
         {
-            _ipUIMediator.JoinWithIP(_ipInputField.text, _portInputField.text);
+            _ipUIMediator.HostIPRequest(_ipInputField.text, _portInputField.text);
         }
 
 
@@ -51,7 +51,7 @@ namespace Gameplay.UI
         public void SanitizeIPInputText()
         {
             _ipInputField.text = IPUIMediator.SanitizeIP(_ipInputField.text);
-            _joinButton.interactable = IPUIMediator.AreIPAddressAndPortValid(_ipInputField.text, _portInputField.text);
+            _hostButton.interactable = IPUIMediator.AreIPAddressAndPortValid(_ipInputField.text, _portInputField.text);
         }
         /// <summary>
         ///     Added to the Port InputField component's OnValueChanged callback.
@@ -59,7 +59,7 @@ namespace Gameplay.UI
         public void SanitisePortText()
         {
             _portInputField.text = IPUIMediator.SanitizePort(_portInputField.text);
-            _joinButton.interactable = IPUIMediator.AreIPAddressAndPortValid(_ipInputField.text, _portInputField.text);
+            _hostButton.interactable = IPUIMediator.AreIPAddressAndPortValid(_ipInputField.text, _portInputField.text);
         }
     }
 }

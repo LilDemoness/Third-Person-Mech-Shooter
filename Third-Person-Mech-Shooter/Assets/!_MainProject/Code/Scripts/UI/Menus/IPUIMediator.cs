@@ -7,7 +7,7 @@ using Unity.Networking.Transport;
 using UnityEngine;
 using VContainer;
 
-namespace Gameplay.UI.MainMenu
+namespace Gameplay.UI.Menus
 {
     public class IPUIMediator : MonoBehaviour
     {
@@ -137,21 +137,11 @@ namespace Gameplay.UI.MainMenu
         {
             _ipJoiningUI.Show();
             _ipHostingUI.Hide();
-
-            //_joinTabButtonHighlightTinter.SetToColour(1);
-            //_joinTabButtonBlockerTinter.SetToColour(1);
-            //_hostTabButtonHighlightTinter.SetToColour(0);
-            //_hostTabButtonBlockerTinter.SetToColour(0);
         }
         public void OpenCreateIPUI()
         {
             _ipJoiningUI.Hide();
             _ipHostingUI.Show();
-
-            //_joinTabButtonHighlightTinter.SetToColour(0);
-            //_joinTabButtonBlockerTinter.SetToColour(0);
-            //_hostTabButtonHighlightTinter.SetToColour(1);
-            //_hostTabButtonBlockerTinter.SetToColour(1);
         }
 
 

@@ -6,6 +6,8 @@ using VContainer.Unity;
 using Unity.Services.Multiplayer;
 using System.Threading.Tasks;
 using static UnityEngine.Analytics.AnalyticsSessionInfo;
+using System.Collections.Generic;
+using Unity.Services.Lobbies.Models;
 
 namespace UnityServices.Sessions
 {
@@ -142,7 +144,7 @@ namespace UnityServices.Sessions
         /// <summary>
         ///     Attempt to join an existing session with a join code.
         /// </summary>
-        public async Task<(bool Success, ISession Session)> TryJoinSessionByCodeAsync(string sessionCode)
+        public async Task<(bool Success, ISession Session)> TryJoinSessionByCodeAsync(string sessionCode, List<QueryFilter> filters = null)
         {
             if (!_rateLimitJoin.CanCall)
             {
@@ -210,7 +212,7 @@ namespace UnityServices.Sessions
         /// <summary>
         ///     Attempt to join the first available session that matches the filtered OnlineMode.
         /// </summary>
-        public async Task<(bool Success, ISession Session)> TryQuickJoinSessionAsync()
+        public async Task<(bool Success, ISession Session)> TryQuickJoinSessionAsync(bool ignoreFilters = false)
         {
             if (!_rateLimitJoin.CanCall)
             {
@@ -232,6 +234,13 @@ namespace UnityServices.Sessions
             // Failed to join the session.
             return (false, null);
         }
+
+
+        public void ClearFilters() => _multiplayerServicesInterface.ClearFilters();
+        public void ToggleGameModeFilter(Gameplay.GameMode gameMode) => _multiplayerServicesInterface.ToggleGameModeFilter(gameMode);
+        public void ToggleMapFilter(string mapName) => _multiplayerServicesInterface.ToggleMapFilter(mapName);
+
+        public void ClearSortOptions() => _multiplayerServicesInterface.ClearSortOptions();
 
 
 

@@ -77,6 +77,7 @@ namespace UserInput
 
         static ClientInput()
         {
+            s_currentControlScheme = new InputControlScheme(MOUSE_AND_KEYBOARD_CONTROL_SCHEME_NAME);
             InitialiseInputPrevention();
         }
 
@@ -137,7 +138,6 @@ namespace UserInput
 
             #region UI Events
 
-            s_inputActions.UI.OpenFrameSelection.performed += OpenFrameSelection_performed;
             s_inputActions.UI.Confirm.performed += Confirm_performed;
             s_inputActions.UI.NextTab.performed += NextTab_performed;
             s_inputActions.UI.PreviousTab.performed += PreviousTab_performed;
@@ -145,6 +145,8 @@ namespace UserInput
             s_inputActions.UI.ToggleLeaderboardUI.performed += ToggleLeaderboardUI_performed;
 
             #endregion
+
+            s_inputActions.MainMenu.OpenFrameSelection.performed += OpenFrameSelection_performed;
 
             #region Multiplayer Chat Events
 
@@ -182,7 +184,6 @@ namespace UserInput
 
             #region UI Events
 
-            s_inputActions.UI.OpenFrameSelection.performed      -= OpenFrameSelection_performed;
             s_inputActions.UI.Confirm.performed                 -= Confirm_performed;
             s_inputActions.UI.NextTab.performed                 -= NextTab_performed;
             s_inputActions.UI.PreviousTab.performed             -= PreviousTab_performed;
@@ -190,6 +191,8 @@ namespace UserInput
             s_inputActions.UI.ToggleLeaderboardUI.performed     -= ToggleLeaderboardUI_performed;
 
             #endregion
+
+            s_inputActions.MainMenu.OpenFrameSelection.performed      -= OpenFrameSelection_performed;
 
             #region Multiplayer Chat Events
 

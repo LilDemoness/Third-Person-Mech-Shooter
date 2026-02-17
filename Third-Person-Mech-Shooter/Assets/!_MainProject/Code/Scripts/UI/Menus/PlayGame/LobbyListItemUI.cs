@@ -3,18 +3,19 @@ using Unity.Services.Multiplayer;
 using UnityEngine;
 using VContainer;
 
-namespace Gameplay.UI.MainMenu.Session
+namespace Gameplay.UI.Menus.Session
 {
     /// <summary>
-    ///     An individual Session UI element in the list of available Sessions.
+    ///     An individual Lobby UI element in the list of available Lobbies.
     /// </summary>
-    public class SessionListItemUI : MonoBehaviour
+    public class LobbyListItemUI : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI _sessionNameText;
         [SerializeField] private TextMeshProUGUI _sessionPlayerCountText;
+        [SerializeField] private GameObject _passwordProtectedCheckGO;
 
         [Inject]
-        private SessionUIMediator _sessionUIMediator;
+        private LobbyUIMediator _lobbyUIMediator;
 
         private ISessionInfo _data;
 
@@ -24,11 +25,12 @@ namespace Gameplay.UI.MainMenu.Session
             _data = data;
             _sessionNameText.SetText(data.Name);
             _sessionPlayerCountText.SetText($"{data.MaxPlayers - data.AvailableSlots}/{data.MaxPlayers}");
+            _passwordProtectedCheckGO.SetActive(data.HasPassword);
         }
 
         public void OnClick()
         {
-            _sessionUIMediator.JoinSessionRequest(_data);
+            _lobbyUIMediator.JoinSessionRequest(_data);
         }
     }
 }

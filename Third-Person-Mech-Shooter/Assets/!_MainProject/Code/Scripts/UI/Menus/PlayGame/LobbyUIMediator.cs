@@ -1,37 +1,30 @@
-using Gameplay.Configuration;
-using Infrastructure;
-using Netcode.ConnectionManagement;
-using TMPro;
-using Unity.Services.Multiplayer;
-using Unity.Services.Core;
-using UnityEngine;
-using UnityServices.Auth;
-using UnityServices.Sessions;
+﻿using UnityEngine;
 using VContainer;
+using Infrastructure;
+using UnityServices.Sessions;
+using System.Collections.Generic;
+using Unity.Services.Multiplayer;
+using Netcode.ConnectionManagement;
+using Unity.Services.Core;
+using UnityServices.Auth;
 
-namespace Gameplay.UI.MainMenu.Session
+namespace Gameplay.UI.Menus
 {
-    public class SessionUIMediator : MonoBehaviour
+    /// <summary>
+    ///     Facilitates lobby-based calls to the Multiplayer SDK.
+    /// </summary>
+    public class LobbyUIMediator : MonoBehaviour
     {
         [SerializeField] private CanvasGroup _canvasGroup;
-
-        [SerializeField] private SessionJoiningUI _sessionJoiningUI;
-        [SerializeField] private SessionCreationUI _sessionCreationUI;
-
-        //[SerializeField] private UITinter _joinToggleHighlight;
-        //[SerializeField] private UITinter _joinToggleTabBlocker;
-        //[SerializeField] private UITinter _createToggleHighlight;
-        //[SerializeField] private UITinter _createToggleTabBlocker;
-
-        [SerializeField] private TextMeshProUGUI _playerNameLabel;
         [SerializeField] private GameObject _loadingSpinner;
 
+
+        #region VContainer Dependency Injection
 
         private AuthenticationServiceFacade _authenticationServiceFacade;
         private MultiplayerServicesFacade _multiplayerServicesFacade;
         private LocalSessionUser _localUser;
         private LocalSession _localSession;
-        private NameGenerationData _nameGenerationData;
         private ConnectionManager _connectionManager;
         private ISubscriber<ConnectStatus> _connectStatusSubscriber;
 
@@ -47,7 +40,6 @@ namespace Gameplay.UI.MainMenu.Session
             MultiplayerServicesFacade multiplayerServicesFacade,
             LocalSessionUser localSessionUser,
             LocalSession localSession,
-            NameGenerationData nameGenerationData,
             ISubscriber<ConnectStatus> connectStatusSubscriber,
             ConnectionManager connectionManager)
         {
@@ -55,13 +47,14 @@ namespace Gameplay.UI.MainMenu.Session
             this._multiplayerServicesFacade = multiplayerServicesFacade;
             this._localUser = localSessionUser;
             this._localSession = localSession;
-            this._nameGenerationData = nameGenerationData;
             this._connectStatusSubscriber = connectStatusSubscriber;
             this._connectionManager = connectionManager;
-            RegenerateName();
 
             _connectStatusSubscriber.Subscribe(OnConnectStatus);
         }
+
+        #endregion
+
 
         private void OnConnectStatus(ConnectStatus status)
         {
@@ -77,7 +70,8 @@ namespace Gameplay.UI.MainMenu.Session
         }
 
 
-        // Multiplayer Services SDK calls done from UI.
+        #region Create Requests
+
         public async void CreateSessionRequest(string sessionName, bool isPrivate)
         {
             // Before sending a request, populate an empty session name, if necessary.
@@ -100,28 +94,10 @@ namespace Gameplay.UI.MainMenu.Session
             HandleSessionJoinResult(result);
         }
 
-        public async void QuerySessionRequest(bool blockUI)
-        {
-            if (Unity.Services.Core.UnityServices.State != ServicesInitializationState.Initialized)
-                return; // Services are uninitialised.
+        #endregion
 
-            if (blockUI)
-                BlockUIWhileLoadingIsInProgress();
 
-            bool playerIsAuthorised = await _authenticationServiceFacade.EnsurePlayerIsAuthorized();
-            if (blockUI && !playerIsAuthorised)
-            {
-                UnblockUIAfterLoadingIsComplete();
-                return;
-            }
-
-            await _multiplayerServicesFacade.RetrieveAndPublishSessionListAsync();
-
-            if (blockUI)
-            {
-                UnblockUIAfterLoadingIsComplete();
-            }
-        }
+        #region Join Requests
 
         public async void JoinSessionWithCodeRequest(string sessionCode)
         {
@@ -159,7 +135,7 @@ namespace Gameplay.UI.MainMenu.Session
             HandleSessionJoinResult(result);
         }
 
-        public async void QuickJoinRequest()
+        public async void QuickJoinRequest(bool ignoreFilters = false)
         {
             BlockUIWhileLoadingIsInProgress();
 
@@ -172,10 +148,62 @@ namespace Gameplay.UI.MainMenu.Session
 
             _connectionManager.StartHostSession(_localUser.DisplayName);
 
-            var result = await _multiplayerServicesFacade.TryQuickJoinSessionAsync();
+            var result = await _multiplayerServicesFacade.TryQuickJoinSessionAsync(ignoreFilters);
 
             HandleSessionJoinResult(result);
         }
+
+        #endregion
+
+
+        #region Lobby Querying
+
+        public async void QueryLobbiesRequest(bool blockUI)
+        {
+            if (Unity.Services.Core.UnityServices.State != ServicesInitializationState.Initialized)
+                return; // Services are uninitialised.
+
+            if (blockUI)
+                BlockUIWhileLoadingIsInProgress();
+
+            bool playerIsAuthorised = await _authenticationServiceFacade.EnsurePlayerIsAuthorized();
+            if (blockUI && !playerIsAuthorised)
+            {
+                UnblockUIAfterLoadingIsComplete();
+                return;
+            }
+
+            await _multiplayerServicesFacade.RetrieveAndPublishSessionListAsync();
+
+            if (blockUI)
+            {
+                UnblockUIAfterLoadingIsComplete();
+            }
+        }
+
+
+
+        #region Filtering
+
+        public void ToggleGameModeFilter(GameMode gameMode) => _multiplayerServicesFacade.ToggleGameModeFilter(gameMode);
+        public void ToggleMapFilter(string mapName) => _multiplayerServicesFacade.ToggleMapFilter(mapName);
+
+        #endregion
+
+        #region Ordering
+
+        public void SetSortOrder(SortField field, SortOrder order) => throw new System.NotImplementedException("Changing Sort Order Not Implemented");
+        public void ResetSortOrder() => _multiplayerServicesFacade.ClearSortOptions();
+
+        #endregion
+
+        private void OnQueryOptionsChanged()
+        {
+            QueryLobbiesRequest(blockUI: false);
+        }
+
+#endregion
+
 
         private void HandleSessionJoinResult((bool Success, ISession Session) result)
         {
@@ -200,48 +228,6 @@ namespace Gameplay.UI.MainMenu.Session
         }
 
 
-
-        public void Show()
-        {
-            _canvasGroup.alpha = 1.0f;
-            _canvasGroup.blocksRaycasts = true;
-        }
-        public void Hide()
-        {
-            _canvasGroup.alpha = 0.0f;
-            _canvasGroup.blocksRaycasts = false;
-            _sessionCreationUI.Hide();
-            _sessionJoiningUI.Hide();
-        }
-
-        public void OpenJoinSessionUI()
-        {
-            _sessionJoiningUI.Show();
-            _sessionCreationUI.Hide();
-
-            //_joinToggleHighlight.SetToColour(1);
-            //_joinToggleTabBlocker.SetToColour(1);
-            //_createToggleHighlight.SetToColour(0);
-            //_createToggleTabBlocker.SetToColour(0);
-        }
-        public void OpenCreateSessionUI()
-        {
-            _sessionJoiningUI.Hide();
-            _sessionCreationUI.Show();
-
-            //_joinToggleHighlight.SetToColour(0);
-            //_joinToggleTabBlocker.SetToColour(0);
-            //_createToggleHighlight.SetToColour(1);
-            //_createToggleTabBlocker.SetToColour(1);
-        }
-
-
-        public void RegenerateName()
-        {
-            _localUser.DisplayName = _nameGenerationData.GenerateRandomName();
-            _playerNameLabel.text = _localUser.DisplayName;
-        }
-
         private void BlockUIWhileLoadingIsInProgress()
         {
             _canvasGroup.interactable = false;
@@ -250,7 +236,7 @@ namespace Gameplay.UI.MainMenu.Session
         private void UnblockUIAfterLoadingIsComplete()
         {
             // This callback can happen after we've already switched to a different scene,
-            //  so we should check in case thje canbas group is null.
+            //  so we should check in case the canvas group is null.
             if (_canvasGroup != null)
             {
                 _canvasGroup.interactable = true;

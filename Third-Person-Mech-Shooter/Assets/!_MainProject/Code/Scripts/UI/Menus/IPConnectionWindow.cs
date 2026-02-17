@@ -7,7 +7,7 @@ using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 using VContainer;
 
-namespace Gameplay.UI.MainMenu
+namespace Gameplay.UI.Menus
 {
     /// <summary>
     ///     A UI Window that shows while a client is attempting to connect to a server. {Confirm]
@@ -36,7 +36,9 @@ namespace Gameplay.UI.MainMenu
         private void OnDestroy()
         {
             if (_connectStatusSubscriber != null)
+            {
                 _connectStatusSubscriber.Unsubscribe(OnConnectStatusMessage);
+            }
         }
 
 

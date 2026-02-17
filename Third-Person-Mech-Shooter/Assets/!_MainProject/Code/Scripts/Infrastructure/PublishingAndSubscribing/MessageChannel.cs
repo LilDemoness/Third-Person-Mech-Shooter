@@ -33,6 +33,8 @@ namespace Infrastructure
 
         public virtual void Publish(T message)
         {
+            //UnityEngine.Debug.Log("Publish Message Type: " + typeof(T));
+
             // Handle pending handlers (Addition and Removal).
             foreach(System.Action<T> handler in _pendingHandlers.Keys)
             {

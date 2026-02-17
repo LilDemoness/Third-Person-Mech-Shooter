@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using VContainer;
 
-namespace Gameplay.UI.MainMenu.Session
+namespace Gameplay.UI.Menus.Session
 {
     public class SessionCreationUI : MonoBehaviour
     {
@@ -13,8 +13,8 @@ namespace Gameplay.UI.MainMenu.Session
         [SerializeField] private GameObject _loadingIndicatorObject;
         [SerializeField] private Toggle _isPrivate;
 
-        [Inject]
-        private SessionUIMediator _sessionUIMediator;
+        //Inject]
+        //private SessionUIMediator _sessionUIMediator;
 
 
         private void Awake()
@@ -29,7 +29,7 @@ namespace Gameplay.UI.MainMenu.Session
 
         public void OnCreateButtonPressed()
         {
-            _sessionUIMediator.CreateSessionRequest(_sessionNameInputField.text, _isPrivate.isOn);
+            //_sessionUIMediator.CreateSessionRequest(_sessionNameInputField.text, _isPrivate.isOn);
         }
 
 

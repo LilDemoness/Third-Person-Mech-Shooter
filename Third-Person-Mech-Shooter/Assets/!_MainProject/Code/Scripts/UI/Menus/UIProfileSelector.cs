@@ -8,7 +8,7 @@ using UnityEngine.UI;
 using Utils;
 using VContainer;
 
-namespace Gameplay.UI.MainMenu
+namespace Gameplay.UI.Menus
 {
     public class UIProfileSelector : MonoBehaviour
     {

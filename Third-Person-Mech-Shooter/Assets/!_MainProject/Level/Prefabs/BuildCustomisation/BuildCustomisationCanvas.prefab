@@ -3760,8 +3760,14 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  _graphic: {fileID: 7531198778693292836}
+  _normalColor: {r: 1, g: 1, b: 1, a: 1}
+  _highlightedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
+  _pressedColor: {r: 0.6, g: 0.6, b: 0.6, a: 1}
+  _disabledColor: {r: 0.8, g: 0.8, b: 0.8, a: 0.5}
   _iconDisplayText: {fileID: 0}
   _textFormattingString: '{0}'
+  _iconDisplayImage: {fileID: 7531198778693292836}
 --- !u!1 &3001094983831109611
 GameObject:
   m_ObjectHideFlags: 0
@@ -6921,8 +6927,14 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  _graphic: {fileID: 5871757367763025852}
+  _normalColor: {r: 1, g: 1, b: 1, a: 1}
+  _highlightedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
+  _pressedColor: {r: 0.6, g: 0.6, b: 0.6, a: 1}
+  _disabledColor: {r: 0.8, g: 0.8, b: 0.8, a: 0.5}
   _iconDisplayText: {fileID: 0}
   _textFormattingString: '{0}'
+  _iconDisplayImage: {fileID: 5871757367763025852}
 --- !u!1 &5097904312486760036
 GameObject:
   m_ObjectHideFlags: 0
@@ -9264,7 +9276,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isInteractable: 1
-  _inputAction: {fileID: 7291365496769820105, guid: 832195adfe757804ab6ebd15233eab2e, type: 3}
+  _inputAction: {fileID: -1665528398294392814, guid: 832195adfe757804ab6ebd15233eab2e, type: 3}
   _inputActionType: 0
   _allowInputWhenNotInFocus: 0
   _onButtonTriggered:
@@ -9283,8 +9295,14 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  _graphic: {fileID: 7677119913616353855}
+  _normalColor: {r: 1, g: 1, b: 1, a: 1}
+  _highlightedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
+  _pressedColor: {r: 0.6, g: 0.6, b: 0.6, a: 1}
+  _disabledColor: {r: 0.8, g: 0.8, b: 0.8, a: 0.5}
   _iconDisplayText: {fileID: 0}
   _textFormattingString: '{0}'
+  _iconDisplayImage: {fileID: 7677119913616353855}
 --- !u!1 &6691906472183574652
 GameObject:
   m_ObjectHideFlags: 0
@@ -10958,7 +10976,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isInteractable: 1
-  _inputAction: {fileID: -610913900546510988, guid: 832195adfe757804ab6ebd15233eab2e, type: 3}
+  _inputAction: {fileID: -5609054952829266176, guid: 832195adfe757804ab6ebd15233eab2e, type: 3}
   _inputActionType: 0
   _allowInputWhenNotInFocus: 0
   _onButtonTriggered:
@@ -10977,8 +10995,14 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  _graphic: {fileID: 6314663511047945741}
+  _normalColor: {r: 1, g: 1, b: 1, a: 1}
+  _highlightedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
+  _pressedColor: {r: 0.6, g: 0.6, b: 0.6, a: 1}
+  _disabledColor: {r: 0.8, g: 0.8, b: 0.8, a: 0.5}
   _iconDisplayText: {fileID: 0}
   _textFormattingString: '{0}'
+  _iconDisplayImage: {fileID: 6314663511047945741}
 --- !u!1 &8227628878613168566
 GameObject:
   m_ObjectHideFlags: 0
@@ -11028,8 +11052,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5344718483363811381}
-  - component: {fileID: 6950775176961207311}
-  - component: {fileID: 8137269257172572566}
   - component: {fileID: 7725182192387360123}
   - component: {fileID: 2954545127556640124}
   - component: {fileID: 128720158383199442}
@@ -11060,44 +11082,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
---- !u!222 &6950775176961207311
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8337934908554416928}
-  m_CullTransparentMesh: 1
---- !u!114 &8137269257172572566
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8337934908554416928}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!114 &7725182192387360123
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11111,7 +11095,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isInteractable: 1
-  _inputAction: {fileID: 0}
+  _inputAction: {fileID: -2586820785962122590, guid: 832195adfe757804ab6ebd15233eab2e, type: 3}
   _inputActionType: 0
   _allowInputWhenNotInFocus: 0
   _onButtonTriggered:
@@ -11130,8 +11114,14 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  _graphic: {fileID: 4959861384400373558}
+  _normalColor: {r: 1, g: 1, b: 1, a: 1}
+  _highlightedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
+  _pressedColor: {r: 0.6, g: 0.6, b: 0.6, a: 1}
+  _disabledColor: {r: 0.8, g: 0.8, b: 0.8, a: 0.5}
   _iconDisplayText: {fileID: 0}
   _textFormattingString: '{0}'
+  _iconDisplayImage: {fileID: 5496204399682980042}
 --- !u!114 &2954545127556640124
 MonoBehaviour:
   m_ObjectHideFlags: 0

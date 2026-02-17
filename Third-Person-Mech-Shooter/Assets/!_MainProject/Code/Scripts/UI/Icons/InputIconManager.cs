@@ -57,12 +57,8 @@ namespace UI.Icons
                 if (bindings[i].groups.Contains(ClientInput.LastUsedDeviceName))
                 {
                     // This binding is compatable with our active device. Use it to determine our Icon.
-                    inputAction.GetBindingDisplayString(i, out string deviceLayoutName, out string controlPath);
-
-                    if (s_inputSystemIdentifierToSpriteIdenfitierDictionary.TryGetValue(controlPath, out string spriteIdentifier))
-                    {
-                        return s_inputIconData.GetSprite(ClientInput.LastUsedDevice, spriteIdentifier);
-                    }
+                    inputAction.GetBindingDisplayString(i, out string _, out string controlPath);
+                    return s_inputIconData.GetSprite(ClientInput.LastUsedDevice, controlPath);
                 }
             }
 

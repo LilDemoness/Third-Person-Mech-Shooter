@@ -1,53 +1,48 @@
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using Infrastructure;
-using TMPro;
 using Unity.Services.Multiplayer;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityServices.Sessions;
 using VContainer;
 
-namespace Gameplay.UI.MainMenu.Session
+namespace Gameplay.UI.Menus.Session
 {
     /// <summary>
-    ///     Handles the list of <see cref="SessionListItemUI"/> elements and ensures it stays synchonised with the Session list from the service.
+    ///     Handles the list of <see cref="LobbyListItemUI"/> elements and ensures it stays synchonised with the Session list from the service.
     /// </summary>
-    public class SessionJoiningUI : MonoBehaviour
+    public class SessionJoiningUI : Menu
     {
-        [SerializeField] private CanvasGroup _canvasGroup;
+        [Space(5)]
+        [SerializeField] private LobbyListItemUI _sessionListItemPrototype;
 
         [Space(5)]
-        [SerializeField] private SessionListItemUI _sessionListItemPrototype;
-
-        [Space(5)]
-        [SerializeField] private TMP_InputField _joinCodeField;
         [SerializeField] private Graphic _emptySessionListLabel;
-        [SerializeField] private Button _joinSessionButton;
 
 
         private IObjectResolver _container;
-        private SessionUIMediator _sessionUIMediator;
+        //private SessionUIMediator _sessionUIMediator;
         private UpdateRunner _updateRunner;
         private ISubscriber<SessionListFetchedMessage> _localSessionsRefreshedSubscriber;
 
-        private List<SessionListItemUI> _sessionListItems = new List<SessionListItemUI>();
+        private List<LobbyListItemUI> _sessionListItems = new List<LobbyListItemUI>();
 
 
         [Inject]
         private void InjectDependenciesAndInitialize(
             IObjectResolver container,
-            SessionUIMediator sessionUIMediator,
+            //SessionUIMediator sessionUIMediator,
             UpdateRunner updateRunner,
             ISubscriber<SessionListFetchedMessage> localSessionsRefreshedSubscriber)
         {
             this._container = container;
-            this._sessionUIMediator = sessionUIMediator;
+            //this._sessionUIMediator = sessionUIMediator;
             this._updateRunner = updateRunner;
             this._localSessionsRefreshedSubscriber = localSessionsRefreshedSubscriber;
 
             _localSessionsRefreshedSubscriber.Subscribe(UpdateUI);
         }
+
 
 
         private void Awake()
@@ -61,23 +56,13 @@ namespace Gameplay.UI.MainMenu.Session
         }
 
 
-        /// <summary>
-        ///     Added to the Join Code InputField component's OnValueChanged callback.
-        /// </summary>
-        public void OnJoinCodeInputTextChanged()
-        {
-            _joinCodeField.text = SanitizeJoinCode(_joinCodeField.text);
-            _joinSessionButton.interactable = _joinCodeField.text.Length > 0;
-        }
+        
 
-        private string SanitizeJoinCode(string dirtyString)
-        {
-            return Regex.Replace(dirtyString.ToUpper(), "[^A-Z0-9]", "");
-        }
 
-        public void OnJoinButtonPressed()
+
+        public void JoinWithCode(string sanitisedString)
         {
-            _sessionUIMediator.JoinSessionWithCodeRequest(SanitizeJoinCode(_joinCodeField.text));
+            //_sessionUIMediator.JoinSessionWithCodeRequest(sanitisedString);
         }
 
 
@@ -87,17 +72,17 @@ namespace Gameplay.UI.MainMenu.Session
         /// <param name="_"></param>
         private void PeriodicRefresh(float _)
         {
-            _sessionUIMediator.QuerySessionRequest(false);
+            //_sessionUIMediator.QuerySessionRequest(blockUI: false);
         }
 
         // Called from UI Button.
         public void OnRefreshButtonPressed()
         {
-            _sessionUIMediator.QuerySessionRequest(true);
+            //_sessionUIMediator.QuerySessionRequest(blockUI: true);
         }
 
         /// <summary>
-        ///     Updates the list of <see cref="SessionListItemUI"/> elements with the given message contents.
+        ///     Updates the list of <see cref="LobbyListItemUI"/> elements with the given message contents.
         /// </summary>
         private void UpdateUI(SessionListFetchedMessage message)
         {
@@ -114,7 +99,7 @@ namespace Gameplay.UI.MainMenu.Session
         }
 
         /// <summary>
-        ///     Ensure that there are the required number of <see cref="SessionListItemUI"/> instances.<br/>
+        ///     Ensure that there are the required number of <see cref="LobbyListItemUI"/> instances.<br/>
         ///     Creates new instances to reach the required amount and disables those over the count.
         /// </summary>
         private void EnsureNumberOfActiveUISlots(int requiredNumber)
@@ -134,9 +119,9 @@ namespace Gameplay.UI.MainMenu.Session
             }
         }
 
-        private SessionListItemUI CreateSessionListItem()
+        private LobbyListItemUI CreateSessionListItem()
         {
-            SessionListItemUI listItem = Instantiate(_sessionListItemPrototype.gameObject, _sessionListItemPrototype.transform.parent).GetComponent<SessionListItemUI>();
+            LobbyListItemUI listItem = Instantiate(_sessionListItemPrototype.gameObject, _sessionListItemPrototype.transform.parent).GetComponent<LobbyListItemUI>();
             listItem.gameObject.SetActive(true);
 
             _container.Inject(listItem);
@@ -147,24 +132,18 @@ namespace Gameplay.UI.MainMenu.Session
 
         public void OnQuickJoinPressed()
         {
-            _sessionUIMediator.QuickJoinRequest();
+            //_sessionUIMediator.QuickJoinRequest();
         }
 
 
-        public void Show()
+        public override void Show()
         {
-            _canvasGroup.alpha = 1.0f;
-            _canvasGroup.interactable = true;
-            _canvasGroup.blocksRaycasts = true;
-
-            _joinCodeField.text = "";
+            base.Show();
             _updateRunner.Subscribe(PeriodicRefresh, 10.0f);
         }
-        public void Hide()
+        public override void Hide()
         {
-            _canvasGroup.alpha = 0.0f;
-            _canvasGroup.interactable = false;
-            _canvasGroup.blocksRaycasts = false;
+            base.Hide();
             _updateRunner.Unsubscribe(PeriodicRefresh);
         }
     }
