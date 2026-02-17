@@ -10,8 +10,10 @@ namespace Gameplay.UI.Menus.Session
     /// </summary>
     public class LobbyListItemUI : MonoBehaviour
     {
-        [SerializeField] private TextMeshProUGUI _sessionNameText;
-        [SerializeField] private TextMeshProUGUI _sessionPlayerCountText;
+        [SerializeField] private TextMeshProUGUI _lobbyNameText;
+        [SerializeField] private TextMeshProUGUI _lobbyPlayerCountText;
+        [SerializeField] private TextMeshProUGUI _lobbyGameModeText;
+        [SerializeField] private TextMeshProUGUI _lobbyMapText;
         [SerializeField] private GameObject _passwordProtectedCheckGO;
 
         [Inject]
@@ -23,8 +25,23 @@ namespace Gameplay.UI.Menus.Session
         public void SetData(ISessionInfo data)
         {
             _data = data;
-            _sessionNameText.SetText(data.Name);
-            _sessionPlayerCountText.SetText($"{data.MaxPlayers - data.AvailableSlots}/{data.MaxPlayers}");
+
+            _lobbyNameText.SetText(data.Name);
+            _lobbyPlayerCountText.SetText($"{data.MaxPlayers - data.AvailableSlots}/{data.MaxPlayers}");
+
+            if (data.Properties != null)
+            {
+                if (data.Properties.TryGetValue("GameMode", out SessionProperty gameModeProperty))
+                    _lobbyGameModeText.SetText(gameModeProperty.Value);
+                else
+                    _lobbyGameModeText.SetText("Error");
+
+                if (data.Properties.TryGetValue("Map", out SessionProperty mapProperty))
+                    _lobbyMapText.SetText(mapProperty.Value);
+                else
+                    _lobbyMapText.SetText("Error");
+            }
+
             _passwordProtectedCheckGO.SetActive(data.HasPassword);
         }
 

@@ -299,7 +299,7 @@ GameObject:
   - component: {fileID: 2096122734158800334}
   - component: {fileID: 8769365127788060820}
   m_Layer: 0
-  m_Name: RoomLabel
+  m_Name: RoomNameLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -479,8 +479,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03eaff29e811b89489a70bbd99ae23b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _sessionNameText: {fileID: 8769365127788060820}
-  _sessionPlayerCountText: {fileID: 1536613011170411369}
+  _lobbyNameText: {fileID: 8769365127788060820}
+  _lobbyPlayerCountText: {fileID: 1536613011170411369}
+  _lobbyGameModeText: {fileID: 6199716068956848537}
+  _lobbyMapText: {fileID: 7804469604560824465}
   _passwordProtectedCheckGO: {fileID: 1690825461285651058}
 --- !u!222 &4410337615999837913
 CanvasRenderer:

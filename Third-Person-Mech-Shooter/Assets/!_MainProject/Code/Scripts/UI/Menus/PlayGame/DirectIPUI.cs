@@ -27,18 +27,21 @@ namespace Gameplay.UI.Menus
         [SerializeField] private GameObject _signInSpinner;
         [SerializeField] private IPConnectionWindow _ipConnectionWindow;
 
-        [Inject]
+
+
         private ConnectionManager _connectionManager;
-
-
-
         private ISubscriber<ConnectStatus> _connectStatusSubscriber;
 
 
         [Inject]
-        private void InjectDependencies(ISubscriber<ConnectStatus> connectStatusSubscriber)
+        private void InjectDependencies(ISubscriber<ConnectStatus> connectStatusSubscriber, ConnectionManager connectionManager)
         {
+            if (_connectStatusSubscriber != null)
+                return; // Bandaid Fix.
+
             this._connectStatusSubscriber = connectStatusSubscriber;
+            this._connectionManager = connectionManager;
+
             _connectStatusSubscriber.Subscribe(OnConnectStatusMessage);
         }
 

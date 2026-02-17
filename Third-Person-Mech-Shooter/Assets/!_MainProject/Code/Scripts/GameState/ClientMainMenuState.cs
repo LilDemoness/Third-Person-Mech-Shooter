@@ -44,7 +44,7 @@ namespace Gameplay.GameState
 
         [Header("Component References")]
         [SerializeField] private LobbyUIMediator _lobbyUIMediator;
-        [SerializeField] private IPUIMediator _ipUIMediator;
+        [SerializeField] private DirectIPUI _directIPUI;
 
 
         [Inject]
@@ -86,7 +86,7 @@ namespace Gameplay.GameState
             base.Configure(builder);
             builder.RegisterComponent(_nameGenerationData);
             builder.RegisterComponent(_lobbyUIMediator);
-            builder.RegisterComponent(_ipUIMediator);
+            builder.RegisterComponent(_directIPUI);
         }
 
 

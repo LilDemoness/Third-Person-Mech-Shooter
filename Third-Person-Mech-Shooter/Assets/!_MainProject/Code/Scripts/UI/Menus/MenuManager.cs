@@ -26,10 +26,11 @@ namespace Gameplay.UI.Menus
 
 
         public static void SetActiveMenu(Menu menuToEnable, GameObject sender = null, bool clearStacks = false) => SetActiveMenu(menuToEnable.gameObject, sender, clearStacks);
-        public static void SetActiveMenu(GameObject menuToEnable, GameObject sender = null, bool clearStacks = false)
+        public static void SetActivePopup(Menu menuToEnable, GameObject sender = null, bool clearStacks = false) => SetActiveMenu(menuToEnable.gameObject, sender, clearStacks, false);
+        public static void SetActiveMenu(GameObject menuToEnable, GameObject sender = null, bool clearStacks = false, bool disablePrevious = true)
         {
             // Disable Current Menu.
-            if (_currentMenuSelection)
+            if (disablePrevious && _currentMenuSelection)
                 DisableMenu(_currentMenuSelection);
             // Enable Desired Menu.
             EnableMenu(menuToEnable);
@@ -103,7 +104,7 @@ namespace Gameplay.UI.Menus
         public static bool IsInActiveMenu(this Component component)
         {
             // Try Find first menu through parents.
-            if (component.TryGetComponentThroughParents<Menu>(out Menu closestParentMenu))
+            if (!component.TryGetComponentThroughParents<Menu>(out Menu closestParentMenu))
                 return false;   // Not within a menu.
 
             // Compare the component's parent menu with the active menu.

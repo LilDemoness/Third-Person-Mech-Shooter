@@ -151,8 +151,8 @@ namespace UnityServices.Sessions
         const FilterField MAP_QUERY_FIELD = FilterField.StringIndex2;
 
 
-        public void ToggleGameModeFilter(Gameplay.GameMode gameMode) => ToggleFilterOption(new FilterOption(GAME_MODE_QUERY_FIELD, gameMode.ToString(), FilterOperation.Contains));
-        public void ToggleMapFilter(string mapName) => ToggleFilterOption(new FilterOption(MAP_QUERY_FIELD, mapName, FilterOperation.Contains));
+        public void ToggleGameModeFilter(Gameplay.GameMode gameMode) => ToggleFilterOption(new FilterOption(GAME_MODE_QUERY_FIELD, gameMode.ToString(), FilterOperation.Equal));
+        public void ToggleMapFilter(string mapName) => ToggleFilterOption(new FilterOption(MAP_QUERY_FIELD, mapName, FilterOperation.Equal));
 
         #endregion
 

@@ -38,7 +38,18 @@ namespace UnityServices.Sessions
         private RateLimitCooldown _rateLimitQuickJoin;
         private RateLimitCooldown _rateLimitHost;
 
-        public ISession CurrentUnitySession { get; private set; }
+
+        private ISession m_currentUnitySession;
+        public ISession CurrentUnitySession
+        {
+            get => m_currentUnitySession;
+            private set
+            {
+                m_currentUnitySession = value;
+                OnCurrentSessionSet?.Invoke();
+            }
+        }
+        public event System.Action OnCurrentSessionSet;
         private bool _isTracking;
 
 
@@ -69,6 +80,7 @@ namespace UnityServices.Sessions
         public void SetRemoteSession(ISession session)
         {
             CurrentUnitySession = session;
+            UpdateSessionInformation(Gameplay.GameMode.FreeForAll, "Map1"); // Temp.
             _localSession.ApplyRemoteData(session);
         }
 
@@ -490,6 +502,19 @@ namespace UnityServices.Sessions
             // Publish the message.
             string reason = e.InnerException == null ? e.Message : $"{e.Message} ({e.InnerException.Message})";    // Session error type, then HTTP error type.
             _unityServiceErrorMessagePublisher.Publish(new UnityServiceErrorMessage("Session Error", reason, UnityServiceErrorMessage.Service.Session, e));
+        }
+
+
+
+        public async void UpdateSessionInformation(Gameplay.GameMode gameMode, string mapName)
+        {
+            if (!CurrentUnitySession.IsHost)
+                return; // Non-hosts cannot update session information.
+
+            IHostSession hostSession = CurrentUnitySession.AsHost();
+            hostSession.SetProperty("GameMode", new SessionProperty(gameMode.ToString(), index: PropertyIndex.String1));
+            hostSession.SetProperty("Map", new SessionProperty(mapName, index: PropertyIndex.String2));
+            await hostSession.SavePropertiesAsync();
         }
     }
 }

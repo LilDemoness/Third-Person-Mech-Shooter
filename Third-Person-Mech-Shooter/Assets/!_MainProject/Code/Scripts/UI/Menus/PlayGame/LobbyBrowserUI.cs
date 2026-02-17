@@ -48,7 +48,7 @@ namespace Gameplay.UI.Menus
             this._updateRunner = updateRunner;
             this._localSessionsRefreshedSubscriber = localSessionsRefreshedSubscriber;
 
-            Debug.Log("Subscribe");
+            //_updateRunner.Subscribe(PeriodicRefresh, 20.0f);
             _localSessionsRefreshedSubscriber.Subscribe(UpdateUI);
         }
 
@@ -63,7 +63,6 @@ namespace Gameplay.UI.Menus
             if (_updateRunner != null)
                 _updateRunner.Unsubscribe(PeriodicRefresh);
         }
-
 
 
 

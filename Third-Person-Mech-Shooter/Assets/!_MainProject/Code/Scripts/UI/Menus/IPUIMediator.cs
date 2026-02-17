@@ -48,7 +48,7 @@ namespace Gameplay.UI.Menus
         private void InjectDependencies(ISubscriber<ConnectStatus> connectStatusSubscriber)
         {
             this._connectStatusSubscriber = connectStatusSubscriber;
-            _connectStatusSubscriber.Subscribe(OnConnectStatusMessage);
+            //_connectStatusSubscriber.Subscribe(OnConnectStatusMessage);
         }
 
 

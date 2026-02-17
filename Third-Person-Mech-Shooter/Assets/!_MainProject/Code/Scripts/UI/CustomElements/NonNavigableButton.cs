@@ -1,3 +1,4 @@
+using Gameplay.UI.Menus;
 using TMPro;
 using UI.Icons;
 using UnityEngine;
@@ -112,7 +113,7 @@ namespace UI
             if (!_isInteractable)
                 return; // The action is not interractable.
 
-            if (!_allowInputWhenNotInFocus && !OverlayMenu.IsWithinActiveMenu(this.transform))
+            if (!CanUseInput_Focus())
                 return; // We are not in focus and aren't allowing out-of-focus input.
 
             if (!IsValidActionInput(ref ctx))
@@ -125,6 +126,8 @@ namespace UI
         {
             if (!_isInteractable)
                 return; // The button is not interractable.
+            if (!CanUseInput_Focus())
+                return;
 
             _graphic.CrossFadeColor(_pressedColor, 0.0f, true, true);
             _onButtonTriggered?.Invoke();
@@ -133,6 +136,8 @@ namespace UI
         {
             if (!_isInteractable)
                 return; // The button is not interractable.
+            if (!CanUseInput_Focus())
+                return;
 
             _graphic.CrossFadeColor(_highlightedColor, 0.0f, true, true);
         }
@@ -140,9 +145,17 @@ namespace UI
         {
             if (!_isInteractable)
                 return; // The button is not interractable.
+            if (!CanUseInput_Focus())
+                return;
 
             _graphic.CrossFadeColor(_normalColor, 0.0f, true, true);
         }
+
+
+        /// <summary>
+        ///     Returns true if this NonNavigableButton isn't being prevented from providing input from focus state.
+        /// </summary>
+        private bool CanUseInput_Focus() => _allowInputWhenNotInFocus || this.IsInActiveMenu();
 
 
         private bool IsValidActionInput(ref InputAction.CallbackContext ctx) => _inputActionType switch

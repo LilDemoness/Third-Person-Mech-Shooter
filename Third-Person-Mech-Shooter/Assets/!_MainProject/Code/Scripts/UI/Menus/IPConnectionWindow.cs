@@ -18,7 +18,7 @@ namespace Gameplay.UI.Menus
         [SerializeField] private TextMeshProUGUI _titleText;
 
         [Inject]
-        private IPUIMediator _ipUIMediator;
+        private DirectIPUI _directIPUI;
         private ISubscriber<ConnectStatus> _connectStatusSubscriber;
 
         [Inject]
@@ -45,7 +45,7 @@ namespace Gameplay.UI.Menus
         private void OnConnectStatusMessage(ConnectStatus connectStatus)
         {
             CancelConnectionWindow();
-            _ipUIMediator.DisableSignInSpinner();
+            _directIPUI.DisableSignInSpinner();
         }
 
         private void Show()
@@ -69,7 +69,7 @@ namespace Gameplay.UI.Menus
             void OnTimeElapsed()
             {
                 Hide();
-                _ipUIMediator.DisableSignInSpinner();
+                _directIPUI.DisableSignInSpinner();
             }
 
             UnityTransport utp = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
@@ -114,7 +114,7 @@ namespace Gameplay.UI.Menus
         public void OnCancelJoinButtonPressed()
         {
             CancelConnectionWindow();
-            _ipUIMediator.JoiningWindowCancelled();
+            _directIPUI.JoiningWindowCancelled();
         }
     }
 }
