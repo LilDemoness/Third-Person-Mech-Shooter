@@ -106,8 +106,6 @@ namespace Gameplay.UI.Menus
         private void EnsureNumberOfActiveUISlots(int requiredNumber)
         {
             int delta = requiredNumber - _lobbyListItems.Count;
-            Debug.Log("Delta: " + delta);
-            Debug.Log("Req: " + requiredNumber);
 
             // Create required new instances.
             for (int i = 0; i < delta; ++i)
@@ -118,7 +116,6 @@ namespace Gameplay.UI.Menus
             // Enable/Disable instances.
             for (int i = 0; i < _lobbyListItems.Count; ++i)
             {
-                Debug.Log(i < requiredNumber ? "Enable" : "Disable");
                 _lobbyListItems[i].gameObject.SetActive(i < requiredNumber);
             }
         }

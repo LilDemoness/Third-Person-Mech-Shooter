@@ -807,7 +807,6 @@ GameObject:
   - component: {fileID: 31882726}
   - component: {fileID: 31882728}
   - component: {fileID: 31882727}
-  - component: {fileID: 31882729}
   m_Layer: 0
   m_Name: ProfileMenu
   m_TagString: Untagged
@@ -865,28 +864,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1968eaded950ca449bfa5b28267df0e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _canvasGroup: {fileID: 31882727}
-  _profileListItemPrototype: {fileID: 1226097915}
-  _newProfileField: {fileID: 1670912619}
-  _createProfileButton: {fileID: 1956663856}
-  _emptyProfileListLabel: {fileID: 1403615887}
---- !u!114 &31882729
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 31882725}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 78b5bad99db7e834eab291283a1de7b5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
   CanvasGroup: {fileID: 31882727}
   InitialSelection: {fileID: 0}
   OnReturnToRootMenuPerformed:
     m_PersistentCalls:
       m_Calls: []
+  _canvasGroup: {fileID: 31882727}
+  _profileListItemPrototype: {fileID: 1226097915}
+  _newProfileField: {fileID: 1670912619}
+  _createProfileButton: {fileID: 1956663856}
+  _emptyProfileListLabel: {fileID: 1403615887}
 --- !u!1001 &38103390
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -29072,7 +29059,7 @@ PrefabInstance:
     - target: {fileID: 6208511596972497417, guid: 8eba5c4b2aaf56447b79e6e95c8c4939, type: 3}
       propertyPath: _profileMenu
       value: 
-      objectReference: {fileID: 31882729}
+      objectReference: {fileID: 31882728}
     - target: {fileID: 6208511596972497417, guid: 8eba5c4b2aaf56447b79e6e95c8c4939, type: 3}
       propertyPath: _IPUIMediator
       value: 

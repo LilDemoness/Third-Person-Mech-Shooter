@@ -19,6 +19,7 @@ namespace Gameplay.UI
             MultiplayerServicesFacade multiplayerServicesFacade)
         {
             this._multiplayerServicesFacade = multiplayerServicesFacade;
+            this.gameObject.SetActive(false);
 
             if (_multiplayerServicesFacade.CurrentUnitySession != null)
                 SubscribeToSession();
@@ -28,11 +29,15 @@ namespace Gameplay.UI
         private void SubscribeToSession()
         {
             _multiplayerServicesFacade.OnCurrentSessionSet -= SubscribeToSession;
+            this.gameObject.SetActive(true);
 
             _multiplayerServicesFacade.CurrentUnitySession.Changed += UpdateJoinCode;
             UpdateJoinCode();
         }
 
-        private void UpdateJoinCode() => _codeDisplayLabel.text = "Join Code: " + _multiplayerServicesFacade.CurrentUnitySession.Code;
+        private void UpdateJoinCode()
+        {
+            _codeDisplayLabel.text = "Join Code: " + _multiplayerServicesFacade.CurrentUnitySession.Code;
+        }
     }
 }

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 using UserInput;
+using Gameplay.GameState;
 
 namespace UI.Lobby
 {
@@ -16,8 +17,13 @@ namespace UI.Lobby
         private Dictionary<ulong, ReadyCheckMark> _readyCheckMarkInstances = new Dictionary<ulong, ReadyCheckMark>();
 
 
+        [SerializeField] private NetworkLobbyState _networkLobbyState;
+
+
         private void Awake()
         {
+            _networkLobbyState.OnClientChangedReadyState += NetworkLobbyState_OnClientChangedReadyState;
+
             LobbyManager.OnClientIsReady += SetClientReady;
             LobbyManager.OnClientNotReady += SetClientNotReady;
 
@@ -25,10 +31,18 @@ namespace UI.Lobby
         }
         private void OnDestroy()
         {
+            _networkLobbyState.OnClientChangedReadyState -= NetworkLobbyState_OnClientChangedReadyState;
+
             LobbyManager.OnClientIsReady -= SetClientReady;
             LobbyManager.OnClientNotReady -= SetClientNotReady;
 
             ClientInput.OnConfirmPerformed -= TogglePlayerReadyState;
+        }
+
+
+        private void NetworkLobbyState_OnClientChangedReadyState(ulong clientId, int seatIndex, bool newReadyState)
+        {
+            throw new System.NotImplementedException();
         }
 
 

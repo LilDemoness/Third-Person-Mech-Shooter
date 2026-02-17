@@ -266,7 +266,7 @@ namespace Gameplay.GameState
             for (int i = 0; i < _networkLobbyState.SessionPlayers.Count; ++i)
             {
                 // Update the indicator.
-                _playerReadyIndicatorInstances[i].SetToggleText(_networkLobbyState.SessionPlayers[i].PlayerName);
+                _playerReadyIndicatorInstances[i].SetToggleText((_networkLobbyState.SessionPlayers[i].ClientId == NetworkManager.Singleton.LocalClientId ? "(You)\n" : "") + _networkLobbyState.SessionPlayers[i].PlayerName);
                 _playerReadyIndicatorInstances[i].SetToggleVisibility(_networkLobbyState.SessionPlayers[i].IsReady);
             }
         }

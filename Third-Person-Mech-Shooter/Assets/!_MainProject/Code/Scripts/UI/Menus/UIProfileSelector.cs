@@ -10,7 +10,7 @@ using VContainer;
 
 namespace Gameplay.UI.Menus
 {
-    public class UIProfileSelector : MonoBehaviour
+    public class UIProfileSelector : Menu
     {
         [SerializeField] private CanvasGroup _canvasGroup;
 
@@ -44,8 +44,10 @@ namespace Gameplay.UI.Menus
         public void SanitiseProfileNameInputText()
         {
             _newProfileField.text = SanitiseProfileName(_newProfileField.text);
-            _createProfileButton.interactable = _newProfileField.text.Length > 0 && !_profileManager.AvailableProfiles.Contains(_newProfileField.text);
+            _createProfileButton.interactable = IsValidProfileName(_newProfileField.text);
         }
+        private bool IsValidProfileName(string profileName) => profileName.Length > 0 && !_profileManager.AvailableProfiles.Contains(profileName) && _profileManager.IsValidNewProfileName(profileName);
+
 
         /// <summary>
         ///     Sanitises the input string by removing invalid characters and limiting its length.
@@ -60,18 +62,29 @@ namespace Gameplay.UI.Menus
         public void OnNewProfileButtonPressed()
         {
             string profile = _newProfileField.text;
-            if (!_profileManager.AvailableProfiles.Contains(profile))
+            if (_profileManager.AvailableProfiles.Contains(profile))
             {
-                _profileManager.CreateProfile(profile);
-                _profileManager.Profile = profile;
-            }
-            else
-            {
+                // Failed to create profile - Already Exists.
                 PopupManager.ShowPopupPanel("Could not create new Profile", "A profile already exists with this same name. Select one of the already existing profiles or create a new one.");
+                return;
+            }
+
+            if (!_profileManager.TryCreateProfile(profile))
+            {
+                // Failed to create profile - Invalid Profile.
+                PopupManager.ShowPopupPanel("Could not create new Profile", $"{profile} is an invalid profile name. Select one of the already existing profiles or create a new one.");
+                return;
+            }
+
+            if (!_profileManager.TrySetProfile(profile))
+            {
+                // Failed to set profile.
+                PopupManager.ShowPopupPanel("Could not set Profile", "Select another existing profile or create a new one.");
+                return;
             }
         }
 
-        public void InitialiseUI()
+        public void UpdateUI()
         {
             // Create & Setup UI Slots, instantiating & enabling/disabling as necessary.
             EnsureNumberOfActiveUISlots(_profileManager.AvailableProfiles.Count);
@@ -137,31 +150,28 @@ namespace Gameplay.UI.Menus
 
         public void SelectProfile(string profileName)
         {
-            _profileManager.Profile = profileName;
-            //HighlightSelectedProfile();
-            Hide();
+            if (_profileManager.TrySetProfile(profileName))
+            {
+                HighlightSelectedProfile();
+                Hide();
+            }
+            else
+            {
+                PopupManager.ShowPopupPanel("Could not set Profile", $"{profileName} is an invalid profile for this build. Select another existing profile or create a new one.");
+            }
         }
         public void DeleteProfile(string profileName)
         {
             _profileManager.DeleteProfile(profileName);
-            HighlightSelectedProfile();
+            UpdateUI();
         }
 
 
-        public void Show()
+        public override void Show()
         {
-            _canvasGroup.alpha = 1.0f;
-            _canvasGroup.interactable = true;
-            _canvasGroup.blocksRaycasts = true;
+            base.Show();
             _newProfileField.text = "";
-
-            InitialiseUI();
-        }
-        public void Hide()
-        {
-            _canvasGroup.alpha = 0.0f;
-            _canvasGroup.interactable = false;
-            _canvasGroup.blocksRaycasts = false;
+            UpdateUI();
         }
     }
 }

@@ -112,9 +112,10 @@ namespace Gameplay.GameState
             _ugsSetupTooltipDetector.enabled = false;
             _signInSpinner.SetActive(false);
 
-            Debug.Log($"Signed in. Unity Player ID {AuthenticationService.Instance.PlayerId}");
+            Debug.Log($"Signed in. ID: {AuthenticationService.Instance.PlayerId}\nName: {_profileManager.Profile}");
 
             _localUser.ID = AuthenticationService.Instance.PlayerId;
+            _localUser.DisplayName = _profileManager.Profile;
 
             // The local SessionUser object will be hooked into the UI before the LocalSession is population
             //  during session join, so the LocalSession must know about it already when that happens.
@@ -144,11 +145,12 @@ namespace Gameplay.GameState
             _sessionButton.interactable = true;
             _signInSpinner.SetActive(false);
 
-            Debug.Log($"Signed in. Unity Player ID {AuthenticationService.Instance.PlayerId}");
+            Debug.Log($"Signed in. ID: {AuthenticationService.Instance.PlayerId}\nName: {_profileManager.Profile}");
 
             // Update the LocalUser and LocalSession.
             _localSession.RemoveUser(_localUser);
             _localUser.ID = AuthenticationService.Instance.PlayerId;
+            _localUser.DisplayName = _profileManager.Profile;
             _localSession.AddUser(_localUser);
         }
 

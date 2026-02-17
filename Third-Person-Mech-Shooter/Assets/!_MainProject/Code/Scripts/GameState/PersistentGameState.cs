@@ -13,7 +13,7 @@ namespace Gameplay.GameState
         const string DEFAULT_MAP_NAME = "TestGameMap";
 
 
-        private GameMode m_gameMode;
+        private GameMode m_gameMode = GameMode.Invalid;
         public GameMode GameMode
         {
             get => m_gameMode;

@@ -6,6 +6,7 @@ using TMPro;
 using Unity.Networking.Transport;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityServices.Sessions;
 using VContainer;
 
 namespace Gameplay.UI.Menus
@@ -30,17 +31,22 @@ namespace Gameplay.UI.Menus
 
 
         private ConnectionManager _connectionManager;
+        private LocalSessionUser _localSessionUser;
         private ISubscriber<ConnectStatus> _connectStatusSubscriber;
 
 
         [Inject]
-        private void InjectDependencies(ISubscriber<ConnectStatus> connectStatusSubscriber, ConnectionManager connectionManager)
+        private void InjectDependencies(
+            ISubscriber<ConnectStatus> connectStatusSubscriber,
+            ConnectionManager connectionManager,
+            LocalSessionUser localSessionUser)
         {
             if (_connectStatusSubscriber != null)
                 return; // Bandaid Fix.
 
             this._connectStatusSubscriber = connectStatusSubscriber;
             this._connectionManager = connectionManager;
+            this._localSessionUser = localSessionUser;
 
             _connectStatusSubscriber.Subscribe(OnConnectStatusMessage);
         }
@@ -82,7 +88,7 @@ namespace Gameplay.UI.Menus
 
             // Perform the Host attempt.
             EnableSignInSpinner();
-            _connectionManager.StartHostIP(GetPlayerName(), ip, portInteger);
+            _connectionManager.StartHostIP(_localSessionUser.DisplayName, ip, portInteger);
         }
         public void JoinWithIP(string ip, string port)
         {
@@ -90,7 +96,7 @@ namespace Gameplay.UI.Menus
 
             // Perform the Join attempt.
             EnableSignInSpinner();
-            _connectionManager.StartClientIP(GetPlayerName(), ip, portInteger);
+            _connectionManager.StartClientIP(_localSessionUser.DisplayName, ip, portInteger);
             _ipConnectionWindow.ShowConnectionWindow();
         }
 
@@ -186,8 +192,5 @@ namespace Gameplay.UI.Menus
             bool portValid = ushort.TryParse(port, out ushort portNumber);
             return portValid && NetworkEndpoint.TryParse(ipAddress, portNumber, out var networkEndpoint);
         }
-
-
-        private string GetPlayerName() { Debug.LogWarning("Player Names not Implemented"); return "Mighty Miku"; }
     }
 }
