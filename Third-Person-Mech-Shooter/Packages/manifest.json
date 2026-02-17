@@ -11,7 +11,7 @@
     "com.unity.services.multiplayer": "1.1.8",
     "com.unity.toolchain.win-x86_64-linux-x86_64": "2.0.11",
     "com.unity.ugui": "2.0.0",
-    "jp.hadashikick.vcontainer": "https://github.com/hadashiA/VContainer.git?path=VContainer/Assets/VContainer#1.17.0",
+    "jp.hadashikick.vcontainer": "1.17.0",
     "com.unity.modules.accessibility": "1.0.0",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
@@ -44,5 +44,14 @@
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0"
-  }
+  },
+  "scopedRegistries": [
+    {
+      "name": "package.openupm.com",
+      "url": "https://package.openupm.com",
+      "scopes": [
+        "jp.hadashikick.vcontainer"
+      ]
+    }
+  ]
 }
