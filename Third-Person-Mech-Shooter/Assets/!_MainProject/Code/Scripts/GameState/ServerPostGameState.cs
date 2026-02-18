@@ -102,7 +102,7 @@ namespace Gameplay.GameState
             if (votesInDuplicate < 0)
             {
                 // No votes. Choose a random GameType.
-                gameTypes = GameMode.Invalid.GetAllGameModes();
+                gameTypes = GameModeExtensions.GetAllGameModes();
                 return gameTypes[Random.Range(0, gameTypes.Length)];
             }
 
