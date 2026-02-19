@@ -252,9 +252,18 @@ namespace UnityServices.Sessions
         }
 
 
+
         public void ClearFilters() => _multiplayerServicesInterface.ClearFilters();
-        public void ToggleGameModeFilter(Gameplay.GameMode gameMode) => _multiplayerServicesInterface.ToggleGameModeFilter(gameMode);
-        public void ToggleMapFilter(string mapName) => _multiplayerServicesInterface.ToggleMapFilter(mapName);
+
+        public void SetGameModeFilter(Gameplay.GameMode gameMode) => _multiplayerServicesInterface.SetGameModeFilter(gameMode);
+        public void ClearGameModeFilter() => _multiplayerServicesInterface.ClearGameModeFilter();
+
+        public void SetMapFilter(string mapName) => _multiplayerServicesInterface.SetMapFilter(mapName);
+        public void ClearMapFilter() => _multiplayerServicesInterface.ClearMapFilter();
+
+        public void SetShowPasswordProtectedLobbies(bool newValue) => _multiplayerServicesInterface.SetShowPasswordProtectedLobbies(newValue);
+
+
 
         public void ClearSortOptions() => _multiplayerServicesInterface.ClearSortOptions();
 

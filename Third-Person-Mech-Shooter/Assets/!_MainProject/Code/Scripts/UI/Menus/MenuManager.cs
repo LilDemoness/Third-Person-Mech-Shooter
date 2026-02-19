@@ -39,7 +39,7 @@ namespace Gameplay.UI.Menus
             if (!clearStacks)
             {
                 _backButtonTargets.Push(_currentMenuSelection);
-                if (sender != null)
+                //if (sender != null)
                     _previousRootButtonSelections.Push(sender);
             }
             _currentMenuSelection = menuToEnable.gameObject;

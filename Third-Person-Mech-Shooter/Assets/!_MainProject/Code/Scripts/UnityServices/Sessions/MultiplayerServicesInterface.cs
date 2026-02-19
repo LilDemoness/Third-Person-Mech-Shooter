@@ -24,7 +24,7 @@ namespace UnityServices.Sessions
             // Filter for open sessions only.
             _defaultFilterOptions = new List<FilterOption>
             {
-                new(FilterField.AvailableSlots, "0", FilterOperation.Greater),
+                new(FilterField.AvailableSlots, "0", FilterOperation.Greater)
             };
 
             // Order by fullness, then newest first.
@@ -135,15 +135,37 @@ namespace UnityServices.Sessions
 
             return filters;
         }
-        private void ToggleFilterOption(FilterOption filterOption)   // Note: Doesn't re-query.
+        /// <summary>
+        ///     If no FilterOptions with the same Field exist, adds the passed FilterOption to the filters.
+        ///     Otherwise, replaces the FilterOption with the one passed.
+        /// </summary>
+        private void SetFilterOptionForField(FilterOption filterOption, bool replaceIfFound = true)   // Note: Doesn't re-query.
         {
-            if (_filterOptions.Contains(filterOption))
-                _filterOptions.Remove(filterOption);
-            else
-                _filterOptions.Add(filterOption);
+            if (ClearFilter(filterOption.Field))
+            {
+                if (!replaceIfFound)
+                    return; // We're not wanting to replace the field, just remove it.
+            }
+
+            _filterOptions.Add(filterOption);
         }
 
         public void ClearFilters() => _filterOptions.Clear();
+        /// <returns> True if a filter was removed. Otherwise, false.</returns>
+        public bool ClearFilter(FilterField filterField)
+        {
+            for (int i = 0; i < _filterOptions.Count; ++i)
+            {
+                if (_filterOptions[i].Field == filterField)
+                {
+                    // Found a filter with the same field.
+                    _filterOptions.RemoveAt(i);
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
 
 
@@ -151,8 +173,18 @@ namespace UnityServices.Sessions
         const FilterField MAP_QUERY_FIELD = FilterField.StringIndex2;
 
 
-        public void ToggleGameModeFilter(Gameplay.GameMode gameMode) => ToggleFilterOption(new FilterOption(GAME_MODE_QUERY_FIELD, gameMode.ToString(), FilterOperation.Equal));
-        public void ToggleMapFilter(string mapName) => ToggleFilterOption(new FilterOption(MAP_QUERY_FIELD, mapName, FilterOperation.Equal));
+        public void SetGameModeFilter(Gameplay.GameMode gameMode) => SetFilterOptionForField(new FilterOption(GAME_MODE_QUERY_FIELD, gameMode.ToString(), FilterOperation.Equal));
+        public void SetMapFilter(string mapName) => SetFilterOptionForField(new FilterOption(MAP_QUERY_FIELD, mapName, FilterOperation.Contains));
+        public void SetShowPasswordProtectedLobbies(bool showPasswordProtectedLobbies)
+        {
+            if (showPasswordProtectedLobbies)
+                ClearFilter(FilterField.HasPassword); // Allow password protected lobbies = no password protection filter.
+            else
+                _filterOptions.Add(new FilterOption(FilterField.HasPassword, false.ToString(), FilterOperation.Equal)); // Hide password protected lobbies = Apply filter to show only non-password protected.
+        }
+
+        public void ClearGameModeFilter() => ClearFilter(GAME_MODE_QUERY_FIELD);
+        public void ClearMapFilter() => ClearFilter(MAP_QUERY_FIELD);
 
         #endregion
 

@@ -184,8 +184,23 @@ namespace Gameplay.UI.Menus
 
         #region Filtering
 
-        public void ToggleGameModeFilter(GameMode gameMode) => _multiplayerServicesFacade.ToggleGameModeFilter(gameMode);
-        public void ToggleMapFilter(string mapName) => _multiplayerServicesFacade.ToggleMapFilter(mapName);
+        public void ClearFilters() => _multiplayerServicesFacade.ClearFilters();
+
+        public void SetGameModeFilter(GameMode gameMode)
+        {
+            if (gameMode == GameMode.Invalid)
+                _multiplayerServicesFacade.ClearFilters();
+            else
+                _multiplayerServicesFacade.SetGameModeFilter(gameMode);
+        }
+        public void SetMapFilter(string mapName)
+        {
+            if (string.IsNullOrEmpty(mapName))
+                _multiplayerServicesFacade.ClearMapFilter();
+            else
+                _multiplayerServicesFacade.SetMapFilter(mapName);
+        }
+        public void SetShowPasswordProtectedLobbies(bool newValue) => _multiplayerServicesFacade.SetShowPasswordProtectedLobbies(newValue);
 
         #endregion
 
