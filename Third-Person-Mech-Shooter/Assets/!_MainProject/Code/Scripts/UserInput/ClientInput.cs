@@ -15,6 +15,7 @@ namespace UserInput
     {
         // Prevent Multiple Instances
         private static ClientInput s_instance;
+        public static bool HasInputActions => s_inputActions != null;
 
 
         public static Vector2 MovementInput { get; private set; }
@@ -271,6 +272,10 @@ namespace UserInput
 
 
         private bool _isInputFieldFocused;
+        /// <summary>
+        ///     Checks if the player is currently selecting a InputField or TMP_InputField and adds an input prevention if they are.</br>
+        ///     If the player isn't, we instead remove that prevention.
+        /// </summary>
         private void CheckFocus()
         {
             GameObject selected = EventSystem.current.currentSelectedGameObject;
@@ -293,7 +298,6 @@ namespace UserInput
             _isInputFieldFocused = true;
 
             PreventActions(typeof(ClientInput), ActionTypes.Everything);
-            Debug.Log("Input Field Received Focus");
         }
         private void HandleNoInputFieldFocused()
         {
@@ -302,7 +306,6 @@ namespace UserInput
             _isInputFieldFocused = false;
 
             RemoveActionPrevention(typeof(ClientInput), ActionTypes.Everything);
-            Debug.Log("Non InputField Received Focus");
         }
 
 
@@ -357,9 +360,9 @@ namespace UserInput
 
             // UI.
             if (s_uiPreventionDictionary.Count > 0)
-                s_inputActions.UI.Disable();
+                DisableUIMaps();
             else
-                s_inputActions.UI.Enable();
+                EnableUIMaps();
         }
 
 
@@ -601,7 +604,7 @@ namespace UserInput
             {
                 // At least one type is disabling UI controls.
                 // Disable our 'UI' map.
-                s_inputActions.UI.Disable();
+                DisableUIMaps();
             }
         }
         /// <summary>
@@ -625,8 +628,19 @@ namespace UserInput
             {
                 // There are no longer any types wishing to disable our UI controls.
                 // Enable the 'UI' map.
-                s_inputActions.UI.Enable();
+                EnableUIMaps();
             }
+        }
+
+        private static void EnableUIMaps()
+        {
+            s_inputActions.UI.Enable();
+            s_inputActions.MainMenu.Enable();
+        }
+        private static void DisableUIMaps()
+        {
+            s_inputActions.UI.Disable();
+            s_inputActions.MainMenu.Disable();
         }
 
         #endregion
@@ -673,5 +687,8 @@ namespace UserInput
 
             _ => throw new System.NotImplementedException(),
         };
+
+
+        public static InputAction GetReferenceForAction(InputAction inputAction) => s_inputActions.FindAction(inputAction.name, true);
     }
 }

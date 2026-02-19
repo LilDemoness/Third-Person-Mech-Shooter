@@ -6,6 +6,7 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using UserInput;
 
 namespace UI
 {
@@ -100,14 +101,14 @@ namespace UI
         {
             if (_inputAction != null)
             {
-                _inputAction.action.Enable();
-                _inputAction.action.performed += Action_performed;
+                ClientInput.GetReferenceForAction(_inputAction.action).performed += Action_performed;
             }
         }
         private void OnDisable()
         {
-            if (_inputAction != null)
-                _inputAction.action.performed -= Action_performed;
+            if (_inputAction != null && ClientInput.HasInputActions)
+                ClientInput.GetReferenceForAction(_inputAction.action).performed -= Action_performed;
+
             if (s_currentHighlightedButton == this)
                 s_currentHighlightedButton = null;
         }
@@ -220,17 +221,20 @@ namespace UI
 
         private void UpdateSpriteIdentifiers()
         {
+            InputAction playerInputAction = ClientInput.GetReferenceForAction(_inputAction.action);
+
             if (_iconDisplayText)
-                UpdateIconDisplayText();
+                UpdateIconDisplayText(playerInputAction);
             if (_iconDisplayImage)
-                UpdateIconDisplayImage();
+                UpdateIconDisplayImage(playerInputAction);
         }
-        private void UpdateIconDisplayText()
+        private void UpdateIconDisplayText() => ClientInput.GetReferenceForAction(_inputAction.action);
+        private void UpdateIconDisplayText(InputAction inputAction)
         {
-            _iconDisplayText.text = InputIconManager.FormatTextForIconFromInputAction(_textFormattingString, _inputAction);
+            _iconDisplayText.text = InputIconManager.FormatTextForIconFromInputAction(_textFormattingString, inputAction);
             _iconDisplayText.spriteAsset = InputIconManager.GetSpriteAsset();
         }
-        private void UpdateIconDisplayImage() => _iconDisplayImage.sprite = InputIconManager.GetIconForAction(_inputAction);
+        private void UpdateIconDisplayImage(InputAction inputAction) => _iconDisplayImage.sprite = InputIconManager.GetIconForAction(inputAction);
 
 
 #if UNITY_EDITOR

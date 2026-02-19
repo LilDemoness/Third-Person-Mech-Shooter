@@ -103,16 +103,29 @@ namespace Gameplay.UI.Menus
         public static bool IsActiveMenu(this Menu menu) => menu.gameObject == CurrentMenu;
 
         /// <summary>
-        ///     Returns true if the passed component's parent menu is the active menu. Otherwise, false.
+        ///     Returns true if the passed component's parent menu is the active menu, or if there is no active menu. Otherwise, false.
         /// </summary>
         public static bool IsInActiveMenu(this Component component)
         {
+            if (CurrentMenu == null)
+                return true;
+
             // Try Find first menu through parents.
             if (!component.TryGetComponentThroughParents<Menu>(out Menu closestParentMenu))
                 return false;   // Not within a menu.
 
             // Compare the component's parent menu with the active menu.
             return closestParentMenu.gameObject == CurrentMenu;
+        }
+
+
+        public static void ClearData()
+        {
+            Debug.Log("Clear Data");
+
+            _currentMenuSelection = null;
+            _previousRootButtonSelections.Clear();
+            _backButtonTargets.Clear();
         }
     }
 }

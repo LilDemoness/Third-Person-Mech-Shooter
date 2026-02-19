@@ -120,6 +120,8 @@ namespace SceneLoading
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
         {
+            Gameplay.UI.Menus.MenuManager.ClearData();
+
             if (!IsSpawned || NetworkManager.ShutdownInProgress)
             {
                 _clientLoadingScreen.StopLoadingScreen();

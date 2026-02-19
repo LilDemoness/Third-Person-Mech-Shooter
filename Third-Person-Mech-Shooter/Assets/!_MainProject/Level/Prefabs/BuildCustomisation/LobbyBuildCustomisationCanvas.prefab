@@ -808,7 +808,7 @@ MonoBehaviour:
   _isInteractable: 1
   _inputAction: {fileID: 0}
   _inputActionType: 0
-  _allowInputWhenNotInFocus: 1
+  _allowInputWhenNotInFocus: 0
   _onButtonTriggered:
     m_PersistentCalls:
       m_Calls:
@@ -1195,7 +1195,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4014501734150995891, guid: 80b6380adbf4136489225a7af5ad2496, type: 3}
       propertyPath: m_Value
-      value: 1.0000002
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4076963173885804310, guid: 80b6380adbf4136489225a7af5ad2496, type: 3}
       propertyPath: m_SizeDelta.y

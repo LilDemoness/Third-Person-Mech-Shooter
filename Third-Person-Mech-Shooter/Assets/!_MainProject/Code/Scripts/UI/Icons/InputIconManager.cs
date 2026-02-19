@@ -54,6 +54,9 @@ namespace UI.Icons
             var bindingCount = bindings.Count;
             for (int i = 0; i < bindingCount; ++i)
             {
+                if (bindings[i].groups == null)
+                    continue;
+
                 if (bindings[i].groups.Contains(ClientInput.LastUsedDeviceName))
                 {
                     // This binding is compatable with our active device. Use it to determine our Icon.

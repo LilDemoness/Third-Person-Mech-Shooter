@@ -236,7 +236,7 @@ namespace Gameplay.UI.Menus
         {
             _multiplayerServicesFacade.SetRemoteSession(remoteSession);
 
-            Debug.Log($"Joined session with ID: {_localSession.SessionID}");
+            Debug.Log($"Joined session with ID: {_localSession.SessionID}\nName: {remoteSession.Name}");
 
             _connectionManager.StartClientSession(_localUser.DisplayName);
         }
