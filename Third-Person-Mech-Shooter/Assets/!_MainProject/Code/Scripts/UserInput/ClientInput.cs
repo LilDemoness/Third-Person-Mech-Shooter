@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Users;
 
@@ -216,6 +217,8 @@ namespace UserInput
             if (s_inputActions == null)
                 return;
 
+            CheckFocus();
+
             // Cache our movement input & notify listeners if it's changed since the last notification.
             MovementInput = s_inputActions.Movement.Movement.ReadValue<Vector2>();
             if (MovementInput != s_previousMovementInput)
@@ -265,6 +268,42 @@ namespace UserInput
 
         #endregion
         
+
+
+        private bool _isInputFieldFocused;
+        private void CheckFocus()
+        {
+            GameObject selected = EventSystem.current.currentSelectedGameObject;
+            if (selected != null)
+            {
+                if (selected.TryGetComponent<UnityEngine.UI.InputField>(out var inputField))
+                    HandleInputFieldFocused();
+                else if (selected.TryGetComponent<TMPro.TMP_InputField>(out var tmpInputField))
+                    HandleInputFieldFocused();
+                else
+                    HandleNoInputFieldFocused();
+            }
+            else
+                HandleNoInputFieldFocused();
+        }
+        private void HandleInputFieldFocused()
+        {
+            if (_isInputFieldFocused)
+                return;
+            _isInputFieldFocused = true;
+
+            PreventActions(typeof(ClientInput), ActionTypes.Everything);
+            Debug.Log("Input Field Received Focus");
+        }
+        private void HandleNoInputFieldFocused()
+        {
+            if (!_isInputFieldFocused)
+                return;
+            _isInputFieldFocused = false;
+
+            RemoveActionPrevention(typeof(ClientInput), ActionTypes.Everything);
+            Debug.Log("Non InputField Received Focus");
+        }
 
 
 

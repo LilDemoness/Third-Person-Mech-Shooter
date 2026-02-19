@@ -16,7 +16,7 @@ namespace Gameplay.UI.Menus
     - Quick Join.
     - Join with Code.
      */
-    public class LobbyBrowserUI : MonoBehaviour
+    public class LobbyBrowserUI : Menu
     {
         [Header("Lobby List")]
         [SerializeField] private LobbyListItemUI _lobbyListItemPrototype;
@@ -26,7 +26,7 @@ namespace Gameplay.UI.Menus
 
 
         [Header("Submenu References")]
-        [SerializeField] private Menu _customiseFiltersMenu;
+        [SerializeField] private EditFiltersUI _customiseFiltersMenu;
         [SerializeField] private JoinLobbyWithCodeUI _joinLobbyWithCodeMenu;
 
 
@@ -68,6 +68,12 @@ namespace Gameplay.UI.Menus
                 _localSessionsRefreshedSubscriber.Unsubscribe(UpdateUI);
         }
 
+
+        public override void Show()
+        {
+            base.Show();
+            OnRefreshButtonPressed();
+        }
 
 
         /// <summary>

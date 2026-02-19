@@ -231,7 +231,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 303e3ba150664004185358b79559df45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _canvasGroup: {fileID: 8073573892142532164}
+  CanvasGroup: {fileID: 8073573892142532164}
+  InitialSelection: {fileID: 2801276450612131316}
+  OnShow:
+    m_PersistentCalls:
+      m_Calls: []
+  OnHide:
+    m_PersistentCalls:
+      m_Calls: []
   _titleText: {fileID: 8981219831883525645}
   _mainText: {fileID: 7763965193323109017}
   _confirmButton: {fileID: 2801276450612131316}
@@ -578,6 +585,42 @@ PrefabInstance:
     - target: {fileID: 5933201912781112184, guid: 9fdaa51b9be25084c9bed723421cde9c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6217849353738452434, guid: 9fdaa51b9be25084c9bed723421cde9c, type: 3}
+      propertyPath: m_Colors.m_PressedColor.b
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6217849353738452434, guid: 9fdaa51b9be25084c9bed723421cde9c, type: 3}
+      propertyPath: m_Colors.m_PressedColor.g
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6217849353738452434, guid: 9fdaa51b9be25084c9bed723421cde9c, type: 3}
+      propertyPath: m_Colors.m_PressedColor.r
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6217849353738452434, guid: 9fdaa51b9be25084c9bed723421cde9c, type: 3}
+      propertyPath: m_Colors.m_SelectedColor.b
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6217849353738452434, guid: 9fdaa51b9be25084c9bed723421cde9c, type: 3}
+      propertyPath: m_Colors.m_SelectedColor.g
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6217849353738452434, guid: 9fdaa51b9be25084c9bed723421cde9c, type: 3}
+      propertyPath: m_Colors.m_SelectedColor.r
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6217849353738452434, guid: 9fdaa51b9be25084c9bed723421cde9c, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.b
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6217849353738452434, guid: 9fdaa51b9be25084c9bed723421cde9c, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.g
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6217849353738452434, guid: 9fdaa51b9be25084c9bed723421cde9c, type: 3}
+      propertyPath: m_Colors.m_HighlightedColor.r
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 6217849353738452434, guid: 9fdaa51b9be25084c9bed723421cde9c, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size

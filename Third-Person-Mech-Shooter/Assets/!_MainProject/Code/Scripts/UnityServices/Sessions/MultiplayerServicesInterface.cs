@@ -43,7 +43,7 @@ namespace UnityServices.Sessions
         /// <summary>
         ///     Create a session with the given parameters.
         /// </summary>
-        public async Task<ISession> CreateSession(string sessionName, int maxPlayers, bool isPrivate, Dictionary<string, PlayerProperty> playerProperties, Dictionary<string, SessionProperty> sessionProperties)
+        public async Task<ISession> CreateSession(string sessionName, int maxPlayers, bool isPrivate, string sessionPassword, Dictionary<string, PlayerProperty> playerProperties, Dictionary<string, SessionProperty> sessionProperties)
         {
             SessionOptions sessionOptions = new SessionOptions
             {
@@ -51,6 +51,7 @@ namespace UnityServices.Sessions
                 MaxPlayers = maxPlayers,
                 IsPrivate = isPrivate,
                 IsLocked = false,
+                Password = sessionPassword,
                 PlayerProperties = playerProperties,
                 SessionProperties = sessionProperties,
             }.WithRelayNetwork();

@@ -71,7 +71,7 @@ namespace Gameplay.UI.Menus
 
         #region Create Requests
 
-        public async void CreateSessionRequest(string sessionName, bool isPrivate)
+        public async void CreateSessionRequest(string sessionName, bool isPrivate, string sessionPassword = null)
         {
             // Before sending a request, populate an empty session name, if necessary.
             if (string.IsNullOrEmpty(sessionName))
@@ -88,7 +88,7 @@ namespace Gameplay.UI.Menus
             }
 
             _connectionManager.StartHostSession(_localUser.DisplayName);
-            var result = await _multiplayerServicesFacade.TryCreateSessionAsync(sessionName, MAX_PLAYERS, isPrivate);
+            var result = await _multiplayerServicesFacade.TryCreateSessionAsync(sessionName, MAX_PLAYERS, isPrivate, sessionPassword);
 
             HandleSessionJoinResult(result);
         }

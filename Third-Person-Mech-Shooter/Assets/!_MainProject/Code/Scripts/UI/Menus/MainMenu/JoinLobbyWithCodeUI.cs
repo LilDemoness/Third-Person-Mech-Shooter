@@ -27,6 +27,7 @@ namespace Gameplay.UI.Menus
         }
 
         public void ShowJoinLobbyWithCodePressed() => MenuManager.SetActivePopup(this);
+        public void HidePressed() => MenuManager.ReturnToPreviousMenu();
 
 
         /// <summary>

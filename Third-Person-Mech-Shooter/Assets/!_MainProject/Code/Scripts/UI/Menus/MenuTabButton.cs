@@ -7,7 +7,7 @@ namespace Gameplay.UI.Menus
     public class MenuTabButton : MonoBehaviour
     {
         [SerializeField] private ContainerMenu _parentMenu;
-        [SerializeField] private MenuTab _menuTab;
+        [SerializeField] private Menu _menu;
 
 
         private void Awake()
@@ -19,6 +19,6 @@ namespace Gameplay.UI.Menus
             GetComponent<Button>().onClick.RemoveListener(OnButtonSelected);
         }
 
-        public void OnButtonSelected() => _parentMenu.ShowTab(_menuTab);
+        public void OnButtonSelected() => _parentMenu.ShowSubmenu(_menu);
     }
 }

@@ -11,10 +11,8 @@ namespace Gameplay.UI.Menus
         [SerializeField] protected GameObject InitialSelection;
 
 
-        public event System.Action OnShow;
-        public event System.Action OnHide;
-
-        public UnityEvent OnReturnToRootMenuPerformed;
+        public UnityEvent OnShow;
+        public UnityEvent OnHide;
 
 
 
@@ -22,9 +20,6 @@ namespace Gameplay.UI.Menus
         {
             Hide();
         }
-
-
-        public virtual void ReturnToRootMenu() => OnReturnToRootMenuPerformed?.Invoke();
 
         public virtual void Show()
         {

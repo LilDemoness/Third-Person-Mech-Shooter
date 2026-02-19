@@ -12,7 +12,7 @@ namespace UI
     /// <summary>
     ///     A button that can be pressed by a mouse and triggered via a PlayerInputAction, but that cannot be selected via navigation
     /// </summary>
-    public class NonNavigableButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
+    public class NonNavigableButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler, IPointerClickHandler
     {
         [System.Serializable]
         private enum InputActionType
@@ -34,6 +34,14 @@ namespace UI
             /// <summary> Trigger the action if there is negative vertical input.</summary>
             VerticalNegative,
         }
+
+        private static NonNavigableButton s_currentHighlightedButton;
+        static NonNavigableButton()
+        {
+            MenuManager.OnActiveMenuChanged -= OnActiveMenuChanged;
+            MenuManager.OnActiveMenuChanged += OnActiveMenuChanged;
+        }
+        private static void OnActiveMenuChanged() => s_currentHighlightedButton?.OnPointerExit(null);
 
 
         [SerializeField] private bool _isInteractable = true;
@@ -100,6 +108,8 @@ namespace UI
         {
             if (_inputAction != null)
                 _inputAction.action.performed -= Action_performed;
+            if (s_currentHighlightedButton == this)
+                s_currentHighlightedButton = null;
         }
         private void OnDestroy()
         {
@@ -122,6 +132,9 @@ namespace UI
             // Valid input. Trigger our callback.
             _onButtonTriggered?.Invoke();
         }
+
+        private bool _isPressed = false;
+        private bool _isHighlighted = false;
         public void OnPointerClick(PointerEventData eventData)
         {
             if (!_isInteractable)
@@ -129,8 +142,22 @@ namespace UI
             if (!CanUseInput_Focus())
                 return;
 
-            _graphic.CrossFadeColor(_pressedColor, 0.0f, true, true);
             _onButtonTriggered?.Invoke();
+        }
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            if (!_isInteractable)
+                return; // The button is not interractable.
+            if (!CanUseInput_Focus())
+                return;
+
+            _isPressed = true;
+            UpdateSelectionIndicator();
+        }
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            _isPressed = false;
+            UpdateSelectionIndicator();
         }
         public void OnPointerEnter(PointerEventData eventData)
         {
@@ -139,16 +166,32 @@ namespace UI
             if (!CanUseInput_Focus())
                 return;
 
-            _graphic.CrossFadeColor(_highlightedColor, 0.0f, true, true);
+            _isHighlighted = true;
+            UpdateSelectionIndicator();
+            s_currentHighlightedButton = this;
         }
         public void OnPointerExit(PointerEventData eventData)
         {
-            if (!_isInteractable)
+            /*if (!_isInteractable)
                 return; // The button is not interractable.
             if (!CanUseInput_Focus())
-                return;
+                return;*/
 
-            _graphic.CrossFadeColor(_normalColor, 0.0f, true, true);
+            _isHighlighted = false;
+            UpdateSelectionIndicator();
+
+            if (s_currentHighlightedButton == this)
+                s_currentHighlightedButton = null;
+        }
+
+        private void UpdateSelectionIndicator()
+        {
+            if (_isPressed)
+                _graphic.CrossFadeColor(_pressedColor, 0.0f, true, true);
+            else if (_isHighlighted)
+                _graphic.CrossFadeColor(_highlightedColor, 0.0f, true, true);
+            else
+                _graphic.CrossFadeColor(_normalColor, 0.0f, true, true);
         }
 
 

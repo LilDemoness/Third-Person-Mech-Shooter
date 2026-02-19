@@ -129,7 +129,7 @@ namespace UnityServices.Sessions
         /// <summary>
         ///     Attempt to create a new session and then join it.
         /// </summary>
-        public async Task<(bool Success, ISession Session)> TryCreateSessionAsync(string sessionName, int maxPlayers, bool isPrivate)
+        public async Task<(bool Success, ISession Session)> TryCreateSessionAsync(string sessionName, int maxPlayers, bool isPrivate, string sessionPassword)
         {
             if (!_rateLimitHost.CanCall)
             {
@@ -144,6 +144,7 @@ namespace UnityServices.Sessions
                     sessionName,
                     maxPlayers,
                     isPrivate,
+                    sessionPassword,
                     _localUser.GetDataForUnityServices(),
                     null);
                 return (true, session);

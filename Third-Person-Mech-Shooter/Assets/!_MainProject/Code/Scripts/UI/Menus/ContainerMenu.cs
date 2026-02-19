@@ -4,26 +4,26 @@ namespace Gameplay.UI.Menus
 {
     public class ContainerMenu : Menu
     {
-        [SerializeField] private MenuTab[] _menuTabs;
+        [SerializeField] private Menu[] _subMenus;
 
 
         public override void Show()
         {
             base.Show();
-            ShowDefaultTab();
+            ShowDefaultSubmenu();
         }
 
-        public void ShowTab(int tabIndex) => ShowTab(_menuTabs[tabIndex]);
-        public void ShowTab(MenuTab menuTab)
+        public void ShowSubmenu(int submenuIndex) => ShowSubmenu(_subMenus[submenuIndex]);
+        public void ShowSubmenu(Menu submenu)
         {
-            HideAllTabs();
-            menuTab.Show();
+            HideAllSubmenus();
+            MenuManager.SetActiveMenu(submenu.gameObject, null, false, false);
         }
-        private void ShowDefaultTab() => ShowTab(_menuTabs[0]);
-        private void HideAllTabs()
+        private void ShowDefaultSubmenu() => ShowSubmenu(_subMenus[0]);
+        private void HideAllSubmenus()
         {
-            for(int i = 0; i < _menuTabs.Length; ++i)
-                _menuTabs[i].Hide();
+            for(int i = 0; i < _subMenus.Length; ++i)
+                _subMenus[i].Hide();
         }
     }
 }

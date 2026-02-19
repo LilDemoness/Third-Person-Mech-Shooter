@@ -1,3 +1,4 @@
+using Gameplay.UI.Menus;
 using TMPro;
 using UnityEngine;
 
@@ -6,11 +7,8 @@ namespace Gameplay.UI.Popups
     /// <summary>
     ///     A simple Popup Panel to display information to players.
     /// </summary>
-    public class PopupPanel : MonoBehaviour
+    public class PopupPanel : Menu
     {
-        [SerializeField] private CanvasGroup _canvasGroup;
-
-        [Space(5)]
         [SerializeField] private TextMeshProUGUI _titleText;
         [SerializeField] private TextMeshProUGUI _mainText;
         [SerializeField] private GameObject _confirmButton;
@@ -21,16 +19,19 @@ namespace Gameplay.UI.Popups
         public bool IsDisplaying => _isDisplaying;
 
         private bool _closableByUser;
+        private bool _obstructInput;
 
 
-        private void Awake()
-        {
-            Hide();
-        }
-
+        protected override void Start() { } // Override start method to prevent hiding ourselves when being instantiated.
         public void OnConfirmClick()
         {
-            if (_closableByUser)
+            if (!_closableByUser)
+                return;
+
+            // If we're obstructing input (Displaying through the MenuManager), then return through the MenuManager. Otherwise, hide normally.
+            if (_obstructInput && MenuManager.CurrentMenu == this.gameObject)
+                MenuManager.ReturnToPreviousMenu();
+            else
                 Hide();
         }
 
@@ -38,29 +39,32 @@ namespace Gameplay.UI.Popups
         /// <summary>
         ///     Setup and show the Popup Panel.
         /// </summary>
-        public void SetupPopupPanel(string titleText, string mainText, bool closeableByUser = true)
+        public void SetupPopupPanel(string titleText, string mainText, bool closeableByUser = true, bool obstructInput = true)
         {
             _titleText.text = titleText;
             _mainText.text = mainText;
             _closableByUser = closeableByUser;
+            _obstructInput = obstructInput;
 
             _confirmButton.SetActive(_closableByUser);
             _loadingSpinner.SetActive(!_closableByUser);
 
-            Show();
+            // If we're obstructing input, achieve this by opening through the MenuManager. Otherwise, show normally.
+            if (obstructInput)
+                MenuManager.SetActivePopup(this);
+            else
+                Show();
         }
 
 
-        private void Show()
+        public override void Show()
         {
-            _canvasGroup.alpha = 1.0f;
-            _canvasGroup.blocksRaycasts = true;
+            base.Show();
             _isDisplaying = true;
         }
-        public void Hide()
+        public override void Hide()
         {
-            _canvasGroup.alpha = 0.0f;
-            _canvasGroup.blocksRaycasts = false;
+            base.Hide();
             _isDisplaying = false;
         }
     }

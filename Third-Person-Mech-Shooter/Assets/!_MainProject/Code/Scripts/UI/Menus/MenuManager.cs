@@ -25,15 +25,13 @@ namespace Gameplay.UI.Menus
         }
 
 
-        public static void SetActiveMenu(Menu menuToEnable, GameObject sender = null, bool clearStacks = false) => SetActiveMenu(menuToEnable.gameObject, sender, clearStacks);
+        public static void SetActiveMenu(Menu menuToEnable, GameObject sender = null, bool clearStacks = false, bool disablePrevious = true) => SetActiveMenu(menuToEnable.gameObject, sender, clearStacks, disablePrevious);
         public static void SetActivePopup(Menu menuToEnable, GameObject sender = null, bool clearStacks = false) => SetActiveMenu(menuToEnable.gameObject, sender, clearStacks, false);
         public static void SetActiveMenu(GameObject menuToEnable, GameObject sender = null, bool clearStacks = false, bool disablePrevious = true)
         {
-            // Disable Current Menu.
+            // Disable Previous Menu.
             if (disablePrevious && _currentMenuSelection)
                 DisableMenu(_currentMenuSelection);
-            // Enable Desired Menu.
-            EnableMenu(menuToEnable);
 
             // Update Back Button Progression.
             if (!clearStacks)
@@ -50,6 +48,9 @@ namespace Gameplay.UI.Menus
                 _previousRootButtonSelections.Clear();
                 _backButtonTargets.Clear();
             }
+
+            // Enable Desired Menu.
+            EnableMenu(menuToEnable);
 
             // Notify listeners that we've changed menu.
             OnActiveMenuChanged?.Invoke();
@@ -86,7 +87,10 @@ namespace Gameplay.UI.Menus
         private static void DisableMenu(GameObject menuToDisable)
         {
             if (menuToDisable.TryGetComponent<Menu>(out Menu subMenu))
+            {
+                Debug.Log("Hide: " + subMenu.name);
                 subMenu.Hide();
+            }
             else
                 menuToDisable.SetActive(false);
         }

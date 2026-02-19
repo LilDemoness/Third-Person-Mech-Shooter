@@ -14,7 +14,7 @@ namespace Gameplay.UI.Menus
     /// <summary>
     ///     Handles
     /// </summary>
-    public class DirectIPUI : MonoBehaviour
+    public class DirectIPUI : Menu
     {
         public const string DEFAULT_IP = "127.0.0.1";
         public const int DEFAULT_PORT = 9998;
