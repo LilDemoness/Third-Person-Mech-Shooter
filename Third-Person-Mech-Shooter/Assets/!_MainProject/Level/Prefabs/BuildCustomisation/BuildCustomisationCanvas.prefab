@@ -583,6 +583,7 @@ GameObject:
   - component: {fileID: 6447248282693001473}
   - component: {fileID: 7405033407389811844}
   - component: {fileID: 1542058504624026702}
+  - component: {fileID: 2699052680111490070}
   m_Layer: 5
   m_Name: LeftButtonIndicator
   m_TagString: Untagged
@@ -647,6 +648,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2699052680111490070
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 410664651995189434}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1af155c4231904646ad671c21fe9815a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _image: {fileID: 1542058504624026702}
+  _inputAction: {fileID: 6485306273179015493, guid: 832195adfe757804ab6ebd15233eab2e, type: 3}
 --- !u!1 &522266765019844427
 GameObject:
   m_ObjectHideFlags: 0
@@ -3745,21 +3760,10 @@ MonoBehaviour:
   _inputActionType: 2
   _allowInputWhenNotInFocus: 0
   _onButtonTriggered:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 23858505449193763}
-        m_TargetAssemblyTypeName: UI.Customisation.FrameSelection.FrameSelectionUI,
-          Assembly-CSharp
-        m_MethodName: PreviewNextFrame
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+    _PersistentCalls:
+    - _Target: {fileID: 23858505449193763}
+      _MemberName: PreviewNextFrame
+      _PersistentArguments: []
   _graphic: {fileID: 7531198778693292836}
   _normalColor: {r: 1, g: 1, b: 1, a: 1}
   _highlightedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
@@ -6912,21 +6916,10 @@ MonoBehaviour:
   _inputActionType: 3
   _allowInputWhenNotInFocus: 0
   _onButtonTriggered:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 23858505449193763}
-        m_TargetAssemblyTypeName: UI.Customisation.FrameSelection.FrameSelectionUI,
-          Assembly-CSharp
-        m_MethodName: PreviewPreviousFrame
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+    _PersistentCalls:
+    - _Target: {fileID: 23858505449193763}
+      _MemberName: PreviewPreviousFrame
+      _PersistentArguments: []
   _graphic: {fileID: 5871757367763025852}
   _normalColor: {r: 1, g: 1, b: 1, a: 1}
   _highlightedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
@@ -8229,6 +8222,7 @@ GameObject:
   - component: {fileID: 2178537398691928951}
   - component: {fileID: 5567261451837323869}
   - component: {fileID: 8882434450282952494}
+  - component: {fileID: 7766194792369025981}
   m_Layer: 5
   m_Name: RightButtonIndicator
   m_TagString: Untagged
@@ -8293,6 +8287,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7766194792369025981
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5853504285439140661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1af155c4231904646ad671c21fe9815a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _image: {fileID: 8882434450282952494}
+  _inputAction: {fileID: -5338148820409163352, guid: 832195adfe757804ab6ebd15233eab2e, type: 3}
 --- !u!1 &5943947570531356804
 GameObject:
   m_ObjectHideFlags: 0
@@ -9280,21 +9288,10 @@ MonoBehaviour:
   _inputActionType: 0
   _allowInputWhenNotInFocus: 0
   _onButtonTriggered:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 23858505449193763}
-        m_TargetAssemblyTypeName: UI.Customisation.FrameSelection.FrameSelectionUI,
-          Assembly-CSharp
-        m_MethodName: SetActiveFrameAsNext
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+    _PersistentCalls:
+    - _Target: {fileID: 23858505449193763}
+      _MemberName: SetActiveFrameAsNext
+      _PersistentArguments: []
   _graphic: {fileID: 7677119913616353855}
   _normalColor: {r: 1, g: 1, b: 1, a: 1}
   _highlightedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
@@ -10980,21 +10977,10 @@ MonoBehaviour:
   _inputActionType: 0
   _allowInputWhenNotInFocus: 0
   _onButtonTriggered:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 23858505449193763}
-        m_TargetAssemblyTypeName: UI.Customisation.FrameSelection.FrameSelectionUI,
-          Assembly-CSharp
-        m_MethodName: SetActiveFrameAsPrevious
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+    _PersistentCalls:
+    - _Target: {fileID: 23858505449193763}
+      _MemberName: SetActiveFrameAsPrevious
+      _PersistentArguments: []
   _graphic: {fileID: 6314663511047945741}
   _normalColor: {r: 1, g: 1, b: 1, a: 1}
   _highlightedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
@@ -11099,21 +11085,10 @@ MonoBehaviour:
   _inputActionType: 0
   _allowInputWhenNotInFocus: 0
   _onButtonTriggered:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 23858505449193763}
-        m_TargetAssemblyTypeName: UI.Customisation.FrameSelection.FrameSelectionUI,
-          Assembly-CSharp
-        m_MethodName: Open
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+    _PersistentCalls:
+    - _Target: {fileID: 23858505449193763}
+      _MemberName: ToggleSelectionOptions
+      _PersistentArguments: []
   _graphic: {fileID: 4959861384400373558}
   _normalColor: {r: 1, g: 1, b: 1, a: 1}
   _highlightedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}

@@ -460,20 +460,10 @@ MonoBehaviour:
   _inputActionType: 0
   _allowInputWhenNotInFocus: 0
   _onButtonTriggered:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 851880779}
-        m_TargetAssemblyTypeName: UI.Customisation.MidGameCustomisationUI, Assembly-CSharp
-        m_MethodName: Hide
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+    _PersistentCalls:
+    - _Target: {fileID: 851880779}
+      _MemberName: Hide
+      _PersistentArguments: []
   _graphic: {fileID: 269585476}
   _normalColor: {r: 1, g: 1, b: 1, a: 1}
   _highlightedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}

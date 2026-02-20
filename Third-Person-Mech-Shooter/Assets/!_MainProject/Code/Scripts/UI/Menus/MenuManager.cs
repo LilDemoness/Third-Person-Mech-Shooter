@@ -26,6 +26,7 @@ namespace Gameplay.UI.Menus
 
 
         public static void SetActiveMenu(Menu menuToEnable, GameObject sender = null, bool clearStacks = false, bool disablePrevious = true) => SetActiveMenu(menuToEnable.gameObject, sender, clearStacks, disablePrevious);
+        public static void SetActivePopup(Menu menuToEnable) => SetActiveMenu(menuToEnable.gameObject, null, false, false);
         public static void SetActivePopup(Menu menuToEnable, GameObject sender = null, bool clearStacks = false) => SetActiveMenu(menuToEnable.gameObject, sender, clearStacks, false);
         public static void SetActiveMenu(GameObject menuToEnable, GameObject sender = null, bool clearStacks = false, bool disablePrevious = true)
         {

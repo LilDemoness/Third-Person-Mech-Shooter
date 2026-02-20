@@ -26,9 +26,6 @@ namespace Gameplay.UI.Menus
             ResetJoinCodeInput();
         }
 
-        public void ShowJoinLobbyWithCodePressed() => MenuManager.SetActivePopup(this);
-        public void HidePressed() => MenuManager.ReturnToPreviousMenu();
-
 
         /// <summary>
         ///     Added to the Join Code InputField component's OnValueChanged callback.

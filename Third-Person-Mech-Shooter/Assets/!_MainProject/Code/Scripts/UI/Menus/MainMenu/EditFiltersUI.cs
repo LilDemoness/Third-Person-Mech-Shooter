@@ -78,17 +78,16 @@ namespace Gameplay.UI.Menus
 
 
         public void ShowEditFiltersUIPressed() => MenuManager.SetActivePopup(this);
-        public void HideEditFiltersUIPressed() => MenuManager.ReturnToPreviousMenu();
         public void ApplyFiltersPressed()
         {
             ApplyFilters();
-            HideEditFiltersUIPressed();
+            MenuManager.ReturnToPreviousMenu();
         }
         public void ResetFiltersPressed()
         {
             _lobbyUIMediator.ClearFilters();
             InitialiseValues();
-            HideEditFiltersUIPressed();
+            MenuManager.ReturnToPreviousMenu();
         }
 
         private void ApplyFilters()

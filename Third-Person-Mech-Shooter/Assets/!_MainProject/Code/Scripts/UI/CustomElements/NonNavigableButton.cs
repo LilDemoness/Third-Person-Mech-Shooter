@@ -2,11 +2,11 @@ using Gameplay.UI.Menus;
 using TMPro;
 using UI.Icons;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using UserInput;
+using UltEvents;
 
 namespace UI
 {
@@ -65,7 +65,7 @@ namespace UI
         [SerializeField] private bool _allowInputWhenNotInFocus = false;
 
         [Space(10)]
-        [SerializeField] private UnityEvent _onButtonTriggered;
+        [SerializeField] private UltEvent _onButtonTriggered;
 
 
         [Header("Hover Iteraction Indication")]

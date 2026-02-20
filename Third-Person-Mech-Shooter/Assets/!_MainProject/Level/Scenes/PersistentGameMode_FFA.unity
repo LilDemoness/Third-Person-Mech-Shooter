@@ -6244,20 +6244,10 @@ MonoBehaviour:
   _inputActionType: 0
   _allowInputWhenNotInFocus: 1
   _onButtonTriggered:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1150197779574916156}
-        m_TargetAssemblyTypeName: Gameplay.GameState.ClientGameplayState, Assembly-CSharp
-        m_MethodName: OpenCustomisationUI
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+    _PersistentCalls:
+    - _Target: {fileID: 1150197779574916156}
+      _MemberName: OpenCustomisationUI
+      _PersistentArguments: []
   _graphic: {fileID: 1807852750}
   _normalColor: {r: 1, g: 1, b: 1, a: 1}
   _highlightedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}

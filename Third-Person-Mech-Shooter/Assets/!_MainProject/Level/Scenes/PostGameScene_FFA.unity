@@ -604,12 +604,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8576420107912745963}
     - target: {fileID: 9051921562172709183, guid: 1e7f3dee1ec31b249b0e4fe74e19faf9, type: 3}
-      propertyPath: _inputAction
-      value: 
+      propertyPath: _onButtonTriggered._PersistentCalls.Array.size
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9051921562172709183, guid: 1e7f3dee1ec31b249b0e4fe74e19faf9, type: 3}
-      propertyPath: _iconDisplayText
+      propertyPath: _onButtonTriggered._PersistentCalls.Array.data[0]._Target
       value: 
+      objectReference: {fileID: 8576420107912745964}
+    - target: {fileID: 9051921562172709183, guid: 1e7f3dee1ec31b249b0e4fe74e19faf9, type: 3}
+      propertyPath: _onButtonTriggered._PersistentCalls.Array.data[0]._MemberName
+      value: ShowLeaderboard
       objectReference: {fileID: 0}
     - target: {fileID: 9051921562172709183, guid: 1e7f3dee1ec31b249b0e4fe74e19faf9, type: 3}
       propertyPath: _onButtonTriggered.m_PersistentCalls.m_Calls.Array.data[0].m_Target
