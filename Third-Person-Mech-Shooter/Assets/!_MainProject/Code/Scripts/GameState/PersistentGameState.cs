@@ -11,6 +11,7 @@ namespace Gameplay.GameState
     {
         const GameMode DEFAULT_GAME_MODE = GameMode.FreeForAll;
         const string DEFAULT_MAP_NAME = "TestGameMap";
+        private bool _hasInitialised = false;
 
 
         private GameMode m_gameMode = GameMode.Invalid;
@@ -48,6 +49,10 @@ namespace Gameplay.GameState
 
         public void Init()
         {
+            if (_hasInitialised)
+                return;
+            _hasInitialised = true;
+
             GameMode = DEFAULT_GAME_MODE;
             MapName = DEFAULT_MAP_NAME;
         }

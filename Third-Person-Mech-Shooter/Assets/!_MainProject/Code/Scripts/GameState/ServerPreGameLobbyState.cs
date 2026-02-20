@@ -4,6 +4,7 @@ using SceneLoading;
 using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
+using UnityServices.Sessions;
 using Utils;
 using VContainer;
 
@@ -29,10 +30,28 @@ namespace Gameplay.GameState
         public const float LOBBY_READY_TIME = 2.0f;
         private const float LOBBY_LOCKDOWN_TIME = 1.0f; // The time before starting where players cannot cancel. Game start animations would play during this time.
 
-        [Inject]
+
+        // VContainer Dependency Injection.
         private ConnectionManager _connectionManager;
-        [Inject]
         private PersistentGameState _persistentGameState;
+        private MultiplayerServicesFacade _multiplayerServicesFacade;
+
+        public PersistentGameState PersistentGameState => _persistentGameState;
+
+        [Inject]
+        private void InjectAndInitialise(
+            ConnectionManager connectionManager,
+            PersistentGameState persistentGameState,
+            MultiplayerServicesFacade multiplayerServicesFacade)
+        {
+            this._connectionManager = connectionManager;
+            this._persistentGameState = persistentGameState;
+            this._multiplayerServicesFacade = multiplayerServicesFacade;
+
+            // Ensure that if the session changes that we set it's data correctly.
+            // Also handles a bug with builds not receiving their Session when setting data, leading to it remaining unset.
+            _multiplayerServicesFacade.OnCurrentSessionSet += UpdateSessionInformation;
+        }
 
 
         protected override void Awake()
@@ -50,6 +69,9 @@ namespace Gameplay.GameState
                 _netcodeHooks.OnNetworkSpawnHook -= OnNetworkSpawn;
                 _netcodeHooks.OnNetworkDespawnHook -= OnNetworkDespawn;
             }
+
+            if (_multiplayerServicesFacade != null)
+                _multiplayerServicesFacade.OnCurrentSessionSet -= UpdateSessionInformation;
         }
 
         private void OnNetworkSpawn()
@@ -70,6 +92,7 @@ namespace Gameplay.GameState
 
             // Default GameMode & Map.
             _persistentGameState.Init();
+            StartCoroutine(TriggerAfterFrame(() => UpdateSessionInformation(_persistentGameState.GameMode, _persistentGameState.MapName)));
         }
         private void OnNetworkDespawn()
         {
@@ -86,6 +109,54 @@ namespace Gameplay.GameState
             }
         }
 
+        private IEnumerator TriggerAfterFrame(System.Action action)
+        {
+            yield return null;
+            action();
+        }
+
+
+        #region Updating Session
+
+
+        public void NextGameMode()
+        {
+            if (this.enabled)   // Component is disabled on non-server clients.
+                SetGameMode((GameMode)MathUtils.Loop((int)_persistentGameState.GameMode + 1, (int)GameMode.KingOfTheHill + 1));
+        }
+
+        private void UpdateSessionInformation(GameMode gameMode, string mapName)
+        {
+            // Update info without notifying to reduce duplicate notifications.
+            SetGameMode(gameMode, update: false);
+            SetMapName(mapName, update: false);
+
+            // Notify after setting everything.
+            UpdateSessionInformation();
+        }
+        public void SetGameMode(GameMode gameMode, bool update = true)
+        {
+            _persistentGameState.GameMode = gameMode;
+            if (update)
+                UpdateSessionInformation();
+        }
+        public void SetMapName(string mapName, bool update = true)
+        {
+            _persistentGameState.MapName = mapName;
+            if (update)
+                UpdateSessionInformation();
+        }
+        private void UpdateSessionInformation()
+        {
+            // If this is a lobby game (Rather than DirectIP), update the lobby info.
+            if (_multiplayerServicesFacade.CurrentUnitySession != null)
+                _multiplayerServicesFacade.UpdateSessionInformation(_persistentGameState.GameMode, _persistentGameState.MapName);
+
+            // Update all clients of the change.
+            NetworkLobbyState.SyncGameDataClientRpc(_persistentGameState.GameMode, _persistentGameState.MapName);
+        }
+
+        #endregion
 
 
         private void OnSceneEvent(SceneEvent sceneEvent)
@@ -98,13 +169,24 @@ namespace Gameplay.GameState
         }
         private void OnConnectionEvent(NetworkManager networkManager, ConnectionEventData connectionEventData)
         {
-            if (connectionEventData.EventType != ConnectionEvent.ClientDisconnected)
-                return; // We're only wanting to handle disconnect events.
-
-            // Client Disconnected. Clear their data.
-            for(int i = 0; i < NetworkLobbyState.SessionPlayers.Count; ++i)
+            switch (connectionEventData.EventType)
             {
-                if (NetworkLobbyState.SessionPlayers[i].ClientId == connectionEventData.ClientId)
+                case ConnectionEvent.ClientDisconnected:
+                    HandleDisconnectionEvent(connectionEventData.ClientId);
+                    break;
+                case ConnectionEvent.ClientConnected:
+                    Debug.Log("Client Connected");
+                    HandleConnectionEvent();
+                    break;
+            }
+        }
+        private void HandleConnectionEvent() => UpdateSessionInformation();
+        private void HandleDisconnectionEvent(ulong clientId)
+        {
+            // Client Disconnected. Clear their data.
+            for (int i = 0; i < NetworkLobbyState.SessionPlayers.Count; ++i)
+            {
+                if (NetworkLobbyState.SessionPlayers[i].ClientId == clientId)
                 {
                     NetworkLobbyState.SessionPlayers.RemoveAt(i);
                     break;

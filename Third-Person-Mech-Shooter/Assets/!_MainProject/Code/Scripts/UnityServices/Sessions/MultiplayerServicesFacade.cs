@@ -96,7 +96,6 @@ namespace UnityServices.Sessions
                 return; // We're already tracking.
 
             _isTracking = true;
-            _persistentGameState.SubscribeToChangeAndCall(UpdateSessionInformation);
             SubscribeToJoinedSession();
         }
         /// <summary>
@@ -109,7 +108,6 @@ namespace UnityServices.Sessions
             {
                 _isTracking = false;
             }
-            _persistentGameState.OnGameStateDataChanged -= UpdateSessionInformation;
 
             if (CurrentUnitySession != null)
             {
@@ -364,7 +362,11 @@ namespace UnityServices.Sessions
         }
 
         private void OnPlayerPropertiesChanged() => Debug.Log("Player properties changed.");
-        private void OnSessionPropertiesChanged() => Debug.Log("Session properties changed.");
+        private void OnSessionPropertiesChanged()
+        {
+            RetrieveSessionInformation();
+            Debug.Log("Session properties changed.");
+        }
 
 
         /// <summary>
@@ -520,11 +522,25 @@ namespace UnityServices.Sessions
 
 
 
-        public void UpdateSessionInformation() => UpdateSessionInformation(_persistentGameState.GameMode, _persistentGameState.MapName);
+        public void RetrieveSessionInformation()
+        {
+            if (!CurrentUnitySession.Properties.TryGetValue("GameMode", out SessionProperty gameModeSessionProperty))
+                Debug.LogError("Failed to retrieve GameMode from Session Properties");
+            else if (!Enum.TryParse<Gameplay.GameMode>(gameModeSessionProperty.Value, out Gameplay.GameMode gameMode))
+                Debug.LogError($"Retrieved GameMode \"{gameModeSessionProperty.Value}\" failed to convert to GameMode enum");
+            else
+                _persistentGameState.GameMode = gameMode;
+            
+            if (CurrentUnitySession.Properties.TryGetValue("Map", out SessionProperty mapSessionProperty))
+                _persistentGameState.MapName = mapSessionProperty.Value;
+            else
+                Debug.LogError("Failed to retrieve Map from Session Properties");
+        }
         public async void UpdateSessionInformation(Gameplay.GameMode gameMode, string mapName)
         {
             if (!CurrentUnitySession.IsHost)
                 return; // Non-hosts cannot update session information.
+            
 
             IHostSession hostSession = CurrentUnitySession.AsHost();
             hostSession.SetProperty("GameMode", new SessionProperty(gameMode.ToString(), index: PropertyIndex.String1));

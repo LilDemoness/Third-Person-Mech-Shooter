@@ -1,14 +1,13 @@
 using Gameplay.GameplayObjects.Character.Customisation;
 using Gameplay.GameplayObjects.Character.Customisation.Data;
 using Gameplay.GameplayObjects.Players;
-using NUnit.Framework;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UI;
 using UI.Lobby;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.UI;
 using Utils;
 
 namespace Gameplay.GameState
@@ -93,6 +92,13 @@ namespace Gameplay.GameState
 
             Cursor.lockState = CursorLockMode.None;
         }
+        protected override void Start()
+        {
+            base.Start();
+
+            ConfigureUIForSessionMode(SessionMode.Unready);
+            //SetReadyState(isReady: false);
+        }
         protected override void OnDestroy()
         {
             if (Instance == this)
@@ -107,13 +113,7 @@ namespace Gameplay.GameState
             }
         }
 
-        protected override void Start()
-        {
-            base.Start();
 
-            ConfigureUIForSessionMode(SessionMode.Unready);
-            //SetReadyState(isReady: false);
-        }
 
 
         private void OnNetworkSpawn()
