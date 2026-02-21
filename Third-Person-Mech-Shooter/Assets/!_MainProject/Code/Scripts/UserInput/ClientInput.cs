@@ -60,6 +60,12 @@ namespace UserInput
 
         #endregion
 
+        #region Game State Events
+
+        public static event System.Action OnPauseGamePerformed;
+
+        #endregion
+
 
         #region Input Device Type
 
@@ -158,6 +164,8 @@ namespace UserInput
 
             #endregion
 
+            s_inputActions.GameState.PauseGame.performed += PauseGame_perfored;
+
 
             // Enable the Input Actions.
             s_inputActions.Enable();
@@ -203,6 +211,8 @@ namespace UserInput
             s_inputActions.MultiplayerChat.CancelChat.performed -= CancelChat_performed;
 
             #endregion
+
+            s_inputActions.GameState.PauseGame.performed -= PauseGame_perfored;
 
 
             // Dispose of the Input Actions.
@@ -268,7 +278,13 @@ namespace UserInput
         private void CancelChat_performed(InputAction.CallbackContext obj) => OnCancelChatPerformed?.Invoke();
 
         #endregion
-        
+
+        #region Game State Event Functions
+
+        private void PauseGame_perfored(InputAction.CallbackContext ctx) => OnPauseGamePerformed?.Invoke();
+
+        #endregion
+
 
 
         private bool _isInputFieldFocused;
