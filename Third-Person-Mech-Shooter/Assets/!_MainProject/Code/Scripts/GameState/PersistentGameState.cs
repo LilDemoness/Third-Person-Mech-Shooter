@@ -42,6 +42,17 @@ namespace Gameplay.GameState
             }
         }
 
+        private bool m_isInGameplay = false;
+        public bool IsInGameplay
+        {
+            get => m_isInGameplay;
+            set
+            {
+                m_isInGameplay = value;
+                OnGameStateDataChanged?.Invoke();
+            }
+        }
+
 
 
         private PersistentDataContainer _test;
@@ -53,6 +64,7 @@ namespace Gameplay.GameState
                 return;
             _hasInitialised = true;
 
+            IsInGameplay = false;
             GameMode = DEFAULT_GAME_MODE;
             MapName = DEFAULT_MAP_NAME;
         }

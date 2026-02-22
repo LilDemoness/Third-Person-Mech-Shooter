@@ -46,6 +46,18 @@ namespace Gameplay.GameState
         /// </summary>
         public abstract GameState ActiveState { get; }
 
+        private static GameState s_activeState;
+        public static GameState ActiveGameState
+        {
+            get => s_activeState;
+            protected set
+            {
+                s_activeState = value;
+                OnActiveStateChanged?.Invoke();
+            }
+        }
+        public static event System.Action OnActiveStateChanged;
+
 
         /// <summary>
         ///     This is the single active GameState object. There can only be one.
@@ -85,6 +97,8 @@ namespace Gameplay.GameState
                 //  Either it wasn't persistant or we are a different kind of state. In either case, we're replacing it.
                 Destroy(s_activeStateGO);
             }
+
+            ActiveGameState = ActiveState;
 
             // Put ourselves as the Active State GameObject.
             s_activeStateGO = this.gameObject;

@@ -1,11 +1,22 @@
+using ApplicationLifecycle.Messages;
+using Infrastructure;
+using Netcode.ConnectionManagement;
 using UnityEngine;
 using UserInput;
+using VContainer;
 
 namespace Gameplay.UI.Menus.Pause
 {
     public class PauseMenu : Menu
     {
         private bool _isOpen;
+        private CursorLockMode _previousLockMode;
+
+
+        [Inject]
+        ConnectionManager _connectionManager;
+        [Inject]
+        IPublisher<QuitApplicationMessage> _quitApplicationPub;
 
 
         private void Awake()
@@ -27,6 +38,8 @@ namespace Gameplay.UI.Menus.Pause
             {
                 // Perform game pausing logic here.
                 _isOpen = true;
+                _previousLockMode = Cursor.lockState;
+                Cursor.lockState = CursorLockMode.None;
             }
         }
         public override void Hide()
@@ -37,6 +50,7 @@ namespace Gameplay.UI.Menus.Pause
             {
                 // Perform game resuming logic here.
                 _isOpen = false;
+                Cursor.lockState = _previousLockMode;
             }
         }
 
@@ -58,5 +72,9 @@ namespace Gameplay.UI.Menus.Pause
             if (!MenuManager.TryCloseMenu(this))
                 Debug.LogError("Failed to close PauseMenu");
         }
+
+
+        public void OnExitToMainMenuPressed() => _connectionManager.RequestShutdown();
+        public void OnExitToDesktopPressed() => _quitApplicationPub.Publish(new QuitApplicationMessage());
     }
 }

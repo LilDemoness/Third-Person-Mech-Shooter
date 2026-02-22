@@ -51,6 +51,7 @@ namespace UnityServices.Sessions
             }
         }
         public event System.Action OnCurrentSessionSet;
+        public event System.Action OnSessionUpdated;
         private bool _isTracking;
 
 
@@ -67,6 +68,9 @@ namespace UnityServices.Sessions
             _rateLimitJoin = new RateLimitCooldown(1.0f);
             _rateLimitQuickJoin = new RateLimitCooldown(1.0f);
             _rateLimitHost = new RateLimitCooldown(3.0f);
+
+
+            this.OnCurrentSessionSet += InvokeOnSessionUpdated;
         }
         public void Dispose()
         {
@@ -75,6 +79,8 @@ namespace UnityServices.Sessions
             {
                 _serviceScope.Dispose();
             }
+
+            this.OnCurrentSessionSet -= InvokeOnSessionUpdated;
         }
 
 
@@ -535,6 +541,8 @@ namespace UnityServices.Sessions
                 _persistentGameState.MapName = mapSessionProperty.Value;
             else
                 Debug.LogError("Failed to retrieve Map from Session Properties");
+
+            InvokeOnSessionUpdated();
         }
         public async void UpdateSessionInformation(Gameplay.GameMode gameMode, string mapName)
         {
@@ -547,5 +555,8 @@ namespace UnityServices.Sessions
             hostSession.SetProperty("Map", new SessionProperty(mapName, index: PropertyIndex.String2));
             await hostSession.SavePropertiesAsync();
         }
+
+
+        private void InvokeOnSessionUpdated() => OnSessionUpdated?.Invoke();
     }
 }

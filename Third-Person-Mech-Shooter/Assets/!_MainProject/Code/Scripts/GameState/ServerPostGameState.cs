@@ -68,6 +68,7 @@ namespace Gameplay.GameState
             SessionManager<SessionPlayerData>.Instance.OnSessionEnded();    // Clears data from removed players.
 
             _networkTimer.StartTimer(_timeTillNextScene);
+            _persistentGameState.IsInGameplay = false;
         }
 
 

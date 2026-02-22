@@ -3,9 +3,8 @@ using Unity.Netcode;
 using Gameplay.Actions;
 using Gameplay.GameplayObjects.Character.Customisation.Data;
 using Gameplay.StatusEffects;
-using Gameplay.GameplayObjects.Character.Customisation;
 using Utils;
-using NUnit.Framework.Constraints;
+using System.Collections.Generic;
 
 namespace Gameplay.GameplayObjects.Character
 {
@@ -15,6 +14,9 @@ namespace Gameplay.GameplayObjects.Character
     /// </summary>
     public class ServerCharacter : NetworkBehaviour
     {
+        public static Dictionary<ulong, ServerCharacter> s_AllServerCharacters = new Dictionary<ulong, ServerCharacter>();
+
+
         [SerializeField] private ClientCharacter m_clientCharacter;
         public ClientCharacter ClientCharacter => m_clientCharacter;
 
@@ -106,7 +108,8 @@ namespace Gameplay.GameplayObjects.Character
         }
         public override void OnNetworkSpawn()
         {
-            // We're subscribing to this event on clients too in order to relay our BuildData through the class reference as opposed to duplicating the struct.
+            s_AllServerCharacters.Add(this.OwnerClientId, this);
+
             if (!IsServer)
             {
                 this.enabled = false;
@@ -125,6 +128,8 @@ namespace Gameplay.GameplayObjects.Character
             NetworkHealthComponent.OnDied -= OnCharacterDied;
             ActionPlayer.OnActionQueueFilled -= ServerActionPlayer_OnActionQueueFilled;
             ActionPlayer.OnActionQueueEmptied -= ServerActionPlayer_OnActionQueueEmptied;
+
+            s_AllServerCharacters.Remove(NetworkManager.LocalClientId);
         }
 
 
@@ -381,6 +386,17 @@ namespace Gameplay.GameplayObjects.Character
 
 #endif
         #endregion
+
+
+        /// <summary>
+        ///     Forces a respawn of the local ServerCharacter.
+        /// </summary>
+        public static void ForceRespawn() => s_AllServerCharacters[NetworkManager.Singleton.LocalClientId].ForceRespawnServerRpc();
+        [Rpc(SendTo.Server)]
+        private void ForceRespawnServerRpc(RpcParams rpcParams = default)
+        {
+            _networkHealthComponent.SetLifeState_Server(this, LifeState.Dead);
+        }
     }
 
 

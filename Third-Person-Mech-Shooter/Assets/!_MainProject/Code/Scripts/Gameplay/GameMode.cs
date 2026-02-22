@@ -50,6 +50,7 @@ namespace Gameplay
                 GameMode.FreeForAll => "Free For All",
                 GameMode.TeamDeathmatch => "Team Deathmatch",
                 GameMode.KingOfTheHill => "King of the Hill",
+                GameMode.Invalid => "-",
                 _ => throw new System.NotImplementedException($"No Display Name set for {gameMode.ToString()}"),
             };
         }
