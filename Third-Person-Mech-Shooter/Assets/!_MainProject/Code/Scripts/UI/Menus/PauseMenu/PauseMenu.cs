@@ -13,6 +13,9 @@ namespace Gameplay.UI.Menus.Pause
         private CursorLockMode _previousLockMode;
 
 
+        [SerializeField] private Menu _optionsMenu;
+
+
         [Inject]
         ConnectionManager _connectionManager;
         [Inject]
@@ -73,6 +76,7 @@ namespace Gameplay.UI.Menus.Pause
                 Debug.LogError("Failed to close PauseMenu");
         }
 
+        public void ShowOptionsMenu() => MenuManager.SetActiveMenu(_optionsMenu, disablePrevious: false);
 
         public void OnExitToMainMenuPressed() => _connectionManager.RequestShutdown();
         public void OnExitToDesktopPressed() => _quitApplicationPub.Publish(new QuitApplicationMessage());
