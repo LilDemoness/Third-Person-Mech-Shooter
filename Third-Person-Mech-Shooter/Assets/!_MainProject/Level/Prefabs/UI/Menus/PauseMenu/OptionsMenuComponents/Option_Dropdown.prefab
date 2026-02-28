@@ -713,7 +713,19 @@ MonoBehaviour:
       m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7638078308497733796}
+        m_TargetAssemblyTypeName: Gameplay.UI.Menus.Options.SetIntOption, Assembly-CSharp
+        m_MethodName: OnValueChanged
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_AlphaFadeSpeed: 0.15
 --- !u!1 &3673274478413836435
 GameObject:
@@ -1267,7 +1279,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7446815241818196487, guid: 33d513f9127bfd140ad618a7cee445e8, type: 3}
       propertyPath: m_Name
-      value: Option_Dropdown Variant
+      value: Option_Dropdown
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1275,10 +1287,32 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8805400141560512243, guid: 33d513f9127bfd140ad618a7cee445e8, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8496313271912536928}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7446815241818196487, guid: 33d513f9127bfd140ad618a7cee445e8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7638078308497733796}
   m_SourcePrefab: {fileID: 100100000, guid: 33d513f9127bfd140ad618a7cee445e8, type: 3}
 --- !u!224 &7363135107980321066 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8805400141560512243, guid: 33d513f9127bfd140ad618a7cee445e8, type: 3}
   m_PrefabInstance: {fileID: 2025507779765903321}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &8882342674153428446 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7446815241818196487, guid: 33d513f9127bfd140ad618a7cee445e8, type: 3}
+  m_PrefabInstance: {fileID: 2025507779765903321}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7638078308497733796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8882342674153428446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 519c5aa32f3b7cb4e8dfd837ae000638, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _dropdown: {fileID: 6174966769000409277}
+  _intOptionValue: {fileID: 0}

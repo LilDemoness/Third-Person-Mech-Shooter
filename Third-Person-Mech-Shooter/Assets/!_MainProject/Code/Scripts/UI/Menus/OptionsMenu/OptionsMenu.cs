@@ -21,12 +21,45 @@ namespace Gameplay.UI.Menus.Options
 
         private void Awake()
         {
+            InitialiseSubmenus();
+
             // Subscribe to selection events.
         }
         private void OnDestroy()
         {
             // Unsubscribe from selection events.
         }
+
+
+        private void InitialiseSubmenus()
+        {
+            _gameplayMenu.Init();
+            _videoMenu.Init();
+            _audioMenu.Init();
+            _controlsMenu.Init();
+            _keybindingsMenu.Init();
+            _accessibilityMenu.Init();
+        }
+        private void SaveSettingsToPrefs()
+        {
+            _gameplayMenu.SaveAllOptionsToPrefs();
+            _videoMenu.SaveAllOptionsToPrefs();
+            _audioMenu.SaveAllOptionsToPrefs();
+            _controlsMenu.SaveAllOptionsToPrefs();
+            _keybindingsMenu.SaveAllOptionsToPrefs();
+            _accessibilityMenu.SaveAllOptionsToPrefs();
+        }
+        private void LoadSettingsFromPrefs()
+        {
+            _gameplayMenu.LoadAllOptionsFromPrefs();
+            _videoMenu.LoadAllOptionsFromPrefs();
+            _audioMenu.LoadAllOptionsFromPrefs();
+            _controlsMenu.LoadAllOptionsFromPrefs();
+            _keybindingsMenu.LoadAllOptionsFromPrefs();
+            _accessibilityMenu.LoadAllOptionsFromPrefs();
+        }
+        private void ResetCurrentSubmenuValues() => _currentOpenMenu?.ResetAllOptions();
+
 
         public override void Show()
         {
