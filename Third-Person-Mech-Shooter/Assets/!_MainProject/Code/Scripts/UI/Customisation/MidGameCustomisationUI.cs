@@ -52,7 +52,7 @@ namespace UI.Customisation
             OnCustomisationUIOpened?.Invoke();
 
             // Prevent Non-Relevant Input.
-            ClientInput.PreventActions(typeof(MidGameCustomisationUI), ALL_ACTIONS_BUT_UI);
+            ClientInput.AddActionPrevention(typeof(MidGameCustomisationUI), ALL_ACTIONS_BUT_UI);
         }
         [ContextMenu("Hide")]
         public void Hide()

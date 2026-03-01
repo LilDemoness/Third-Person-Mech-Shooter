@@ -314,7 +314,7 @@ namespace UserInput
                 return;
             _isInputFieldFocused = true;
 
-            PreventActions(typeof(ClientInput), ActionTypes.Everything);
+            AddActionPrevention(typeof(ClientInput), ActionTypes.Everything);
         }
         private void HandleNoInputFieldFocused()
         {
@@ -454,7 +454,7 @@ namespace UserInput
         /// </summary>
         /// <param name="lockingType"> The type of the object that is locking these actions.</param>
         /// <param name="actionsToLock"> The types of actions that we are locking.</param>
-        public static void PreventActions(Type lockingType, ActionTypes actionsToLock)
+        public static void AddActionPrevention(Type lockingType, ActionTypes actionsToLock)
         {
             // Loop through all selected values of our enum.
             //foreach (var actionType in Enum.GetValues(typeof(ActionTypes)).Cast<ActionTypes>().Where(x => (actionsToLock & x) > 0))

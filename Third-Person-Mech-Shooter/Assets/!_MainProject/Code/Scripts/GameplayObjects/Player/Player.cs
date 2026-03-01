@@ -261,7 +261,7 @@ namespace Gameplay.GameplayObjects.Players
         private void OnLocalPlayerDied(ServerCharacter inflicter)
         {
             Debug.Log("Local Death");
-            ClientInput.PreventActions(typeof(Player), ClientInput.ActionTypes.Respawning);         // Prevent Input.
+            ClientInput.AddActionPrevention(typeof(Player), ClientInput.ActionTypes.Respawning);         // Prevent Input.
             OnLocalPlayerDeath?.Invoke(this, new PlayerDeathEventArgs(ServerCharacter, inflicter)); // Notify Listeners (Respawn Screen, etc).
         }
 

@@ -47,7 +47,7 @@ namespace Gameplay.UI.Menus.Pause
                 _previousLockMode = Cursor.lockState;
                 Cursor.lockState = CursorLockMode.None;
 
-                ClientInput.PreventActions(typeof(PauseMenu), LOCKING_TYPES);
+                ClientInput.AddActionPrevention(typeof(PauseMenu), LOCKING_TYPES);
             }
         }
         public override void Hide()
