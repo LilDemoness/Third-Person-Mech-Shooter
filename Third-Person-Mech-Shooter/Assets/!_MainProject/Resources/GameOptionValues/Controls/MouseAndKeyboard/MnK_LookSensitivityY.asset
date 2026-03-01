@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <PrefsIdentifier>k__BackingField: MnK_LookSensitivityY
   <DefaultValue>k__BackingField: 15
-  m_minValue: 0
-  m_maxValue: 60
+  m_MinValue: 0
+  m_MaxValue: 60
+  m_roundingValue: 0.1

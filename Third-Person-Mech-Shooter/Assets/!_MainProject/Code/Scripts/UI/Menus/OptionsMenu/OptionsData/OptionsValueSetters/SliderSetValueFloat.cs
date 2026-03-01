@@ -41,6 +41,20 @@ namespace Gameplay.UI.Menus.Options
             base.OnOptionsValueChanged();
             _slider.SetValueWithoutNotify(_floatOptionValue.Value);
         }
+
+
+#if UNITY_EDITOR
+
+        private void OnValidate()
+        {
+            if (_floatOptionValue == null)
+                return;
+
+            if (!_floatOptionValue.HasLimits)
+                Debug.LogWarning($"Float Option without limits attached to a slider.\n{this.name}", this);
+        }
+
+#endif
     }
 
 

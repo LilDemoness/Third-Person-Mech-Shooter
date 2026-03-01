@@ -41,5 +41,19 @@ namespace Gameplay.UI.Menus.Options
             base.OnOptionsValueChanged();
             _slider.SetValueWithoutNotify(_intOptionValue.Value);
         }
+
+
+#if UNITY_EDITOR
+
+        private void OnValidate()
+        {
+            if (_intOptionValue == null)
+                return;
+
+            if (!_intOptionValue.HasLimits)
+                Debug.LogWarning($"Int Option without limits attached to a slider.\n{this.name}", this);
+        }
+
+#endif
     }
 }

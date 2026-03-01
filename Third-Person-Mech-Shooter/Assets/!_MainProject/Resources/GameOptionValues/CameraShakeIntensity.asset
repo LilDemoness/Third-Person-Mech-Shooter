@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <PrefsIdentifier>k__BackingField: CameraShakeIntensity
   <DefaultValue>k__BackingField: 1
-  m_minValue: 0
-  m_maxValue: 1
+  m_MinValue: 0
+  m_MaxValue: 1
+  m_roundingValue: 0.1
