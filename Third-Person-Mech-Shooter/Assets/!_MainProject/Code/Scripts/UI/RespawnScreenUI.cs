@@ -45,7 +45,7 @@ namespace UI
             // Only set the killer name when notified of the death on the local player as the required timings are sent through the NetworkGameplayState instead, but that doesn't have killer information.
             if (e.Inflicter == null)
                 SetKillerName(DEFAULT_KILLER_NAME);
-            if (e.Inflicter == e.Character)
+            else if (e.Inflicter == e.Character)
                 SetKillerName(KILLED_BY_SELF_NAME);
             else
                 SetKillerName(e.Inflicter.CharacterName);

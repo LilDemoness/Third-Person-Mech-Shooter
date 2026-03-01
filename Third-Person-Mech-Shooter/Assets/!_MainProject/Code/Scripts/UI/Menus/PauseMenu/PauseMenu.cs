@@ -9,6 +9,8 @@ namespace Gameplay.UI.Menus.Pause
 {
     public class PauseMenu : Menu
     {
+        private const ClientInput.ActionTypes LOCKING_TYPES = ClientInput.ActionTypes.Everything & ~ClientInput.ActionTypes.UI;
+
         private bool _isOpen;
         private CursorLockMode _previousLockMode;
 
@@ -41,8 +43,11 @@ namespace Gameplay.UI.Menus.Pause
             {
                 // Perform game pausing logic here.
                 _isOpen = true;
+
                 _previousLockMode = Cursor.lockState;
                 Cursor.lockState = CursorLockMode.None;
+
+                ClientInput.PreventActions(typeof(PauseMenu), LOCKING_TYPES);
             }
         }
         public override void Hide()
@@ -53,7 +58,10 @@ namespace Gameplay.UI.Menus.Pause
             {
                 // Perform game resuming logic here.
                 _isOpen = false;
+
                 Cursor.lockState = _previousLockMode;
+
+                ClientInput.RemoveActionPrevention(typeof(PauseMenu), LOCKING_TYPES);
             }
         }
 

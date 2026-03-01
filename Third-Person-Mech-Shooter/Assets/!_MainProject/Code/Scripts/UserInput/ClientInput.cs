@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -330,20 +331,23 @@ namespace UserInput
 
         private static void InitialiseInputPrevention()
         {
-            s_movementPreventionDictionary = new Dictionary<Type, int>();
-            s_cameraPreventionDictionary = new Dictionary<Type, int>();
-            s_combatPreventionDictionary = new Dictionary<Type, int>();
-            s_uiPreventionDictionary = new Dictionary<Type, int>();
+            foreach (var actionType in VALID_ACTION_TYPES)
+            {
+                if (!s_actionPreventionDictionaries.ContainsKey(actionType))
+                    throw new System.NotImplementedException($"No Dictionary Implemented for ActionTypes {actionType.ToString()}");
+
+                s_actionPreventionDictionaries[actionType] = new Dictionary<Type, int>();
+            }
         }
         /// <summary>
         ///     Reset all instances of input prevention.
         /// </summary>
         public static void ResetInputPrevention()
         {
-            s_movementPreventionDictionary = new Dictionary<Type, int>();
-            s_cameraPreventionDictionary = new Dictionary<Type, int>();
-            s_combatPreventionDictionary = new Dictionary<Type, int>();
-            s_uiPreventionDictionary = new Dictionary<Type, int>();
+            foreach (var dictionary in s_actionPreventionDictionaries.Values)
+            {
+                dictionary.Clear();
+            }
         }
         /// <summary>
         ///     Ensure that all Input Action Maps are correctly activated/deactivated based on their current preventions.
@@ -353,32 +357,14 @@ namespace UserInput
             if (s_inputActions == null)
                 return; // No InputActions have been created.
 
-            // Movement.
-            if (s_movementPreventionDictionary.Count > 0)
-                s_inputActions.Movement.Disable();
-            else
-                s_inputActions.Movement.Enable();
-
-
-            // Camera.
-            if (s_cameraPreventionDictionary.Count > 0)
-                s_inputActions.Camera.Disable();
-            else
-                s_inputActions.Camera.Enable();
-
-
-            // Combat.
-            if (s_combatPreventionDictionary.Count > 0)
-                s_inputActions.Combat.Disable();
-            else
-                s_inputActions.Combat.Enable();
-
-
-            // UI.
-            if (s_uiPreventionDictionary.Count > 0)
-                DisableUIMaps();
-            else
-                EnableUIMaps();
+            // Ensure all actions map preventions are correct for all our Action Types.
+            foreach (ActionTypes actionType in s_actionPreventionDictionaries.Keys)
+            {
+                if (s_actionPreventionDictionaries[actionType].Count > 0)
+                    DisableActionMap(actionType);
+                else
+                    EnableActionMap(actionType);
+            }
         }
 
 
@@ -397,6 +383,72 @@ namespace UserInput
 
             Everything = ~0
         }
+        private static readonly ActionTypes[] VALID_ACTION_TYPES =
+        {
+            ActionTypes.Movement,
+            ActionTypes.Camera,
+            ActionTypes.Combat,
+            ActionTypes.UI,
+            ActionTypes.MultiplayerChat,
+        };
+        private static Dictionary<ActionTypes, Dictionary<Type, int>> s_actionPreventionDictionaries = new()
+        {
+            { ActionTypes.Movement, new Dictionary<Type, int>() },
+            { ActionTypes.Camera, new Dictionary<Type, int>() },
+            { ActionTypes.Combat, new Dictionary<Type, int>() },
+            { ActionTypes.UI, new Dictionary<Type, int>() },
+            { ActionTypes.MultiplayerChat, new Dictionary<Type, int>() },
+        };
+
+        private static void EnableActionMap(ActionTypes actionType)
+        {
+            switch (actionType)
+            {
+                case ActionTypes.Movement:
+                    s_inputActions.Movement.Enable();
+                    break;
+                case ActionTypes.Camera:
+                    s_inputActions.Camera.Enable();
+                    break;
+                case ActionTypes.Combat:
+                    s_inputActions.Combat.Enable();
+                    break;
+                case ActionTypes.UI:
+                    s_inputActions.UI.Enable();
+                    s_inputActions.MainMenu.Enable();
+                    break;
+                case ActionTypes.MultiplayerChat:
+                    s_inputActions.MultiplayerChat.Enable();
+                    break;
+                default: throw new System.NotImplementedException($"No Map Disabling Setup for ActionTypes {actionType.ToString()}");
+            };
+        }
+        private static void DisableActionMap(ActionTypes actionType)
+        {
+            switch (actionType)
+            {
+                case ActionTypes.Movement:
+                    s_inputActions.Movement.Disable();
+                    break;
+                case ActionTypes.Camera:
+                    s_inputActions.Camera.Disable();
+                    break;
+                case ActionTypes.Combat:
+                    s_inputActions.Combat.Disable();
+                    break;
+                case ActionTypes.UI:
+                    s_inputActions.UI.Disable();
+                    s_inputActions.MainMenu.Disable();
+                    break;
+                case ActionTypes.MultiplayerChat:
+                    s_inputActions.MultiplayerChat.Disable();
+                    break;
+                default: throw new System.NotImplementedException($"No Map Disabling Setup for ActionTypes {actionType.ToString()}");
+            };
+        }
+
+
+
         /// <summary>
         ///     Prevent the desired actions from being performed.
         /// </summary>
@@ -404,14 +456,30 @@ namespace UserInput
         /// <param name="actionsToLock"> The types of actions that we are locking.</param>
         public static void PreventActions(Type lockingType, ActionTypes actionsToLock)
         {
-            if (actionsToLock.HasFlag(ActionTypes.Movement))
-                PreventMovementActions(lockingType);
-            if (actionsToLock.HasFlag(ActionTypes.Camera))
-                PreventCameraActions(lockingType);
-            if (actionsToLock.HasFlag(ActionTypes.Combat))
-                PreventCombatActions(lockingType);
-            if (actionsToLock.HasFlag(ActionTypes.UI))
-                PreventUIActions(lockingType);
+            // Loop through all selected values of our enum.
+            //foreach (var actionType in Enum.GetValues(typeof(ActionTypes)).Cast<ActionTypes>().Where(x => (actionsToLock & x) > 0))
+            foreach (var actionType in VALID_ACTION_TYPES)
+            {
+                if (!actionsToLock.HasFlag(actionType))
+                    continue;   // Only process our desired action types.
+
+                if (!s_actionPreventionDictionaries.TryGetValue(actionType, out var dictionary))
+                    throw new System.NotImplementedException($"No Dictionary assigned for ActionTypes {actionType.ToString()}");
+
+
+                if (!dictionary.TryAdd(lockingType, 1)) // If we have no kvp with key 'lockingType' initialise one with 1 count.
+                {
+                    // We already have a kvp with key 'lockingType', so increment instead.
+                    ++dictionary[lockingType];
+                }
+
+                if (s_inputActions != null)
+                {
+                    // At least one type is disabling this ActionType.
+                    // Disable our corresponding map.
+                    DisableActionMap(actionType);
+                }
+            }
         }
         /// <summary>
         ///     Remove one count of prevention from the desired types of actions. <br/>
@@ -421,14 +489,34 @@ namespace UserInput
         /// <param name="actionsToUnlock"> The types of actions that we are unlocking.</param>
         public static void RemoveActionPrevention(Type lockingType, ActionTypes actionsToUnlock)
         {
-            if (actionsToUnlock.HasFlag(ActionTypes.Movement))
-                RemoveMovementActionPrevention(lockingType);
-            if (actionsToUnlock.HasFlag(ActionTypes.Camera))
-                RemoveCameraActionPrevention(lockingType);
-            if (actionsToUnlock.HasFlag(ActionTypes.Combat))
-                RemoveCombatActionPrevention(lockingType);
-            if (actionsToUnlock.HasFlag(ActionTypes.UI))
-                RemoveUIActionPrevention(lockingType);
+            // Loop through all selected values of our enum.
+            //foreach (var actionType in Enum.GetValues(typeof(ActionTypes)).Cast<ActionTypes>().Where(x => (actionsToUnlock & x) > 0))
+            foreach (var actionType in VALID_ACTION_TYPES)
+            {
+                if (!actionsToUnlock.HasFlag(actionType))
+                    continue;   // Only process our desired action types.
+
+                if (!s_actionPreventionDictionaries.TryGetValue(actionType, out var dictionary))
+                    throw new System.NotImplementedException($"No Dictionary assigned for ActionTypes {actionType.ToString()}");
+
+
+                if (dictionary.ContainsKey(lockingType))
+                {
+                    --dictionary[lockingType];
+
+                    if (dictionary[lockingType] <= 0)
+                    {
+                        dictionary.Remove(lockingType);
+                    }
+                }
+
+                if (dictionary.Count == 0 && s_inputActions != null)
+                {
+                    // There are no longer any types wishing to disable this actionType's associated controls.
+                    // Enable the corresponding map.
+                    EnableActionMap(actionType);
+                }
+            }
         }
 
 
@@ -437,229 +525,13 @@ namespace UserInput
         [ContextMenu(itemName: "Display Active Locks")]
         private void DisplayLocks()
         {
-            string movementPreventingTypes = string.Concat(s_movementPreventionDictionary.Keys);
-            Debug.Log(s_movementPreventionDictionary.Count + "\n" + movementPreventingTypes);
-
-            string cameraPreventingTypes = string.Concat(s_cameraPreventionDictionary.Keys);
-            Debug.Log(s_cameraPreventionDictionary.Count + "\n" + cameraPreventingTypes);
-
-            string combatPreventingTypes = string.Join(", ", s_combatPreventionDictionary.Keys);
-            Debug.Log(s_combatPreventionDictionary.Count + "\n" + combatPreventingTypes);
-
-            string uiPreventingTypes = string.Join(", ", s_uiPreventionDictionary.Keys);
-            Debug.Log(s_uiPreventionDictionary.Count + "\n" + uiPreventingTypes);
+            foreach (var kvp in s_actionPreventionDictionaries)
+            {
+                Debug.Log(kvp.Key.ToString() + ": " + kvp.Value.Count + "\n" + string.Concat(kvp.Value.Keys));
+            }
         }
 
 #endif
-
-
-
-        #region Movement
-
-        private static Dictionary<Type, int> s_movementPreventionDictionary;
-        /// <summary>
-        ///     Prevent the client from performing Movement actions.
-        /// </summary>
-        /// <param name="lockingType"> The type of the source object that is locking Movement actions.</param>
-        public static void PreventMovementActions(Type lockingType)
-        {
-            if (!s_movementPreventionDictionary.TryAdd(lockingType, 1)) // If we have no kvp with key 'lockingType' initialise one with 1 count.
-            {
-                // We already have a kvp with key 'lockingType', so increment instead.
-                ++s_movementPreventionDictionary[lockingType];
-            }
-
-            if (s_inputActions != null)
-            {
-                // At least one type is disabling movement controls.
-                // Disable our 'Movement' map.
-                s_inputActions.Movement.Disable();
-            }
-        }
-        /// <summary>
-        ///     Remove one count of the passed type from Movement action prevention.<br/>
-        ///     Re-enables the Action Map if there are no longer any types wishing to disable Movement actions.
-        /// </summary>
-        /// <param name="lockingType"> The type of the source object that is stopping its Movement action locking.</param>
-        public static void RemoveMovementActionPrevention(Type lockingType)
-        {
-            if (s_movementPreventionDictionary.ContainsKey(lockingType))
-            {
-                --s_movementPreventionDictionary[lockingType];
-
-                if (s_movementPreventionDictionary[lockingType] <= 0)
-                {
-                    s_movementPreventionDictionary.Remove(lockingType);
-                }
-            }
-
-            if (s_movementPreventionDictionary.Count == 0 && s_inputActions != null)
-            {
-                // There are no longer any types wishing to disable our movement controls.
-                // Enable the 'Movement' map.
-                s_inputActions.Movement.Enable();
-            }
-        }
-
-        #endregion
-
-        #region Camera
-
-        private static Dictionary<Type, int> s_cameraPreventionDictionary;
-        /// <summary>
-        ///     Prevent the client from performing Camera actions.
-        /// </summary>
-        /// <param name="lockingType"> The type of the source object that is locking Camera actions.</param>
-        public static void PreventCameraActions(Type lockingType)
-        {
-            if (!s_cameraPreventionDictionary.TryAdd(lockingType, 1)) // If we have no kvp with key 'lockingType' initialise one with 1 count.
-            {
-                // We already have a kvp with key 'lockingType', so increment instead.
-                ++s_cameraPreventionDictionary[lockingType];
-            }
-
-            if (s_inputActions != null)
-            {
-                // At least one type is disabling camera controls.
-                // Disable our 'Camera' map.
-                s_inputActions.Camera.Disable();
-            }
-        }
-        /// <summary>
-        ///     Remove one count of the passed type from Camera action prevention.<br/>
-        ///     Re-enables the Action Map if there are no longer any types wishing to disable Camera actions.
-        /// </summary>
-        /// <param name="lockingType"> The type of the source object that is stopping its Camera action locking.</param>
-        public static void RemoveCameraActionPrevention(Type lockingType)
-        {
-            if (s_cameraPreventionDictionary.ContainsKey(lockingType))
-            {
-                --s_cameraPreventionDictionary[lockingType];
-
-                if (s_cameraPreventionDictionary[lockingType] <= 0)
-                {
-                    s_cameraPreventionDictionary.Remove(lockingType);
-                }
-            }
-
-            if (s_cameraPreventionDictionary.Count == 0 && s_inputActions != null)
-            {
-                // There are no longer any types wishing to disable our camera controls.
-                // Enable the 'Camera' map.
-                s_inputActions.Camera.Enable();
-            }
-        }
-
-        #endregion
-
-        #region Combat
-
-        private static Dictionary<Type, int> s_combatPreventionDictionary;
-        /// <summary>
-        ///     Prevent the client from performing Combat actions.
-        /// </summary>
-        /// <param name="lockingType"> The type of the source object that is locking Combat actions.</param>
-        public static void PreventCombatActions(Type lockingType)
-        {
-            if (!s_combatPreventionDictionary.TryAdd(lockingType, 1)) // If we have no kvp with key 'lockingType' initialise one with 1 count.
-            {
-                // We already have a kvp with key 'lockingType', so increment instead.
-                ++s_combatPreventionDictionary[lockingType];
-            }
-
-            if (s_inputActions != null)
-            {
-                // At least one type is disabling combat controls.
-                // Disable our 'Combat' map.
-                s_inputActions.Combat.Disable();
-            }
-        }
-        /// <summary>
-        ///     Remove one count of the passed type from Combat action prevention.<br/>
-        ///     Re-enables the Action Map if there are no longer any types wishing to disable Combat actions.
-        /// </summary>
-        /// <param name="lockingType"> The type of the source object that is stopping its Combat action locking.</param>
-        public static void RemoveCombatActionPrevention(Type lockingType)
-        {
-            if (s_combatPreventionDictionary.ContainsKey(lockingType))
-            {
-                --s_combatPreventionDictionary[lockingType];
-
-                if (s_combatPreventionDictionary[lockingType] <= 0)
-                {
-                    s_combatPreventionDictionary.Remove(lockingType);
-                }
-            }
-
-            if (s_combatPreventionDictionary.Count == 0 && s_inputActions != null)
-            {
-                // There are no longer any types wishing to disable our combat controls.
-                // Enable the 'Combat' map.
-                s_inputActions.Combat.Enable();
-            }
-        }
-
-        #endregion
-
-        #region UI
-
-        private static Dictionary<Type, int> s_uiPreventionDictionary;
-        /// <summary>
-        ///     Prevent the client from performing UI actions.
-        /// </summary>
-        /// <param name="lockingType"> The type of the source object that is locking UI actions.</param>
-        public static void PreventUIActions(Type lockingType)
-        {
-            if (!s_uiPreventionDictionary.TryAdd(lockingType, 1)) // If we have no kvp with key 'lockingType' initialise one with 1 count.
-            {
-                // We already have a kvp with key 'lockingType', so increment instead.
-                ++s_uiPreventionDictionary[lockingType];
-            }
-
-            if (s_inputActions != null)
-            {
-                // At least one type is disabling UI controls.
-                // Disable our 'UI' map.
-                DisableUIMaps();
-            }
-        }
-        /// <summary>
-        ///     Remove one count of the passed type from UI action prevention.<br/>
-        ///     Re-enables the Action Map if there are no longer any types wishing to disable UI actions.
-        /// </summary>
-        /// <param name="lockingType"> The type of the source object that is stopping its UI action locking.</param>
-        public static void RemoveUIActionPrevention(Type lockingType)
-        {
-            if (s_uiPreventionDictionary.ContainsKey(lockingType))
-            {
-                --s_uiPreventionDictionary[lockingType];
-
-                if (s_uiPreventionDictionary[lockingType] <= 0)
-                {
-                    s_uiPreventionDictionary.Remove(lockingType);
-                }
-            }
-
-            if (s_uiPreventionDictionary.Count == 0 && s_inputActions != null)
-            {
-                // There are no longer any types wishing to disable our UI controls.
-                // Enable the 'UI' map.
-                EnableUIMaps();
-            }
-        }
-
-        private static void EnableUIMaps()
-        {
-            s_inputActions.UI.Enable();
-            s_inputActions.MainMenu.Enable();
-        }
-        private static void DisableUIMaps()
-        {
-            s_inputActions.UI.Disable();
-            s_inputActions.MainMenu.Disable();
-        }
-
-        #endregion
 
         #endregion
 
