@@ -103,7 +103,8 @@ public abstract class BaseOptionsValue : ScriptableObject
 /// </summary>
 public abstract class OptionsValue<T> : BaseOptionsValue
 {
-    [NonSerialized] protected T m_Value;
+    //[NonSerialized] protected T m_Value;
+    [NonSerialized] private T m_Value;
     public T Value
     {
         get => m_Value;
@@ -114,7 +115,15 @@ public abstract class OptionsValue<T> : BaseOptionsValue
     [field: SerializeField] protected string PrefsIdentifier { get; private set; }
 
     [field: Space(5)]
-    [field: SerializeField] protected T DefaultValue { get; private set; }
+    [field: SerializeField] protected T DefaultValue
+    {
+        get;
+#if UNITY_EDITOR
+        set;
+#else
+        private set;
+#endif
+    }
 
 
     protected override string GetValueString() => m_Value.ToString();
@@ -127,6 +136,7 @@ public abstract class OptionsValue<T> : BaseOptionsValue
 
 
     public abstract void SetValue(T newValue);
+    protected virtual void SetValueNoNotifyNoChecks(T newValue) => m_Value = newValue;
 
 
 #if UNITY_EDITOR

@@ -10,18 +10,18 @@ public class BoolOptionValue : OptionsValue<bool>
     public override void SetValue(bool newValue)
     {
         // Don't update/notify if we haven't changed our value.
-        if (m_Value == newValue)
+        if (Value == newValue)
             return;
 
-        m_Value = newValue;
+        SetValueNoNotifyNoChecks(newValue);
         InvokeOnValueChanged();
     }
 
 
-    public override void SaveToPrefs() => PlayerPrefs.SetInt(PrefsIdentifier, m_Value ? 1 : 0);
+    public override void SaveToPrefs() => PlayerPrefs.SetInt(PrefsIdentifier, Value ? 1 : 0);
     public override void LoadFromPrefs()
     {
-        m_Value = PlayerPrefs.GetInt(PrefsIdentifier, DefaultValue ? 1 : 0) == 1;
+        SetValueNoNotifyNoChecks(PlayerPrefs.GetInt(PrefsIdentifier, DefaultValue ? 1 : 0) == 1);
         InvokeOnValueChanged();
     }
 }

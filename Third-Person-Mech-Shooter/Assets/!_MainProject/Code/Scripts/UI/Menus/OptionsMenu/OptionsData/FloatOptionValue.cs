@@ -8,11 +8,11 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Options Values/New Float Value", order = 2)]
 public class FloatOptionValue : OptionsValue<float>
 {
-    [SerializeField] private float m_minValue;
-    [SerializeField] private float m_maxValue;
+    [SerializeField] protected float m_MinValue;
+    [SerializeField] protected float m_MaxValue;
 
-    public float MinValue => m_minValue;
-    public float MaxValue => m_maxValue;
+    public float MinValue => m_MinValue;
+    public float MaxValue => m_MaxValue;
     public bool HasLimits => !Mathf.Approximately(MinValue, MaxValue);
 
 
@@ -33,18 +33,18 @@ public class FloatOptionValue : OptionsValue<float>
         }
 
         // Don't update/notify if we haven't changed our value.
-        if (m_Value == newValue)
+        if (Value == newValue)
             return;
 
-        m_Value = newValue;
+        SetValueNoNotifyNoChecks(newValue);
         InvokeOnValueChanged();
     }
 
 
-    public override void SaveToPrefs() => PlayerPrefs.SetFloat(PrefsIdentifier, m_Value);
+    public override void SaveToPrefs() => PlayerPrefs.SetFloat(PrefsIdentifier, Value);
     public override void LoadFromPrefs()
     {
-        m_Value = PlayerPrefs.GetFloat(PrefsIdentifier, DefaultValue);
+        SetValueNoNotifyNoChecks(PlayerPrefs.GetFloat(PrefsIdentifier, DefaultValue));
         InvokeOnValueChanged();
     }
 
@@ -55,9 +55,9 @@ public class FloatOptionValue : OptionsValue<float>
     {
         if (HasLimits)
         {
-            if (DefaultValue < m_minValue)
+            if (DefaultValue < m_MinValue)
                 Debug.LogError($"Default Value of {this.name} is below the minimum value");
-            else if (DefaultValue > m_maxValue)
+            else if (DefaultValue > m_MaxValue)
                 Debug.LogError($"Default Value of {this.name} exceeds the maximum value");
         }
     }

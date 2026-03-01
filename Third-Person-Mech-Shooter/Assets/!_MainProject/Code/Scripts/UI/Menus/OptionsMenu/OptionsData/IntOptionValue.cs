@@ -22,18 +22,18 @@ public class IntOptionValue : OptionsValue<int>
             newValue = Mathf.Clamp(newValue, MinValue, MaxValue);
 
         // Don't update/notify if we haven't changed our value.
-        if (m_Value == newValue)
+        if (Value == newValue)
             return;
         
-        m_Value = newValue;
+        SetValueNoNotifyNoChecks(newValue);
         InvokeOnValueChanged();
     }
 
 
-    public override void SaveToPrefs() => PlayerPrefs.SetInt(PrefsIdentifier, m_Value);
+    public override void SaveToPrefs() => PlayerPrefs.SetInt(PrefsIdentifier, Value);
     public override void LoadFromPrefs()
     {
-        m_Value = PlayerPrefs.GetInt(PrefsIdentifier, DefaultValue);
+        SetValueNoNotifyNoChecks(PlayerPrefs.GetInt(PrefsIdentifier, DefaultValue));
         InvokeOnValueChanged();
     }
 

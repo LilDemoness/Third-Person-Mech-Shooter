@@ -19,17 +19,20 @@ public class FullscreenModeOptionValue : OptionsValue<FullScreenMode>, IDropdown
 #endif
 
         // Don't update/notify if we haven't changed our value.
-        if (m_Value == newFullscreenMode)
+        if (Value == newFullscreenMode)
             return;
 
-        Screen.fullScreenMode = newFullscreenMode;
-
-        m_Value = newFullscreenMode;
+        SetValueNoNotifyNoChecks(newFullscreenMode);
         InvokeOnValueChanged();
+    }
+    protected override void SetValueNoNotifyNoChecks(FullScreenMode newFullscreenMode)
+    {
+        base.SetValueNoNotifyNoChecks(newFullscreenMode);
+        Screen.fullScreenMode = newFullscreenMode;
     }
 
 
-    public int GetSelectedOptionIndex() => (int)m_Value;
+    public int GetSelectedOptionIndex() => (int)Value;
     public List<string> GetDropdownOptions() => new()
     {
         "Exclusive Fullscreen", // 0 = FullScreenMode.ExclusiveFullScreen
@@ -43,19 +46,20 @@ public class FullscreenModeOptionValue : OptionsValue<FullScreenMode>, IDropdown
 
     public override void SaveToPrefs()
     {
+        FullScreenMode fullScreenMode = Value;
 #if !ALLOW_MAXIMSED_WINDOW
-        EnsureValueIsNotInvalid(ref m_Value);
+        EnsureValueIsNotInvalid(ref fullScreenMode);
 #endif
-        PlayerPrefs.SetInt(PrefsIdentifier, (int)m_Value);
+        PlayerPrefs.SetInt(PrefsIdentifier, (int)fullScreenMode);
     }
     public override void LoadFromPrefs()
     {
-        m_Value = (FullScreenMode)PlayerPrefs.GetInt(PrefsIdentifier, (int)DefaultValue);
+        FullScreenMode fullscreenMode = (FullScreenMode)PlayerPrefs.GetInt(PrefsIdentifier, (int)DefaultValue);
 #if !ALLOW_MAXIMSED_WINDOW
-        EnsureValueIsNotInvalid(ref m_Value);
+        EnsureValueIsNotInvalid(ref fullscreenMode);
 #endif
 
-        Screen.fullScreenMode = m_Value;
+        SetValueNoNotifyNoChecks(fullscreenMode);
         InvokeOnValueChanged();
     }
 

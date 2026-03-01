@@ -32,10 +32,14 @@ public class ResolutionOptionValue : OptionsValue<Resolution>, IDropdownSupporti
         if (newValue.width == Value.width && newValue.height == Value.height)
             return;
 
-        Screen.SetResolution(newValue.width, newValue.height, Screen.fullScreenMode);
-
-        m_Value = newValue;
+        SetValueNoNotifyNoChecks(newValue);
         InvokeOnValueChanged();
+    }
+
+    protected override void SetValueNoNotifyNoChecks(Resolution newValue)
+    {
+        base.SetValueNoNotifyNoChecks(newValue);
+        Screen.SetResolution(newValue.width, newValue.height, Screen.fullScreenMode);
     }
 
 
@@ -45,7 +49,7 @@ public class ResolutionOptionValue : OptionsValue<Resolution>, IDropdownSupporti
         int resolutionValueIndex = -1;
         for (int i = 0; i < Resolutions.Length; ++i)
         {
-            if (m_Value.width == Resolutions[i].width && m_Value.height == Resolutions[i].height)
+            if (Value.width == Resolutions[i].width && Value.height == Resolutions[i].height)
             {
                 resolutionValueIndex = i;
                 break;
@@ -70,12 +74,12 @@ public class ResolutionOptionValue : OptionsValue<Resolution>, IDropdownSupporti
     public override void SaveToPrefs()
     {
         // Protect against saving default or invalid values.
-        if (m_Value.width <= 0 || m_Value.height <= 0)
+        if (Value.width <= 0 || Value.height <= 0)
             return;
 
         // We cannot save the Resolution struct as is, so break it into width and height for saving.
-        PlayerPrefs.SetInt(PrefsIdentifier + WIDTH_PREFS_SUFFIX, m_Value.width);
-        PlayerPrefs.SetInt(PrefsIdentifier + HEIGHT_PREFS_SUFFIX, m_Value.height);
+        PlayerPrefs.SetInt(PrefsIdentifier + WIDTH_PREFS_SUFFIX, Value.width);
+        PlayerPrefs.SetInt(PrefsIdentifier + HEIGHT_PREFS_SUFFIX, Value.height);
     }
     public override void LoadFromPrefs()
     {
@@ -88,9 +92,8 @@ public class ResolutionOptionValue : OptionsValue<Resolution>, IDropdownSupporti
         {
             resolution = Screen.currentResolution;
         }
-        
-        m_Value = resolution;
-        Screen.SetResolution(m_Value.width, m_Value.height, Screen.fullScreenMode);
+
+        SetValueNoNotifyNoChecks(resolution);
         InvokeOnValueChanged();
     }
 }
