@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Gameplay.UI.Popups;
+using UnityEngine;
 
 namespace Gameplay.UI.Menus.Options
 {
@@ -8,10 +9,48 @@ namespace Gameplay.UI.Menus.Options
     {
         [SerializeField] private CanvasGroup _canvasGroup;
         private BaseSetOption[] _optionSetters;
+        private static bool _hasChanges = false;
 
 
-        public void Show() => _canvasGroup.Show();
-        public void Hide() => _canvasGroup.Hide();
+        private void OnDestroy() => BaseSetOption.OnAnyChanged -= OnAnyOptionChanged;
+
+
+        public void Open()
+        {
+            _hasChanges = false;
+            BaseSetOption.OnAnyChanged += OnAnyOptionChanged;
+            Show();
+        }
+        public void ForceClose()
+        {
+            //LoadAllOptionsFromPrefs();
+            CompleteClose(null);
+        }
+        public void Close(System.Action onClosedCallback)
+        {
+            Debug.Log("Closed. Has Changes? " + _hasChanges);
+            if (_hasChanges)
+            {
+                Debug.LogWarning("To-Do: Query for saving changes.");
+                PopupManager.ShowPopupPanel("Unsaved Changes", "You have unsaved changes",
+                    ("Save", () => { SaveAllOptionsToPrefs(); CompleteClose(onClosedCallback); }),
+                    ("Discard", () => { LoadAllOptionsFromPrefs(); CompleteClose(onClosedCallback); })    
+                );
+            }
+            else
+                CompleteClose(onClosedCallback);
+        }
+        private void CompleteClose(System.Action onClosedCallback)
+        {
+            _hasChanges = false;
+            BaseSetOption.OnAnyChanged -= OnAnyOptionChanged;
+            
+            Hide();
+            onClosedCallback?.Invoke();
+        }
+
+        private void Show() => _canvasGroup.Show();
+        private void Hide() => _canvasGroup.Hide();
 
 
         public void Init()
@@ -34,6 +73,8 @@ namespace Gameplay.UI.Menus.Options
             {
                 _optionSetters[i].SaveToPrefs();
             }
+            // We've saved all our changes, so no new changes exist.
+            _hasChanges = false;
         }
         public void LoadAllOptionsFromPrefs()
         {
@@ -49,6 +90,14 @@ namespace Gameplay.UI.Menus.Options
             {
                 _optionSetters[i].ResetValue();
             }
+        }
+
+
+
+        private void OnAnyOptionChanged()
+        {
+            Debug.Log("Option Changed");
+            _hasChanges = true;
         }
     }
 }

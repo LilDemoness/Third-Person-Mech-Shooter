@@ -9,6 +9,7 @@ namespace Gameplay.UI.Menus.Options
     public abstract class BaseSetOption : MonoBehaviour
     {
         protected abstract BaseOptionsValue OptionsValue { get; }
+        public static event System.Action OnAnyChanged;
 
         private void OnDestroy() => OptionsValue?.UnsubscribeFromOnValueChanged(OnOptionsValueChanged);
 
@@ -22,6 +23,9 @@ namespace Gameplay.UI.Menus.Options
         public virtual void ResetValue() => OptionsValue.ResetValue();
 
 
-        protected abstract void OnOptionsValueChanged();
+        protected virtual void OnOptionsValueChanged()
+        {
+            OnAnyChanged?.Invoke();
+        }
     }
 }

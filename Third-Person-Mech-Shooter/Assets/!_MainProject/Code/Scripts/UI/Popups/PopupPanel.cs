@@ -1,6 +1,8 @@
 using Gameplay.UI.Menus;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Gameplay.UI.Popups
 {
@@ -11,7 +13,10 @@ namespace Gameplay.UI.Popups
     {
         [SerializeField] private TextMeshProUGUI _titleText;
         [SerializeField] private TextMeshProUGUI _mainText;
-        [SerializeField] private GameObject _confirmButton;
+
+        [SerializeField] private Button _buttonPrefab;
+        [SerializeField] private Transform _buttonContainer;
+
         [SerializeField] private GameObject _loadingSpinner;
 
 
@@ -46,14 +51,51 @@ namespace Gameplay.UI.Popups
             _closableByUser = closeableByUser;
             _obstructInput = obstructInput;
 
-            _confirmButton.SetActive(_closableByUser);
+            if (closeableByUser)
+                CreateButton(new PopupButtonParameters("Close", Hide));
             _loadingSpinner.SetActive(!_closableByUser);
+
+            SetupButtonNavigation();
 
             // If we're obstructing input, achieve this by opening through the MenuManager. Otherwise, show normally.
             if (obstructInput)
                 MenuManager.SetActivePopup(this);
             else
                 Show();
+        }
+
+
+        private Button CreateButton(PopupButtonParameters setupParameters)
+        {
+            // Create and setup the button.
+            Button button = Instantiate<Button>(_buttonPrefab, _buttonPrefab.transform.parent);
+            button.GetComponentInChildren<TMP_Text>().text = setupParameters.ButtonText;
+            button.onClick.AddListener(setupParameters.OnPressedCallback.Invoke);
+
+            // Return the newly created button.
+            return button;
+        }
+        private void SetupButtonNavigation()
+        {
+            Debug.Log("Double check that this returns children in order.");
+            Selectable[] selectableChildren = _buttonContainer.GetComponentsInChildren<Selectable>();
+            int finalSelectableIndex = selectableChildren.Length - 1;
+            for (int i = 0; i <= finalSelectableIndex; ++i)
+            {
+                if (i == 0)
+                    selectableChildren[i].SetNavigation(onLeft: selectableChildren[finalSelectableIndex], onRight: selectableChildren[i + 1]);
+                else if (i == finalSelectableIndex)
+                    selectableChildren[i].SetNavigation(onLeft: selectableChildren[i - 1], onRight: selectableChildren[0]);
+                else
+                    selectableChildren[i].SetNavigation(onLeft: selectableChildren[i - 1], onRight: selectableChildren[i + 1]);
+            }
+        }
+        private void CleanupButtons()
+        {
+            for (int i = _buttonContainer.childCount - 1; i >= 0; --i)
+            {
+                Destroy(_buttonContainer.GetChild(i));
+            }
         }
 
 
@@ -66,6 +108,26 @@ namespace Gameplay.UI.Popups
         {
             base.Hide();
             _isDisplaying = false;
+
+            CleanupButtons();
+        }
+    }
+
+
+    public readonly struct PopupButtonParameters
+    {
+        public readonly string ButtonText;
+        public readonly System.Action OnPressedCallback;
+        public readonly UnityEngine.InputSystem.InputAction TriggerButtonInput;
+
+
+        public PopupButtonParameters(string buttonText, System.Action onPressedCallback) : this(buttonText, onPressedCallback, null)
+        { }
+        public PopupButtonParameters(string buttonText, System.Action onPressedCallback, UnityEngine.InputSystem.InputAction triggerButtonInput)
+        {
+            this.ButtonText = buttonText;
+            this.OnPressedCallback = onPressedCallback;
+            this.TriggerButtonInput = triggerButtonInput;
         }
     }
 }

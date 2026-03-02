@@ -54,6 +54,18 @@ namespace Gameplay.UI.Popups
             return s_instance.DisplayPopupPanel(titleText, mainText, closeableByUser);
         }
 
+        public static PopupPanel ShowPopupPanel(string titleText, string bodyText, params (string, System.Action)[] popupOptions)
+        {
+            if (s_instance == null)
+            {
+                Debug.LogError($"No PopupManager instance found. Cannot display message: {titleText}: {bodyText}");
+                return null;
+            }
+
+            // Create a popup menu with buttons corresponding to the values of 'popupOptions'.
+            throw new System.NotImplementedException();
+        }
+
         private PopupPanel DisplayPopupPanel(string titleText, string mainText, bool closeableByUser)
         {
             PopupPanel popup = GetNextAvailablePopupPanel();

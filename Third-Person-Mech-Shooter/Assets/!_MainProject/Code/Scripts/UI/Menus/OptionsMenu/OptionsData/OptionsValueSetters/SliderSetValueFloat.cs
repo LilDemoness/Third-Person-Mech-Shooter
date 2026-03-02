@@ -38,8 +38,8 @@ namespace Gameplay.UI.Menus.Options
         public void OnSliderValueChanged(float newValue) => _floatOptionValue.SetValue(newValue);
         protected override void OnOptionsValueChanged()
         {
-            base.OnOptionsValueChanged();
             _slider.SetValueWithoutNotify(_floatOptionValue.Value);
+            base.OnOptionsValueChanged();
         }
 
 
@@ -68,6 +68,7 @@ namespace Gameplay.UI.Menus.Options
         protected override void OnOptionsValueChanged()
         {
             OnUpdateDisplayValue?.Invoke();
+            base.OnOptionsValueChanged();
         }
     }
 }

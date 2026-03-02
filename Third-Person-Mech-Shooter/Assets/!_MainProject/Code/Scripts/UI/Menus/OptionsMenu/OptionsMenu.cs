@@ -73,12 +73,12 @@ namespace Gameplay.UI.Menus.Options
         private void CloseAllMenus()
         {
             // Hide all menus.
-            _gameplayMenu.Hide();
-            _videoMenu.Hide();
-            _audioMenu.Hide();
-            _controlsMenu.Hide();
-            _keybindingsMenu.Hide();
-            _accessibilityMenu.Hide();
+            _gameplayMenu.ForceClose();
+            _videoMenu.ForceClose();
+            _audioMenu.ForceClose();
+            _controlsMenu.ForceClose();
+            _keybindingsMenu.ForceClose();
+            _accessibilityMenu.ForceClose();
 
             // Null our current menu as none are now open.
             _currentOpenMenu = null;
@@ -87,11 +87,17 @@ namespace Gameplay.UI.Menus.Options
         {
             // If we have an open menu, close it.
             if (_currentOpenMenu)
-                _currentOpenMenu.Hide();
-
+            {
+                _currentOpenMenu.Close(() => FinishSetActiveMenu(optionsSubmenu));
+            }
+            else
+                FinishSetActiveMenu(optionsSubmenu);
+        }
+        private void FinishSetActiveMenu(OptionsSubmenu optionsSubmenu)
+        {
             // Open our desired menu and cache it.
             _currentOpenMenu = optionsSubmenu;
-            optionsSubmenu.Show();
+            optionsSubmenu.Open();
         }
 
 
@@ -103,12 +109,21 @@ namespace Gameplay.UI.Menus.Options
 
         #region UI Button Functions
 
+        #region Open Menu Button Functions
+
         public void OpenGameplayMenu() => SetActiveMenu(_gameplayMenu);
         public void OpenVideoMenu() => SetActiveMenu(_videoMenu);
         public void OpenAudioMenu() => SetActiveMenu(_audioMenu);
         public void OpenControlsMenu() => SetActiveMenu(_controlsMenu);
         public void OpenKeybindingsMenu() => SetActiveMenu(_keybindingsMenu);
         public void OpenAccessibilityMenu() => SetActiveMenu(_accessibilityMenu);
+
+        #endregion
+
+
+        public void DiscardChanges() => _currentOpenMenu?.LoadAllOptionsFromPrefs();
+        public void SaveChanges() => _currentOpenMenu?.SaveAllOptionsToPrefs();
+        public void ResetToDefault() => _currentOpenMenu?.ResetAllOptions();
 
         #endregion
     }
