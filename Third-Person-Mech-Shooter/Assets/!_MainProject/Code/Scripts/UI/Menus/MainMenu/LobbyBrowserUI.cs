@@ -84,7 +84,7 @@ namespace Gameplay.UI.Menus
         ///     Performs a hard refresh (Locks UI elements).
         /// </summary>
         // Called from UI Button.
-        public void OnRefreshButtonPressed() => _lobbyUIMediator.QueryLobbiesRequest(blockUI: true);
+        public void OnRefreshButtonPressed() { Debug.Log("Refresh"); _lobbyUIMediator.QueryLobbiesRequest(blockUI: true); }
 
 
 
@@ -137,5 +137,10 @@ namespace Gameplay.UI.Menus
 
 
         public void OnQuickJoinPressed() => _lobbyUIMediator.QuickJoinRequest();
+
+
+
+        public void OpenEditFiltersUI() => MenuManager.OpenChildMenu(_customiseFiltersMenu, this, true);
+        public void OpenJoinCodePopup() => MenuManager.OpenChildMenu(_joinLobbyWithCodeMenu, this, true);
     }
 }

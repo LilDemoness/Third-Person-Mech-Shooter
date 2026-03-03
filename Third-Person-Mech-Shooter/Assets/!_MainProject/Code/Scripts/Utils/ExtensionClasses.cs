@@ -82,6 +82,17 @@ public static class SelectableExtensions
         // Set our selectable's navigation.
         selectable.navigation = navigation;
     }
+
+
+    /// <summary>
+    ///     Sets a Selectable's navigation mode to <see cref="Navigation.Mode.None"/>.
+    /// </summary>
+    public static void RemoveNavigation(this Selectable selectable)
+    {
+        Navigation navigation = new Navigation();
+        navigation.mode = Navigation.Mode.None;
+        selectable.navigation = navigation;
+    }
 }
 
 
@@ -232,5 +243,21 @@ public static class CanvasGroupExtensions
         canvasGroup.alpha = 0.0f;
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
+    }
+}
+
+
+public static class ObjectExtensions
+{
+    public static bool TryCastToType<T>(this object obj, out T castResult) where T : class
+    {
+        if (obj.GetType().IsAssignableFrom(typeof(T)))
+        {
+            castResult = default(T);
+            return false;
+        }
+
+        castResult = (obj as T);
+        return true;
     }
 }

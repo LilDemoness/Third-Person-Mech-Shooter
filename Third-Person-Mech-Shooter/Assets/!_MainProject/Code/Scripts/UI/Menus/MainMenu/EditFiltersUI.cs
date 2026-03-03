@@ -77,7 +77,6 @@ namespace Gameplay.UI.Menus
 
 
 
-        public void ShowEditFiltersUIPressed() => MenuManager.SetActivePopup(this);
         public void ApplyFiltersPressed()
         {
             ApplyFilters();

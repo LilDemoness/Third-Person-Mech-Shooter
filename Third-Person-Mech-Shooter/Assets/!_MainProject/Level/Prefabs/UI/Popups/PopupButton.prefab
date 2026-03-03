@@ -149,7 +149,7 @@ GameObject:
   - component: {fileID: 9174603380538345211}
   - component: {fileID: 6217849353738452434}
   m_Layer: 0
-  m_Name: ConfirmButton
+  m_Name: PopupButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -226,7 +226,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 0
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}

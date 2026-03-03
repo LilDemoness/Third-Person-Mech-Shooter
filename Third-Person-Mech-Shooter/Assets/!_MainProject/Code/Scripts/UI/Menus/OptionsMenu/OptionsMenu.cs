@@ -63,10 +63,15 @@ namespace Gameplay.UI.Menus.Options
 
         public override void Show()
         {
-            CloseAllMenus();
-            SetActiveMenu(_gameplayMenu);
+            
 
             base.Show();
+        }
+        public override void Hide()
+        {
+            CloseAllMenus();
+            SetActiveMenu(_gameplayMenu);
+            base.Hide();
         }
 
 

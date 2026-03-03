@@ -12,7 +12,7 @@ namespace Gameplay.UI.Menus
     /// <summary>
     ///     Facilitates lobby-based calls to the Multiplayer SDK.
     /// </summary>
-    public class LobbyUIMediator : MonoBehaviour
+    public class LobbyUIMediator : ContainerMenu
     {
         [SerializeField] private CanvasGroup _canvasGroup;
         [SerializeField] private GameObject _loadingSpinner;

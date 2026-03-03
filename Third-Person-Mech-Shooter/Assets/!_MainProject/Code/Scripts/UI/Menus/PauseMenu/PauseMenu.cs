@@ -70,21 +70,19 @@ namespace Gameplay.UI.Menus.Pause
         {
             if (!_isOpen)
                 PauseGame();
-            else if (MenuManager.CurrentMenu == this.gameObject)
+            else if (this.IsActiveMenu())
                 ResumeGame();
-            else
-                MenuManager.ReturnToPreviousMenu();
         }
 
 
         public void PauseGame() => MenuManager.SetActiveMenu(this);
         public void ResumeGame()
         {
-            if (!MenuManager.TryCloseMenu(this))
+            if (!MenuManager.CloseMenu(this, true))
                 Debug.LogError("Failed to close PauseMenu");
         }
 
-        public void ShowOptionsMenu() => MenuManager.SetActiveMenu(_optionsMenu, disablePrevious: false);
+        public void ShowOptionsMenu() => MenuManager.OpenChildMenu(_optionsMenu, this, selectFirstElement: true);
 
         public void OnExitToMainMenuPressed() => _connectionManager.RequestShutdown();
         public void OnExitToDesktopPressed() => _quitApplicationPub.Publish(new QuitApplicationMessage());

@@ -1,6 +1,7 @@
 using Gameplay.UI.Menus;
 using System.Collections.Generic;
 using TMPro;
+using UI;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,12 +10,13 @@ namespace Gameplay.UI.Popups
     /// <summary>
     ///     A simple Popup Panel to display information to players.
     /// </summary>
-    public class PopupPanel : Menu
+    public class PopupPanel : Popup
     {
         [SerializeField] private TextMeshProUGUI _titleText;
         [SerializeField] private TextMeshProUGUI _mainText;
 
         [SerializeField] private Button _buttonPrefab;
+        [SerializeField] private NonNavigableButton _nonNavigableButtonPrefab;
         [SerializeField] private Transform _buttonContainer;
 
         [SerializeField] private GameObject _loadingSpinner;
@@ -27,59 +29,111 @@ namespace Gameplay.UI.Popups
         private bool _obstructInput;
 
 
-        protected override void Start() { } // Override start method to prevent hiding ourselves when being instantiated.
         public void OnConfirmClick()
         {
             if (!_closableByUser)
                 return;
 
-            // If we're obstructing input (Displaying through the MenuManager), then return through the MenuManager. Otherwise, hide normally.
-            if (_obstructInput && MenuManager.CurrentMenu == this.gameObject)
-                MenuManager.ReturnToPreviousMenu();
+            // If we're NOT obstructing input (Displaying through the MenuManager), OR are the active popup, then close ourselves. Otherwise, we've failed to close.
+            if (!_obstructInput || this.IsActivePopup())
+                Close();
             else
-                Hide();
+                Debug.Log("Failed to Close");
         }
 
 
         /// <summary>
         ///     Setup and show the Popup Panel.
         /// </summary>
-        public void SetupPopupPanel(string titleText, string mainText, bool closeableByUser = true, bool obstructInput = true)
+        public void SetupPopupPanel(string titleText, string mainText, bool closeableByUser = true, bool obstructInput = true, PopupButtonParameters[] popupButtonParameters = null)
         {
             _titleText.text = titleText;
             _mainText.text = mainText;
             _closableByUser = closeableByUser;
             _obstructInput = obstructInput;
 
+            Debug.Log("Params: " + popupButtonParameters);
+
             if (closeableByUser)
-                CreateButton(new PopupButtonParameters("Close", Hide));
+                CreateButton(new PopupButtonParameters("Close", Close));
+            if (popupButtonParameters != null)
+            {
+                foreach (PopupButtonParameters parameter in popupButtonParameters)
+                {
+                    Debug.Log($"Param Text: " + parameter.ButtonText);
+                    CreateButton(parameter);
+                }
+            }
             _loadingSpinner.SetActive(!_closableByUser);
 
             SetupButtonNavigation();
 
             // If we're obstructing input, achieve this by opening through the MenuManager. Otherwise, show normally.
             if (obstructInput)
-                MenuManager.SetActivePopup(this);
+                MenuManager.CreatePopup(this);
             else
-                Show();
+                Open();
         }
 
 
-        private Button CreateButton(PopupButtonParameters setupParameters)
+        private void CreateButton(PopupButtonParameters setupParameters)
+        {
+            if (setupParameters.TriggerButtonInput != null)
+                CreateNonNavigableButton(setupParameters);
+            else
+                CreateNavigableButton(setupParameters);
+        }
+        private Button CreateNavigableButton(PopupButtonParameters setupParameters)
         {
             // Create and setup the button.
-            Button button = Instantiate<Button>(_buttonPrefab, _buttonPrefab.transform.parent);
+            Button button = Instantiate<Button>(_buttonPrefab, _buttonContainer);
             button.GetComponentInChildren<TMP_Text>().text = setupParameters.ButtonText;
-            button.onClick.AddListener(setupParameters.OnPressedCallback.Invoke);
+            button.onClick.AddListener(CompleteCallback);
 
             // Return the newly created button.
             return button;
+
+
+            void CompleteCallback()
+            {
+                Close();
+                setupParameters.OnPressedCallback?.Invoke();
+            }
+        }
+        private NonNavigableButton CreateNonNavigableButton(PopupButtonParameters setupParameters)
+        {
+            // Create and setup the button.
+            NonNavigableButton button = Instantiate<NonNavigableButton>(_nonNavigableButtonPrefab, _buttonContainer);
+            button.GetComponentInChildren<TMP_Text>().text = setupParameters.ButtonText;
+            button.OnButtonTriggered += CompleteCallback;
+
+            // Return the newly created button.
+            return button;
+
+
+            void CompleteCallback()
+            {
+                Close();
+                setupParameters.OnPressedCallback?.Invoke();
+            }
         }
         private void SetupButtonNavigation()
         {
             Debug.Log("Double check that this returns children in order.");
             Selectable[] selectableChildren = _buttonContainer.GetComponentsInChildren<Selectable>();
             int finalSelectableIndex = selectableChildren.Length - 1;
+
+            // No selectables under our button container.
+            if (finalSelectableIndex == -1)
+                return;
+            // Only one selectable, so no navigation is needed.
+            else if (finalSelectableIndex == 0)
+            {
+                selectableChildren[0].RemoveNavigation();
+                return;
+            }
+
+            // Multiple selectables. Setup their horizontal navigation.
             for (int i = 0; i <= finalSelectableIndex; ++i)
             {
                 if (i == 0)
@@ -94,20 +148,20 @@ namespace Gameplay.UI.Popups
         {
             for (int i = _buttonContainer.childCount - 1; i >= 0; --i)
             {
-                Destroy(_buttonContainer.GetChild(i));
+                Destroy(_buttonContainer.GetChild(i).gameObject);
             }
         }
 
 
-        public override void Show()
+        public override void Open()
         {
-            base.Show();
             _isDisplaying = true;
+            base.Open();
         }
-        public override void Hide()
+        public override void Close()
         {
-            base.Hide();
             _isDisplaying = false;
+            base.Close();
 
             CleanupButtons();
         }
@@ -120,6 +174,12 @@ namespace Gameplay.UI.Popups
         public readonly System.Action OnPressedCallback;
         public readonly UnityEngine.InputSystem.InputAction TriggerButtonInput;
 
+
+
+        private PopupButtonParameters(PopupButtonParameters other)
+        {
+            throw new System.Exception("Copy Constructor used");
+        }
 
         public PopupButtonParameters(string buttonText, System.Action onPressedCallback) : this(buttonText, onPressedCallback, null)
         { }

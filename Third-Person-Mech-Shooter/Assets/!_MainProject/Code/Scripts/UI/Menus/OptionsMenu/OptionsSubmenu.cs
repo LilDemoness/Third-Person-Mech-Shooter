@@ -1,5 +1,6 @@
 ﻿using Gameplay.UI.Popups;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Gameplay.UI.Menus.Options
 {
@@ -28,14 +29,12 @@ namespace Gameplay.UI.Menus.Options
         }
         public void Close(System.Action onClosedCallback)
         {
-            Debug.Log("Closed. Has Changes? " + _hasChanges);
             if (_hasChanges)
             {
-                Debug.LogWarning("To-Do: Query for saving changes.");
-                PopupManager.ShowPopupPanel("Unsaved Changes", "You have unsaved changes",
-                    ("Save", () => { SaveAllOptionsToPrefs(); CompleteClose(onClosedCallback); }),
-                    ("Discard", () => { LoadAllOptionsFromPrefs(); CompleteClose(onClosedCallback); })    
-                );
+                PopupManager.ShowUnsavedChangesOptionsPanel(null, OnDiscard, OnSave);
+
+                void OnSave() { SaveAllOptionsToPrefs(); CompleteClose(onClosedCallback); }
+                void OnDiscard() { LoadAllOptionsFromPrefs(); CompleteClose(onClosedCallback); }
             }
             else
                 CompleteClose(onClosedCallback);
@@ -82,6 +81,8 @@ namespace Gameplay.UI.Menus.Options
             {
                 _optionSetters[i].LoadFromPrefs();
             }
+            // We've just reloaded our saved options, so we don't have any changes from them.
+            _hasChanges = false;
         }
 
         public void ResetAllOptions()

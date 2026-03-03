@@ -25,12 +25,25 @@ PrefabInstance:
       value: '{0} Back'
       objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.size
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.data[0]._Target
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.data[0]._Target
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.data[0]._MemberName
+      value: Gameplay.UI.Menus.MenuManager, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null.ReturnToPreviousMenu
       objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.data[0]._MemberName

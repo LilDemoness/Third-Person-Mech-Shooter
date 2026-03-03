@@ -53,8 +53,7 @@ namespace Gameplay.UI.Popups
 
             return s_instance.DisplayPopupPanel(titleText, mainText, closeableByUser);
         }
-
-        public static PopupPanel ShowPopupPanel(string titleText, string bodyText, params (string, System.Action)[] popupOptions)
+        public static PopupPanel ShowPopupPanel(string titleText, string bodyText, params PopupButtonParameters[] popupButtons)
         {
             if (s_instance == null)
             {
@@ -63,15 +62,34 @@ namespace Gameplay.UI.Popups
             }
 
             // Create a popup menu with buttons corresponding to the values of 'popupOptions'.
-            throw new System.NotImplementedException();
+            return s_instance.DisplayPopupPanel(titleText, bodyText, false, popupButtons);
+        }
+        public static PopupPanel ShowUnsavedChangesOptionsPanel(System.Action onCancelCallback, System.Action onDiscardCallback, System.Action onSaveCallback)
+        {
+            if (s_instance == null)
+            {
+                Debug.LogError($"No PopupManager instance found. Cannot display unsaved changes message");
+                return null;
+            }
+
+            PopupButtonParameters[] parameters = new PopupButtonParameters[]
+            {
+                new PopupButtonParameters("Cancel", onCancelCallback),
+                new PopupButtonParameters("Discard", onDiscardCallback),
+                new PopupButtonParameters("Apply", onSaveCallback),
+            };
+
+            const string TITLE_TEXT = "Unsaved Changes";
+            const string BODY_TEXT = "You have unsaved changes";
+            return s_instance.DisplayPopupPanel(TITLE_TEXT, BODY_TEXT, false, parameters);
         }
 
-        private PopupPanel DisplayPopupPanel(string titleText, string mainText, bool closeableByUser)
+        private PopupPanel DisplayPopupPanel(string titleText, string mainText, bool closeableByUser, params PopupButtonParameters[] popupButtons)
         {
             PopupPanel popup = GetNextAvailablePopupPanel();
             if (popup != null)
             {
-                popup.SetupPopupPanel(titleText, mainText, closeableByUser);
+                popup.SetupPopupPanel(titleText, mainText, closeableByUser, popupButtonParameters: popupButtons);
             }
 
             return popup;

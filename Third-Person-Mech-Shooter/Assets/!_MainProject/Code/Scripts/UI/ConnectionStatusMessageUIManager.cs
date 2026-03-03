@@ -95,7 +95,7 @@ namespace Gameplay.UI
             if (_currentReconnectPopup == null)
                 return; // No open popup.
 
-            _currentReconnectPopup.Hide();
+            _currentReconnectPopup.Close();
             _currentReconnectPopup = null;
         }
     }

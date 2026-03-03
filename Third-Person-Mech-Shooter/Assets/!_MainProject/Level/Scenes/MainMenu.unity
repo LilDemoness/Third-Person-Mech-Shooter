@@ -593,14 +593,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d57aa4eb7f36bc43a682f970ce0514c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CanvasGroup: {fileID: 28624005}
-  InitialSelection: {fileID: 0}
-  OnShow:
-    m_PersistentCalls:
-      m_Calls: []
-  OnHide:
-    m_PersistentCalls:
-      m_Calls: []
+  <CanvasGroup>k__BackingField: {fileID: 28624005}
+  <FirstSelectedElement>k__BackingField: {fileID: 0}
   _lobbyListItemPrototype: {fileID: 432897847}
   _noLobbiesLabel: {fileID: 98605133}
   _customiseFiltersMenu: {fileID: 230000755}
@@ -671,14 +665,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f90ecbc1ce0980447adfa8366d43e6ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CanvasGroup: {fileID: 29766204}
-  InitialSelection: {fileID: 0}
-  OnShow:
-    m_PersistentCalls:
-      m_Calls: []
-  OnHide:
-    m_PersistentCalls:
-      m_Calls: []
+  <CanvasGroup>k__BackingField: {fileID: 29766204}
+  <FirstSelectedElement>k__BackingField: {fileID: 0}
   _ipInputField: {fileID: 1812835025}
   _portInputField: {fileID: 221233031}
   _buttons:
@@ -754,14 +742,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1968eaded950ca449bfa5b28267df0e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CanvasGroup: {fileID: 31882727}
-  InitialSelection: {fileID: 0}
-  OnShow:
-    m_PersistentCalls:
-      m_Calls: []
-  OnHide:
-    m_PersistentCalls:
-      m_Calls: []
+  <CanvasGroup>k__BackingField: {fileID: 31882727}
+  <FirstSelectedElement>k__BackingField: {fileID: 0}
   _canvasGroup: {fileID: 31882727}
   _profileListItemPrototype: {fileID: 1226097915}
   _newProfileField: {fileID: 1670912619}
@@ -3314,14 +3296,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10d830b9c18f256498121976cc5014e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CanvasGroup: {fileID: 219435610}
-  InitialSelection: {fileID: 1619027329}
-  OnShow:
-    m_PersistentCalls:
-      m_Calls: []
-  OnHide:
-    m_PersistentCalls:
-      m_Calls: []
+  <CanvasGroup>k__BackingField: {fileID: 219435610}
+  <FirstSelectedElement>k__BackingField: {fileID: 0}
   _joinCodeField: {fileID: 1619027331}
 --- !u!1 &221233029
 GameObject:
@@ -3617,14 +3593,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4011b5962c8d62345873a3f0a0e6a473, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CanvasGroup: {fileID: 230000754}
-  InitialSelection: {fileID: 0}
-  OnShow:
-    m_PersistentCalls:
-      m_Calls: []
-  OnHide:
-    m_PersistentCalls:
-      m_Calls: []
+  <CanvasGroup>k__BackingField: {fileID: 230000754}
+  <FirstSelectedElement>k__BackingField: {fileID: 0}
   _gameModeDropdown: {fileID: 867288112}
   _mapNameDropdown: {fileID: 1122386361}
   _showPasswordProtectedToggle: {fileID: 714720629}
@@ -3892,14 +3862,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cdc63bbd16c8054abb3f705d580024b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CanvasGroup: {fileID: 248659021}
-  InitialSelection: {fileID: 0}
-  OnShow:
-    m_PersistentCalls:
-      m_Calls: []
-  OnHide:
-    m_PersistentCalls:
-      m_Calls: []
+  <CanvasGroup>k__BackingField: {fileID: 248659021}
+  <FirstSelectedElement>k__BackingField: {fileID: 0}
   _canvasGroup: {fileID: 248659021}
   _loadingIndicatorObject: {fileID: 1122977560}
   _lobbyNameInputField: {fileID: 1231408075}
@@ -6999,6 +6963,10 @@ PrefabInstance:
       value: '{0} Join With Code'
       objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -7007,8 +6975,16 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.data[0]._Target
+      value: 
+      objectReference: {fileID: 28624007}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.data[0]._Target
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.data[0]._MemberName
+      value: OpenJoinCodePopup
       objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.data[0]._MemberName
@@ -13328,7 +13304,6 @@ GameObject:
   - component: {fileID: 1009343716}
   - component: {fileID: 1009343719}
   - component: {fileID: 1009343718}
-  - component: {fileID: 1009343717}
   m_Layer: 0
   m_Name: LobbyJoinCodeButton
   m_TagString: Untagged
@@ -13356,63 +13331,6 @@ RectTransform:
   m_AnchoredPosition: {x: 665, y: 0}
   m_SizeDelta: {x: 322.5, y: 80}
   m_Pivot: {x: 0, y: 1}
---- !u!114 &1009343717
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1009343715}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Navigation:
-    m_Mode: 3
-    m_WrapAround: 0
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
-    m_SelectOnLeft: {fileID: 0}
-    m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
-  m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
-    m_ColorMultiplier: 1
-    m_FadeDuration: 0.1
-  m_SpriteState:
-    m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 0}
-    m_SelectedSprite: {fileID: 0}
-    m_DisabledSprite: {fileID: 0}
-  m_AnimationTriggers:
-    m_NormalTrigger: Normal
-    m_HighlightedTrigger: Highlighted
-    m_PressedTrigger: Pressed
-    m_SelectedTrigger: Selected
-    m_DisabledTrigger: Disabled
-  m_Interactable: 1
-  m_TargetGraphic: {fileID: 1009343718}
-  m_OnClick:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Gameplay.UI.MainMenu.Session.SessionUIMediator,
-          Assembly-CSharp
-        m_MethodName: OpenCreateSessionUI
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!114 &1009343718
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14633,7 +14551,6 @@ GameObject:
   - component: {fileID: 1069460218}
   - component: {fileID: 1069460217}
   - component: {fileID: 1069460219}
-  - component: {fileID: 1069460221}
   - component: {fileID: 1069460216}
   m_Layer: 0
   m_Name: PlayGameUI
@@ -14726,32 +14643,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00b1788e79cc9d840a43817d6374da40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _canvasGroup: {fileID: 1069460216}
-  _loadingSpinner: {fileID: 1122977560}
---- !u!114 &1069460221
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1069460214}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a8d32d86071d10f468fc54e238f9a33c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CanvasGroup: {fileID: 1069460216}
-  InitialSelection: {fileID: 0}
-  OnShow:
-    m_PersistentCalls:
-      m_Calls: []
-  OnHide:
-    m_PersistentCalls:
-      m_Calls: []
-  _subMenus:
+  <CanvasGroup>k__BackingField: {fileID: 1069460216}
+  <FirstSelectedElement>k__BackingField: {fileID: 0}
+  Children:
   - {fileID: 28624007}
   - {fileID: 248659022}
   - {fileID: 29766206}
+  _canvasGroup: {fileID: 1069460216}
+  _loadingSpinner: {fileID: 1122977560}
 --- !u!1 &1088308946
 GameObject:
   m_ObjectHideFlags: 0
@@ -16281,6 +16180,10 @@ PrefabInstance:
       value: '{0} Edit Filters'
       objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -16289,8 +16192,16 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.data[0]._Target
+      value: 
+      objectReference: {fileID: 28624007}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.data[0]._Target
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.data[0]._MemberName
+      value: OpenEditFiltersUI
       objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.data[0]._MemberName
@@ -16447,7 +16358,6 @@ GameObject:
   - component: {fileID: 1172515510}
   - component: {fileID: 1172515511}
   - component: {fileID: 1172515512}
-  - component: {fileID: 1172515513}
   m_Layer: 0
   m_Name: OptionsMenu
   m_TagString: Untagged
@@ -16513,26 +16423,6 @@ CanvasGroup:
   m_Interactable: 0
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
---- !u!114 &1172515513
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1172515509}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 78b5bad99db7e834eab291283a1de7b5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CanvasGroup: {fileID: 1172515512}
-  InitialSelection: {fileID: 0}
-  OnShow:
-    m_PersistentCalls:
-      m_Calls: []
-  OnHide:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &1178537224
 GameObject:
   m_ObjectHideFlags: 0
@@ -20463,8 +20353,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 873db581fb81bec4091178f084a3beec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _parentMenu: {fileID: 1069460221}
-  _menu: {fileID: 29766206}
+  _parentContainerMenu: {fileID: 1069460219}
+  _associatedChildMenu: {fileID: 29766206}
+  _showOnSelect: 1
 --- !u!114 &1404966364
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20879,6 +20770,10 @@ PrefabInstance:
       value: '{0} Refresh'
       objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -20887,9 +20782,17 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.data[0]._Target
+      value: 
+      objectReference: {fileID: 28624007}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.data[0]._Target
       value: 
       objectReference: {fileID: 28624007}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.data[0]._MemberName
+      value: OnRefreshButtonPressed
+      objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.data[0]._MemberName
       value: OnRefreshButtonPressed
@@ -23025,8 +22928,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 873db581fb81bec4091178f084a3beec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _parentMenu: {fileID: 1069460221}
-  _menu: {fileID: 28624007}
+  _parentContainerMenu: {fileID: 1069460219}
+  _associatedChildMenu: {fileID: 28624007}
+  _showOnSelect: 1
 --- !u!114 &1663241884
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24417,8 +24321,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 873db581fb81bec4091178f084a3beec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _parentMenu: {fileID: 1069460221}
-  _menu: {fileID: 248659022}
+  _parentContainerMenu: {fileID: 1069460219}
+  _associatedChildMenu: {fileID: 248659022}
+  _showOnSelect: 1
 --- !u!114 &1728428124
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24601,6 +24506,10 @@ PrefabInstance:
       value: '{0} Quick Join'
       objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -24609,9 +24518,17 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.data[0]._Target
+      value: 
+      objectReference: {fileID: 28624007}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.data[0]._Target
       value: 
       objectReference: {fileID: 28624007}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.data[0]._MemberName
+      value: OnQuickJoinPressed
+      objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.data[0]._MemberName
       value: OnQuickJoinPressed
@@ -30316,7 +30233,7 @@ PrefabInstance:
     - target: {fileID: 6208511596972497417, guid: 8eba5c4b2aaf56447b79e6e95c8c4939, type: 3}
       propertyPath: _optionsMenu
       value: 
-      objectReference: {fileID: 1172515513}
+      objectReference: {fileID: 0}
     - target: {fileID: 6208511596972497417, guid: 8eba5c4b2aaf56447b79e6e95c8c4939, type: 3}
       propertyPath: _profileMenu
       value: 
@@ -30332,7 +30249,7 @@ PrefabInstance:
     - target: {fileID: 6208511596972497417, guid: 8eba5c4b2aaf56447b79e6e95c8c4939, type: 3}
       propertyPath: _playGameMenu
       value: 
-      objectReference: {fileID: 1069460221}
+      objectReference: {fileID: 1069460219}
     - target: {fileID: 6208511596972497417, guid: 8eba5c4b2aaf56447b79e6e95c8c4939, type: 3}
       propertyPath: _settingsMenu
       value: 

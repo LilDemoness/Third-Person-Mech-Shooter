@@ -4251,13 +4251,25 @@ PrefabInstance:
       value: '{0} Apply Changes'
       objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.size
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.data[0]._Target
+      value: 
+      objectReference: {fileID: 754282207234319310}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.data[0]._Target
       value: 
       objectReference: {fileID: 754282207234319310}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.data[0]._MemberName
+      value: SaveChanges
+      objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.data[0]._MemberName
       value: SaveChanges
@@ -4625,11 +4637,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1104833043734203743, guid: 1b0c4ba99dca19a4cb08f7432863f7a2, type: 3}
       propertyPath: m_Size
-      value: 0.99912333
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1104833043734203743, guid: 1b0c4ba99dca19a4cb08f7432863f7a2, type: 3}
       propertyPath: m_Value
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1294423526881786138, guid: 1b0c4ba99dca19a4cb08f7432863f7a2, type: 3}
       propertyPath: m_Alpha
@@ -4776,13 +4788,25 @@ PrefabInstance:
       value: '{0} Reset To Defaults'
       objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.size
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.data[0]._Target
+      value: 
+      objectReference: {fileID: 754282207234319310}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.data[0]._Target
       value: 
       objectReference: {fileID: 754282207234319310}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.data[0]._MemberName
+      value: ResetToDefault
+      objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.data[0]._MemberName
       value: ResetToDefault

@@ -65,7 +65,7 @@ namespace UI
         [SerializeField] private bool _allowInputWhenNotInFocus = false;
 
         [Space(10)]
-        [SerializeField] private UltEvent _onButtonTriggered;
+        public UltEvent OnButtonTriggered;
 
 
         [Header("Hover Iteraction Indication")]
@@ -131,7 +131,7 @@ namespace UI
                 return; // Invalid input for the action trigger type.
 
             // Valid input. Trigger our callback.
-            _onButtonTriggered?.Invoke();
+            OnButtonTriggered?.Invoke();
         }
 
         private bool _isPressed = false;
@@ -143,7 +143,7 @@ namespace UI
             if (!CanUseInput_Focus())
                 return;
 
-            _onButtonTriggered?.Invoke();
+            OnButtonTriggered?.Invoke();
         }
         public void OnPointerDown(PointerEventData eventData)
         {
