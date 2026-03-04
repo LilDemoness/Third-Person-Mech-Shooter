@@ -4,11 +4,8 @@ using UnityEngine.UI;
 
 namespace Gameplay.UI.Menus.Options
 {
-    // Doesn't inherit from Menu as we don't want to open via MenuManager
-    //  so that we can preserve our back button going straight to the main pause menu.
-    public class OptionsSubmenu : MonoBehaviour
+    public class OptionsSubmenu : Menu
     {
-        [SerializeField] private CanvasGroup _canvasGroup;
         private BaseSetOption[] _optionSetters;
         private static bool _hasChanges = false;
 
@@ -16,52 +13,64 @@ namespace Gameplay.UI.Menus.Options
         private void OnDestroy() => BaseSetOption.OnAnyChanged -= OnAnyOptionChanged;
 
 
-        public void Open()
+        public override void Open(bool selectFirstElement = true)
         {
             _hasChanges = false;
             BaseSetOption.OnAnyChanged += OnAnyOptionChanged;
-            Show();
+            base.Open(selectFirstElement);
         }
         public void ForceClose()
         {
             //LoadAllOptionsFromPrefs();
             CompleteClose(null);
         }
-        public void Close(System.Action onClosedCallback)
+        public override void Close(System.Action onCompleteCallback)
         {
             if (_hasChanges)
             {
                 PopupManager.ShowUnsavedChangesOptionsPanel(null, OnDiscard, OnSave);
 
-                void OnSave() { SaveAllOptionsToPrefs(); CompleteClose(onClosedCallback); }
-                void OnDiscard() { LoadAllOptionsFromPrefs(); CompleteClose(onClosedCallback); }
+                void OnSave() { SaveAllOptionsToPrefs(); CompleteClose(onCompleteCallback); }
+                void OnDiscard() { LoadAllOptionsFromPrefs(); CompleteClose(onCompleteCallback); }
             }
             else
-                CompleteClose(onClosedCallback);
+                CompleteClose(onCompleteCallback);
         }
         private void CompleteClose(System.Action onClosedCallback)
         {
             _hasChanges = false;
             BaseSetOption.OnAnyChanged -= OnAnyOptionChanged;
-            
-            Hide();
-            onClosedCallback?.Invoke();
-        }
 
-        private void Show() => _canvasGroup.Show();
-        private void Hide() => _canvasGroup.Hide();
+            base.Close(onClosedCallback);
+        }
 
 
         public void Init()
         {
             _optionSetters = GetComponentsInChildren<BaseSetOption>();
             InitialiseAllOptions();
+            SetupNavigation();
         }
         private void InitialiseAllOptions()
         {
             for(int i = 0; i < _optionSetters.Length; ++i)
             {
                 _optionSetters[i].Initialise();
+            }
+        }
+        private void SetupNavigation()
+        {
+            if (_optionSetters.Length <= 1)
+                return;
+
+            for(int i = 0; i < _optionSetters.Length; ++i)
+            {
+                if (i == 0)
+                    _optionSetters[i].SetupNavigation(_optionSetters[_optionSetters.Length - 1], _optionSetters[i + 1]);
+                else if (i == _optionSetters.Length - 1)
+                    _optionSetters[i].SetupNavigation(_optionSetters[i - 1], _optionSetters[0]);
+                else
+                    _optionSetters[i].SetupNavigation(_optionSetters[i - 1], _optionSetters[i + 1]);
             }
         }
 

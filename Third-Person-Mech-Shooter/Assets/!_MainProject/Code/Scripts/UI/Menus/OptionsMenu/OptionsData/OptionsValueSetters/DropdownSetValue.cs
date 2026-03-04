@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 namespace Gameplay.UI.Menus.Options
 {
@@ -9,6 +10,7 @@ namespace Gameplay.UI.Menus.Options
     public class DropdownSetValue : BaseSetOption
     {
         [SerializeField] private TMP_Dropdown _dropdown;
+        public override Selectable PrimaryNavigationElement => _dropdown;
 
 
 
@@ -39,6 +41,10 @@ namespace Gameplay.UI.Menus.Options
             _dropdown.AddOptions(_optionsValue.GetDropdownOptions());
             _dropdown.SetValueWithoutNotify(_optionsValue.GetSelectedOptionIndex());
         }
+
+
+        public override void SetupNavigation(BaseSetOption onUp, BaseSetOption onDown) => _dropdown.SetNavigation(null, null, onUp.PrimaryNavigationElement, onDown.PrimaryNavigationElement);
+        
 
 
 #if UNITY_EDITOR

@@ -46,6 +46,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8413270130020991512}
   - component: {fileID: 5895283335030769495}
+  - component: {fileID: 3437858560889203902}
   m_Layer: 5
   m_Name: Slider
   m_TagString: Untagged
@@ -96,9 +97,9 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_HighlightedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
+    m_PressedColor: {r: 0.6, g: 0.6, b: 0.6, a: 1}
+    m_SelectedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -125,6 +126,18 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &3437858560889203902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2934122233446668106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef2277625c7eace4ca7a00205c0a3695, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4138001542278965494
 GameObject:
   m_ObjectHideFlags: 0
@@ -475,6 +488,7 @@ GameObject:
   - component: {fileID: 5954307814589485983}
   - component: {fileID: 2313369897633175373}
   - component: {fileID: 859329309812875166}
+  - component: {fileID: 1734170391210762046}
   m_Layer: 5
   m_Name: SliderValue
   m_TagString: Untagged
@@ -562,9 +576,9 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_HighlightedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
+    m_PressedColor: {r: 0.6, g: 0.6, b: 0.6, a: 1}
+    m_SelectedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -654,6 +668,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _slider: {fileID: 4694771599150883761}
+--- !u!114 &1734170391210762046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7537885563545703130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef2277625c7eace4ca7a00205c0a3695, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1703719147058197096
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -662,6 +688,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1237627700952122691, guid: 33d513f9127bfd140ad618a7cee445e8, type: 3}
+      propertyPath: _selectionNotifiers.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1237627700952122691, guid: 33d513f9127bfd140ad618a7cee445e8, type: 3}
+      propertyPath: '_selectionNotifiers.Array.data[0]'
+      value: 
+      objectReference: {fileID: 3437858560889203902}
+    - target: {fileID: 1237627700952122691, guid: 33d513f9127bfd140ad618a7cee445e8, type: 3}
+      propertyPath: '_selectionNotifiers.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1734170391210762046}
     - target: {fileID: 1746455551506703589, guid: 33d513f9127bfd140ad618a7cee445e8, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -831,5 +869,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e74113553baade48a0c14efa4f422e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _slider: {fileID: 5895283335030769495}
+  Slider: {fileID: 5895283335030769495}
+  SliderInputConnection: {fileID: 859329309812875166}
   _floatOptionValue: {fileID: 0}

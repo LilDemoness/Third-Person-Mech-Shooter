@@ -117,6 +117,17 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 8444446839783858103}
   m_SourcePrefab: {fileID: 100100000, guid: b28efaafebf9cbf49a653e261c805ac8, type: 3}
+--- !u!114 &1260372893916928002 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 859329309812875166, guid: b28efaafebf9cbf49a653e261c805ac8, type: 3}
+  m_PrefabInstance: {fileID: 1914396032457328540}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42e4bfc97a808fe4ba7cde1806abd7d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &5422630789844254923 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5895283335030769495, guid: b28efaafebf9cbf49a653e261c805ac8, type: 3}
@@ -145,5 +156,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a145ba6f7a0bcb54483549fcb3d872c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _slider: {fileID: 5422630789844254923}
+  Slider: {fileID: 5422630789844254923}
+  SliderInputConnection: {fileID: 1260372893916928002}
   _intOptionValue: {fileID: 0}

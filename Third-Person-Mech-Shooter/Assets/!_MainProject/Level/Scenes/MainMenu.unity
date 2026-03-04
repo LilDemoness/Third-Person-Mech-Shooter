@@ -10579,6 +10579,10 @@ PrefabInstance:
       value: '{0} Apply'
       objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -10587,9 +10591,17 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.data[0]._Target
+      value: 
+      objectReference: {fileID: 230000755}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.data[0]._Target
       value: 
       objectReference: {fileID: 230000755}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.data[0]._MemberName
+      value: ApplyFiltersPressed
+      objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.data[0]._MemberName
       value: ApplyFiltersPressed
@@ -12642,6 +12654,10 @@ PrefabInstance:
       value: '{0} Reset'
       objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -12650,9 +12666,17 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.data[0]._Target
+      value: 
+      objectReference: {fileID: 230000755}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.data[0]._Target
       value: 
       objectReference: {fileID: 230000755}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.data[0]._MemberName
+      value: ResetFiltersPressed
+      objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.data[0]._MemberName
       value: ResetFiltersPressed
@@ -13587,7 +13611,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1057724934}
   m_HandleRect: {fileID: 1057724933}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -14649,6 +14673,11 @@ MonoBehaviour:
   - {fileID: 28624007}
   - {fileID: 248659022}
   - {fileID: 29766206}
+  Buttons:
+  - {fileID: 1663241883}
+  - {fileID: 1728428123}
+  - {fileID: 1404966363}
+  _enterChildOnOpen: 1
   _canvasGroup: {fileID: 1069460216}
   _loadingSpinner: {fileID: 1122977560}
 --- !u!1 &1088308946
@@ -15947,6 +15976,10 @@ PrefabInstance:
       value: '{0} Create Lobby'
       objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -15955,9 +15988,17 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.data[0]._Target
+      value: 
+      objectReference: {fileID: 248659022}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.data[0]._Target
       value: 
       objectReference: {fileID: 248659022}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.data[0]._MemberName
+      value: OnCreateButtonPressed
+      objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.data[0]._MemberName
       value: OnCreateButtonPressed
@@ -20355,7 +20396,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _parentContainerMenu: {fileID: 1069460219}
   _associatedChildMenu: {fileID: 29766206}
-  _showOnSelect: 1
+  _showOnSelect: 0
 --- !u!114 &1404966364
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21233,6 +21274,10 @@ PrefabInstance:
       value: '{0} Join'
       objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -21241,9 +21286,17 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.data[0]._Target
+      value: 
+      objectReference: {fileID: 219435611}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.data[0]._Target
       value: 
       objectReference: {fileID: 219435611}
+    - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
+      propertyPath: OnButtonTriggered._PersistentCalls.Array.data[0]._MemberName
+      value: OnJoinWithCodePressed
+      objectReference: {fileID: 0}
     - target: {fileID: 8049085791961118955, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: _onButtonTriggered._PersistentCalls.Array.data[0]._MemberName
       value: OnJoinWithCodePressed
@@ -22930,7 +22983,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _parentContainerMenu: {fileID: 1069460219}
   _associatedChildMenu: {fileID: 28624007}
-  _showOnSelect: 1
+  _showOnSelect: 0
 --- !u!114 &1663241884
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24323,7 +24376,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _parentContainerMenu: {fileID: 1069460219}
   _associatedChildMenu: {fileID: 248659022}
-  _showOnSelect: 1
+  _showOnSelect: 0
 --- !u!114 &1728428124
 MonoBehaviour:
   m_ObjectHideFlags: 0

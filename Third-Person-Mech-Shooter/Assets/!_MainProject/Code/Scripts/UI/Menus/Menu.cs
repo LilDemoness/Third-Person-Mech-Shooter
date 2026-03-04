@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace Gameplay.UI.Menus
 {
@@ -37,7 +38,8 @@ namespace Gameplay.UI.Menus
     public abstract class Menu : MonoBehaviour
     {
         [field: SerializeField] protected CanvasGroup CanvasGroup { get; private set; }
-        [field: SerializeField] protected GameObject FirstSelectedElement { get; private set; }
+        [SerializeField] private Selectable _firstSelectedElement;
+        protected GameObject FirstSelectedElement => _firstSelectedElement.gameObject;
 
         public GameObject NavigationTarget => FirstSelectedElement;
 
@@ -50,9 +52,11 @@ namespace Gameplay.UI.Menus
         // Open this menu.
         public virtual void Open(bool selectFirstElement = true)
         {
+            Debug.Log(this.name + " Select First?: " + selectFirstElement);
+            Show();
+
             if (selectFirstElement)
                 EventSystem.current.SetSelectedGameObject(FirstSelectedElement);
-            Show();
         }
         // Close this menu.
         public virtual void Close(System.Action onCompleteCallback)

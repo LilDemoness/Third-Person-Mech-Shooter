@@ -8,6 +8,7 @@ namespace Gameplay.UI.Menus.Options
     public class SliderInputConnection : MonoBehaviour
     {
         [SerializeField] private SliderSetValue _slider;
+        public Selectable Selectable => _thisInputField;
         private TMP_InputField _thisInputField;
 
 

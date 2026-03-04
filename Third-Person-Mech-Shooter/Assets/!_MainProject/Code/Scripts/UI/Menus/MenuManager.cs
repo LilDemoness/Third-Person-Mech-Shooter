@@ -226,7 +226,20 @@ namespace Gameplay.UI.Menus
 
     public static class MenuManager
     {
-        static MenuManager() => ClearData();
+        static MenuManager()
+        {
+            ClearData();
+            OnActiveMenuChanged += Test;
+        }
+
+        private static void Test()
+        {
+            string outputString = "";
+            for (int i = 0; i < s_openMenus.Count; ++i)
+                outputString += s_openMenus[i].name + (i == s_openMenus.Count - 1 ? "" : ",");
+
+            Debug.Log(outputString);
+        }
 
 
         public static System.Action OnActiveMenuChanged;
@@ -244,7 +257,28 @@ namespace Gameplay.UI.Menus
             Menu parentMenu = componentToTest.transform.parent.GetComponentInParent<Menu>();
 
             if (s_blockingPopups.Count == 0)
-                return parentMenu == SelectedMenu;  // No obstructing popups are open, so directly compare the parent menu to the selected menu.
+            {
+                // No obstructing popups are open, so directly compare the parent menu to the selected menu.
+                if (parentMenu == SelectedMenu)
+                    return true;
+                else
+                {
+                    // Iterate upwards, checking ContainerMenus if we find them and stopping once we don't.
+                    // This allows buttons in the root menu (Shared buttons) to still operate when children are open.
+                    for(int i = s_openMenusCount - 2; i >= 0; --i)
+                    {
+                        if (s_openMenus[i] is not ContainerMenu)
+                            break;
+
+                        // This menu is a container menu. Perform a comparison check.
+                        if (s_openMenus[i] == parentMenu)
+                            return true;
+                    }
+
+                    return false;
+                }
+            }
+
             if (parentMenu == null)
                 return false;   // An object without a menu parent will never be in focus when there is an obstructing popup open.
 
@@ -269,6 +303,8 @@ namespace Gameplay.UI.Menus
         /// <param name="parentMenu"> The parent menu of the menu you wish to open, or null if it doesn't have one.</param>
         public static void SetActiveMenu(Menu menuToSwap, Menu parentMenu)
         {
+            Debug.Log("Set Active Menu: " + menuToSwap.name + " Parent: " + (parentMenu == null ? "NULL" : parentMenu.name));
+
             // Find the index of the parent menu (Our child is one below this, so 'indexToSwap = parentIndex + 1');
             int indexToSwap;
             if (parentMenu != null)
@@ -337,6 +373,8 @@ namespace Gameplay.UI.Menus
 
         public static void OpenChildMenu(Menu childMenu, Menu parentMenu, bool selectFirstElement)
         {
+            Debug.Log("Add Child Menu: " + childMenu.name + ". Parent: " + (parentMenu == null ? "NULL" : parentMenu.name));
+
             if (parentMenu == null)
                 AddChild();
             else
@@ -348,6 +386,7 @@ namespace Gameplay.UI.Menus
                     Debug.Log($"Parent '{parentMenu.name}' is not within the menu hierarchy.");
                     return;
                 }
+                Debug.Log("Closed to Parent Menu");
 
                 // Add the child menu under the parent.
                 AddChild();
@@ -427,6 +466,7 @@ namespace Gameplay.UI.Menus
                 return; // No menus are active for us to close.
 
             int menuIndex = s_openMenusCount - 1;
+            Debug.Log("Close: " + s_openMenus[menuIndex].name);
             s_openMenus[menuIndex].Close(Finish);
 
             void Finish()

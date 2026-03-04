@@ -809,7 +809,7 @@ MonoBehaviour:
   _inputAction: {fileID: 0}
   _inputActionType: 0
   _allowInputWhenNotInFocus: 0
-  _onButtonTriggered:
+  OnButtonTriggered:
     _PersistentCalls: []
   _graphic: {fileID: 1867058845051659252}
   _normalColor: {r: 1, g: 1, b: 1, a: 1}
@@ -1121,6 +1121,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4014501734150995891, guid: 80b6380adbf4136489225a7af5ad2496, type: 3}
+      propertyPath: m_Size
+      value: 0.77472526
+      objectReference: {fileID: 0}
+    - target: {fileID: 4014501734150995891, guid: 80b6380adbf4136489225a7af5ad2496, type: 3}
       propertyPath: m_Value
       value: 1.0000002
       objectReference: {fileID: 0}
@@ -1350,6 +1354,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7862530042830744625, guid: 80b6380adbf4136489225a7af5ad2496, type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8882026484326715269, guid: 80b6380adbf4136489225a7af5ad2496, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8882026484326715269, guid: 80b6380adbf4136489225a7af5ad2496, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8882026484326715269, guid: 80b6380adbf4136489225a7af5ad2496, type: 3}
+      propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

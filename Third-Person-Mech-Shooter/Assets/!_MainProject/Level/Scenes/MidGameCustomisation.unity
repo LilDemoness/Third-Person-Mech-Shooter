@@ -459,10 +459,10 @@ MonoBehaviour:
   _inputAction: {fileID: 0}
   _inputActionType: 0
   _allowInputWhenNotInFocus: 0
-  _onButtonTriggered:
+  OnButtonTriggered:
     _PersistentCalls:
     - _Target: {fileID: 851880779}
-      _MemberName: Hide
+      _MemberName: OnFinishCustomisationPerformed
       _PersistentArguments: []
   _graphic: {fileID: 269585476}
   _normalColor: {r: 1, g: 1, b: 1, a: 1}

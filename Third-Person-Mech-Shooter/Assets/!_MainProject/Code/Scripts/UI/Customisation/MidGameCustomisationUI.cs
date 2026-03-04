@@ -69,5 +69,8 @@ namespace UI.Customisation
             // Allow Non-Relevant Input.
             ClientInput.RemoveActionPrevention(typeof(MidGameCustomisationUI), ALL_ACTIONS_BUT_UI);
         }
+
+
+        public void OnFinishCustomisationPerformed() => Hide();
     }
 }

@@ -8,25 +8,23 @@ namespace Gameplay.UI.Menus.Options
     /// </summary>
     public class SliderSetValueFloat : SliderSetValue
     {
-        [SerializeField] private Slider _slider;
-
         [SerializeField] private FloatOptionValue _floatOptionValue;
         protected override BaseOptionsValue OptionsValue => _floatOptionValue;
 
         public override string GetDisplayValue() => _floatOptionValue.Value.ToString();
-        public override void SetValue(float newValue) => _slider.value = newValue;
+        public override void SetValue(float newValue) => Slider.value = newValue;
 
 
-        private void Awake() => _slider.onValueChanged.AddListener(OnSliderValueChanged);
-        private void OnDestroy() => _slider.onValueChanged.RemoveListener(OnSliderValueChanged);
+        private void Awake() => Slider.onValueChanged.AddListener(OnSliderValueChanged);
+        private void OnDestroy() => Slider.onValueChanged.RemoveListener(OnSliderValueChanged);
 
 
         public override void Initialise()
         {
             if (_floatOptionValue.HasLimits)
             {
-                _slider.minValue = _floatOptionValue.MinValue;
-                _slider.maxValue = _floatOptionValue.MaxValue;
+                Slider.minValue = _floatOptionValue.MinValue;
+                Slider.maxValue = _floatOptionValue.MaxValue;
             }
             else
                 Debug.LogWarning("Float Option without limits attached to a slider. How should we handle this?");
@@ -38,7 +36,7 @@ namespace Gameplay.UI.Menus.Options
         public void OnSliderValueChanged(float newValue) => _floatOptionValue.SetValue(newValue);
         protected override void OnOptionsValueChanged()
         {
-            _slider.SetValueWithoutNotify(_floatOptionValue.Value);
+            Slider.SetValueWithoutNotify(_floatOptionValue.Value);
             base.OnOptionsValueChanged();
         }
 
@@ -60,6 +58,11 @@ namespace Gameplay.UI.Menus.Options
 
     public abstract class SliderSetValue : BaseSetOption
     {
+        [SerializeField] protected Slider Slider;
+        [SerializeField] protected SliderInputConnection SliderInputConnection;
+        public override Selectable PrimaryNavigationElement => Slider;
+
+
         public event System.Action OnUpdateDisplayValue;
         public abstract string GetDisplayValue();
 
@@ -69,6 +72,13 @@ namespace Gameplay.UI.Menus.Options
         {
             OnUpdateDisplayValue?.Invoke();
             base.OnOptionsValueChanged();
+        }
+
+
+        public override void SetupNavigation(BaseSetOption onUp, BaseSetOption onDown)
+        {
+            Slider.SetNavigation(null, null, onUp.PrimaryNavigationElement, onDown.PrimaryNavigationElement);
+            SliderInputConnection.Selectable.SetNavigation(Slider, null, onUp.PrimaryNavigationElement, onDown.PrimaryNavigationElement);
         }
     }
 }

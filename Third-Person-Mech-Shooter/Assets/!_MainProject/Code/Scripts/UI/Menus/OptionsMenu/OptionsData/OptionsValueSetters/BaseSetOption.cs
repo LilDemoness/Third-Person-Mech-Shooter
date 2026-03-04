@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 namespace Gameplay.UI.Menus.Options
 {
@@ -8,6 +9,8 @@ namespace Gameplay.UI.Menus.Options
     /// </summary>
     public abstract class BaseSetOption : MonoBehaviour
     {
+        public abstract Selectable PrimaryNavigationElement { get; }
+
         protected abstract BaseOptionsValue OptionsValue { get; }
         public static event System.Action OnAnyChanged;
 
@@ -27,5 +30,8 @@ namespace Gameplay.UI.Menus.Options
         {
             OnAnyChanged?.Invoke();
         }
+
+
+        public abstract void SetupNavigation(BaseSetOption onUp, BaseSetOption onDown);
     }
 }

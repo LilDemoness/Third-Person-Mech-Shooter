@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Gameplay.UI.Menus.Options
 {
-    public class OptionsMenu : Menu
+    public class OptionsMenu : ContainerMenu
     {
         [Header("Submenus")]
         [SerializeField] private OptionsSubmenu _gameplayMenu;

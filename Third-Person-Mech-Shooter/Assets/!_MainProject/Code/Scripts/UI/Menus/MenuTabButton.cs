@@ -24,7 +24,7 @@ namespace Gameplay.UI.Menus
     }*/
 
     [RequireComponent(typeof(Button))]
-    public class MenuTabButton : MonoBehaviour, ISelectHandler, IPointerClickHandler
+    public class MenuTabButton : MonoBehaviour, ISelectHandler
     {
         /* Input:
          * - Select:            Enter Submenu
@@ -44,10 +44,14 @@ namespace Gameplay.UI.Menus
 
         protected void Awake()
         {
+            GetComponent<Button>().onClick.AddListener(OnButtonClicked);
+
             // Subscribe to navigation events.
         }
         protected void OnDestroy()
         {
+            GetComponent<Button>().onClick.RemoveListener(OnButtonClicked);
+
             // Unsubscribe from navigation events.
         }
 
@@ -57,7 +61,7 @@ namespace Gameplay.UI.Menus
             if (_showOnSelect)
                 _parentContainerMenu.ShowChild(_associatedChildMenu);
         }
-        public void OnPointerClick(PointerEventData _)
+        public void OnButtonClicked()
         {
             _parentContainerMenu.EnterChild(_associatedChildMenu);
         }

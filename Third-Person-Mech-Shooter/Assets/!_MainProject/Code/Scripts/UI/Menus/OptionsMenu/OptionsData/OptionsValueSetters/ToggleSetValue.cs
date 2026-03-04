@@ -9,6 +9,8 @@ namespace Gameplay.UI.Menus.Options
     public class ToggleSetValue : BaseSetOption
     {
         [SerializeField] private Toggle _toggle;
+        public override Selectable PrimaryNavigationElement => _toggle;
+
 
         [SerializeField] private BoolOptionValue _boolOptionValue;
         protected override BaseOptionsValue OptionsValue => _boolOptionValue;
@@ -23,6 +25,12 @@ namespace Gameplay.UI.Menus.Options
         {
             _toggle.SetIsOnWithoutNotify(_boolOptionValue.Value);
             base.OnOptionsValueChanged();
+        }
+
+
+        public override void SetupNavigation(BaseSetOption onUp, BaseSetOption onDown)
+        {
+            _toggle.SetNavigation(null, null, onUp.PrimaryNavigationElement, onDown.PrimaryNavigationElement);
         }
     }
 }
