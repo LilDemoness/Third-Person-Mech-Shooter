@@ -12,8 +12,6 @@ namespace Gameplay.UI.Menus
 {
     public class UIProfileSelector : Menu
     {
-        [SerializeField] private CanvasGroup _canvasGroup;
-
         [Space(5)]
         [SerializeField] private ProfileListItemUI _profileListItemPrototype;
         [SerializeField] private TMP_InputField _newProfileField;

@@ -207,6 +207,7 @@ MonoBehaviour:
   - {fileID: 4995765814952291909}
   - {fileID: 1948129987139202708}
   _enterChildOnOpen: 0
+  _childrenCanBeClosed: 1
   _gameplayMenu: {fileID: 3935778370281774925}
   _videoMenu: {fileID: 7118513821573843691}
   _audioMenu: {fileID: 4305097790262730380}

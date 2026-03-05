@@ -140,7 +140,7 @@ namespace Gameplay.UI.Menus
 
 
 
-        public void OpenEditFiltersUI() => MenuManager.OpenChildMenu(_customiseFiltersMenu, this, true);
-        public void OpenJoinCodePopup() => MenuManager.OpenChildMenu(_joinLobbyWithCodeMenu, this, true);
+        public void OpenEditFiltersUI() => MenuManager.OpenChildMenu(_customiseFiltersMenu, null, this);
+        public void OpenJoinCodePopup() => MenuManager.OpenChildMenu(_joinLobbyWithCodeMenu, null, this);
     }
 }

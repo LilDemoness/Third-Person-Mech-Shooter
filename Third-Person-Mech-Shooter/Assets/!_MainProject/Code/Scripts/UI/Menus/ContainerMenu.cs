@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace Gameplay.UI.Menus
 {
@@ -34,21 +35,27 @@ namespace Gameplay.UI.Menus
         [SerializeField] private bool _enterChildOnOpen = true;
         private int _previouslySelectedChildIndex = 0;
 
+        [SerializeField] private bool _childrenCanBeClosed = false;
+        public bool ChildrenCanBeClosed => _childrenCanBeClosed;
 
-        public override void Show()
+
+        public override void Open(bool selectFirstElement = true)
         {
-            base.Show();
+            Show();
             HideAllChildren();
 
-            EventSystem.current.SetSelectedGameObject(Buttons[_previouslySelectedChildIndex].gameObject);
 
-            //if (_enterChildOnOpen)
-            //    EnterChild(Children[_previouslySelectedChildIndex]);
-            //else
+            if (_enterChildOnOpen)
+                EnterChild(Children[_previouslySelectedChildIndex]);
+            else if (selectFirstElement)
+                EventSystem.current.SetSelectedGameObject(Buttons[_previouslySelectedChildIndex].gameObject);
+            else
+                Debug.Log("Don't select first element");
             //    ShowChild(Children[_previouslySelectedChildIndex]);
         }
         public override void Close(System.Action onCompleteCallback)
         {
+            Debug.Log("Close");
             Hide();
             HideAllChildren();
             _previouslySelectedChildIndex = 0;
@@ -64,6 +71,7 @@ namespace Gameplay.UI.Menus
         // Note: This was causing issues with the LobbyBrowserUI due to calling immediately before EnterChild().
         public virtual void ShowChild(int childIndex)
         {
+            Debug.Log("Show Child");
             _previouslySelectedChildIndex = childIndex;
             HideAllChildren();
             Children[childIndex].Show();
@@ -72,8 +80,9 @@ namespace Gameplay.UI.Menus
         public void EnterChild(Menu childMenu) => EnterChild(GetChildIndex(childMenu));
         public virtual void EnterChild(int childIndex)
         {
+            Debug.Log("Enter Child");
             _previouslySelectedChildIndex = childIndex;
-            MenuManager.OpenChildMenu(Children[childIndex], this, true);
+            MenuManager.OpenChildMenu(Children[childIndex], Buttons[childIndex].GetComponent<Button>(), this);
         }
 
 

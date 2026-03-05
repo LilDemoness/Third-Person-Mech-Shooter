@@ -39,7 +39,7 @@ namespace Gameplay.UI.Menus
     {
         [field: SerializeField] protected CanvasGroup CanvasGroup { get; private set; }
         [SerializeField] private Selectable _firstSelectedElement;
-        protected GameObject FirstSelectedElement => _firstSelectedElement.gameObject;
+        protected GameObject FirstSelectedElement => _firstSelectedElement?.gameObject;
 
         public GameObject NavigationTarget => FirstSelectedElement;
 
@@ -57,6 +57,11 @@ namespace Gameplay.UI.Menus
 
             if (selectFirstElement)
                 EventSystem.current.SetSelectedGameObject(FirstSelectedElement);
+        }
+        public virtual void Reopen(Selectable targetSelectable = null)
+        {
+            Show();
+            EventSystem.current.SetSelectedGameObject(targetSelectable != null ? targetSelectable.gameObject : FirstSelectedElement);
         }
         // Close this menu.
         public virtual void Close(System.Action onCompleteCallback)

@@ -162,17 +162,17 @@ namespace Gameplay.GameState
         {
             _lobbyUIMediator.QuickJoinRequest(ignoreFilters: true);
         }
-        public void OnPlayGamePressed()
+        public void OnPlayGamePressed(Button sender)
         {
-            MenuManager.SetActiveMenu(_playGameMenu);
+            MenuManager.SetActiveMenu(_playGameMenu, sender);
         }
         public void OnArmouryPressed()
         {
 
         }
-        public void OnProfilePressed()
+        public void OnProfilePressed(Button sender)
         {
-            MenuManager.SetActiveMenu(_profileMenu);
+            MenuManager.SetActiveMenu(_profileMenu, sender);
         }
         public void OnOptionsPressed()
         {

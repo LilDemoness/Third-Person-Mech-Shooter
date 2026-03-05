@@ -39,7 +39,7 @@ namespace Gameplay.UI.Menus.Pause
         {
             base.Show();
 
-            if (!_isOpen)
+            if (!_isOpen && _resumeAfterFrameCoroutine == null)
             {
                 // Perform game pausing logic here.
                 _isOpen = true;
@@ -54,15 +54,26 @@ namespace Gameplay.UI.Menus.Pause
         {
             base.Hide();
 
-            if (_isOpen)
+            if (_isOpen && _resumeAfterFrameCoroutine == null)
             {
-                // Perform game resuming logic here.
-                _isOpen = false;
-
-                Cursor.lockState = _previousLockMode;
-
-                ClientInput.RemoveActionPrevention(typeof(PauseMenu), LOCKING_TYPES);
+                // Properly resume the game after a frame to prevent immediately re-opening cause we receive the input for PauseGame after we were closed.
+                _resumeAfterFrameCoroutine = StartCoroutine(ResumeAfterFrame());
             }
+        }
+        private Coroutine _resumeAfterFrameCoroutine;
+        private System.Collections.IEnumerator ResumeAfterFrame()
+        {
+            yield return null;
+
+            // Perform game resuming logic here.
+            _isOpen = false;
+
+            Cursor.lockState = _previousLockMode;
+
+            ClientInput.RemoveActionPrevention(typeof(PauseMenu), LOCKING_TYPES);
+            
+            // Reset the coroutine to prevent it getting stack with a invalid but non-null value.
+            _resumeAfterFrameCoroutine = null;
         }
 
 
@@ -70,19 +81,16 @@ namespace Gameplay.UI.Menus.Pause
         {
             if (!_isOpen)
                 PauseGame();
-            else if (this.IsActiveMenu())
-                ResumeGame();
         }
 
 
-        public void PauseGame() => MenuManager.SetActiveMenu(this);
+        public void PauseGame() => MenuManager.SetActiveMenu(this, null);
         public void ResumeGame()
         {
-            if (!MenuManager.CloseMenu(this, true))
-                Debug.LogError("Failed to close PauseMenu");
+            MenuManager.CloseMenu(this);
         }
 
-        public void ShowOptionsMenu() => MenuManager.OpenChildMenu(_optionsMenu, this, selectFirstElement: true);
+        public void ShowOptionsMenu(UnityEngine.UI.Selectable sender) => MenuManager.OpenChildMenu(_optionsMenu, sender, this);
 
         public void OnExitToMainMenuPressed() => _connectionManager.RequestShutdown();
         public void OnExitToDesktopPressed() => _quitApplicationPub.Publish(new QuitApplicationMessage());
