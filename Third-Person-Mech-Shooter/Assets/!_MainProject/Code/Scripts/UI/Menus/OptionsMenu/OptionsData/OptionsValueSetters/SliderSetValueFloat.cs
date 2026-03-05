@@ -15,8 +15,16 @@ namespace Gameplay.UI.Menus.Options
         public override void SetValue(float newValue) => Slider.value = newValue;
 
 
-        private void Awake() => Slider.onValueChanged.AddListener(OnSliderValueChanged);
-        private void OnDestroy() => Slider.onValueChanged.RemoveListener(OnSliderValueChanged);
+        protected override void Awake()
+        {
+            base.Awake();
+            Slider.onValueChanged.AddListener(OnSliderValueChanged);
+        }
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            Slider.onValueChanged.RemoveListener(OnSliderValueChanged);
+        }
 
 
         public override void Initialise()

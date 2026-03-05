@@ -12,5 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0591fa9505fd035409a09fe581f5f371, type: 3}
   m_Name: UseVSync
   m_EditorClassIdentifier: 
+  <Title>k__BackingField: Use VSync
+  <Description>k__BackingField: Synchronises the game's framerate to the monitor's
+    refresh rate.
   <PrefsIdentifier>k__BackingField: UseVSync
   <DefaultValue>k__BackingField: 1

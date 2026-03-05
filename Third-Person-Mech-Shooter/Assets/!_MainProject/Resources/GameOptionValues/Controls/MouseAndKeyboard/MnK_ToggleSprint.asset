@@ -12,5 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0591fa9505fd035409a09fe581f5f371, type: 3}
   m_Name: MnK_ToggleSprint
   m_EditorClassIdentifier: 
+  <Title>k__BackingField: Toggle Sprint
+  <Description>k__BackingField: 'When enabled, you press the Sprint key to start
+    sprinting, then again to stop.
+
+    When disabled, you must hold the Sprint key
+    to sprint, and release to stop.'
   <PrefsIdentifier>k__BackingField: MnK_ToggleSprint
   <DefaultValue>k__BackingField: 0

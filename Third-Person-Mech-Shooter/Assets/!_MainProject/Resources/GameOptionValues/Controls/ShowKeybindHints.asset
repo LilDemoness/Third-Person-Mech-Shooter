@@ -12,5 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0591fa9505fd035409a09fe581f5f371, type: 3}
   m_Name: ShowKeybindHints
   m_EditorClassIdentifier: 
+  <Title>k__BackingField: Show Keybind Hints
+  <Description>k__BackingField: Shows icons for the required input next to corresponding
+    actions on the in-game UI.
   <PrefsIdentifier>k__BackingField: ShowKeybindHints
   <DefaultValue>k__BackingField: 1

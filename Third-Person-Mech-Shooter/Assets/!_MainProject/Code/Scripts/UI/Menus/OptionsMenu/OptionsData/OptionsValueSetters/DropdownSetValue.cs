@@ -19,8 +19,16 @@ namespace Gameplay.UI.Menus.Options
         protected override BaseOptionsValue OptionsValue => (_optionsValue as BaseOptionsValue);
 
 
-        private void Awake() => _dropdown.onValueChanged.AddListener(OnValueChanged);
-        private void OnDestroy() => _dropdown.onValueChanged.RemoveListener(OnValueChanged);
+        protected override void Awake()
+        {
+            base.Awake();
+            _dropdown.onValueChanged.AddListener(OnValueChanged);
+        }
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            _dropdown.onValueChanged.RemoveListener(OnValueChanged);
+        }
 
         public override void Initialise()
         {

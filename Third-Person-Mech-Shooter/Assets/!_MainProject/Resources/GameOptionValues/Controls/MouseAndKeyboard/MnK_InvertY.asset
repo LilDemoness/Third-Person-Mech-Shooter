@@ -12,5 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0591fa9505fd035409a09fe581f5f371, type: 3}
   m_Name: MnK_InvertY
   m_EditorClassIdentifier: 
+  <Title>k__BackingField: Invert Mouse Y
+  <Description>k__BackingField: Inverts the vertical axis when controlling the camera
+    with a mouse.
   <PrefsIdentifier>k__BackingField: MnK_InvertY
   <DefaultValue>k__BackingField: 0

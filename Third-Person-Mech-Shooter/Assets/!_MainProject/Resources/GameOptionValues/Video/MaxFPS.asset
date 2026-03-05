@@ -12,6 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b39e01613f58c04b934d251529cf8f5, type: 3}
   m_Name: MaxFPS
   m_EditorClassIdentifier: 
+  <Title>k__BackingField: Maximum Framerate
+  <Description>k__BackingField: 'Limits the number of frames per second to the set
+    value.
+
+    Leave at 0 for no limit.'
   <PrefsIdentifier>k__BackingField: MaxFPS
   <DefaultValue>k__BackingField: 0
   m_minValue: 0

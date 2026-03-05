@@ -12,4 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc8c4f508d8fbde4585be74f3ac53a0b, type: 3}
   m_Name: ScreenResolution
   m_EditorClassIdentifier: 
-  PrefsIdentifier: ScreenResolution
+  <Title>k__BackingField: Resolution
+  <Description>k__BackingField: Changes the game Resolution.
+  <PrefsIdentifier>k__BackingField: 

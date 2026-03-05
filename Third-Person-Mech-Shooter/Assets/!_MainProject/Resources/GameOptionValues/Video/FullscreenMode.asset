@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb24c8617c592fe4b90cd4e4c0367b9f, type: 3}
   m_Name: FullscreenMode
   m_EditorClassIdentifier: 
+  <Title>k__BackingField: Fullscreen Mode
+  <Description>k__BackingField: Changes the fullscreen mode.
   <PrefsIdentifier>k__BackingField: FullscreenMode
   <DefaultValue>k__BackingField: 0

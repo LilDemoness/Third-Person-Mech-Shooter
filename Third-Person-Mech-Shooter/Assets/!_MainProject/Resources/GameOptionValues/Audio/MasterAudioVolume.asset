@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ccac8c077c9eff84c9e5c17979ef3168, type: 3}
   m_Name: MasterAudioVolume
   m_EditorClassIdentifier: 
+  <Title>k__BackingField: Master Volume
+  <Description>k__BackingField: Controls the master volume of the game, affecting
+    all audio effects.
   <PrefsIdentifier>k__BackingField: MasterAudio
   <DefaultValue>k__BackingField: 1
   m_MinValue: 0
   m_MaxValue: 1
   m_roundingValue: 0.01
   _audioMixer: {fileID: 24100000, guid: f38bd0ff8e45e3c468d2ae0d7ff96b21, type: 2}
-  _volumeIdentifierName: MasterVolume
+  _volumeIdentifier: 0

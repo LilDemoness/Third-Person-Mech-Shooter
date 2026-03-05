@@ -16,8 +16,16 @@ namespace Gameplay.UI.Menus.Options
         protected override BaseOptionsValue OptionsValue => _boolOptionValue;
 
 
-        private void Awake() => _toggle.onValueChanged.AddListener(OnValueChanged);
-        private void OnDestroy() => _toggle.onValueChanged.RemoveListener(OnValueChanged);
+        protected override void Awake()
+        {
+            base.Awake();
+            _toggle.onValueChanged.AddListener(OnValueChanged);
+        }
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            _toggle.onValueChanged.RemoveListener(OnValueChanged);
+        }
 
 
         public void OnValueChanged(bool newValue) => _boolOptionValue.SetValue(newValue);

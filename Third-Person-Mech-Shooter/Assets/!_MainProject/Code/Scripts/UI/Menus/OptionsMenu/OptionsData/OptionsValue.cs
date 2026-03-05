@@ -13,6 +13,9 @@ public abstract class BaseOptionsValue : ScriptableObject
 {
     [field: NonSerialized] public bool Initialised { get; protected set; }
 
+    [field: SerializeField] public string Title { get; private set; } 
+    [field: SerializeField] [field: TextArea(2, 10)] public string Description { get; private set; } 
+
 
     public virtual void Init()
     {
