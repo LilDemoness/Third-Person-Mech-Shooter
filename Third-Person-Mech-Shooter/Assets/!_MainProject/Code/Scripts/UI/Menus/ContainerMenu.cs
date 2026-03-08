@@ -1,39 +1,18 @@
-﻿using UnityEngine;
+﻿using Cysharp.Threading.Tasks;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Gameplay.UI.Menus
 {
-    /*public class ContainerMenu : Menu
-    {
-        [SerializeField] private Menu[] _subMenus;
-
-
-        public override void Show()
-        {
-            base.Show();
-            ShowDefaultSubmenu();
-        }
-
-        public void ShowSubmenu(int submenuIndex) => ShowSubmenu(_subMenus[submenuIndex]);
-        public void ShowSubmenu(Menu submenu)
-        {
-            HideAllSubmenus();
-            MenuManager.SetActiveMenu(submenu.gameObject, null, false, false);
-        }
-        private void ShowDefaultSubmenu() => ShowSubmenu(_subMenus[0]);
-        private void HideAllSubmenus()
-        {
-            for(int i = 0; i < _subMenus.Length; ++i)
-                _subMenus[i].Hide();
-        }
-    }*/
     public abstract class ContainerMenu : Menu
     {
         public Menu[] Children;
         public MenuTabButton[] Buttons;
         [SerializeField] private bool _enterChildOnOpen = true;
         private int _previouslySelectedChildIndex = 0;
+        protected Menu PreviouslySelectedChild => Children[_previouslySelectedChildIndex];
+
 
         [SerializeField] private bool _childrenCanBeClosed = false;
         public bool ChildrenCanBeClosed => _childrenCanBeClosed;
@@ -53,14 +32,14 @@ namespace Gameplay.UI.Menus
                 Debug.Log("Don't select first element");
             //    ShowChild(Children[_previouslySelectedChildIndex]);
         }
-        public override void Close(System.Action onCompleteCallback)
+        public override async UniTask<bool> Close()
         {
             Debug.Log("Close");
             Hide();
             HideAllChildren();
             _previouslySelectedChildIndex = 0;
 
-            onCompleteCallback?.Invoke();
+            return true;
         }
 
 
@@ -71,6 +50,9 @@ namespace Gameplay.UI.Menus
         // Note: This was causing issues with the LobbyBrowserUI due to calling immediately before EnterChild().
         public virtual void ShowChild(int childIndex)
         {
+            if (!CanHideActiveChild())
+                return;
+
             Debug.Log("Show Child");
             _previouslySelectedChildIndex = childIndex;
             HideAllChildren();
@@ -86,6 +68,11 @@ namespace Gameplay.UI.Menus
         }
 
 
+        /// <summary>
+        ///     Returns true if this ContainerMenu can hide its child and show another.<br/>
+        ///     Does not affect entering children, only showing.
+        /// </summary>
+        protected virtual bool CanHideActiveChild() => true;
         private void HideAllChildren()
         {
             for (int i = 0; i < Children.Length; ++i)

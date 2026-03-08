@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Gameplay.UI.Menus.Options
@@ -67,11 +68,14 @@ namespace Gameplay.UI.Menus.Options
 
             base.Show();
         }
-        public override void Hide()
+        public override async UniTask<bool> Close()
         {
             CloseAllMenus();
-            SetActiveMenu(_gameplayMenu);
-            base.Hide();
+            bool success = await SetActiveMenu(_gameplayMenu);
+            if (!success)
+                return false;
+
+            return await base.Close();
         }
 
 
@@ -88,21 +92,21 @@ namespace Gameplay.UI.Menus.Options
             // Null our current menu as none are now open.
             _currentOpenMenu = null;
         }
-        private void SetActiveMenu(OptionsSubmenu optionsSubmenu)
+        private async UniTask<bool> SetActiveMenu(OptionsSubmenu optionsSubmenu)
         {
             // If we have an open menu, close it.
-            if (_currentOpenMenu)
+            if (_currentOpenMenu != null)
             {
-                _currentOpenMenu.Close(() => FinishSetActiveMenu(optionsSubmenu));
+                bool success = await _currentOpenMenu.Close();
+                if (!success)
+                    return false;
             }
-            else
-                FinishSetActiveMenu(optionsSubmenu);
-        }
-        private void FinishSetActiveMenu(OptionsSubmenu optionsSubmenu)
-        {
+
             // Open our desired menu and cache it.
             _currentOpenMenu = optionsSubmenu;
             optionsSubmenu.Open();
+
+            return true;
         }
 
 
@@ -112,16 +116,19 @@ namespace Gameplay.UI.Menus.Options
         }
 
 
+        protected override bool CanHideActiveChild() => PreviouslySelectedChild == null || !(PreviouslySelectedChild as OptionsSubmenu).HasChanges;
+
+
         #region UI Button Functions
 
         #region Open Menu Button Functions
 
-        public void OpenGameplayMenu() => SetActiveMenu(_gameplayMenu);
-        public void OpenVideoMenu() => SetActiveMenu(_videoMenu);
-        public void OpenAudioMenu() => SetActiveMenu(_audioMenu);
-        public void OpenControlsMenu() => SetActiveMenu(_controlsMenu);
-        public void OpenKeybindingsMenu() => SetActiveMenu(_keybindingsMenu);
-        public void OpenAccessibilityMenu() => SetActiveMenu(_accessibilityMenu);
+        public async UniTaskVoid OpenGameplayMenu()         => await SetActiveMenu(_gameplayMenu);
+        public async UniTaskVoid OpenVideoMenu()            => await SetActiveMenu(_videoMenu);
+        public async UniTaskVoid OpenAudioMenu()            => await SetActiveMenu(_audioMenu);
+        public async UniTaskVoid OpenControlsMenu()         => await SetActiveMenu(_controlsMenu);
+        public async UniTaskVoid OpenKeybindingsMenu()      => await SetActiveMenu(_keybindingsMenu);
+        public async UniTaskVoid OpenAccessibilityMenu()    => await SetActiveMenu(_accessibilityMenu);
 
         #endregion
 

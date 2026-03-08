@@ -1,4 +1,5 @@
-﻿using Gameplay.UI.Popups;
+﻿using Cysharp.Threading.Tasks;
+using Gameplay.UI.Popups;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +9,7 @@ namespace Gameplay.UI.Menus.Options
     {
         private BaseSetOption[] _optionSetters;
         private static bool _hasChanges = false;
+        public bool HasChanges => _hasChanges;
 
 
         private void OnDestroy() => BaseSetOption.OnAnyChanged -= OnAnyOptionChanged;
@@ -22,26 +24,35 @@ namespace Gameplay.UI.Menus.Options
         public void ForceClose()
         {
             //LoadAllOptionsFromPrefs();
-            CompleteClose(null);
+            base.Close().Forget();
         }
-        public override void Close(System.Action onCompleteCallback)
+        public override async UniTask<bool> Close()
         {
+            Debug.Log("Try Close: " + _hasChanges);
             if (_hasChanges)
             {
-                PopupManager.ShowUnsavedChangesOptionsPanel(null, OnDiscard, OnSave);
+                bool? success = null;
+                PopupManager.ShowUnsavedChangesOptionsPanel(OnCancel, OnDiscard, OnSave);
+                await UniTask.WaitUntil(() => success.HasValue);
 
-                void OnSave() { SaveAllOptionsToPrefs(); CompleteClose(onCompleteCallback); }
-                void OnDiscard() { LoadAllOptionsFromPrefs(); CompleteClose(onCompleteCallback); }
+                if (!success.Value)
+                    return false;   // Closing was cancelled.
+
+                // Closing successfully completed.
+                await base.Close();
+                return true;
+
+                void OnCancel() => success = false;
+                void OnDiscard() { LoadAllOptionsFromPrefs(); success = true; }
+                void OnSave() { SaveAllOptionsToPrefs(); success = true; }
             }
             else
-                CompleteClose(onCompleteCallback);
-        }
-        private void CompleteClose(System.Action onClosedCallback)
-        {
-            _hasChanges = false;
-            BaseSetOption.OnAnyChanged -= OnAnyOptionChanged;
-
-            base.Close(onClosedCallback);
+            {
+                _hasChanges = false;
+                BaseSetOption.OnAnyChanged -= OnAnyOptionChanged;
+                await base.Close();
+                return true;
+            }
         }
 
 

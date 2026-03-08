@@ -71,8 +71,8 @@ namespace Gameplay.UI.Popups
             // If we're obstructing input, achieve this by opening through the MenuManager. Otherwise, show normally.
             if (obstructInput)
                 MenuManager.CreatePopup(this);
-            else
-                Open();
+            
+            Open();
         }
 
 
@@ -143,6 +143,9 @@ namespace Gameplay.UI.Popups
                 else
                     selectableChildren[i].SetNavigation(onLeft: selectableChildren[i - 1], onRight: selectableChildren[i + 1]);
             }
+
+            // Select the first button.
+            UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(selectableChildren[0].gameObject);
         }
         private void CleanupButtons()
         {

@@ -1,4 +1,5 @@
 ﻿using System;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -64,10 +65,10 @@ namespace Gameplay.UI.Menus
             EventSystem.current.SetSelectedGameObject(targetSelectable != null ? targetSelectable.gameObject : FirstSelectedElement);
         }
         // Close this menu.
-        public virtual void Close(System.Action onCompleteCallback)
+        public virtual async UniTask<bool> Close()
         {
             Hide();
-            onCompleteCallback?.Invoke();
+            return true;
         }
 
 

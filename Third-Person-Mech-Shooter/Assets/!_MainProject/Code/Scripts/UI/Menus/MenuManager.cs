@@ -1,230 +1,13 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Cysharp.Threading.Tasks;
 
 namespace Gameplay.UI.Menus
 {
-    /*public static class MenuManager
-    {
-        // Back Button Handling.
-        private static Stack<GameObject> _previousRootButtonSelections;
-        private static Stack<GameObject> _previousMenus;
-        private static GameObject _currentMenuSelection;
-
-        public static GameObject CurrentMenu => _currentMenuSelection;
-        public static bool HasBackButtonTarget => _previousMenus.TryPeek(out _);
-
-
-        public static event System.Action OnActiveMenuChanged;
-
-
-        static MenuManager()
-        {
-            _previousRootButtonSelections = new Stack<GameObject>();
-            _previousMenus = new Stack<GameObject>();
-        }
-
-
-        public static void SetActiveMenu(Menu menuToEnable, GameObject sender = null, bool clearStacks = false, bool disablePrevious = true) => SetActiveMenu(menuToEnable.gameObject, sender, clearStacks, disablePrevious);
-        public static void SetActivePopup(Menu menuToEnable) => SetActiveMenu(menuToEnable.gameObject, null, false, false);
-        public static void SetActivePopup(Menu menuToEnable, GameObject sender = null, bool clearStacks = false) => SetActiveMenu(menuToEnable.gameObject, sender, clearStacks, false);
-        public static void SetActiveMenu(GameObject menuToEnable, GameObject sender = null, bool clearStacks = false, bool disablePrevious = true)
-        {
-            // Disable Previous Menu.
-            if (disablePrevious && _currentMenuSelection)
-                DisableMenu(_currentMenuSelection);
-
-            // Update Back Button Progression.
-            if (!clearStacks)
-            {
-                if (_currentMenuSelection != null)
-                {
-                    _previousMenus.Push(_currentMenuSelection);
-                    //if (sender != null)
-                        _previousRootButtonSelections.Push(sender);
-                }
-            }
-            _currentMenuSelection = menuToEnable;
-
-            // Clear stacks if desired.
-            if (clearStacks)
-            {
-                _previousRootButtonSelections.Clear();
-                _previousMenus.Clear();
-            }
-
-            // Enable Desired Menu.
-            EnableMenu(menuToEnable);
-
-            // Notify listeners that we've changed menu.
-            OnActiveMenuChanged?.Invoke();
-        }
-        public static void ReturnToPreviousMenu()
-        {
-            // Disable Current Menu.
-            if (_currentMenuSelection)
-                DisableMenu(_currentMenuSelection);
-            // Enable Desired Menu.
-            GameObject menuToEnable = _previousMenus.Pop(); // Retrieve desired menu.
-            EnableMenu(menuToEnable);
-
-            // Allow for Back Button Progression to submenus of this menu.
-            _currentMenuSelection = menuToEnable;
-
-            // Set the selected object to the selection when we left the menu we've returned to.
-            EventSystem.current.SetSelectedGameObject(_previousRootButtonSelections.Pop());
-
-            // Notify listeners that we've changed menu.
-            OnActiveMenuChanged?.Invoke();
-        }
-
-
-        public static bool TryReturnToMenu(Menu menu) => TryReturnToMenu(menu.gameObject);
-        public static bool TryReturnToMenu(GameObject menu)
-        {
-            if (CurrentMenu == menu)
-                return true;
-
-            // Check if our menu was previously open.
-            if (!_previousMenus.Contains(menu))
-                return false;
-
-            // Our desired menu is one of our previous, so close all menus until we reach it, then show it.
-            for(int i = 0; i < _previousMenus.Count; ++i)
-            {
-                GameObject menuToClose = _previousMenus.Pop();
-                GameObject previousButtonSelection = _previousRootButtonSelections.Pop();
-
-                if (menuToClose == menu)
-                {
-                    // Open the desired menu.
-                    _currentMenuSelection = menu;
-                    EnableMenu(menu);
-
-                    // Set the selected object to the selection when we left the menu we've returned to.
-                    EventSystem.current.SetSelectedGameObject(previousButtonSelection);
-
-                    // Notify listeners that we've changed menu.
-                    OnActiveMenuChanged?.Invoke();
-                    return true;
-                }
-                else
-                    DisableMenu(menuToClose);
-            }
-
-            throw new System.Exception($".Contains() check returned true, but menu '{menu.name}' was not found in stack.");
-        }
-
-        public static bool TryCloseMenu(Menu menu) => TryCloseMenu(menu.gameObject);
-        public static bool TryCloseMenu(GameObject menu)
-        {
-            // Close menus until we reach our desired one to close, which we also close.
-            if (_currentMenuSelection == menu)
-            {
-                DisableMenu(_currentMenuSelection);
-            }
-            else
-            {
-                // Check if our menu was previously open.
-                if (!_previousMenus.Contains(menu))
-                    return false;
-
-                // Disable the current menu.
-                DisableMenu(_currentMenuSelection);
-
-                for (int i = 0; i < _previousMenus.Count; ++i)
-                {
-                    // Remove this menu from the stacks.
-                    GameObject menuToClose = _previousMenus.Pop();
-                    _previousRootButtonSelections.Pop();
-
-                    // Disable this menu.
-                    DisableMenu(menuToClose);
-
-                    if (menuToClose == menu)
-                        break;  // We've reached the menu we wanted to close, so stop closing.
-                }
-            }
-
-
-            // Open the menu previous to the one we closed (If one exists).
-            if (_previousMenus.TryPop(out GameObject menuToOpen))
-            {
-                Debug.Log("Menu To Open: " + menuToOpen);
-                _currentMenuSelection = menuToOpen;
-                EnableMenu(menuToOpen);
-
-                // Set the selected object to the selection when we left the menu we've returned to.
-                if (_previousRootButtonSelections.TryPop(out GameObject desiredButtonSelection))
-                    EventSystem.current.SetSelectedGameObject(desiredButtonSelection);
-            }
-            else
-                _currentMenuSelection = null;
-
-            // Notify listeners that we've changed menu.
-            OnActiveMenuChanged?.Invoke();
-            return true;
-        }
-
-
-        // Shows/Enables the desired menu as applicable.
-        private static void EnableMenu(GameObject menuToEnable)
-        {
-            if (menuToEnable.TryGetComponent<Menu>(out Menu subMenu))
-                subMenu.Show();
-            else
-                menuToEnable.SetActive(true);
-        }
-        // Hides/Disables the desired menu as applicable.
-        private static void DisableMenu(GameObject menuToDisable)
-        {
-            if (menuToDisable.TryGetComponent<Menu>(out Menu subMenu))
-                subMenu.Hide();
-            else
-                menuToDisable.SetActive(false);
-        }
-
-
-
-        /// <summary>
-        ///     Returns true if this menu is the currently active menu.
-        /// </summary>
-        public static bool IsActiveMenu(this Menu menu) => menu.gameObject == CurrentMenu;
-
-        /// <summary>
-        ///     Returns true if the passed component's parent menu is the active menu, or if there is no active menu. Otherwise, false.
-        /// </summary>
-        public static bool IsInActiveMenu(this Component component)
-        {
-            //if (CurrentMenu == null)
-            //    return true;
-
-            // Try Find first menu through parents.
-            if (!component.TryGetComponentThroughParents<Menu>(out Menu closestParentMenu))
-            //    return false;   // Not within a menu.
-                return CurrentMenu == null;   // Not within a menu.
-
-            // Compare the component's parent menu with the active menu.
-            return closestParentMenu.gameObject == CurrentMenu;
-        }
-
-
-        public static void ClearData()
-        {
-            Debug.Log("Clear Data");
-
-            _currentMenuSelection = null;
-            _previousRootButtonSelections.Clear();
-            _previousMenus.Clear();
-        }
-    }*/
-
-
-
-
-
     public static class MenuManager
     {
         static MenuManager()
@@ -232,8 +15,36 @@ namespace Gameplay.UI.Menus
             ClearData();
             OnActiveMenuChanged += Test;
 
-            UserInput.ClientInput.OnPauseGamePerformed += ReturnToPreviousMenu_P;
+            CacheLastSelectedGameobject().Forget();
+
+            UserInput.ClientInput.OnPauseGamePerformed += ReturnToPreviousMenu_Performed;
         }
+
+
+        private static async UniTaskVoid CacheLastSelectedGameobject()
+        {
+            s_priorSelectedObject = null;
+            GameObject lastSelection = null;
+            GameObject currentSelection;
+            while(EventSystem.current != null)
+            {
+                currentSelection = EventSystem.current.currentSelectedGameObject;
+                if (lastSelection != null && currentSelection != lastSelection)
+                {
+                    // Selection is not null & differs from last frame's.
+                    // Set our cached prior selection to the last frame's selection.
+                    Debug.Log("Update Selection: " + lastSelection.name);
+                    s_priorSelectedObject = lastSelection.GetComponent<Selectable>();
+                }
+
+                await UniTask.Yield(PlayerLoopTiming.PostLateUpdate);
+                lastSelection = currentSelection;
+            }
+
+            if (!Application.isPlaying)
+                Debug.LogWarning("Stopping Selected GameObject Detection");
+        }
+
 
         /*
          * When the menu below is opened:
@@ -262,7 +73,7 @@ namespace Gameplay.UI.Menus
             for (int i = 0; i < s_openMenuData.Count; ++i)
                 outputString += s_openMenuData[i].Menu.name + (i == s_openMenuData.Count - 1 ? "" : ",");
 
-            Debug.Log(outputString);
+            Debug.Log("Active Menus: " + outputString);
         }
 
 
@@ -273,6 +84,9 @@ namespace Gameplay.UI.Menus
         private static List<MenuData> s_openMenuData;   // Data on all our open menus.
         private static int s_openMenusCount;            // How many menus are currently open. 0 is none.
         private static bool s_parentMenuIsContainer => s_openMenusCount > 1 && s_openMenuData[s_openMenusCount - 2].Menu is ContainerMenu;
+
+        private static List<MenuData> s_cachedMenuData; // Data on all our open menus from before the current operation.
+        private static Selectable s_priorSelectedObject;
 
         public static MenuData ActiveMenuData => s_openMenusCount > 0 ? s_openMenuData[s_openMenusCount - 1] : null;
 
@@ -323,15 +137,21 @@ namespace Gameplay.UI.Menus
         ///     Swaps to the desired menu, closing all menus to reach the menu's parent menu (If it has one, otherwise closes all menus).
         /// </summary>
         /// <param name="menuToSwap"> The menu you wish to open.</param>
-        public static void SetActiveMenu(Menu menuToSwap, Selectable triggeringSelectable) => SetActiveMenu(menuToSwap, triggeringSelectable, menuToSwap.transform.parent.GetComponentInParent<Menu>());
+        public static void SetActiveMenu(Menu menuToSwap, Selectable triggeringSelectable) => SetActiveMenuUniTask(menuToSwap, triggeringSelectable).Forget();
+        /// <inheritdoc cref="SetActiveMenu(Menu, Selectable)"/>
+        private static async UniTask<bool> SetActiveMenuUniTask(Menu menuToSwap, Selectable triggeringSelectable) => await SetActiveMenuUniTask(menuToSwap, triggeringSelectable, menuToSwap.transform.parent.GetComponentInParent<Menu>());
+
         /// <summary>
         ///     Swaps to the desired menu, closing all menus to reach the menu's parent.
         /// </summary>
         /// <param name="menuToSwap"> The menu you wish to open.</param>
         /// <param name="parentMenu"> The parent menu of the menu you wish to open, or null if it doesn't have one.</param>
-        public static void SetActiveMenu(Menu menuToSwap, Selectable triggeringSelectable, Menu parentMenu)
+        public static void SetActiveMenu(Menu menuToSwap, Selectable triggeringSelectable, Menu parentMenu) => SetActiveMenuUniTask(menuToSwap, triggeringSelectable, parentMenu).Forget();
+        /// <inheritdoc cref="SetActiveMenu(Menu, Selectable, Menu)"/>
+        public static async UniTask<bool> SetActiveMenuUniTask(Menu menuToSwap, Selectable triggeringSelectable, Menu parentMenu)
         {
             Debug.Log("Set Active Menu: " + menuToSwap.name + " Parent: " + (parentMenu == null ? "NULL" : parentMenu.name));
+            CacheCurrentData();
 
             // Find the index of the parent menu (Our child is one below this, so 'indexToSwap = parentIndex + 1');
             int indexToSwap = parentMenu != null ? GetIndexOfMenu(parentMenu) : 0;
@@ -346,21 +166,42 @@ namespace Gameplay.UI.Menus
 
 
             // Close menus until we reach our menuToSwap's level.
-            // To-do: Account for menus that have logic that needs to be performed when closing (Such as OptionsMenu requesting changes).
+            bool success;
             for(int i = indexToSwap; i < s_openMenusCount; ++i)
-                CloseActiveMenu(null, false, false);
+            {
+                success = await CloseActiveMenuUniTask(false, false);
+                if (!success)
+                {
+                    Debug.Log("Fail");
+                    RevertOperation();
+                    return false; // Failed to close a menu, so cancel the exit.
+                }
+            }
 
             // Swap the active menu to our desired.
-            SwapMenu(menuToSwap, triggeringSelectable);
+            success = await SwapMenuUniTask(menuToSwap, triggeringSelectable);
+            Debug.Log("Swap: " + success);
+            if (!success)
+            {
+                RevertOperation();
+                return false;
+            }
+
+            DiscardCachedData();
+            return true;
         }
 
         /// <summary>
         ///     Swaps the menu at the current level to <paramref name="menuToSwap"/>.
         /// </summary>
-        public static void SwapMenu(Menu menuToSwap, Selectable sourceSelectable)
+        public static async UniTask<bool> SwapMenuUniTask(Menu menuToSwap, Selectable sourceSelectable)
         {
-            CloseActiveMenu(FinishSwap, true, false);
-            void FinishSwap() => OpenChildMenu(menuToSwap, sourceSelectable, null);
+            bool success = await CloseActiveMenuUniTask(true, false);
+            if (!success)
+                return false;
+
+            success = await OpenChildMenuUniTask(menuToSwap, sourceSelectable, null);
+            return success;
         }
 
 
@@ -393,8 +234,9 @@ namespace Gameplay.UI.Menus
         /// <param name="child"> The menu you wish to open.</param>
         /// <param name="sourceSelectable"> The selectable that triggered this opening, or null if no selectable triggered it. Used when returning to the previous menu.</param>
         /// <param name="parent"> The existing menu that the new menu should be opened under</param>
-        /// <returns> True if the operation was successful. Otherwise, false.</returns>
-        public static bool OpenChildMenu(Menu child, Selectable sourceSelectable, Menu parent)
+        public static void OpenChildMenu(Menu child, Selectable sourceSelectable, Menu parent) => OpenChildMenuUniTask(child, sourceSelectable, parent).Forget();
+        /// <inheritdoc cref="OpenChildMenu(Menu, Selectable, Menu)"/>
+        private static async UniTask<bool> OpenChildMenuUniTask(Menu child, Selectable sourceSelectable, Menu parent)
         {
             if (parent == null)
                 OpenMenu(child, true, sourceSelectable);
@@ -402,9 +244,12 @@ namespace Gameplay.UI.Menus
             {
                 // The menu has a desired parent.
                 // Close to reach the parent without closing the parent.
-                bool success = CloseMenusToReach(parent, MenuOperation.None);
+                bool success = await CloseMenusToReachUniTask(parent, MenuOperation.None);
                 if (!success)
-                    return false;   // Failed to find the desired parent in our open menus.
+                {
+                    Debug.LogWarning("Failed to open parent");
+                    return false;
+                }
 
                 // Open our child under the parent.
                 OpenMenu(child, true, sourceSelectable);
@@ -420,9 +265,48 @@ namespace Gameplay.UI.Menus
         private static void ReopenActiveMenu()
         {
             if (ActiveMenuData != null)
+            {
+                Debug.Log("Selectable Target: " + ActiveMenuData.SelectableTargetForReopen?.name);
                 ActiveMenuData.Menu.Reopen(ActiveMenuData.SelectableTargetForReopen);
+            }
             else
                 EventSystem.current.SetSelectedGameObject(s_baseSelectable?.gameObject);
+        }
+        private static bool CacheCurrentData()
+        {
+            if (s_cachedMenuData != null)
+                return false;   // We are already caching data.
+            if (s_openMenuData == null || s_openMenusCount == 0)
+                return true;    // We are the primary cacher, but there is nothing to cache.
+
+            // We have data to cache. Cache it.
+            s_cachedMenuData = s_openMenuData;
+            Debug.Log("Selected: " + s_priorSelectedObject?.name);
+            s_cachedMenuData[s_cachedMenuData.Count - 1].SelectableTargetForReopen = s_priorSelectedObject;
+            return true;
+        }
+        private static void DiscardCachedData() => s_cachedMenuData = null;
+        private static void RevertOperation()
+        {
+            Debug.Log("Revert Operation");
+            if (s_cachedMenuData == null)
+                return;
+
+            // Hide the current menu.
+            if (ActiveMenuData != null)
+                ActiveMenuData.Menu.Hide();
+
+            // Revert the menu order, opening where required.
+            int cachedMenusCount = s_cachedMenuData.Count;
+            Debug.Log(cachedMenusCount + " | " + s_openMenusCount);
+            for(int i = s_openMenusCount; i < cachedMenusCount; ++i)
+            {
+                OpenMenu(s_cachedMenuData[i].Menu, false, i == 0 ? s_baseSelectable : s_cachedMenuData[i - 1].SelectableTargetForReopen);
+            }
+
+            // Repen the new current menu.
+            ReopenActiveMenu();
+            DiscardCachedData();
         }
 
 
@@ -432,21 +316,28 @@ namespace Gameplay.UI.Menus
         /// </summary>
         /// <param name="menu"> The menu you wish to close until.</param>
         /// <param name="targetMenuOperation"> The operation you wish to perform on the target menu.</param>
-        /// <returns> True if the operation was successful. Otherwise, false.</returns>
-        private static bool CloseMenusToReach(Menu menu, MenuOperation targetMenuOperation)
+        private static void CloseMenusToReach(Menu menu, MenuOperation targetMenuOperation) => CloseMenusToReachUniTask(menu, targetMenuOperation).Forget();
+        /// <inheritdoc cref="CloseActiveMenuUniTask(bool, bool)"/>
+        private static async UniTask<bool> CloseMenusToReachUniTask(Menu menu, MenuOperation targetMenuOperation)
         {
             // Find out how many menus we need to close.
             int menuIndex = GetIndexOfMenu(menu);
             if (menuIndex == -1)
-                return false;   // The desired menu isn't open in our hierarchy.
+                return false; // The desired menu isn't open in our hierarchy.
 
+            CacheCurrentData();
+            bool success;
 
             // Close menus until we reach our desired.
             while(s_openMenusCount - 1 > menuIndex)
             {
                 // Close the menu.
-                // To-do: Pause if the menu needs to run any multi-frame logic (Such as receiving confirmation from the player).
-                CloseActiveMenu(null, awaitClose: false, reopenParentMenu: false, forceIgnoreContainerChildRequirements: true);
+                success = await CloseActiveMenuUniTask(reopenParentMenu: false, preventClosingOfChildlessContainer: true);
+                if (!success)
+                {
+                    RevertOperation();
+                    return false;
+                }
             }
 
             // Perform our desired operation on our target menu.
@@ -454,8 +345,12 @@ namespace Gameplay.UI.Menus
             {
                 case MenuOperation.Close:
                     // Close the target menu and reopen its parent.
-                    // To-do: Pause if the menu needs to run any multi-frame logic (Such as receiving confirmation from the player).
-                    CloseActiveMenu(null, awaitClose: false, reopenParentMenu: true);
+                    success = await CloseActiveMenuUniTask(reopenParentMenu: true, preventClosingOfChildlessContainer: false);
+                    if (!success)
+                    {
+                        RevertOperation();
+                        return false;
+                    }
                     break;
                 case MenuOperation.Reopen:
                     // Reopen the target menu.
@@ -464,52 +359,62 @@ namespace Gameplay.UI.Menus
             }
 
 
+            DiscardCachedData();
             return true;
         }
         /// <summary>
         ///     Closes the lowest level menu.
         /// </summary>
-        /// <param name="onCompleteCallback"></param>
-        /// <param name="awaitClose"> Whether the menu should wait wait until the menu finalises closing before actually removing it.</param>
         /// <param name="reopenParentMenu"> Whether the menu above the active menu should be reopened once the active is closed, or left as inactive.</param>
-        private static void CloseActiveMenu(System.Action onCompleteCallback, bool awaitClose = false, bool reopenParentMenu = true, bool forceIgnoreContainerChildRequirements = false)
+        /// <param name="preventClosingOfChildlessContainer"> Should we prevent closing the parent if it is a ContainerMenu that cannot be open without a child? Default: False.</param>
+        private static async UniTask<bool> CloseActiveMenuUniTask(bool reopenParentMenu = true, bool preventClosingOfChildlessContainer = false)
         {
             if (s_openMenusCount == 0)
             {
                 Debug.Log("No menu to close");
-                onCompleteCallback?.Invoke();
-                return; // No menus are active for us to close.
+                return true; // No menus are active for us to close.
             }
+            bool isPrimaryCacher = CacheCurrentData();
+            Debug.Log("Primary Cacher: " + isPrimaryCacher);
 
             // Close the menu.
-            if (awaitClose)
-                ActiveMenuData.Menu.Close(Finish);
+            bool success = await ActiveMenuData.Menu.Close();
+            if (!success)
+            {
+                if (isPrimaryCacher) { RevertOperation(); }
+                return false;
+            }
+
+            Debug.Log("Closed: " + ActiveMenuData.Menu.name);
+            s_openMenuData.RemoveAt(s_openMenusCount - 1);
+            --s_openMenusCount;
+
+            Debug.Log(
+                "Don't Ignore: " + (!preventClosingOfChildlessContainer)
+                + "\n Has Active Menu: " + (ActiveMenuData != null)
+                + "\n Active is Container: " + (ActiveMenuData != null && ActiveMenuData.Menu is ContainerMenu)
+                + "\n Active's Children Cannot be Closed: " + (ActiveMenuData != null && ActiveMenuData.Menu is ContainerMenu && !(ActiveMenuData.Menu as ContainerMenu).ChildrenCanBeClosed)
+                );
+            if (!preventClosingOfChildlessContainer && ActiveMenuData != null && ActiveMenuData.Menu is ContainerMenu && !(ActiveMenuData.Menu as ContainerMenu).ChildrenCanBeClosed)
+            {
+                // Our parent is a ContainerMenu that cannot be open without its children, so close it too.
+                success = await CloseActiveMenuUniTask(reopenParentMenu);
+                if (!success)
+                {
+                    if (isPrimaryCacher) { RevertOperation(); }
+                    return false;
+                }
+            }
             else
             {
-                ActiveMenuData.Menu.Close(null);
-                Finish();
+                // We don't need to do anything else. Closing completed.
+
+                if (reopenParentMenu)
+                    ReopenActiveMenu();
             }
 
-            void Finish()
-            {
-                Debug.Log("Closed: " + ActiveMenuData.Menu.name);
-                s_openMenuData.RemoveAt(s_openMenusCount - 1);
-                --s_openMenusCount;
-
-                if (!forceIgnoreContainerChildRequirements && ActiveMenuData != null && ActiveMenuData.Menu is ContainerMenu && !(ActiveMenuData.Menu as ContainerMenu).ChildrenCanBeClosed)
-                {
-                    // Our parent is a ContainerMenu that cannot be open without its children, so close it too.
-                    CloseActiveMenu(onCompleteCallback, awaitClose, reopenParentMenu);
-                }
-                else
-                {
-                    // We don't need to do anything else. Closing completed.
-
-                    if (reopenParentMenu)
-                        ReopenActiveMenu();
-                    onCompleteCallback?.Invoke();
-                }
-            }
+            if (isPrimaryCacher) { DiscardCachedData(); }
+            return true;
         }
 
 
@@ -519,13 +424,18 @@ namespace Gameplay.UI.Menus
         /// <summary>
         ///     Closes the desired menu and reopens its parent (If it has one).
         /// </summary>
-        public static void CloseMenu(Menu menu) => CloseMenusToReach(menu, MenuOperation.Close);
+        public static void CloseMenu(Menu menu) => CloseMenusToReachUniTask(menu, MenuOperation.Close).Forget();
+        public static void ReturnToPreviousMenu() { }// => CloseActiveMenu(null, true, true);
 
         /// <summary>
         ///     Closes the current active menu and opens the one above it in s_openMenus (If it exists).
         /// </summary>
-        public static void ReturnToPreviousMenu() { }// => CloseActiveMenu(null, true, true);
-        public static void ReturnToPreviousMenu_P() => CloseActiveMenu(null, true, true);
+        public static void ReturnToPreviousMenu_Performed()
+        {
+            // Quick and dirty way to force our back target selection to be correct when we are using a non-button to trigger.
+            s_priorSelectedObject = EventSystem.current.currentSelectedGameObject ? EventSystem.current.currentSelectedGameObject.GetComponent<Selectable>() : s_priorSelectedObject;
+            CloseActiveMenuUniTask(reopenParentMenu: true).Forget();
+        }
 
         #endregion
 
