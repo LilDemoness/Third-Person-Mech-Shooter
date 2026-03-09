@@ -27,7 +27,7 @@ namespace Gameplay.UI.Menus
             None = 0,
             // Closes self when a child is closed and no others take its place.
             CloseSelf = 1,
-            // Reopens the default child (Child 0).
+            // Reopens the default child (Child 0). If the default child was the open child, instead closes self.
             OpenDefaultChild = 2,
         }
         [SerializeField] private ChildClosedFallback _childClosedFallback = ChildClosedFallback.CloseSelf;
@@ -61,6 +61,11 @@ namespace Gameplay.UI.Menus
             base.Reopen(targetSelectable);
         }
 
+
+        /// <summary>
+        ///     Returns true if the passed child is the default child (Child 0).
+        /// </summary>
+        public bool IsDefaultChild(Menu childMenu) => GetChildIndex(childMenu) == 0;
 
 
         /// <summary>

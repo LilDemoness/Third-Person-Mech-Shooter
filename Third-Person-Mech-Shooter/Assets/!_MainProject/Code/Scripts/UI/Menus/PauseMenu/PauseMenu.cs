@@ -35,6 +35,9 @@ namespace Gameplay.UI.Menus.Pause
         private void OnDestroy()
         {
             ClientInput.OnPauseGamePerformed -= OnPauseGamePerformed;
+
+            if (_isOpen)
+                FinishResume();
         }
 
         public override void Show()
@@ -49,6 +52,7 @@ namespace Gameplay.UI.Menus.Pause
                 _previousLockMode = Cursor.lockState;
                 Cursor.lockState = CursorLockMode.None;
 
+                Debug.Log("Prevention Added");
                 ClientInput.AddActionPrevention(typeof(PauseMenu), LOCKING_TYPES);
             }
         }
@@ -68,15 +72,19 @@ namespace Gameplay.UI.Menus.Pause
         private System.Collections.IEnumerator ResumeAfterFrame()
         {
             yield return null;
-
+            FinishResume();
+        }
+        private void FinishResume()
+        {
             // Perform game resuming logic here.
             _isOpen = false;
 
             Cursor.lockState = _previousLockMode;
 
+            Debug.Log("Prevention Removed");
             ClientInput.RemoveActionPrevention(typeof(PauseMenu), LOCKING_TYPES);
-            
-            // Reset the coroutine to prevent it getting stack with a invalid but non-null value.
+
+            // Reset the resume delay coroutine to prevent it getting stack with a invalid but non-null value.
             _resumeAfterFrameCoroutine = null;
         }
 

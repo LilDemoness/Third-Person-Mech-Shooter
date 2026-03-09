@@ -402,7 +402,8 @@ namespace Gameplay.UI.Menus
             Debug.Log("Primary Cacher: " + isPrimaryCacher);
 
             // Close the menu.
-            bool success = await ActiveMenuData.Menu.Close();
+            Menu activeMenu = ActiveMenuData.Menu;
+            bool success = await activeMenu.Close();
             if (!success)
             {
                 if (isPrimaryCacher) { RevertOperation(); }
@@ -410,7 +411,7 @@ namespace Gameplay.UI.Menus
                 return false;
             }
 
-            Debug.Log("Closed: " + ActiveMenuData.Menu.name);
+            Debug.Log("Closed: " + activeMenu.name);
             s_openMenuData.RemoveAt(s_openMenusCount - 1);
             --s_openMenusCount;
 
@@ -430,8 +431,18 @@ namespace Gameplay.UI.Menus
                         success = await CloseActiveMenuUniTask(reopenParentMenu);
                         break;
                     case ContainerMenu.ChildClosedFallback.OpenDefaultChild:
-                        activeContainerMenu.ReopenWithDefaultChild(ActiveMenuData.SelectableTargetForReopen);
-                        success = true;
+                        if (activeContainerMenu.IsDefaultChild(activeMenu))
+                        {
+                            // The default child was open. Close this menu.
+                            success = await CloseActiveMenuUniTask(reopenParentMenu);
+                        }
+                        else
+                        {
+                            // The default child wasn't open. Open it.
+                            activeContainerMenu.ReopenWithDefaultChild(ActiveMenuData.SelectableTargetForReopen);
+                            success = true;
+                        }
+
                         break;
                 }
 
