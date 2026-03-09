@@ -35,8 +35,10 @@ namespace Gameplay.UI.Menus
             Show();
             EventSystem.current.SetSelectedGameObject(targetSelectable != null ? targetSelectable.gameObject : FirstSelectedElement);
         }
+#pragma warning disable CS1998 // The base implementation of this method is synchronus, but children may not be. Suppress the warning: "Async method lacks 'await' operators and will run synchronously".
         // Close this menu.
         public virtual async UniTask<bool> Close()
+#pragma warning restore CS1998 
         {
             Debug.Log("Close: " + this.name);
             Hide();

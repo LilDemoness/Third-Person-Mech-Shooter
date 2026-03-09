@@ -70,7 +70,7 @@ namespace Gameplay.UI.Popups
 
             // If we're obstructing input, achieve this by opening through the MenuManager. Otherwise, show normally.
             if (obstructInput)
-                MenuManager.CreatePopup(this);
+                MenuManager.LinkPopup(this);
             
             Open();
         }

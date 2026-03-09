@@ -1,11 +1,8 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Cysharp.Threading.Tasks;
-using System.Linq;
 
 namespace Gameplay.UI.Menus
 {
@@ -14,15 +11,20 @@ namespace Gameplay.UI.Menus
         static MenuManager()
         {
             ClearData();
-            OnActiveMenuChanged += Test;
+            OnActiveMenuChanged += LogOpenMenus;
 
-            CacheLastSelectedGameobject().Forget();
+            CachePreviousSelectableUniTask().Forget();
 
             UserInput.ClientInput.OnPauseGamePerformed += ReturnToPreviousMenu_Performed;
         }
 
 
-        private static async UniTaskVoid CacheLastSelectedGameobject()
+        /// <summary>
+        ///     Continuously caches the Selectable selected prior to the current one.<br/>
+        ///     Should never set s_priorSelectedObject to 'null' once the first frame has elapsed. (This can still occur when <see cref="ClearData"/> is called)<br/>
+        ///     Loops every 'PostLateUpdate' until the event system is destroyed (Such as when the program is terminated).
+        /// </summary>
+        private static async UniTaskVoid CachePreviousSelectableUniTask()
         {
             s_priorSelectedObject = null;
             GameObject lastSelection = null;
@@ -46,28 +48,27 @@ namespace Gameplay.UI.Menus
         }
 
 
-        /*
-         * When the menu below is opened:
-         * - Reselect the menu
-         * - Reselect the SelectableTargetForReopen (Or default selection if is null)
-        */
+        /// <summary>
+        ///     Container class for storing a menu and the selectable we wish to reselect when we return to the menu.
+        /// </summary>
+        // Class rather than struct for passing by reference.
         public class MenuData
         {
-            public Menu Menu;
-            public Selectable SelectableTargetForReopen;    // Populated when a menu is closed.
+            public readonly Menu Menu;
+            public Selectable SelectableTargetForReopen { get; private set; }   // Target selectable when we return to 'Menu'. Primarily populated when a menu is closed.
 
             public MenuData(Menu menu)
             {
                 this.Menu = menu;
                 this.SelectableTargetForReopen = null;
             }
-            // Called when the containing menu opens a child menu.
-            public void OnOpenedChildMenu(Selectable sourceSelectable) => SelectableTargetForReopen = sourceSelectable;
+
+            public void SetReturnTargetSelectable(Selectable sourceSelectable) => SelectableTargetForReopen = sourceSelectable;
         }
 
 
 
-        private static void Test()
+        private static void LogOpenMenus()
         {
             string outputString = "";
             for (int i = 0; i < s_openMenuData.Count; ++i)
@@ -128,11 +129,15 @@ namespace Gameplay.UI.Menus
             return parentMenu == s_blockingPopups[s_blockingPopups.Count - 1];
         }
 
+        /// <summary>
+        ///     Returns true if this menu is the active menu.
+        /// </summary>
         public static bool IsActiveMenu(this Menu menu) => s_openMenusCount > 0 ? ActiveMenuData.Menu == menu : false;
-        // Note: Defaults to true if no popups are active.
+        /// <summary>
+        ///     Returns true if this popup is the active popup.<br/>
+        ///     Defaults to true if no popups are active.
+        /// </summary>
         public static bool IsActivePopup(this Popup popup) => s_blockingPopups.Count > 0 ? s_blockingPopups[s_blockingPopups.Count - 1] == popup : true;
-
-        public static bool IsInOpenMenus(this Menu menu) => s_openMenusCount > 0 ? s_openMenuData.Any(t => t.Menu == menu) : false;
 
 
 
@@ -222,7 +227,7 @@ namespace Gameplay.UI.Menus
             if (ActiveMenuData == null)
                 s_baseSelectable = sourceSelectable;
             else
-                ActiveMenuData.OnOpenedChildMenu(sourceSelectable);
+                ActiveMenuData.SetReturnTargetSelectable(sourceSelectable);
 
             // Hide our current menu, if desired.
             if (hideCurrent)
@@ -280,6 +285,10 @@ namespace Gameplay.UI.Menus
             else
                 EventSystem.current.SetSelectedGameObject(s_baseSelectable?.gameObject);
         }
+        /// <summary>
+        ///     Cache the current open menu data to allow for reverting operations.
+        /// </summary>
+        /// <returns> True if we are the primary cacher (The first to cache since last clear). Otherwise, false.</returns>
         private static bool CacheCurrentData()
         {
             if (s_cachedMenuData != null)
@@ -290,10 +299,17 @@ namespace Gameplay.UI.Menus
             // We have data to cache. Cache it.
             s_cachedMenuData = s_openMenuData;
             Debug.Log("Selected: " + s_priorSelectedObject?.name);
-            s_cachedMenuData[s_cachedMenuData.Count - 1].SelectableTargetForReopen = s_priorSelectedObject;
+            s_cachedMenuData[s_cachedMenuData.Count - 1].SetReturnTargetSelectable(s_priorSelectedObject);
             return true;
         }
+        /// <summary>
+        ///     Clear our cached data.
+        /// </summary>
         private static void DiscardCachedData() => s_cachedMenuData = null;
+        /// <summary>
+        ///     Revert the previous operation using our cached menu data.<br/>
+        ///     Does nothing if 's_cachedMenuData' is null (Such as if the cache was discarded since last set).
+        /// </summary>
         private static void RevertOperation()
         {
             Debug.Log("Revert Operation");
@@ -500,15 +516,15 @@ namespace Gameplay.UI.Menus
 
         // Handle popups per menu? (Allows popups to appear behind menus?)
         public static List<Popup> s_blockingPopups; // List so that we can remove popups even if they aren't the open one.
-        public static void CreatePopup(Popup popup)
+        public static void LinkPopup(Popup popup)
         {
             s_blockingPopups.Add(popup);
-            popup.OnClose += ClosePopup;
+            popup.OnClose += UnlinkPopup;
         }
-        private static void ClosePopup(Popup popup)
+        private static void UnlinkPopup(Popup popup)
         {
             s_blockingPopups.Remove(popup);
-            popup.OnClose -= ClosePopup;
+            popup.OnClose -= UnlinkPopup;
         }
 
 
@@ -532,6 +548,11 @@ namespace Gameplay.UI.Menus
                 s_blockingPopups = new List<Popup>();
         }
     }
+
+
+    /// <summary>
+    ///     Base class for popups that can be linked to the MenuManager for Menu Management purposes.
+    /// </summary>
     public class Popup : MonoBehaviour
     {
         public System.Action<Popup> OnClose;
