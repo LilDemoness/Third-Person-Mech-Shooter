@@ -62,11 +62,6 @@ namespace Gameplay.UI.Menus.Pause
                 _resumeAfterFrameCoroutine = StartCoroutine(ResumeAfterFrame());
             }
         }
-        public override void Reopen(Selectable targetSelectable = null)
-        {
-            ShowChild(0);   // Change to be a setting in ContainerMenu of returning to the first (0th) child when a child is closed and no others are opened (Along with the option of doing nothing or closing the parent too).
-            base.Reopen(targetSelectable);
-        }
 
 
         private Coroutine _resumeAfterFrameCoroutine;

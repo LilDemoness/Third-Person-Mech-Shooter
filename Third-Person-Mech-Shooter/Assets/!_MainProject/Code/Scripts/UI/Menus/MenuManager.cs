@@ -402,12 +402,24 @@ namespace Gameplay.UI.Menus
                 "Don't Ignore: " + (!preventClosingOfChildlessContainer)
                 + "\n Has Active Menu: " + (ActiveMenuData != null)
                 + "\n Active is Container: " + (ActiveMenuData != null && ActiveMenuData.Menu is ContainerMenu)
-                + "\n Active's Children Cannot be Closed: " + (ActiveMenuData != null && ActiveMenuData.Menu is ContainerMenu && !(ActiveMenuData.Menu as ContainerMenu).ChildrenCanBeClosed)
+                + "\n Active has Fallback for Closed Children: " + (ActiveMenuData != null && ActiveMenuData.Menu is ContainerMenu && (ActiveMenuData.Menu as ContainerMenu).OnChildClosedFallback != ContainerMenu.ChildClosedFallback.None)
                 );
-            if (!preventClosingOfChildlessContainer && ActiveMenuData != null && ActiveMenuData.Menu is ContainerMenu && !(ActiveMenuData.Menu as ContainerMenu).ChildrenCanBeClosed)
+            if (!preventClosingOfChildlessContainer && ActiveMenuData != null && ActiveMenuData.Menu is ContainerMenu && (ActiveMenuData.Menu as ContainerMenu).OnChildClosedFallback != ContainerMenu.ChildClosedFallback.None)
             {
                 // Our parent is a ContainerMenu that cannot be open without its children, so close it too.
-                success = await CloseActiveMenuUniTask(reopenParentMenu);
+                ContainerMenu activeContainerMenu = ActiveMenuData.Menu as ContainerMenu;
+                switch(activeContainerMenu.OnChildClosedFallback)
+                {
+                    case ContainerMenu.ChildClosedFallback.CloseSelf:
+                        success = await CloseActiveMenuUniTask(reopenParentMenu);
+                        break;
+                    case ContainerMenu.ChildClosedFallback.OpenDefaultChild:
+                        activeContainerMenu.ReopenWithDefaultChild(ActiveMenuData.SelectableTargetForReopen);
+                        success = true;
+                        break;
+                }
+
+
                 if (!success)
                 {
                     if (isPrimaryCacher) { RevertOperation(); }

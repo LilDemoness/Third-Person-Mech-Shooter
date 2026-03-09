@@ -14,8 +14,21 @@ namespace Gameplay.UI.Menus
         protected Menu PreviouslySelectedChild => Children[_previouslySelectedChildIndex];
 
 
-        [SerializeField] private bool _childrenCanBeClosed = false;
-        public bool ChildrenCanBeClosed => _childrenCanBeClosed;
+        /// <summary>
+        ///     What should occur when this menu's children are closed without new ones being opened.
+        /// </summary>
+        [System.Serializable]
+        public enum ChildClosedFallback
+        {
+            // Do nothing.
+            None = 0,
+            // Closes self when a child is closed and no others take its place.
+            CloseSelf = 1,
+            // Reopens the default child (Child 0).
+            OpenDefaultChild = 2,
+        }
+        [SerializeField] private ChildClosedFallback _childClosedFallback = ChildClosedFallback.CloseSelf;
+        public ChildClosedFallback OnChildClosedFallback => _childClosedFallback;
 
 
         public override void Open(bool selectFirstElement = true)
@@ -38,6 +51,12 @@ namespace Gameplay.UI.Menus
             _previouslySelectedChildIndex = 0;
 
             return await base.Close();
+        }
+        public virtual void ReopenWithDefaultChild(Selectable targetSelectable = null)
+        {
+            HideAllChildren();
+            ShowChild(0);
+            base.Reopen(targetSelectable);
         }
 
 

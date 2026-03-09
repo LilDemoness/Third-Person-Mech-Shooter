@@ -2694,7 +2694,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 7718262899203262279}
   _enterChildOnOpen: 1
-  _childrenCanBeClosed: 1
+  _childClosedFallback: 2
   _optionsMenu: {fileID: 1139146946766983546}
 --- !u!225 &4318493401578434898
 CanvasGroup:
