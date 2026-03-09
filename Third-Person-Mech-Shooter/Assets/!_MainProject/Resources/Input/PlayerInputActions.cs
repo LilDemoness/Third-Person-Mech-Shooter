@@ -932,6 +932,24 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""OptionsResetToDefault"",
+                    ""type"": ""Button"",
+                    ""id"": ""480867bc-f798-4ad4-af4a-8c3f1493eb89"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""OptionsApplyChanges"",
+                    ""type"": ""Button"",
+                    ""id"": ""fa48551d-1e14-431a-b0cc-41175f9b34ec"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1130,6 +1148,50 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
                     ""action"": ""OpenFrameSelection"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""26dd6b68-0574-45a2-870d-512119f6435b"",
+                    ""path"": ""<Keyboard>/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";MnK"",
+                    ""action"": ""OptionsResetToDefault"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1a256886-a6e0-4b0c-9643-b35b34c44774"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""OptionsResetToDefault"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""acfedf3e-e494-47ca-8f5c-a6f246dd64ac"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";MnK"",
+                    ""action"": ""OptionsApplyChanges"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""87d63c6b-b25d-4543-a6aa-7e1e496d9d72"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""OptionsApplyChanges"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1341,6 +1403,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_MainMenu_SelectPreviousFrame = m_MainMenu.FindAction("SelectPreviousFrame", throwIfNotFound: true);
         m_MainMenu_SelectNextFrame = m_MainMenu.FindAction("SelectNextFrame", throwIfNotFound: true);
         m_MainMenu_OpenFrameSelection = m_MainMenu.FindAction("OpenFrameSelection", throwIfNotFound: true);
+        m_MainMenu_OptionsResetToDefault = m_MainMenu.FindAction("OptionsResetToDefault", throwIfNotFound: true);
+        m_MainMenu_OptionsApplyChanges = m_MainMenu.FindAction("OptionsApplyChanges", throwIfNotFound: true);
         // MultiplayerChat
         m_MultiplayerChat = asset.FindActionMap("MultiplayerChat", throwIfNotFound: true);
         m_MultiplayerChat_OpenChat = m_MultiplayerChat.FindAction("OpenChat", throwIfNotFound: true);
@@ -2019,6 +2083,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_MainMenu_SelectPreviousFrame;
     private readonly InputAction m_MainMenu_SelectNextFrame;
     private readonly InputAction m_MainMenu_OpenFrameSelection;
+    private readonly InputAction m_MainMenu_OptionsResetToDefault;
+    private readonly InputAction m_MainMenu_OptionsApplyChanges;
     /// <summary>
     /// Provides access to input actions defined in input action map "MainMenu".
     /// </summary>
@@ -2066,6 +2132,14 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "MainMenu/OpenFrameSelection".
         /// </summary>
         public InputAction @OpenFrameSelection => m_Wrapper.m_MainMenu_OpenFrameSelection;
+        /// <summary>
+        /// Provides access to the underlying input action "MainMenu/OptionsResetToDefault".
+        /// </summary>
+        public InputAction @OptionsResetToDefault => m_Wrapper.m_MainMenu_OptionsResetToDefault;
+        /// <summary>
+        /// Provides access to the underlying input action "MainMenu/OptionsApplyChanges".
+        /// </summary>
+        public InputAction @OptionsApplyChanges => m_Wrapper.m_MainMenu_OptionsApplyChanges;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -2119,6 +2193,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @OpenFrameSelection.started += instance.OnOpenFrameSelection;
             @OpenFrameSelection.performed += instance.OnOpenFrameSelection;
             @OpenFrameSelection.canceled += instance.OnOpenFrameSelection;
+            @OptionsResetToDefault.started += instance.OnOptionsResetToDefault;
+            @OptionsResetToDefault.performed += instance.OnOptionsResetToDefault;
+            @OptionsResetToDefault.canceled += instance.OnOptionsResetToDefault;
+            @OptionsApplyChanges.started += instance.OnOptionsApplyChanges;
+            @OptionsApplyChanges.performed += instance.OnOptionsApplyChanges;
+            @OptionsApplyChanges.canceled += instance.OnOptionsApplyChanges;
         }
 
         /// <summary>
@@ -2157,6 +2237,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @OpenFrameSelection.started -= instance.OnOpenFrameSelection;
             @OpenFrameSelection.performed -= instance.OnOpenFrameSelection;
             @OpenFrameSelection.canceled -= instance.OnOpenFrameSelection;
+            @OptionsResetToDefault.started -= instance.OnOptionsResetToDefault;
+            @OptionsResetToDefault.performed -= instance.OnOptionsResetToDefault;
+            @OptionsResetToDefault.canceled -= instance.OnOptionsResetToDefault;
+            @OptionsApplyChanges.started -= instance.OnOptionsApplyChanges;
+            @OptionsApplyChanges.performed -= instance.OnOptionsApplyChanges;
+            @OptionsApplyChanges.canceled -= instance.OnOptionsApplyChanges;
         }
 
         /// <summary>
@@ -2775,6 +2861,20 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnOpenFrameSelection(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "OptionsResetToDefault" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnOptionsResetToDefault(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "OptionsApplyChanges" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnOptionsApplyChanges(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "MultiplayerChat" which allows adding and removing callbacks.

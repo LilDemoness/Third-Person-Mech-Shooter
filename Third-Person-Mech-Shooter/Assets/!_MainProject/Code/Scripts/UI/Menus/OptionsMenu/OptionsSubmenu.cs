@@ -92,6 +92,7 @@ namespace Gameplay.UI.Menus.Options
             {
                 _optionSetters[i].SaveToPrefs();
             }
+
             // We've saved all our changes, so no new changes exist.
             _hasChanges = false;
         }
@@ -101,6 +102,7 @@ namespace Gameplay.UI.Menus.Options
             {
                 _optionSetters[i].LoadFromPrefs();
             }
+
             // We've just reloaded our saved options, so we don't have any changes from them.
             _hasChanges = false;
         }
@@ -111,6 +113,9 @@ namespace Gameplay.UI.Menus.Options
             {
                 _optionSetters[i].ResetValue();
             }
+
+            // We've just performed a change, so ensure that we are aware of this.
+            _hasChanges = true;
         }
 
 

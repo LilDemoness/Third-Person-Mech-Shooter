@@ -1,4 +1,4 @@
-using Cysharp.Threading.Tasks;
+using Gameplay.UI.Popups;
 using UnityEngine;
 
 namespace Gameplay.UI.Menus.Options
@@ -15,21 +15,8 @@ namespace Gameplay.UI.Menus.Options
         private OptionsSubmenu _currentOpenMenu;
 
 
-        [Header("Highlighted Option Information")]
-        [SerializeField] private GameObject _temp;
 
-
-
-        private void Awake()
-        {
-            InitialiseSubmenus();
-
-            // Subscribe to selection events.
-        }
-        private void OnDestroy()
-        {
-            // Unsubscribe from selection events.
-        }
+        private void Awake() => InitialiseSubmenus();
 
 
         private void InitialiseSubmenus()
@@ -62,60 +49,16 @@ namespace Gameplay.UI.Menus.Options
         private void ResetCurrentSubmenuValues() => _currentOpenMenu?.ResetAllOptions();
 
 
-        public override void Show()
-        {
-            
 
-            base.Show();
+        public override void ShowChild(int childIndex)
+        {
+            _currentOpenMenu = Children[childIndex] as OptionsSubmenu;
+            base.ShowChild(childIndex);
         }
-        public override async UniTask<bool> Close()
+        public override void EnterChild(int childIndex)
         {
-            CloseAllMenus();
-            bool success = await SetActiveMenu(_gameplayMenu);
-            if (!success)
-            {
-                Debug.Log("Failed to set to Gameplay Menu");
-                return false;
-            }
-
-            return await base.Close();
-        }
-
-
-        private void CloseAllMenus()
-        {
-            // Hide all menus.
-            _gameplayMenu.ForceClose();
-            _videoMenu.ForceClose();
-            _audioMenu.ForceClose();
-            _controlsMenu.ForceClose();
-            _keybindingsMenu.ForceClose();
-            _accessibilityMenu.ForceClose();
-
-            // Null our current menu as none are now open.
-            _currentOpenMenu = null;
-        }
-        private async UniTask<bool> SetActiveMenu(OptionsSubmenu optionsSubmenu)
-        {
-            // If we have an open menu, close it.
-            if (_currentOpenMenu != null)
-            {
-                bool success = await _currentOpenMenu.Close();
-                if (!success)
-                    return false;
-            }
-
-            // Open our desired menu and cache it.
-            _currentOpenMenu = optionsSubmenu;
-            optionsSubmenu.Open();
-
-            return true;
-        }
-
-
-        private void OnSelectedOptionChanged()
-        {
-
+            _currentOpenMenu = Children[childIndex] as OptionsSubmenu;
+            base.EnterChild(childIndex);
         }
 
 
@@ -124,21 +67,15 @@ namespace Gameplay.UI.Menus.Options
 
         #region UI Button Functions
 
-        #region Open Menu Button Functions
-
-        public async UniTaskVoid OpenGameplayMenu()         => await SetActiveMenu(_gameplayMenu);
-        public async UniTaskVoid OpenVideoMenu()            => await SetActiveMenu(_videoMenu);
-        public async UniTaskVoid OpenAudioMenu()            => await SetActiveMenu(_audioMenu);
-        public async UniTaskVoid OpenControlsMenu()         => await SetActiveMenu(_controlsMenu);
-        public async UniTaskVoid OpenKeybindingsMenu()      => await SetActiveMenu(_keybindingsMenu);
-        public async UniTaskVoid OpenAccessibilityMenu()    => await SetActiveMenu(_accessibilityMenu);
-
-        #endregion
-
-
         public void DiscardChanges() => _currentOpenMenu?.LoadAllOptionsFromPrefs();
         public void SaveChanges() => _currentOpenMenu?.SaveAllOptionsToPrefs();
-        public void ResetToDefault() => _currentOpenMenu?.ResetAllOptions();
+        public void ResetToDefault()
+        {
+            PopupManager.ShowPopupPanel("Reset to Default", "Are you sure you wish to reset your options to their default values?",
+                new PopupButtonParameters("Cancel", null),
+                new PopupButtonParameters("Reset", ResetCurrentSubmenuValues)
+                );
+        }
 
         #endregion
     }

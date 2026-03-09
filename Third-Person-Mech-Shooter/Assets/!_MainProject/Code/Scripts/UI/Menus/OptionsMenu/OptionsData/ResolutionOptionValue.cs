@@ -36,6 +36,16 @@ public class ResolutionOptionValue : OptionsValue<Resolution>, IDropdownSupporti
         InvokeOnValueChanged();
     }
 
+    public override void ResetValue()
+    {
+        // Reset to the screen's default resolution.
+        Resolution screenDefaultResolution = new Resolution();
+        screenDefaultResolution.width = Display.main.systemWidth;
+        screenDefaultResolution.height = Display.main.systemHeight;
+
+        Value = screenDefaultResolution;
+    }
+
     protected override void SetValueNoNotifyNoChecks(Resolution newValue)
     {
         base.SetValueNoNotifyNoChecks(newValue);

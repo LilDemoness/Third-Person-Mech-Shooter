@@ -846,6 +846,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "OptionsResetToDefault",
+                    "type": "Button",
+                    "id": "480867bc-f798-4ad4-af4a-8c3f1493eb89",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "OptionsApplyChanges",
+                    "type": "Button",
+                    "id": "fa48551d-1e14-431a-b0cc-41175f9b34ec",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -1044,6 +1062,50 @@
                     "processors": "",
                     "groups": ";Gamepad",
                     "action": "OpenFrameSelection",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "26dd6b68-0574-45a2-870d-512119f6435b",
+                    "path": "<Keyboard>/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";MnK",
+                    "action": "OptionsResetToDefault",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1a256886-a6e0-4b0c-9643-b35b34c44774",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "OptionsResetToDefault",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "acfedf3e-e494-47ca-8f5c-a6f246dd64ac",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";MnK",
+                    "action": "OptionsApplyChanges",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "87d63c6b-b25d-4543-a6aa-7e1e496d9d72",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "OptionsApplyChanges",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
