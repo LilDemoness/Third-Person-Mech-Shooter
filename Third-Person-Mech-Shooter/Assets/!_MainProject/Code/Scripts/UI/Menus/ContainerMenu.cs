@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 namespace Gameplay.UI.Menus
 {
+    /// <summary>
+    ///     A menu that contains other menus as its children, with <see cref="MenuTabButton"/> instances allowing you to swap between them.
+    /// </summary>
     public abstract class ContainerMenu : Menu
     {
         public Menu[] Children;
@@ -43,7 +46,6 @@ namespace Gameplay.UI.Menus
                 EventSystem.current.SetSelectedGameObject(Buttons[_previouslySelectedChildIndex].gameObject);
             else
                 Debug.Log("Don't select first element");
-            //    ShowChild(Children[_previouslySelectedChildIndex]);
         }
         public override async UniTask<bool> Close()
         {
@@ -60,11 +62,16 @@ namespace Gameplay.UI.Menus
         }
 
 
-        // Note: Alternatively, call Show() on the child menu in ShowChild(), and then open the child menu in Hide().
 
+        /// <summary>
+        ///     Shows the desired child. <br/>
+        ///     Doesn't 'enter' the child through the <see cref="MenuManager"/>. Instead, hides other children and shows the desired child.
+        /// </summary>
         public void ShowChild(Menu childMenu) => ShowChild(GetChildIndex(childMenu));
-        // Shows the child with the given index (Doesn't enter it).
-        // Note: This was causing issues with the LobbyBrowserUI due to calling immediately before EnterChild().
+        /// <summary>
+        ///     Shows the child with the given index. <br/>
+        ///     Doesn't 'enter' the child through the <see cref="MenuManager"/>. Instead, hides other children and shows the desired child.
+        /// </summary>
         public virtual void ShowChild(int childIndex)
         {
             if (!CanHideActiveChild())
@@ -74,15 +81,30 @@ namespace Gameplay.UI.Menus
             _previouslySelectedChildIndex = childIndex;
             HideAllChildren();
             Children[childIndex].Show();
-            //MenuManager.OpenChildMenu(Children[childIndex], this, false);
         }
+        /// <summary>
+        ///     Enters the desired child via the <see cref="MenuManager"/>.
+        /// </summary>
         public void EnterChild(Menu childMenu) => EnterChild(GetChildIndex(childMenu));
+        /// <summary>
+        ///     Enters the child with the given index via the <see cref="MenuManager"/>.
+        /// </summary>
         public virtual void EnterChild(int childIndex)
         {
-            Debug.Log("Enter Child");
+            Debug.Log($"Enter Child {childIndex}");
             _previouslySelectedChildIndex = childIndex;
             MenuManager.OpenChildMenu(Children[childIndex], Buttons[childIndex]?.GetComponent<Button>(), this);
         }
+
+
+        /// <summary>
+        ///     Enter the next child by index, looping to the first child from the last.
+        /// </summary>
+        public virtual void EnterNextChild() => EnterChild(_previouslySelectedChildIndex < Children.Length - 1 ? _previouslySelectedChildIndex + 1 : 0);
+        /// <summary>
+        ///     Enter the previous child by index, looping to the last child from the first.
+        /// </summary>
+        public virtual void EnterPreviousChild() => EnterChild(_previouslySelectedChildIndex > 0 ? _previouslySelectedChildIndex - 1 : Children.Length - 1);
 
 
         /// <summary>
@@ -90,6 +112,9 @@ namespace Gameplay.UI.Menus
         ///     Does not affect entering children, only showing.
         /// </summary>
         protected virtual bool CanHideActiveChild() => true;
+        /// <summary>
+        ///     Hides (Not Closes) all this menu's children.
+        /// </summary>
         private void HideAllChildren()
         {
             for (int i = 0; i < Children.Length; ++i)
@@ -97,6 +122,9 @@ namespace Gameplay.UI.Menus
         }
 
 
+        /// <summary>
+        ///     Returns the index for the passed Menu, throwing an exception if it does not exist under this ContainerMenu.
+        /// </summary>
         protected int GetChildIndex(Menu childMenu)
         {
             for (int i = 0; i < Children.Length; ++i)
