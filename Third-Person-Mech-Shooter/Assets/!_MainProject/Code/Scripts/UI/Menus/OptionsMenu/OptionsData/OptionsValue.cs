@@ -22,7 +22,6 @@ public abstract class BaseOptionsValue : ScriptableObject
         if (Initialised)
             return;
         Initialised = true;
-        Debug.Log("Init");
 
         LoadFromPrefs();
     }
@@ -43,10 +42,15 @@ public abstract class BaseOptionsValue : ScriptableObject
     /// <param name="callback"> The function to subscribe to the 'onValueChanged' event.</param>
     public void SubscribeToOnValueChangedAndTryTrigger(System.Action callback)
     {
-        onValueChanged += callback;
+        SubscribeToOnValueChanged(callback);
         if (Initialised)
             callback?.Invoke();
     }
+    /// <summary>
+    ///     Subscribes to this instance's 'onValueChanged' event with the given callback.
+    /// </summary>
+    /// <param name="callback"> The function to subscribe to the 'onValueChanged' event.</param>
+    public void SubscribeToOnValueChanged(System.Action callback) => onValueChanged += callback;
     /// <summary>
     ///     Unsubscribes the passed callback from this instance's 'onValueChanged' event.
     /// </summary>

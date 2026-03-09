@@ -82,7 +82,6 @@ namespace Gameplay.UI.Menus
             if (!CanHideActiveChild())
                 return;
 
-            Debug.Log($"'{this.name}' Showing Child '{childIndex}'", this);
             _previouslySelectedChildIndex = childIndex;
             HideAllChildren();
             Children[childIndex].Show();
@@ -96,7 +95,6 @@ namespace Gameplay.UI.Menus
         /// </summary>
         public virtual void EnterChild(int childIndex)
         {
-            Debug.Log($"Enter Child {childIndex}");
             _previouslySelectedChildIndex = childIndex;
             MenuManager.OpenChildMenu(Children[childIndex], Buttons[childIndex]?.GetComponent<Button>(), this);
         }

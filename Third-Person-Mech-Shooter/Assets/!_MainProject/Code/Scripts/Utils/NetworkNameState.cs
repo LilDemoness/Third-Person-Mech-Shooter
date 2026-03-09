@@ -22,7 +22,7 @@ namespace Utils
 
         public FixedPlayerName(string initialValue)
         {
-            Debug.Log(initialValue);
+            Debug.Log($"FixedPlayerName Created: {initialValue}");
             _name = new FixedString32Bytes(initialValue);
             Debug.Log(_name.ToString());
         }

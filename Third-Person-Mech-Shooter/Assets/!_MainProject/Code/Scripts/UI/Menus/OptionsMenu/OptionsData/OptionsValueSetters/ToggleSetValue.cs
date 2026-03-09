@@ -29,10 +29,9 @@ namespace Gameplay.UI.Menus.Options
 
 
         public void OnValueChanged(bool newValue) => _boolOptionValue.SetValue(newValue);
-        protected override void OnOptionsValueChanged()
+        protected override void UpdateDisplayedValue()
         {
             _toggle.SetIsOnWithoutNotify(_boolOptionValue.Value);
-            base.OnOptionsValueChanged();
         }
 
 

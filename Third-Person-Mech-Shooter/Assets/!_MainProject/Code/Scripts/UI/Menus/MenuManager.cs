@@ -36,7 +36,6 @@ namespace Gameplay.UI.Menus
                 {
                     // Selection is not null & differs from last frame's.
                     // Set our cached prior selection to the last frame's selection.
-                    Debug.Log("Update Selection: " + lastSelection.name);
                     s_priorSelectedObject = lastSelection.GetComponent<Selectable>();
                 }
 
@@ -158,7 +157,6 @@ namespace Gameplay.UI.Menus
         /// <inheritdoc cref="SetActiveMenu(Menu, Selectable, Menu)"/>
         public static async UniTask<bool> SetActiveMenuUniTask(Menu menuToSwap, Selectable triggeringSelectable, Menu parentMenu)
         {
-            Debug.Log("Set Active Menu: " + menuToSwap.name + " Parent: " + (parentMenu == null ? "NULL" : parentMenu.name));
             CacheCurrentData();
 
             // Find the index of the parent menu (Our child is one below this, so 'indexToSwap = parentIndex + 1');
@@ -180,7 +178,6 @@ namespace Gameplay.UI.Menus
                 success = await CloseActiveMenuUniTask(false, false);
                 if (!success)
                 {
-                    Debug.Log("Fail");
                     RevertOperation();
                     return false; // Failed to close a menu, so cancel the exit.
                 }
@@ -188,7 +185,6 @@ namespace Gameplay.UI.Menus
 
             // Swap the active menu to our desired.
             success = await SwapMenuUniTask(menuToSwap, triggeringSelectable);
-            Debug.Log("Swap: " + success);
             if (!success)
             {
                 RevertOperation();
@@ -298,7 +294,6 @@ namespace Gameplay.UI.Menus
 
             // We have data to cache. Cache it.
             s_cachedMenuData = s_openMenuData;
-            Debug.Log("Selected: " + s_priorSelectedObject?.name);
             s_cachedMenuData[s_cachedMenuData.Count - 1].SetReturnTargetSelectable(s_priorSelectedObject);
             return true;
         }
@@ -399,7 +394,6 @@ namespace Gameplay.UI.Menus
                 return true; // No menus are active for us to close.
             }
             bool isPrimaryCacher = CacheCurrentData();
-            Debug.Log("Primary Cacher: " + isPrimaryCacher);
 
             // Close the menu.
             Menu activeMenu = ActiveMenuData.Menu;
@@ -411,16 +405,15 @@ namespace Gameplay.UI.Menus
                 return false;
             }
 
-            Debug.Log("Closed: " + activeMenu.name);
             s_openMenuData.RemoveAt(s_openMenusCount - 1);
             --s_openMenusCount;
 
-            Debug.Log(
-                "Don't Ignore: " + (!preventClosingOfChildlessContainer)
-                + "\n Has Active Menu: " + (ActiveMenuData != null)
-                + "\n Active is Container: " + (ActiveMenuData != null && ActiveMenuData.Menu is ContainerMenu)
-                + "\n Active has Fallback for Closed Children: " + (ActiveMenuData != null && ActiveMenuData.Menu is ContainerMenu && (ActiveMenuData.Menu as ContainerMenu).OnChildClosedFallback != ContainerMenu.ChildClosedFallback.None)
-                );
+            //Debug.Log(
+            //    "Don't Ignore: " + (!preventClosingOfChildlessContainer)
+            //    + "\n Has Active Menu: " + (ActiveMenuData != null)
+            //    + "\n Active is Container: " + (ActiveMenuData != null && ActiveMenuData.Menu is ContainerMenu)
+            //    + "\n Active has Fallback for Closed Children: " + (ActiveMenuData != null && ActiveMenuData.Menu is ContainerMenu && (ActiveMenuData.Menu as ContainerMenu).OnChildClosedFallback != ContainerMenu.ChildClosedFallback.None)
+            //    );
             if (!preventClosingOfChildlessContainer && ActiveMenuData != null && ActiveMenuData.Menu is ContainerMenu && (ActiveMenuData.Menu as ContainerMenu).OnChildClosedFallback != ContainerMenu.ChildClosedFallback.None)
             {
                 // Our parent is a ContainerMenu that cannot be open without its children, so close it too.

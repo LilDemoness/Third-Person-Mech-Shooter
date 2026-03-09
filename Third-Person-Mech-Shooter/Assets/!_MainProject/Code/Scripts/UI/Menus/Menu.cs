@@ -31,7 +31,6 @@ namespace Gameplay.UI.Menus
         /// </param>
         public virtual void Open(bool selectFirstElement = true)
         {
-            Debug.Log(this.name + " Select First?: " + selectFirstElement);
             Show();
 
             if (selectFirstElement)
@@ -54,7 +53,6 @@ namespace Gameplay.UI.Menus
         public virtual async UniTask<bool> Close()
 #pragma warning restore CS1998 
         {
-            Debug.Log("Close: " + this.name);
             Hide();
             return true;
         }

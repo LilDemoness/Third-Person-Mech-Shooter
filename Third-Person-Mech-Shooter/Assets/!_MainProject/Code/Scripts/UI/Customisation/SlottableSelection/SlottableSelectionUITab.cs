@@ -41,7 +41,6 @@ namespace UI.Customisation.SlottableSelection
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
-                Debug.Log("Clicked");
                 OnPressed?.Invoke(_slotIndex);
             }
         }

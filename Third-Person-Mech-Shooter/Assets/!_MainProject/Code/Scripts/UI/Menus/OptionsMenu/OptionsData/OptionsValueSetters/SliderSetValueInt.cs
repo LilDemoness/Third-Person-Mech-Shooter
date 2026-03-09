@@ -42,10 +42,10 @@ namespace Gameplay.UI.Menus.Options
 
 
         public void OnSliderValueChanged(float newValue) => _intOptionValue.SetValue(Mathf.RoundToInt(newValue));
-        protected override void OnOptionsValueChanged()
+        protected override void UpdateDisplayedValue()
         {
-            base.OnOptionsValueChanged();
             Slider.SetValueWithoutNotify(_intOptionValue.Value);
+            base.UpdateDisplayedValue();
         }
 
 

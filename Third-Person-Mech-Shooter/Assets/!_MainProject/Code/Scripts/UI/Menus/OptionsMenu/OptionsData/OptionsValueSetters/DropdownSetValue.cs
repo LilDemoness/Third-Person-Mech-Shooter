@@ -37,10 +37,9 @@ namespace Gameplay.UI.Menus.Options
         }
 
         public void OnValueChanged(int resolutionValue) => _optionsValue.SetValue(resolutionValue);
-        protected override void OnOptionsValueChanged()
+        protected override void UpdateDisplayedValue()
         {
             _dropdown.SetValueWithoutNotify(_optionsValue.GetSelectedOptionIndex());
-            base.OnOptionsValueChanged();
         }
 
         private void InitialiseDropdownWithResolutions()

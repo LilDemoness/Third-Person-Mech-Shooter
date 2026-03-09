@@ -42,10 +42,10 @@ namespace Gameplay.UI.Menus.Options
 
 
         public void OnSliderValueChanged(float newValue) => _floatOptionValue.SetValue(newValue);
-        protected override void OnOptionsValueChanged()
+        protected override void UpdateDisplayedValue()
         {
             Slider.SetValueWithoutNotify(_floatOptionValue.Value);
-            base.OnOptionsValueChanged();
+            base.UpdateDisplayedValue();
         }
 
 
@@ -76,10 +76,9 @@ namespace Gameplay.UI.Menus.Options
 
         public abstract void SetValue(float value);
 
-        protected override void OnOptionsValueChanged()
+        protected override void UpdateDisplayedValue()
         {
             OnUpdateDisplayValue?.Invoke();
-            base.OnOptionsValueChanged();
         }
 
 

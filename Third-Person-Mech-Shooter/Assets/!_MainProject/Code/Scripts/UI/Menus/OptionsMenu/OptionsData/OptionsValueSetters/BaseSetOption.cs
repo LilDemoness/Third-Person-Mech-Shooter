@@ -52,7 +52,8 @@ namespace Gameplay.UI.Menus.Options
         public virtual void Initialise()
         {
             OptionsValue.Init();
-            OptionsValue.SubscribeToOnValueChangedAndTryTrigger(OnOptionsValueChanged);
+            OptionsValue.SubscribeToOnValueChanged(OnOptionsValueChanged);
+            UpdateDisplayedValue();
         }
         public virtual void SaveToPrefs() => OptionsValue.SaveToPrefs();
         public virtual void LoadFromPrefs() => OptionsValue.LoadFromPrefs();
@@ -61,8 +62,10 @@ namespace Gameplay.UI.Menus.Options
 
         protected virtual void OnOptionsValueChanged()
         {
+            UpdateDisplayedValue();
             OnAnyChanged?.Invoke();
         }
+        protected abstract void UpdateDisplayedValue();
 
 
         public abstract void SetupNavigation(BaseSetOption onUp, BaseSetOption onDown);

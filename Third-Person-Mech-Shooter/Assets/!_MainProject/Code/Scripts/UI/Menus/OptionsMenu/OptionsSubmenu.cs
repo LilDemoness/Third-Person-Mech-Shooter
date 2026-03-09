@@ -115,10 +115,6 @@ namespace Gameplay.UI.Menus.Options
 
 
 
-        private void OnAnyOptionChanged()
-        {
-            Debug.Log("Option Changed");
-            _hasChanges = true;
-        }
+        private void OnAnyOptionChanged() => _hasChanges = true;
     }
 }
