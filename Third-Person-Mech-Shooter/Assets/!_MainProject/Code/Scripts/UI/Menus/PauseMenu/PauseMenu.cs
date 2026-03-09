@@ -2,12 +2,13 @@ using ApplicationLifecycle.Messages;
 using Infrastructure;
 using Netcode.ConnectionManagement;
 using UnityEngine;
+using UnityEngine.UI;
 using UserInput;
 using VContainer;
 
 namespace Gameplay.UI.Menus.Pause
 {
-    public class PauseMenu : Menu
+    public class PauseMenu : ContainerMenu
     {
         private const ClientInput.ActionTypes LOCKING_TYPES = ClientInput.ActionTypes.Everything & ~ClientInput.ActionTypes.UI;
 
@@ -28,6 +29,7 @@ namespace Gameplay.UI.Menus.Pause
         {
             ClientInput.OnPauseGamePerformed += OnPauseGamePerformed;
             _isOpen = false;
+
             Hide();
         }
         private void OnDestroy()
@@ -60,6 +62,13 @@ namespace Gameplay.UI.Menus.Pause
                 _resumeAfterFrameCoroutine = StartCoroutine(ResumeAfterFrame());
             }
         }
+        public override void Reopen(Selectable targetSelectable = null)
+        {
+            ShowChild(0);   // Change to be a setting in ContainerMenu of returning to the first (0th) child when a child is closed and no others are opened (Along with the option of doing nothing or closing the parent too).
+            base.Reopen(targetSelectable);
+        }
+
+
         private Coroutine _resumeAfterFrameCoroutine;
         private System.Collections.IEnumerator ResumeAfterFrame()
         {
@@ -90,7 +99,8 @@ namespace Gameplay.UI.Menus.Pause
             MenuManager.CloseMenu(this);
         }
 
-        public void ShowOptionsMenu(UnityEngine.UI.Selectable sender) => MenuManager.OpenChildMenu(_optionsMenu, sender, this);
+        //public void ShowOptionsMenu(UnityEngine.UI.Selectable sender) => MenuManager.OpenMenu(_optionsMenu, true, sender, hideCurrent: true);
+        public void ShowOptionsMenu(UnityEngine.UI.Selectable sender) => EnterChild(_optionsMenu);
 
         public void OnExitToMainMenuPressed() => _connectionManager.RequestShutdown();
         public void OnExitToDesktopPressed() => _quitApplicationPub.Publish(new QuitApplicationMessage());

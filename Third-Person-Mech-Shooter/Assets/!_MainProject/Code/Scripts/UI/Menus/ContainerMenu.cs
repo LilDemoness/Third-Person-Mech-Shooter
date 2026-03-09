@@ -34,12 +34,10 @@ namespace Gameplay.UI.Menus
         }
         public override async UniTask<bool> Close()
         {
-            Debug.Log("Close");
-            Hide();
             HideAllChildren();
             _previouslySelectedChildIndex = 0;
 
-            return true;
+            return await base.Close();
         }
 
 
@@ -53,7 +51,7 @@ namespace Gameplay.UI.Menus
             if (!CanHideActiveChild())
                 return;
 
-            Debug.Log("Show Child");
+            Debug.Log($"'{this.name}' Showing Child '{childIndex}'", this);
             _previouslySelectedChildIndex = childIndex;
             HideAllChildren();
             Children[childIndex].Show();
@@ -64,7 +62,7 @@ namespace Gameplay.UI.Menus
         {
             Debug.Log("Enter Child");
             _previouslySelectedChildIndex = childIndex;
-            MenuManager.OpenChildMenu(Children[childIndex], Buttons[childIndex].GetComponent<Button>(), this);
+            MenuManager.OpenChildMenu(Children[childIndex], Buttons[childIndex]?.GetComponent<Button>(), this);
         }
 
 

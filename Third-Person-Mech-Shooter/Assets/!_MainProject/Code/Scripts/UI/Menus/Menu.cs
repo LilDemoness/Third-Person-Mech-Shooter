@@ -7,36 +7,7 @@ using UnityEngine.UI;
 
 namespace Gameplay.UI.Menus
 {
-    /*public class Menu : MonoBehaviour
-    {
-        [SerializeField] protected CanvasGroup CanvasGroup;
-        [SerializeField] protected GameObject InitialSelection;
-
-
-        public UnityEvent OnShow;
-        public UnityEvent OnHide;
-
-
-
-        protected virtual void Start()
-        {
-            Hide();
-        }
-
-        public virtual void Show()
-        {
-            CanvasGroup.Show();
-            EventSystem.current.SetSelectedGameObject(InitialSelection);
-
-            OnShow?.Invoke();
-        }
-        public virtual void Hide()
-        {
-            CanvasGroup.Hide();
-            OnHide?.Invoke();
-        }
-    }*/
-    public abstract class Menu : MonoBehaviour
+    public class Menu : MonoBehaviour
     {
         [field: SerializeField] protected CanvasGroup CanvasGroup { get; private set; }
         [SerializeField] private Selectable _firstSelectedElement;
@@ -67,6 +38,7 @@ namespace Gameplay.UI.Menus
         // Close this menu.
         public virtual async UniTask<bool> Close()
         {
+            Debug.Log("Close: " + this.name);
             Hide();
             return true;
         }

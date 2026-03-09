@@ -73,7 +73,10 @@ namespace Gameplay.UI.Menus.Options
             CloseAllMenus();
             bool success = await SetActiveMenu(_gameplayMenu);
             if (!success)
+            {
+                Debug.Log("Failed to set to Gameplay Menu");
                 return false;
+            }
 
             return await base.Close();
         }

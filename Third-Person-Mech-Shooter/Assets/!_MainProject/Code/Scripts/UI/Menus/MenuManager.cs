@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Cysharp.Threading.Tasks;
+using System.Linq;
 
 namespace Gameplay.UI.Menus
 {
@@ -127,9 +128,12 @@ namespace Gameplay.UI.Menus
             return parentMenu == s_blockingPopups[s_blockingPopups.Count - 1];
         }
 
-        public static bool IsActiveMenu(this Menu menu) => ActiveMenuData.Menu == menu;
+        public static bool IsActiveMenu(this Menu menu) => s_openMenusCount > 0 ? ActiveMenuData.Menu == menu : false;
         // Note: Defaults to true if no popups are active.
         public static bool IsActivePopup(this Popup popup) => s_blockingPopups.Count > 0 ? s_blockingPopups[s_blockingPopups.Count - 1] == popup : true;
+
+        public static bool IsInOpenMenus(this Menu menu) => s_openMenusCount > 0 ? s_openMenuData.Any(t => t.Menu == menu) : false;
+
 
 
         /// <summary>
@@ -206,18 +210,23 @@ namespace Gameplay.UI.Menus
 
 
         /// <summary>
-        ///     Opens the desired menu.
+        ///     Opens the desired menu.<br/>
+        ///     Doesn't close the active menu.
         /// </summary>
         /// <param name="menu"> The menu you wish to open.</param>
         /// <param name="selectFirstElement"></param>
         /// <param name="sourceSelectable"> The selectable that triggered this opening, or null if no selectable triggered it. Used when returning to the previous menu.</param>
-        public static void OpenMenu(Menu menu, bool selectFirstElement, Selectable sourceSelectable)
+        public static void OpenMenu(Menu menu, bool selectFirstElement, Selectable sourceSelectable, bool hideCurrent = true)
         {
             // Cache the selectable for the purposes of returning.
             if (ActiveMenuData == null)
                 s_baseSelectable = sourceSelectable;
             else
                 ActiveMenuData.OnOpenedChildMenu(sourceSelectable);
+
+            // Hide our current menu, if desired.
+            if (hideCurrent)
+                ActiveMenuData?.Menu.Hide();    // Close instead?
 
             // Add the new menu.
             s_openMenuData.Add(new MenuData(menu));
@@ -238,7 +247,7 @@ namespace Gameplay.UI.Menus
         private static async UniTask<bool> OpenChildMenuUniTask(Menu child, Selectable sourceSelectable, Menu parent)
         {
             if (parent == null)
-                OpenMenu(child, true, sourceSelectable);
+                OpenMenu(child, true, sourceSelectable, hideCurrent: false);
             else
             {
                 // The menu has a desired parent.
@@ -251,7 +260,7 @@ namespace Gameplay.UI.Menus
                 }
 
                 // Open our child under the parent.
-                OpenMenu(child, true, sourceSelectable);
+                OpenMenu(child, true, sourceSelectable, hideCurrent: false);
             }
 
             return true;
@@ -300,7 +309,7 @@ namespace Gameplay.UI.Menus
             Debug.Log(cachedMenusCount + " | " + s_openMenusCount);
             for(int i = s_openMenusCount; i < cachedMenusCount; ++i)
             {
-                OpenMenu(s_cachedMenuData[i].Menu, false, i == 0 ? s_baseSelectable : s_cachedMenuData[i - 1].SelectableTargetForReopen);
+                OpenMenu(s_cachedMenuData[i].Menu, false, i == 0 ? s_baseSelectable : s_cachedMenuData[i - 1].SelectableTargetForReopen, hideCurrent: false);
             }
 
             // Repen the new current menu.
@@ -381,6 +390,7 @@ namespace Gameplay.UI.Menus
             if (!success)
             {
                 if (isPrimaryCacher) { RevertOperation(); }
+                Debug.Log("Failure");
                 return false;
             }
 
@@ -497,6 +507,8 @@ namespace Gameplay.UI.Menus
         {
             s_openMenuData = new List<MenuData>();
             s_openMenusCount = 0;
+
+            s_priorSelectedObject = null;
 
             if (s_blockingPopups != null)
             {
