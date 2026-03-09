@@ -171,9 +171,9 @@ namespace Gameplay.GameState
         {
             MenuManager.SetActiveMenu(_profileMenu, sender);
         }
-        public void OnOptionsPressed()
+        public void OnOptionsPressed(Button sender)
         {
-            //MenuManager.SetActiveMenu(_optionsMenu);
+            MenuManager.SetActiveMenu(_optionsMenu, sender);
         }
         public void OnQuitGamePressed()
         {

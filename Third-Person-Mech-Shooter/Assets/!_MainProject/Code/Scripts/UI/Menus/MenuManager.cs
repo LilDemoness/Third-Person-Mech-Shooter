@@ -41,8 +41,7 @@ namespace Gameplay.UI.Menus
                 lastSelection = currentSelection;
             }
 
-            if (!Application.isPlaying)
-                Debug.LogWarning("Stopping Selected GameObject Detection");
+            Debug.LogWarning("Stopping Selected GameObject Detection");
         }
 
 
