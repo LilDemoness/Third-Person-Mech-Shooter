@@ -244,7 +244,7 @@ namespace UI
             if (_graphic == null)
                 Debug.LogWarning($"NonNavigableButton '{this.gameObject.name}' has no graphic set", this.gameObject);
 
-            if (_iconDisplayText != null)
+            if (_iconDisplayText != null && _textFormattingString != null)
             {
                 if (!Editor_IsFormattingStringValid())
                     Debug.LogWarning("NonNavigableButton has an invalid entry string", this.gameObject);

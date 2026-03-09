@@ -424,7 +424,7 @@ namespace Gameplay.UI.Menus
         ///     Closes the desired menu and reopens its parent (If it has one).
         /// </summary>
         public static void CloseMenu(Menu menu) => CloseMenusToReachUniTask(menu, MenuOperation.Close).Forget();
-        public static void ReturnToPreviousMenu() { }// => CloseActiveMenu(null, true, true);
+        public static void ReturnToPreviousMenu() => CloseActiveMenuUniTask(reopenParentMenu: true).Forget();
 
         /// <summary>
         ///     Closes the current active menu and opens the one above it in s_openMenus (If it exists).
