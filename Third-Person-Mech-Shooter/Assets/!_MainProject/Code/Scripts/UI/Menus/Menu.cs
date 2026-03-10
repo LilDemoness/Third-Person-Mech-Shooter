@@ -66,5 +66,10 @@ namespace Gameplay.UI.Menus
         ///     Hides the menu without performing the rest of its closing logic.
         /// </summary>
         public virtual void Hide() => CanvasGroup.Hide();
+
+
+
+        [ContextMenu("Debug/Log Open Menus")]
+        private void DebugLog() => MenuManager.LogOpenMenus();
     }
 }

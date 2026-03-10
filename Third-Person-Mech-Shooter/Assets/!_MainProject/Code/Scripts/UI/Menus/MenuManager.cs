@@ -67,7 +67,7 @@ namespace Gameplay.UI.Menus
 
 
 
-        private static void LogOpenMenus()
+        public static void LogOpenMenus()
         {
             string outputString = "";
             for (int i = 0; i < s_openMenuData.Count; ++i)
