@@ -786,7 +786,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97f0f0cdedd7baa439c63dd851362e21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _persistentPlayerCollection: {fileID: 11400000, guid: 9596a55ab7773b941bfe4be909d1f13d, type: 2}
   _sessionNameLabel: {fileID: 1141938820816952374}
+  _playerNameLabel: {fileID: 4164978129306388671}
   _joinCodeLabel: {fileID: 3155408931178537476}
   _gameModeLabel: {fileID: 4463347668928474226}
   _mapNameLabel: {fileID: 2017710471330772137}
