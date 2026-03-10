@@ -25,6 +25,10 @@ namespace Gameplay.UI.Menus
         [SerializeField] private Graphic _noLobbiesLabel;
 
 
+        [Header("UI Indicator References")]
+        [SerializeField] private Image _sortOrderImage;
+
+
         [Header("Submenu References")]
         [SerializeField] private EditFiltersUI _customiseFiltersMenu;
         [SerializeField] private JoinLobbyWithCodeUI _joinLobbyWithCodeMenu;
@@ -142,5 +146,32 @@ namespace Gameplay.UI.Menus
 
         public void OpenEditFiltersUI() => MenuManager.OpenChildMenu(_customiseFiltersMenu, null, this);
         public void OpenJoinCodePopup() => MenuManager.OpenChildMenu(_joinLobbyWithCodeMenu, null, this);
+
+
+        public void SetSortOrder(TMPro.TMP_Dropdown sourceDropdown)
+        {
+            const int PLAYER_COUNT_INDEX = 3;
+            SortField sortField = sourceDropdown.value switch
+            {
+                0 => SortField.CreationTime,            // Date Created.
+                1 => Constants.GAME_MODE_SORT_FIELD,    // Game Mode.
+                2 => Constants.MAP_SORT_FIELD,          // Map Name.
+                PLAYER_COUNT_INDEX => SortField.AvailableSlots, // Player Count.
+                _ => throw new System.NotImplementedException()
+            };
+            SortOrder sortOrder = sourceDropdown.value switch
+            {
+                PLAYER_COUNT_INDEX => SortOrder.Descending,
+                _ => SortOrder.Ascending,
+            };
+
+            _sortOrderImage.rectTransform.eulerAngles = new Vector3(0.0f, 0.0f, 0.0f);
+            _lobbyUIMediator.SetSortOrder(sortField, sortOrder);
+        }
+        public void InvertSortOrder()
+        {
+            _sortOrderImage.rectTransform.eulerAngles = new Vector3(0.0f, 0.0f, _sortOrderImage.rectTransform.eulerAngles.z + 180.0f);
+            _lobbyUIMediator.InvertSortOrder();
+        }
     }
 }

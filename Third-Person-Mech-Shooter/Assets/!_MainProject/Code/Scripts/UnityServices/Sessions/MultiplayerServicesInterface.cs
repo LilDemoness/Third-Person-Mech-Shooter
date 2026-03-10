@@ -36,7 +36,7 @@ namespace UnityServices.Sessions
 
 
             _filterOptions = new();
-            _sortOptions = new();
+            ResetSortOptions();
         }
 
 
@@ -192,8 +192,22 @@ namespace UnityServices.Sessions
 
         #region Sort Options
 
-        private List<SortOption> GetSortOptions() => _sortOptions.Count > 0 ? _sortOptions : _defaultSortOptions;
-        public void ClearSortOptions() => _sortOptions.Clear();
+        private List<SortOption> GetSortOptions() => _sortOptions;//_sortOptions.Count > 0 ? _sortOptions : _defaultSortOptions;
+
+        public void SetSortOptions(SortField sortField, SortOrder sortOrder)
+        {
+            ResetSortOptions();
+            _sortOptions[0] = new SortOption(sortOrder, sortField);
+        }
+        public void InvertSortOptions()
+        {
+            if (_sortOptions.Count == 0)
+                ResetSortOptions();
+
+            for(int i = 0; i < _sortOptions.Count; ++i)
+                _sortOptions[i].Order = _sortOptions[i].Order == SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending;
+        }
+        public void ResetSortOptions() => _sortOptions = _defaultSortOptions;
 
         #endregion
     }

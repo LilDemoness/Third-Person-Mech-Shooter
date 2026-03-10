@@ -206,7 +206,16 @@ namespace Gameplay.UI.Menus
 
         #region Ordering
 
-        public void SetSortOrder(SortField field, SortOrder order) => throw new System.NotImplementedException("Changing Sort Order Not Implemented");
+        public void SetSortOrder(SortField field, SortOrder order)
+        {
+            _multiplayerServicesFacade.SetSortOptions(field, order);
+            QueryLobbiesRequest(false);
+        }
+        public void InvertSortOrder()
+        {
+            _multiplayerServicesFacade.InvertSortOptions();
+            QueryLobbiesRequest(false);
+        }
         public void ResetSortOrder() => _multiplayerServicesFacade.ClearSortOptions();
 
         #endregion

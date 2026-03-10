@@ -270,7 +270,9 @@ namespace UnityServices.Sessions
 
 
 
-        public void ClearSortOptions() => _multiplayerServicesInterface.ClearSortOptions();
+        public void SetSortOptions(SortField sortField, SortOrder sortOrder) => _multiplayerServicesInterface.SetSortOptions(sortField, sortOrder);
+        public void InvertSortOptions() => _multiplayerServicesInterface.InvertSortOptions();
+        public void ClearSortOptions() => _multiplayerServicesInterface.ResetSortOptions();
 
 
 
@@ -551,8 +553,8 @@ namespace UnityServices.Sessions
             
 
             IHostSession hostSession = CurrentUnitySession.AsHost();
-            hostSession.SetProperty("GameMode", new SessionProperty(gameMode.ToString(), index: PropertyIndex.String1));
-            hostSession.SetProperty("Map", new SessionProperty(mapName, index: PropertyIndex.String2));
+            hostSession.SetProperty("GameMode", new SessionProperty(gameMode.ToString(), index: Constants.GAME_MODE_PROPERTY_INDEX));
+            hostSession.SetProperty("Map", new SessionProperty(mapName, index: Constants.MAP_PROPERTY_INDEX));
             await hostSession.SavePropertiesAsync();
         }
 

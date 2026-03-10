@@ -516,9 +516,9 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 28624003}
   m_Enabled: 1
-  m_Alpha: 0
-  m_Interactable: 0
-  m_BlocksRaycasts: 0
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
 --- !u!114 &28624007
 MonoBehaviour:
@@ -536,6 +536,7 @@ MonoBehaviour:
   _firstSelectedElement: {fileID: 0}
   _lobbyListItemPrototype: {fileID: 432897847}
   _noLobbiesLabel: {fileID: 98605133}
+  _sortOrderImage: {fileID: 2013009916}
   _customiseFiltersMenu: {fileID: 230000755}
   _joinLobbyWithCodeMenu: {fileID: 219435611}
 --- !u!1 &29766202
@@ -4191,9 +4192,9 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 248659019}
   m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
+  m_Alpha: 0
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
 --- !u!114 &248659022
 MonoBehaviour:
@@ -5391,7 +5392,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 327911510}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 28624007}
+        m_TargetAssemblyTypeName: Gameplay.UI.Menus.LobbyBrowserUI, Assembly-CSharp
+        m_MethodName: InvertSortOrder
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &330174207
 GameObject:
   m_ObjectHideFlags: 0
@@ -10669,7 +10682,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Date Created
+  m_text: Player Count
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -15074,7 +15087,7 @@ MonoBehaviour:
   m_Placeholder: {fileID: 0}
   m_ItemText: {fileID: 1088308948}
   m_ItemImage: {fileID: 0}
-  m_Value: 0
+  m_Value: 3
   m_MultiSelect: 0
   m_Options:
     m_Options:
@@ -15092,7 +15105,19 @@ MonoBehaviour:
       m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 28624007}
+        m_TargetAssemblyTypeName: Gameplay.UI.Menus.LobbyBrowserUI, Assembly-CSharp
+        m_MethodName: SetSortOrder
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 986266191}
+          m_ObjectArgumentAssemblyTypeName: TMPro.TMP_Dropdown, Unity.TextMeshPro
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_AlphaFadeSpeed: 0.15
 --- !u!114 &986266192
 MonoBehaviour:
