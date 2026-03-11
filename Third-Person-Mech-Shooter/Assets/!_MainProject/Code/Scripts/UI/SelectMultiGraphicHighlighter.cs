@@ -10,10 +10,10 @@ namespace Gameplay.UI
         [SerializeField] private Graphic[] _graphics;
 
 
-        [SerializeField] private Color _normalColor;
-        [SerializeField] private Color _highlightedColor;
-        [SerializeField] private Color _selectedColor;
-        [SerializeField] private Color _disabledColor;
+        [SerializeField] private Color _normalColor = new Color(1.0f, 1.0f, 1.0f);
+        [SerializeField] private Color _highlightedColor = new Color(0.8f, 0.8f, 0.8f);
+        [SerializeField] private Color _selectedColor = new Color(0.8f, 0.8f, 0.8f);
+        [SerializeField] private Color _disabledColor = new Color(0.8f, 0.8f, 0.8f, 0.5f);
 
 
 

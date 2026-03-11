@@ -298,9 +298,9 @@ namespace UserInput
             GameObject selected = EventSystem.current.currentSelectedGameObject;
             if (selected != null)
             {
-                if (selected.TryGetComponent<UnityEngine.UI.InputField>(out var inputField))
+                if (selected.TryGetComponent<UnityEngine.UI.InputField>(out var inputField) && inputField.isFocused)
                     HandleInputFieldFocused();
-                else if (selected.TryGetComponent<TMPro.TMP_InputField>(out var tmpInputField))
+                else if (selected.TryGetComponent<TMPro.TMP_InputField>(out var tmpInputField) && tmpInputField.isFocused)
                     HandleInputFieldFocused();
                 else
                     HandleNoInputFieldFocused();

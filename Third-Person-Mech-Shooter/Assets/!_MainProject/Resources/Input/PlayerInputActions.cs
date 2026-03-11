@@ -950,6 +950,24 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ApplyFilters"",
+                    ""type"": ""Button"",
+                    ""id"": ""ada2f91c-e66e-45e9-8893-8d2d70aec095"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ResetFilters"",
+                    ""type"": ""Button"",
+                    ""id"": ""0ee1e974-6174-4881-bc21-89f94d517499"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1194,6 +1212,50 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""OptionsApplyChanges"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""65ec8e2f-0829-4a57-9895-5e4b590e5606"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";MnK"",
+                    ""action"": ""ApplyFilters"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""132fb479-b8b0-4f16-9443-076e1c8de628"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""ApplyFilters"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""35fcb7fb-96ff-4c71-9d0a-94ed56505d21"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";MnK"",
+                    ""action"": ""ResetFilters"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b95fe3e7-7b18-4ee7-8eeb-b7d0c9329c1c"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""ResetFilters"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -1405,6 +1467,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_MainMenu_OpenFrameSelection = m_MainMenu.FindAction("OpenFrameSelection", throwIfNotFound: true);
         m_MainMenu_OptionsResetToDefault = m_MainMenu.FindAction("OptionsResetToDefault", throwIfNotFound: true);
         m_MainMenu_OptionsApplyChanges = m_MainMenu.FindAction("OptionsApplyChanges", throwIfNotFound: true);
+        m_MainMenu_ApplyFilters = m_MainMenu.FindAction("ApplyFilters", throwIfNotFound: true);
+        m_MainMenu_ResetFilters = m_MainMenu.FindAction("ResetFilters", throwIfNotFound: true);
         // MultiplayerChat
         m_MultiplayerChat = asset.FindActionMap("MultiplayerChat", throwIfNotFound: true);
         m_MultiplayerChat_OpenChat = m_MultiplayerChat.FindAction("OpenChat", throwIfNotFound: true);
@@ -2085,6 +2149,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_MainMenu_OpenFrameSelection;
     private readonly InputAction m_MainMenu_OptionsResetToDefault;
     private readonly InputAction m_MainMenu_OptionsApplyChanges;
+    private readonly InputAction m_MainMenu_ApplyFilters;
+    private readonly InputAction m_MainMenu_ResetFilters;
     /// <summary>
     /// Provides access to input actions defined in input action map "MainMenu".
     /// </summary>
@@ -2140,6 +2206,14 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "MainMenu/OptionsApplyChanges".
         /// </summary>
         public InputAction @OptionsApplyChanges => m_Wrapper.m_MainMenu_OptionsApplyChanges;
+        /// <summary>
+        /// Provides access to the underlying input action "MainMenu/ApplyFilters".
+        /// </summary>
+        public InputAction @ApplyFilters => m_Wrapper.m_MainMenu_ApplyFilters;
+        /// <summary>
+        /// Provides access to the underlying input action "MainMenu/ResetFilters".
+        /// </summary>
+        public InputAction @ResetFilters => m_Wrapper.m_MainMenu_ResetFilters;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -2199,6 +2273,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @OptionsApplyChanges.started += instance.OnOptionsApplyChanges;
             @OptionsApplyChanges.performed += instance.OnOptionsApplyChanges;
             @OptionsApplyChanges.canceled += instance.OnOptionsApplyChanges;
+            @ApplyFilters.started += instance.OnApplyFilters;
+            @ApplyFilters.performed += instance.OnApplyFilters;
+            @ApplyFilters.canceled += instance.OnApplyFilters;
+            @ResetFilters.started += instance.OnResetFilters;
+            @ResetFilters.performed += instance.OnResetFilters;
+            @ResetFilters.canceled += instance.OnResetFilters;
         }
 
         /// <summary>
@@ -2243,6 +2323,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @OptionsApplyChanges.started -= instance.OnOptionsApplyChanges;
             @OptionsApplyChanges.performed -= instance.OnOptionsApplyChanges;
             @OptionsApplyChanges.canceled -= instance.OnOptionsApplyChanges;
+            @ApplyFilters.started -= instance.OnApplyFilters;
+            @ApplyFilters.performed -= instance.OnApplyFilters;
+            @ApplyFilters.canceled -= instance.OnApplyFilters;
+            @ResetFilters.started -= instance.OnResetFilters;
+            @ResetFilters.performed -= instance.OnResetFilters;
+            @ResetFilters.canceled -= instance.OnResetFilters;
         }
 
         /// <summary>
@@ -2875,6 +2961,20 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnOptionsApplyChanges(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ApplyFilters" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnApplyFilters(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ResetFilters" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnResetFilters(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "MultiplayerChat" which allows adding and removing callbacks.
