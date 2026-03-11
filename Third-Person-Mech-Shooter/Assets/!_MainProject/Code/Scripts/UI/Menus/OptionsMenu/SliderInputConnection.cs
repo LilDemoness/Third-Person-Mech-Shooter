@@ -8,14 +8,12 @@ namespace Gameplay.UI.Menus.Options
     public class SliderInputConnection : MonoBehaviour
     {
         [SerializeField] private SliderSetValue _slider;
+        [SerializeField] private TMP_InputField _thisInputField;
         public Selectable Selectable => _thisInputField;
-        private TMP_InputField _thisInputField;
 
 
         private void Awake()
         {
-            _thisInputField = this.GetComponent<TMP_InputField>();
-
             _thisInputField.onSubmit.AddListener(SetSliderValue);
             _slider.OnUpdateDisplayValue += UpdateTextToSliderValueNoNotify;
         }

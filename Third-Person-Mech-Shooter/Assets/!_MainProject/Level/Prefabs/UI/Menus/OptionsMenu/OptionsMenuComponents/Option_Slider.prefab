@@ -668,6 +668,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _slider: {fileID: 4694771599150883761}
+  _thisInputField: {fileID: 2313369897633175373}
 --- !u!114 &1734170391210762046
 MonoBehaviour:
   m_ObjectHideFlags: 0
