@@ -206,14 +206,14 @@ namespace Gameplay.UI.Menus
 
         #region Ordering
 
-        public void SetSortOrder(SortField field, SortOrder order)
+        public void SetSortOrder(SortField field, bool inverted)
         {
-            _multiplayerServicesFacade.SetSortOptions(field, order);
+            _multiplayerServicesFacade.SetSortOptions(field, inverted);
             QueryLobbiesRequest(false);
         }
-        public void InvertSortOrder()
+        public void InvertSortOrder(bool inverted)
         {
-            _multiplayerServicesFacade.InvertSortOptions();
+            _multiplayerServicesFacade.InvertSortOptions(inverted);
             QueryLobbiesRequest(false);
         }
         public void ResetSortOrder() => _multiplayerServicesFacade.ClearSortOptions();

@@ -194,21 +194,36 @@ namespace UnityServices.Sessions
 
         private List<SortOption> GetSortOptions() => _sortOptions;//_sortOptions.Count > 0 ? _sortOptions : _defaultSortOptions;
 
-        public void SetSortOptions(SortField sortField, SortOrder sortOrder)
+        public void SetSortOptions(SortField sortField, bool inverted)
         {
             ResetSortOptions();
-            _sortOptions[0] = new SortOption(sortOrder, sortField);
+            _sortOptions[0] = new SortOption(sortField.GetSortOrder(inverted), sortField);
         }
-        public void InvertSortOptions()
+        public void InvertSortOptions(bool inverted)
         {
             if (_sortOptions.Count == 0)
                 ResetSortOptions();
 
             for(int i = 0; i < _sortOptions.Count; ++i)
-                _sortOptions[i].Order = _sortOptions[i].Order == SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending;
+                _sortOptions[i].Order = _sortOptions[i].Field.GetSortOrder(inverted);
         }
         public void ResetSortOptions() => _sortOptions = _defaultSortOptions;
 
+
         #endregion
+    }
+
+    public static class FilteringExtensions
+    {
+        public static SortOrder GetSortOrder(this SortField sortField, bool inverted = false)
+        {
+            switch (sortField)
+            {
+                case SortField.AvailableSlots:
+                case SortField.CreationTime:
+                    return (!inverted ? SortOrder.Descending : SortOrder.Ascending);
+                default: return (!inverted ? SortOrder.Ascending : SortOrder.Descending);
+            }
+        }
     }
 }

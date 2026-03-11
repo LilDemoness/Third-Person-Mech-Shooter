@@ -270,8 +270,8 @@ namespace UnityServices.Sessions
 
 
 
-        public void SetSortOptions(SortField sortField, SortOrder sortOrder) => _multiplayerServicesInterface.SetSortOptions(sortField, sortOrder);
-        public void InvertSortOptions() => _multiplayerServicesInterface.InvertSortOptions();
+        public void SetSortOptions(SortField sortField, bool inverted) => _multiplayerServicesInterface.SetSortOptions(sortField, inverted);
+        public void InvertSortOptions(bool inverted) => _multiplayerServicesInterface.InvertSortOptions(inverted);
         public void ClearSortOptions() => _multiplayerServicesInterface.ResetSortOptions();
 
 
@@ -388,6 +388,7 @@ namespace UnityServices.Sessions
                 return;
             }
 
+            Debug.Log(_rateLimitQuery.CooldownTimeLength);
             try
             {
                 var queryResults = await _multiplayerServicesInterface.QuerySessions();

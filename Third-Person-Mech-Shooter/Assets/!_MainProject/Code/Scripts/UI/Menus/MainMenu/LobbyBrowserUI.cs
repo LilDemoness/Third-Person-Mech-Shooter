@@ -27,6 +27,16 @@ namespace Gameplay.UI.Menus
 
         [Header("UI Indicator References")]
         [SerializeField] private Image _sortOrderImage;
+        private bool m_lobbyOrderInverted;
+        private bool _lobbyOrderInverted
+        {
+            get => m_lobbyOrderInverted;
+            set
+            {
+                m_lobbyOrderInverted = value;
+                UpdateSortOrderImage();
+            }
+        }
 
 
         [Header("Submenu References")]
@@ -61,6 +71,8 @@ namespace Gameplay.UI.Menus
 
         private void Awake()
         {
+            _lobbyOrderInverted = false;
+
             // Hide the prototype list item.
             _lobbyListItemPrototype.gameObject.SetActive(false);
         }
@@ -159,19 +171,16 @@ namespace Gameplay.UI.Menus
                 PLAYER_COUNT_INDEX => SortField.AvailableSlots, // Player Count.
                 _ => throw new System.NotImplementedException()
             };
-            SortOrder sortOrder = sourceDropdown.value switch
-            {
-                PLAYER_COUNT_INDEX => SortOrder.Descending,
-                _ => SortOrder.Ascending,
-            };
 
-            _sortOrderImage.rectTransform.eulerAngles = new Vector3(0.0f, 0.0f, 0.0f);
-            _lobbyUIMediator.SetSortOrder(sortField, sortOrder);
+            _lobbyOrderInverted = false;
+            _lobbyUIMediator.SetSortOrder(sortField, _lobbyOrderInverted);
         }
         public void InvertSortOrder()
         {
-            _sortOrderImage.rectTransform.eulerAngles = new Vector3(0.0f, 0.0f, _sortOrderImage.rectTransform.eulerAngles.z + 180.0f);
-            _lobbyUIMediator.InvertSortOrder();
+            _lobbyOrderInverted = !_lobbyOrderInverted;
+            _lobbyUIMediator.InvertSortOrder(_lobbyOrderInverted);
         }
+
+        private void UpdateSortOrderImage() => _sortOrderImage.rectTransform.eulerAngles = new Vector3(0.0f, 0.0f, _lobbyOrderInverted ? 180.0f : 0.0f);
     }
 }
