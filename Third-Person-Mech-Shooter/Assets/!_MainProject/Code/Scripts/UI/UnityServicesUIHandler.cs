@@ -79,7 +79,7 @@ namespace Gameplay.UI
                 // Default handling method for other exception types.
                 // We're not throwing so that they don't crash the game, but we still want to know that they're occuring.
                 PopupManager.ShowPopupPanel(error.Title, error.Message);
-                Debug.LogError(error.OriginalException);
+                //Debug.LogError(error.OriginalException);
             }
         }
     }

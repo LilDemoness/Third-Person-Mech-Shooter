@@ -7,6 +7,7 @@ using Unity.Services.Multiplayer;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Unity.Services.Lobbies.Models;
+using Cysharp.Threading.Tasks;
 
 namespace UnityServices.Sessions
 {
@@ -377,18 +378,21 @@ namespace UnityServices.Sessions
         }
 
 
+        private bool _isRefreshing = false;
         /// <summary>
         ///     Used for getting the list of all active sessions without needing full info for each.
         /// </summary>
-        public async Task RetrieveAndPublishSessionListAsync()
+        /// <returns> True if this request started a refresh. False if another refresh request was already running.</returns>
+        public async UniTask<bool> RetrieveAndPublishSessionListAsync()
         {
-            if (!_rateLimitQuery.CanCall)
-            {
-                Debug.LogWarning("Retrieving the session list hit the rate limit. Will try again soon...");
-                return;
-            }
+            if (_isRefreshing)  // Prevent duplicate requests from running and causing a rate limit error.
+                return false;
+            _isRefreshing = true;
 
-            Debug.Log(_rateLimitQuery.CooldownTimeLength);
+            if (!_rateLimitQuery.CanCall)
+                await UniTask.WaitForSeconds(_rateLimitQuery.RemainingCooldownTime, true);  // Wait until our rate limit is valid to prevent a rate limit error.
+            _rateLimitQuery.PutOnCooldown();    // Prevent rate limit errors by always going into cooldown on a refresh.
+
             try
             {
                 var queryResults = await _multiplayerServicesInterface.QuerySessions();
@@ -398,6 +402,10 @@ namespace UnityServices.Sessions
             {
                 PublishError(e);
             }
+
+            // We've finished refreshing (Or we caught an error).
+            _isRefreshing = false;
+            return true;
         }
 
         /// <summary>

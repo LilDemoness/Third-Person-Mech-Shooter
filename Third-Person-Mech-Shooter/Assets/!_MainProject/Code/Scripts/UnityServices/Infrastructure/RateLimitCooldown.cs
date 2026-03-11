@@ -8,6 +8,7 @@ namespace UnityServices
         private float _cooldownFinishedTime;
 
         public float CooldownTimeLength => _cooldownTimeLength;
+        public float RemainingCooldownTime => _cooldownFinishedTime - Time.unscaledTime;
 
         public RateLimitCooldown(float cooldownTimeLength)
         {

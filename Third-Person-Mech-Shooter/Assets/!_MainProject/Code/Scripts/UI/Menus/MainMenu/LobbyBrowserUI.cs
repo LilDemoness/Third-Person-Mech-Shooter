@@ -95,12 +95,12 @@ namespace Gameplay.UI.Menus
         /// <summary>
         ///     Performs a soft refresh (Doesn't lock UI elements).
         /// </summary>
-        private void PeriodicRefresh(float _) => _lobbyUIMediator.QueryLobbiesRequest(blockUI: false);
+        private void PeriodicRefresh(float _) => _lobbyUIMediator.QueryLobbiesRequest(blockUI: false).Forget();
         /// <summary>
         ///     Performs a hard refresh (Locks UI elements).
         /// </summary>
         // Called from UI Button.
-        public void OnRefreshButtonPressed() { Debug.Log("Refresh"); _lobbyUIMediator.QueryLobbiesRequest(blockUI: true); }
+        public void OnRefreshButtonPressed() => _lobbyUIMediator.QueryLobbiesRequest(blockUI: true).Forget();
 
 
 

@@ -51,7 +51,7 @@ namespace UI
             get => _isInteractable;
             set
             {
-                _isInteractable = true;
+                _isInteractable = value;
                 _graphic.CrossFadeColor(_isInteractable ? _normalColor : _disabledColor, 0.0f, true, true);
             }
         }
@@ -173,9 +173,9 @@ namespace UI
         }
         public void OnPointerExit(PointerEventData eventData)
         {
-            /*if (!_isInteractable)
+            if (!_isInteractable)
                 return; // The button is not interractable.
-            if (!CanUseInput_Focus())
+            /*if (!CanUseInput_Focus())
                 return;*/
 
             _isHighlighted = false;

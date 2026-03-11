@@ -6,6 +6,9 @@ using Unity.Services.Multiplayer;
 using Netcode.ConnectionManagement;
 using Unity.Services.Core;
 using UnityServices.Auth;
+using Cysharp.Threading.Tasks;
+using UI;
+using System.Threading;
 
 namespace Gameplay.UI.Menus
 {
@@ -157,13 +160,14 @@ namespace Gameplay.UI.Menus
 
         #region Lobby Querying
 
-        public async void QueryLobbiesRequest(bool blockUI)
+        public async UniTaskVoid QueryLobbiesRequest(bool blockUI)
         {
             if (Unity.Services.Core.UnityServices.State != ServicesInitializationState.Initialized)
                 return; // Services are uninitialised.
 
             if (blockUI)
                 BlockUIWhileLoadingIsInProgress();
+
 
             bool playerIsAuthorised = await _authenticationServiceFacade.EnsurePlayerIsAuthorized();
             if (blockUI && !playerIsAuthorised)
@@ -172,9 +176,9 @@ namespace Gameplay.UI.Menus
                 return;
             }
 
-            await _multiplayerServicesFacade.RetrieveAndPublishSessionListAsync();
+            bool startedRefresh = await _multiplayerServicesFacade.RetrieveAndPublishSessionListAsync();
 
-            if (blockUI)
+            if (startedRefresh && blockUI)
             {
                 UnblockUIAfterLoadingIsComplete();
             }
@@ -209,12 +213,12 @@ namespace Gameplay.UI.Menus
         public void SetSortOrder(SortField field, bool inverted)
         {
             _multiplayerServicesFacade.SetSortOptions(field, inverted);
-            QueryLobbiesRequest(false);
+            QueryLobbiesRequest(false).Forget();
         }
         public void InvertSortOrder(bool inverted)
         {
             _multiplayerServicesFacade.InvertSortOptions(inverted);
-            QueryLobbiesRequest(false);
+            QueryLobbiesRequest(false).Forget();
         }
         public void ResetSortOrder() => _multiplayerServicesFacade.ClearSortOptions();
 
@@ -222,7 +226,7 @@ namespace Gameplay.UI.Menus
 
         private void OnQueryOptionsChanged()
         {
-            QueryLobbiesRequest(blockUI: false);
+            QueryLobbiesRequest(blockUI: false).Forget();
         }
 
 #endregion
@@ -255,6 +259,9 @@ namespace Gameplay.UI.Menus
         {
             _canvasGroup.interactable = false;
             _loadingSpinner.SetActive(true);
+
+            foreach (NonNavigableButton btn in GetComponentsInChildren<NonNavigableButton>())
+                btn.IsInteractable = false;
         }
         private void UnblockUIAfterLoadingIsComplete()
         {
@@ -264,6 +271,9 @@ namespace Gameplay.UI.Menus
             {
                 _canvasGroup.interactable = true;
                 _loadingSpinner.SetActive(false);
+
+                foreach(NonNavigableButton btn in GetComponentsInChildren<NonNavigableButton>())
+                    btn.IsInteractable = true;
             }
         }
     }
