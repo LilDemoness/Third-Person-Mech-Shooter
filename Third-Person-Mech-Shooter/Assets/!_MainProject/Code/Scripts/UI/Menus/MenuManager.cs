@@ -15,7 +15,7 @@ namespace Gameplay.UI.Menus
 
             CachePreviousSelectableUniTask().Forget();
 
-            UserInput.ClientInput.OnPauseGamePerformed += ReturnToPreviousMenu_Performed;
+            UserInput.ClientInput.OnReturnToPreviousMenuPerformed += ReturnToPreviousMenu_Performed;
         }
 
 

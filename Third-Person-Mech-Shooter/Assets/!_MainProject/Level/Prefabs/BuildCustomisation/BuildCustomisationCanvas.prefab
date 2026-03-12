@@ -585,7 +585,7 @@ GameObject:
   - component: {fileID: 1542058504624026702}
   - component: {fileID: 2699052680111490070}
   m_Layer: 5
-  m_Name: LeftButtonIndicator
+  m_Name: SelectPreviousTabIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -661,7 +661,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _image: {fileID: 1542058504624026702}
-  _inputAction: {fileID: 6485306273179015493, guid: 832195adfe757804ab6ebd15233eab2e, type: 3}
+  _inputAction: {fileID: -2416609305073008045, guid: 832195adfe757804ab6ebd15233eab2e, type: 3}
 --- !u!1 &522266765019844427
 GameObject:
   m_ObjectHideFlags: 0
@@ -5187,7 +5187,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1570416505107610958}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.7747253
+  m_Size: 0.77472526
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -8158,7 +8158,7 @@ GameObject:
   - component: {fileID: 8882434450282952494}
   - component: {fileID: 7766194792369025981}
   m_Layer: 5
-  m_Name: RightButtonIndicator
+  m_Name: SelectNextTabIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8234,7 +8234,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _image: {fileID: 8882434450282952494}
-  _inputAction: {fileID: -5338148820409163352, guid: 832195adfe757804ab6ebd15233eab2e, type: 3}
+  _inputAction: {fileID: 378473869570891819, guid: 832195adfe757804ab6ebd15233eab2e, type: 3}
 --- !u!1 &5943947570531356804
 GameObject:
   m_ObjectHideFlags: 0
@@ -9218,7 +9218,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isInteractable: 1
-  _inputAction: {fileID: -1665528398294392814, guid: 832195adfe757804ab6ebd15233eab2e, type: 3}
+  _inputAction: {fileID: 7728611615563943854, guid: 832195adfe757804ab6ebd15233eab2e, type: 3}
   _inputActionType: 0
   _allowInputWhenNotInFocus: 0
   OnButtonTriggered:
@@ -10907,7 +10907,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isInteractable: 1
-  _inputAction: {fileID: -5609054952829266176, guid: 832195adfe757804ab6ebd15233eab2e, type: 3}
+  _inputAction: {fileID: -4775859840897280032, guid: 832195adfe757804ab6ebd15233eab2e, type: 3}
   _inputActionType: 0
   _allowInputWhenNotInFocus: 0
   OnButtonTriggered:

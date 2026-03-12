@@ -21015,7 +21015,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isInteractable: 1
-  _inputAction: {fileID: 6485306273179015493, guid: 832195adfe757804ab6ebd15233eab2e, type: 3}
+  _inputAction: {fileID: -2416609305073008045, guid: 832195adfe757804ab6ebd15233eab2e, type: 3}
   _inputActionType: 0
   _allowInputWhenNotInFocus: 0
   OnButtonTriggered:
@@ -21120,7 +21120,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isInteractable: 1
-  _inputAction: {fileID: -5338148820409163352, guid: 832195adfe757804ab6ebd15233eab2e, type: 3}
+  _inputAction: {fileID: 378473869570891819, guid: 832195adfe757804ab6ebd15233eab2e, type: 3}
   _inputActionType: 0
   _allowInputWhenNotInFocus: 0
   OnButtonTriggered:

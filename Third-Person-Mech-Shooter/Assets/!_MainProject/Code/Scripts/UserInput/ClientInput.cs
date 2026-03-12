@@ -35,12 +35,7 @@ namespace UserInput
 
         #region UI Events
 
-
         public static event System.Action<Vector2> OnNavigatePerformed;
-        
-        // Tabs.
-        public static event System.Action OnNextTabPerformed;
-        public static event System.Action OnPreviousTabPerformed;
 
         // Confirmation.
         public static event System.Action OnConfirmPerformed;
@@ -50,6 +45,19 @@ namespace UserInput
 
         // Other.
         public static event System.Action OnToggleLeaderboardPerformed;
+
+        #endregion
+
+        #region Menu Navigation Events
+
+        public static event System.Action OnReturnToPreviousMenuPerformed;
+
+        // Tabs.
+        public static event System.Action OnNextTabPerformed;
+        public static event System.Action OnPreviousTabPerformed;
+
+        public static event System.Action OnNextSubTabPerformed;
+        public static event System.Action OnPreviousSubTabPerformed;
 
         #endregion
 
@@ -148,14 +156,25 @@ namespace UserInput
             #region UI Events
 
             s_inputActions.UI.Confirm.performed += Confirm_performed;
-            s_inputActions.UI.NextTab.performed += NextTab_performed;
-            s_inputActions.UI.PreviousTab.performed += PreviousTab_performed;
             s_inputActions.UI.Navigate.performed += Navigate_performed;
             s_inputActions.UI.ToggleLeaderboardUI.performed += ToggleLeaderboardUI_performed;
 
             #endregion
 
             s_inputActions.MainMenu.OpenFrameSelection.performed += OpenFrameSelection_performed;
+
+            #region Menu Navigation Events
+
+            s_inputActions.MenuNavigation.ReturnToPreviousMenu.performed += ReturnToPreviousMenu_performed;
+
+
+            s_inputActions.MenuNavigation.NextTab.performed += NextTab_performed;
+            s_inputActions.MenuNavigation.PreviousTab.performed += PreviousTab_performed;
+
+            s_inputActions.MenuNavigation.NextSubTab.performed += NextSubTab_performed;
+            s_inputActions.MenuNavigation.PreviousSubTab.performed += PreviousSubTab_performed;
+
+            #endregion
 
             #region Multiplayer Chat Events
 
@@ -196,14 +215,25 @@ namespace UserInput
             #region UI Events
 
             s_inputActions.UI.Confirm.performed                 -= Confirm_performed;
-            s_inputActions.UI.NextTab.performed                 -= NextTab_performed;
-            s_inputActions.UI.PreviousTab.performed             -= PreviousTab_performed;
             s_inputActions.UI.Navigate.performed                -= Navigate_performed;
             s_inputActions.UI.ToggleLeaderboardUI.performed     -= ToggleLeaderboardUI_performed;
 
             #endregion
 
             s_inputActions.MainMenu.OpenFrameSelection.performed      -= OpenFrameSelection_performed;
+
+            #region Menu Navigation Events
+
+            s_inputActions.MenuNavigation.ReturnToPreviousMenu.performed -= ReturnToPreviousMenu_performed;
+
+
+            s_inputActions.MenuNavigation.NextTab.performed -= NextTab_performed;
+            s_inputActions.MenuNavigation.PreviousTab.performed -= PreviousTab_performed;
+
+            s_inputActions.MenuNavigation.NextSubTab.performed -= NextSubTab_performed;
+            s_inputActions.MenuNavigation.PreviousSubTab.performed -= PreviousSubTab_performed;
+
+            #endregion
 
             #region Multiplayer Chat Events
 
@@ -262,13 +292,24 @@ namespace UserInput
         #region UI Event Functions
 
         private void Navigate_performed(InputAction.CallbackContext obj) => OnNavigatePerformed?.Invoke(obj.ReadValue<Vector2>());
-        private void NextTab_performed(InputAction.CallbackContext obj) => OnNextTabPerformed?.Invoke();
-        private void PreviousTab_performed(InputAction.CallbackContext obj) => OnPreviousTabPerformed?.Invoke();
 
         private void OpenFrameSelection_performed(InputAction.CallbackContext obj) => OnOpenFrameSelectionPerformed?.Invoke();
         private void Confirm_performed(InputAction.CallbackContext obj) => OnConfirmPerformed?.Invoke();
 
         private void ToggleLeaderboardUI_performed(InputAction.CallbackContext obj) => OnToggleLeaderboardPerformed?.Invoke();
+
+        #endregion
+
+        #region Menu Navigation Event Functions
+
+        private void ReturnToPreviousMenu_performed(InputAction.CallbackContext obj) => OnReturnToPreviousMenuPerformed?.Invoke();
+
+
+        private void NextTab_performed(InputAction.CallbackContext obj) => OnNextTabPerformed?.Invoke();
+        private void PreviousTab_performed(InputAction.CallbackContext obj) => OnPreviousTabPerformed?.Invoke();
+
+        private void NextSubTab_performed(InputAction.CallbackContext obj) => OnNextSubTabPerformed?.Invoke();
+        private void PreviousSubTab_performed(InputAction.CallbackContext obj) => OnPreviousSubTabPerformed?.Invoke();
 
         #endregion
 
@@ -289,6 +330,8 @@ namespace UserInput
 
 
         private bool _isInputFieldFocused;
+        private bool _isDropdownFocused;
+
         /// <summary>
         ///     Checks if the player is currently selecting a InputField or TMP_InputField and adds an input prevention if they are.</br>
         ///     If the player isn't, we instead remove that prevention.
@@ -298,31 +341,47 @@ namespace UserInput
             GameObject selected = EventSystem.current.currentSelectedGameObject;
             if (selected != null)
             {
-                if (selected.TryGetComponent<UnityEngine.UI.InputField>(out var inputField) && inputField.isFocused)
-                    HandleInputFieldFocused();
-                else if (selected.TryGetComponent<TMPro.TMP_InputField>(out var tmpInputField) && tmpInputField.isFocused)
-                    HandleInputFieldFocused();
+                if (selected.TryGetComponent<TMPro.TMP_InputField>(out var tmpInputField) && tmpInputField.isFocused)
+                    SetInputFieldFocused(true);
                 else
-                    HandleNoInputFieldFocused();
+                    SetInputFieldFocused(false);
+
+                // We need to check through parents as when we are within a Dropdown we are selecting one of its non-dropdown children, and thus cannot check if the parent dropdown is expanded otherwise.
+                if (selected.transform.TryGetComponentThroughParents<TMPro.TMP_Dropdown>(out var tmproDropdown) && tmproDropdown.IsExpanded)
+                    SetDropdownFocused(true);
+                if (selected.transform.TryGetComponentThroughParents<UnityEngine.UI.MultiselectDropdown>(out var multiselectDropdown) && multiselectDropdown.IsExpanded)
+                    SetDropdownFocused(true);
+                else
+                    SetDropdownFocused(false);
             }
             else
-                HandleNoInputFieldFocused();
+            {
+                SetInputFieldFocused(false);
+                SetDropdownFocused(false);
+            }
         }
-        private void HandleInputFieldFocused()
+        private void SetInputFieldFocused(bool isFocused)
         {
+            if (_isInputFieldFocused == isFocused)
+                return;
+            _isInputFieldFocused = isFocused;
+
             if (_isInputFieldFocused)
-                return;
-            _isInputFieldFocused = true;
-
-            AddActionPrevention(typeof(ClientInput), ActionTypes.Everything);
+                AddActionPrevention(typeof(ClientInput), ActionTypes.Everything);
+            else
+                RemoveActionPrevention(typeof(ClientInput), ActionTypes.Everything);
         }
-        private void HandleNoInputFieldFocused()
-        {
-            if (!_isInputFieldFocused)
-                return;
-            _isInputFieldFocused = false;
 
-            RemoveActionPrevention(typeof(ClientInput), ActionTypes.Everything);
+        private void SetDropdownFocused(bool isFocused)
+        {
+            if (_isDropdownFocused == isFocused)
+                return;
+            _isDropdownFocused = isFocused;
+
+            if (_isDropdownFocused) // Prevent Menu Back Input.
+                AddActionPrevention(typeof(ClientInput), ActionTypes.MenuNavigation);
+            else                    // Allow Menu Back Input.
+                RemoveActionPrevention(typeof(ClientInput), ActionTypes.MenuNavigation);
         }
 
 
@@ -373,11 +432,19 @@ namespace UserInput
         {
             None = 0,
 
-            Movement    = 1 << 0,   // Standard Character Movement (WASD/Stick)
-            Camera      = 1 << 1,   // Camera Controls
-            Combat      = 1 << 2,   // Weapon/Ability Activation
-            UI          = 1 << 3,   // Main, Pause, and Customisation Menus
-            MultiplayerChat = 1 << 4,   // Text and Voice Chat Input
+            /// <summary> Standard Character Movement (WASD/Stick).</summary>
+            Movement = 1 << 0,
+            /// <summary> Camera Controls.</summary>
+            Camera = 1 << 1,
+            /// <summary> Weapon/Ability Activation.</summary>
+            Combat = 1 << 2,
+            /// <summary> Most UI elements that aren't navigating between menus themselves.</summary>
+            UI = 1 << 3,
+            /// <summary> Menu Navigation (Back, Previous/Next Tab/SubTab).</summary>
+            MenuNavigation = 1 << 4,
+            /// <summary> Text and Voice Chat Input.</summary>
+            MultiplayerChat = 1 << 5,
+
 
             Respawning = ActionTypes.Movement | ActionTypes.Camera | ActionTypes.Combat,
 
@@ -389,6 +456,7 @@ namespace UserInput
             ActionTypes.Camera,
             ActionTypes.Combat,
             ActionTypes.UI,
+            ActionTypes.MenuNavigation,
             ActionTypes.MultiplayerChat,
         };
         private static Dictionary<ActionTypes, Dictionary<Type, int>> s_actionPreventionDictionaries = new()
@@ -397,6 +465,7 @@ namespace UserInput
             { ActionTypes.Camera, new Dictionary<Type, int>() },
             { ActionTypes.Combat, new Dictionary<Type, int>() },
             { ActionTypes.UI, new Dictionary<Type, int>() },
+            { ActionTypes.MenuNavigation, new Dictionary<Type, int>() },
             { ActionTypes.MultiplayerChat, new Dictionary<Type, int>() },
         };
 
@@ -416,6 +485,9 @@ namespace UserInput
                 case ActionTypes.UI:
                     s_inputActions.UI.Enable();
                     s_inputActions.MainMenu.Enable();
+                    break;
+                case ActionTypes.MenuNavigation:
+                    s_inputActions.MenuNavigation.Enable();
                     break;
                 case ActionTypes.MultiplayerChat:
                     s_inputActions.MultiplayerChat.Enable();
@@ -439,6 +511,9 @@ namespace UserInput
                 case ActionTypes.UI:
                     s_inputActions.UI.Disable();
                     s_inputActions.MainMenu.Disable();
+                    break;
+                case ActionTypes.MenuNavigation:
+                    s_inputActions.MenuNavigation.Disable();
                     break;
                 case ActionTypes.MultiplayerChat:
                     s_inputActions.MultiplayerChat.Disable();

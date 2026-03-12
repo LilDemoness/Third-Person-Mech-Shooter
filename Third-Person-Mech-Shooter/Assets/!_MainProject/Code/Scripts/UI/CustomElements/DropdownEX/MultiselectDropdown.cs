@@ -177,6 +177,9 @@ namespace UnityEngine.UI
 
         [Space]
         [SerializeField] private uint m_value;
+        private bool m_isExpanded;
+
+        public bool IsExpanded => m_isExpanded;
 
 
         [Header("Multi-Select Support")]
@@ -375,6 +378,8 @@ namespace UnityEngine.UI
 
             if (m_template)
                 m_template.gameObject.SetActive(false);
+
+            m_isExpanded = false;
         }
 
         protected override void Start()
@@ -811,6 +816,7 @@ namespace UnityEngine.UI
             itemTemplate.gameObject.SetActive(false);
 
             m_blocker = CreateBlocker(rootCanvas);
+            m_isExpanded = true;
         }
 
         /// <summary>
@@ -988,6 +994,7 @@ namespace UnityEngine.UI
                 DestroyBlocker(m_blocker);
             m_blocker = null;
             Select();
+            m_isExpanded = false;
         }
 
         private IEnumerator DelayedDestroyDropdownList(float delay)
