@@ -33,14 +33,14 @@ namespace Gameplay.UI.Menus.Pause
             _isOpen = false;
             _isPerformingOpenCloseOperation = false;
 
-            FinishClose().Forget();
+            FinishClose(false).Forget();
         }
         private void OnDestroy()
         {
             ClientInput.OnPauseGamePerformed -= OnPauseGamePerformed;
 
             if (_isOpen)
-                FinishClose().Forget();
+                FinishClose(false).Forget();
         }
 
         public override void Open(bool selectFirstElement = true)
@@ -87,14 +87,15 @@ namespace Gameplay.UI.Menus.Pause
             await FinishClose();
             return true;
         }
-        private async UniTask FinishClose()
+        private async UniTask FinishClose(bool revertLockMode = true)
         {
             await base.Close();
 
             // Perform game resuming logic here.
             _isOpen = false;
 
-            Cursor.lockState = _previousLockMode;
+            if (revertLockMode)
+                Cursor.lockState = _previousLockMode;
 
             Debug.Log("Prevention Removed");
             ClientInput.RemoveActionPrevention(typeof(PauseMenu), LOCKING_TYPES);

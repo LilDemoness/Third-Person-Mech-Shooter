@@ -184,7 +184,7 @@ namespace UserInput
 
             #endregion
 
-            s_inputActions.GameState.PauseGame.performed += PauseGame_perfored;
+            s_inputActions.MenuNavigation.PauseGame.performed += PauseGame_perfored;
 
 
             // Enable the Input Actions.
@@ -243,7 +243,7 @@ namespace UserInput
 
             #endregion
 
-            s_inputActions.GameState.PauseGame.performed -= PauseGame_perfored;
+            s_inputActions.MenuNavigation.PauseGame.performed -= PauseGame_perfored;
 
 
             // Dispose of the Input Actions.

@@ -1202,6 +1202,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""PauseGame"",
+                    ""type"": ""Button"",
+                    ""id"": ""25d8e43b-5fd2-415c-8ffa-a9df631eb158"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""PreviousTab"",
                     ""type"": ""Button"",
                     ""id"": ""788b32c2-1a91-4964-9755-5466dd37b52d"",
@@ -1348,6 +1357,28 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""NextSubTab"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ef3731ac-4e9a-4570-9f52-5cf6b675e19b"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";MnK"",
+                    ""action"": ""PauseGame"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""19ef7b6a-0e85-4a5f-9dc0-297a886fbabc"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""PauseGame"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -1414,45 +1445,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";MnK"",
                     ""action"": ""CancelChat"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                }
-            ]
-        },
-        {
-            ""name"": ""GameState"",
-            ""id"": ""b742d77e-12a2-449e-bd5a-e981816104ae"",
-            ""actions"": [
-                {
-                    ""name"": ""PauseGame"",
-                    ""type"": ""Button"",
-                    ""id"": ""521f68e2-4f9d-4dcb-8d8e-c703498ad104"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                }
-            ],
-            ""bindings"": [
-                {
-                    ""name"": """",
-                    ""id"": ""a79fb3dc-a1a4-498a-98f1-24055309aa71"",
-                    ""path"": ""<Keyboard>/escape"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";MnK"",
-                    ""action"": ""PauseGame"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""d71447d9-3c61-4b4d-9cbb-3b3875ba0e7a"",
-                    ""path"": ""<Gamepad>/start"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Gamepad"",
-                    ""action"": ""PauseGame"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1561,6 +1553,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         // MenuNavigation
         m_MenuNavigation = asset.FindActionMap("MenuNavigation", throwIfNotFound: true);
         m_MenuNavigation_ReturnToPreviousMenu = m_MenuNavigation.FindAction("ReturnToPreviousMenu", throwIfNotFound: true);
+        m_MenuNavigation_PauseGame = m_MenuNavigation.FindAction("PauseGame", throwIfNotFound: true);
         m_MenuNavigation_PreviousTab = m_MenuNavigation.FindAction("PreviousTab", throwIfNotFound: true);
         m_MenuNavigation_NextTab = m_MenuNavigation.FindAction("NextTab", throwIfNotFound: true);
         m_MenuNavigation_PreviousSubTab = m_MenuNavigation.FindAction("PreviousSubTab", throwIfNotFound: true);
@@ -1570,9 +1563,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_MultiplayerChat_OpenChat = m_MultiplayerChat.FindAction("OpenChat", throwIfNotFound: true);
         m_MultiplayerChat_SubmitChat = m_MultiplayerChat.FindAction("SubmitChat", throwIfNotFound: true);
         m_MultiplayerChat_CancelChat = m_MultiplayerChat.FindAction("CancelChat", throwIfNotFound: true);
-        // GameState
-        m_GameState = asset.FindActionMap("GameState", throwIfNotFound: true);
-        m_GameState_PauseGame = m_GameState.FindAction("PauseGame", throwIfNotFound: true);
         // Debug
         m_Debug = asset.FindActionMap("Debug", throwIfNotFound: true);
         m_Debug_ToggleNetworkStats = m_Debug.FindAction("ToggleNetworkStats", throwIfNotFound: true);
@@ -1587,7 +1577,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         UnityEngine.Debug.Assert(!m_MainMenu.enabled, "This will cause a leak and performance issues, PlayerInputActions.MainMenu.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_MenuNavigation.enabled, "This will cause a leak and performance issues, PlayerInputActions.MenuNavigation.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_MultiplayerChat.enabled, "This will cause a leak and performance issues, PlayerInputActions.MultiplayerChat.Disable() has not been called.");
-        UnityEngine.Debug.Assert(!m_GameState.enabled, "This will cause a leak and performance issues, PlayerInputActions.GameState.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Debug.enabled, "This will cause a leak and performance issues, PlayerInputActions.Debug.Disable() has not been called.");
     }
 
@@ -2431,6 +2420,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_MenuNavigation;
     private List<IMenuNavigationActions> m_MenuNavigationActionsCallbackInterfaces = new List<IMenuNavigationActions>();
     private readonly InputAction m_MenuNavigation_ReturnToPreviousMenu;
+    private readonly InputAction m_MenuNavigation_PauseGame;
     private readonly InputAction m_MenuNavigation_PreviousTab;
     private readonly InputAction m_MenuNavigation_NextTab;
     private readonly InputAction m_MenuNavigation_PreviousSubTab;
@@ -2450,6 +2440,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "MenuNavigation/ReturnToPreviousMenu".
         /// </summary>
         public InputAction @ReturnToPreviousMenu => m_Wrapper.m_MenuNavigation_ReturnToPreviousMenu;
+        /// <summary>
+        /// Provides access to the underlying input action "MenuNavigation/PauseGame".
+        /// </summary>
+        public InputAction @PauseGame => m_Wrapper.m_MenuNavigation_PauseGame;
         /// <summary>
         /// Provides access to the underlying input action "MenuNavigation/PreviousTab".
         /// </summary>
@@ -2495,6 +2489,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @ReturnToPreviousMenu.started += instance.OnReturnToPreviousMenu;
             @ReturnToPreviousMenu.performed += instance.OnReturnToPreviousMenu;
             @ReturnToPreviousMenu.canceled += instance.OnReturnToPreviousMenu;
+            @PauseGame.started += instance.OnPauseGame;
+            @PauseGame.performed += instance.OnPauseGame;
+            @PauseGame.canceled += instance.OnPauseGame;
             @PreviousTab.started += instance.OnPreviousTab;
             @PreviousTab.performed += instance.OnPreviousTab;
             @PreviousTab.canceled += instance.OnPreviousTab;
@@ -2521,6 +2518,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @ReturnToPreviousMenu.started -= instance.OnReturnToPreviousMenu;
             @ReturnToPreviousMenu.performed -= instance.OnReturnToPreviousMenu;
             @ReturnToPreviousMenu.canceled -= instance.OnReturnToPreviousMenu;
+            @PauseGame.started -= instance.OnPauseGame;
+            @PauseGame.performed -= instance.OnPauseGame;
+            @PauseGame.canceled -= instance.OnPauseGame;
             @PreviousTab.started -= instance.OnPreviousTab;
             @PreviousTab.performed -= instance.OnPreviousTab;
             @PreviousTab.canceled -= instance.OnPreviousTab;
@@ -2684,102 +2684,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="MultiplayerChatActions" /> instance referencing this action map.
     /// </summary>
     public MultiplayerChatActions @MultiplayerChat => new MultiplayerChatActions(this);
-
-    // GameState
-    private readonly InputActionMap m_GameState;
-    private List<IGameStateActions> m_GameStateActionsCallbackInterfaces = new List<IGameStateActions>();
-    private readonly InputAction m_GameState_PauseGame;
-    /// <summary>
-    /// Provides access to input actions defined in input action map "GameState".
-    /// </summary>
-    public struct GameStateActions
-    {
-        private @PlayerInputActions m_Wrapper;
-
-        /// <summary>
-        /// Construct a new instance of the input action map wrapper class.
-        /// </summary>
-        public GameStateActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
-        /// <summary>
-        /// Provides access to the underlying input action "GameState/PauseGame".
-        /// </summary>
-        public InputAction @PauseGame => m_Wrapper.m_GameState_PauseGame;
-        /// <summary>
-        /// Provides access to the underlying input action map instance.
-        /// </summary>
-        public InputActionMap Get() { return m_Wrapper.m_GameState; }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
-        public void Enable() { Get().Enable(); }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
-        public void Disable() { Get().Disable(); }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
-        public bool enabled => Get().enabled;
-        /// <summary>
-        /// Implicitly converts an <see ref="GameStateActions" /> to an <see ref="InputActionMap" /> instance.
-        /// </summary>
-        public static implicit operator InputActionMap(GameStateActions set) { return set.Get(); }
-        /// <summary>
-        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
-        /// </summary>
-        /// <param name="instance">Callback instance.</param>
-        /// <remarks>
-        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
-        /// </remarks>
-        /// <seealso cref="GameStateActions" />
-        public void AddCallbacks(IGameStateActions instance)
-        {
-            if (instance == null || m_Wrapper.m_GameStateActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_GameStateActionsCallbackInterfaces.Add(instance);
-            @PauseGame.started += instance.OnPauseGame;
-            @PauseGame.performed += instance.OnPauseGame;
-            @PauseGame.canceled += instance.OnPauseGame;
-        }
-
-        /// <summary>
-        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
-        /// </summary>
-        /// <remarks>
-        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
-        /// </remarks>
-        /// <seealso cref="GameStateActions" />
-        private void UnregisterCallbacks(IGameStateActions instance)
-        {
-            @PauseGame.started -= instance.OnPauseGame;
-            @PauseGame.performed -= instance.OnPauseGame;
-            @PauseGame.canceled -= instance.OnPauseGame;
-        }
-
-        /// <summary>
-        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="GameStateActions.UnregisterCallbacks(IGameStateActions)" />.
-        /// </summary>
-        /// <seealso cref="GameStateActions.UnregisterCallbacks(IGameStateActions)" />
-        public void RemoveCallbacks(IGameStateActions instance)
-        {
-            if (m_Wrapper.m_GameStateActionsCallbackInterfaces.Remove(instance))
-                UnregisterCallbacks(instance);
-        }
-
-        /// <summary>
-        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
-        /// </summary>
-        /// <remarks>
-        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
-        /// </remarks>
-        /// <seealso cref="GameStateActions.AddCallbacks(IGameStateActions)" />
-        /// <seealso cref="GameStateActions.RemoveCallbacks(IGameStateActions)" />
-        /// <seealso cref="GameStateActions.UnregisterCallbacks(IGameStateActions)" />
-        public void SetCallbacks(IGameStateActions instance)
-        {
-            foreach (var item in m_Wrapper.m_GameStateActionsCallbackInterfaces)
-                UnregisterCallbacks(item);
-            m_Wrapper.m_GameStateActionsCallbackInterfaces.Clear();
-            AddCallbacks(instance);
-        }
-    }
-    /// <summary>
-    /// Provides a new <see cref="GameStateActions" /> instance referencing this action map.
-    /// </summary>
-    public GameStateActions @GameState => new GameStateActions(this);
 
     // Debug
     private readonly InputActionMap m_Debug;
@@ -3174,6 +3078,13 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnReturnToPreviousMenu(InputAction.CallbackContext context);
         /// <summary>
+        /// Method invoked when associated input action "PauseGame" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnPauseGame(InputAction.CallbackContext context);
+        /// <summary>
         /// Method invoked when associated input action "PreviousTab" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
@@ -3230,21 +3141,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnCancelChat(InputAction.CallbackContext context);
-    }
-    /// <summary>
-    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "GameState" which allows adding and removing callbacks.
-    /// </summary>
-    /// <seealso cref="GameStateActions.AddCallbacks(IGameStateActions)" />
-    /// <seealso cref="GameStateActions.RemoveCallbacks(IGameStateActions)" />
-    public interface IGameStateActions
-    {
-        /// <summary>
-        /// Method invoked when associated input action "PauseGame" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnPauseGame(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Debug" which allows adding and removing callbacks.

@@ -3385,12 +3385,12 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2406886632444116110}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2742018727196762694}
+  m_Father: {fileID: 5344718483363811381}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
@@ -3464,7 +3464,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5344718483363811381}
-  - {fileID: 3702594641523832930}
   - {fileID: 5008780913813741206}
   - {fileID: 824350775723909003}
   m_Father: {fileID: 5088191830774401691}
@@ -3764,7 +3763,9 @@ MonoBehaviour:
     - _Target: {fileID: 23858505449193763}
       _MemberName: PreviewNextFrame
       _PersistentArguments: []
-  _graphic: {fileID: 7531198778693292836}
+  _graphics:
+  - {fileID: 7531198778693292836}
+  - {fileID: 3583719059409317578}
   _normalColor: {r: 1, g: 1, b: 1, a: 1}
   _highlightedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
   _pressedColor: {r: 0.6, g: 0.6, b: 0.6, a: 1}
@@ -5187,7 +5188,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1570416505107610958}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.77472526
+  m_Size: 0.7747252
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -6854,7 +6855,9 @@ MonoBehaviour:
     - _Target: {fileID: 23858505449193763}
       _MemberName: PreviewPreviousFrame
       _PersistentArguments: []
-  _graphic: {fileID: 5871757367763025852}
+  _graphics:
+  - {fileID: 5871757367763025852}
+  - {fileID: 7029214466555990269}
   _normalColor: {r: 1, g: 1, b: 1, a: 1}
   _highlightedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
   _pressedColor: {r: 0.6, g: 0.6, b: 0.6, a: 1}
@@ -9226,7 +9229,8 @@ MonoBehaviour:
     - _Target: {fileID: 23858505449193763}
       _MemberName: SetActiveFrameAsNext
       _PersistentArguments: []
-  _graphic: {fileID: 7677119913616353855}
+  _graphics:
+  - {fileID: 7677119913616353855}
   _normalColor: {r: 1, g: 1, b: 1, a: 1}
   _highlightedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
   _pressedColor: {r: 0.6, g: 0.6, b: 0.6, a: 1}
@@ -10915,7 +10919,8 @@ MonoBehaviour:
     - _Target: {fileID: 23858505449193763}
       _MemberName: SetActiveFrameAsPrevious
       _PersistentArguments: []
-  _graphic: {fileID: 6314663511047945741}
+  _graphics:
+  - {fileID: 6314663511047945741}
   _normalColor: {r: 1, g: 1, b: 1, a: 1}
   _highlightedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
   _pressedColor: {r: 0.6, g: 0.6, b: 0.6, a: 1}
@@ -10973,8 +10978,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5344718483363811381}
   - component: {fileID: 7725182192387360123}
-  - component: {fileID: 2954545127556640124}
-  - component: {fileID: 128720158383199442}
   m_Layer: 5
   m_Name: FrameSelectionButton
   m_TagString: Untagged
@@ -10995,12 +10998,13 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 806843477722485806}
+  - {fileID: 3702594641523832930}
   m_Father: {fileID: 2742018727196762694}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 400, y: 100}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &7725182192387360123
 MonoBehaviour:
@@ -11023,7 +11027,9 @@ MonoBehaviour:
     - _Target: {fileID: 23858505449193763}
       _MemberName: ToggleSelectionOptions
       _PersistentArguments: []
-  _graphic: {fileID: 4959861384400373558}
+  _graphics:
+  - {fileID: 4959861384400373558}
+  - {fileID: 5496204399682980042}
   _normalColor: {r: 1, g: 1, b: 1, a: 1}
   _highlightedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
   _pressedColor: {r: 0.6, g: 0.6, b: 0.6, a: 1}
@@ -11031,46 +11037,6 @@ MonoBehaviour:
   _iconDisplayText: {fileID: 0}
   _textFormattingString: '{0}'
   _iconDisplayImage: {fileID: 5496204399682980042}
---- !u!114 &2954545127556640124
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8337934908554416928}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_HorizontalFit: 2
-  m_VerticalFit: 2
---- !u!114 &128720158383199442
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8337934908554416928}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 0
-  m_Spacing: 0
-  m_ChildForceExpandWidth: 0
-  m_ChildForceExpandHeight: 0
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
-  m_ChildScaleWidth: 0
-  m_ChildScaleHeight: 0
-  m_ReverseArrangement: 0
 --- !u!1 &8345224759740476757
 GameObject:
   m_ObjectHideFlags: 0
@@ -11596,7 +11562,6 @@ GameObject:
   - component: {fileID: 806843477722485806}
   - component: {fileID: 846724233829587831}
   - component: {fileID: 4959861384400373558}
-  - component: {fileID: 1895882961684552863}
   m_Layer: 5
   m_Name: FrameName
   m_TagString: Untagged
@@ -11618,9 +11583,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 5344718483363811381}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 111.475, y: 0}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 222.95, y: 50}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &846724233829587831
@@ -11722,20 +11687,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &1895882961684552863
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9171959104007241389}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_HorizontalFit: 2
-  m_VerticalFit: 0
 --- !u!1 &9216712831607066658
 GameObject:
   m_ObjectHideFlags: 0

@@ -464,7 +464,8 @@ MonoBehaviour:
     - _Target: {fileID: 851880779}
       _MemberName: OnFinishCustomisationPerformed
       _PersistentArguments: []
-  _graphic: {fileID: 269585476}
+  _graphics:
+  - {fileID: 269585476}
   _normalColor: {r: 1, g: 1, b: 1, a: 1}
   _highlightedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
   _pressedColor: {r: 0.6, g: 0.6, b: 0.6, a: 1}
@@ -1975,7 +1976,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 806843477722485806, guid: 80b6380adbf4136489225a7af5ad2496, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 222.95
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 806843477722485806, guid: 80b6380adbf4136489225a7af5ad2496, type: 3}
       propertyPath: m_AnchoredPosition.x

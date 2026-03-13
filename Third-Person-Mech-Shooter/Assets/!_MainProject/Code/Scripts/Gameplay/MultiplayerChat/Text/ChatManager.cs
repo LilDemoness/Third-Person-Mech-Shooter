@@ -68,6 +68,7 @@ namespace Gameplay.MultiplayerChat.Text
             // Show the Input and Main Chat.
             SetChatInputVisibility(true);
             StopMainTextChatFade();
+            ClientInput.AddActionPrevention(typeof(ChatManager), ClientInput.ActionTypes.Everything & ~ClientInput.ActionTypes.MultiplayerChat);
 
             // Select the Input Field.
             // We are deselecting and then reselecting the next frame to prevent an error with having the input field selected but the user being unable to interact with it.
@@ -85,6 +86,7 @@ namespace Gameplay.MultiplayerChat.Text
             // Hide the Input Box & Start the Main Chat Fading.
             SetChatInputVisibility(false);
             StartMainTextChatFade();
+            ClientInput.RemoveActionPrevention(typeof(ChatManager), ClientInput.ActionTypes.Everything & ~ClientInput.ActionTypes.MultiplayerChat);
         }
         private void SetChatInputVisibility(bool isVisible)
         {
@@ -94,6 +96,7 @@ namespace Gameplay.MultiplayerChat.Text
         }
 
         private IEnumerator ReselectInputAfterFrame() { yield return null; EventSystem.current.SetSelectedGameObject(_chatInput.gameObject); }
+        private IEnumerator AllowInputAfterFrame() { yield return null; ClientInput.RemoveActionPrevention(typeof(ChatManager), ClientInput.ActionTypes.Everything & ~ClientInput.ActionTypes.MultiplayerChat); }
 
         #endregion
 
