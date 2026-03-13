@@ -81,7 +81,6 @@ namespace Gameplay.UI.Menus
             for(int i = 0; i < _lobbyListHeaders.Length; ++i)
                 _lobbyListHeaders[i].SetHeaderIndex(i);
             LobbyListHeaderUI.OnAnyHeaderSelected += SetSelectedLobbyHeader;
-            SetSelectedLobbyHeader(-1);
 
             // Hide the prototype list item.
             _lobbyListItemPrototype.gameObject.SetActive(false);
@@ -100,7 +99,8 @@ namespace Gameplay.UI.Menus
         public override void Show()
         {
             base.Show();
-            OnRefreshButtonPressed();
+            SetSelectedLobbyHeader(-1);
+            //OnRefreshButtonPressed();
         }
 
 

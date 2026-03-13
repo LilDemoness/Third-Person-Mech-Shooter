@@ -52,8 +52,6 @@ namespace Gameplay.UI.Popups
             _closableByUser = closeableByUser;
             _obstructInput = obstructInput;
 
-            Debug.Log("Params: " + popupButtonParameters);
-
             if (closeableByUser)
                 CreateButton(new PopupButtonParameters("Close", Close));
             if (popupButtonParameters != null)

@@ -81,6 +81,8 @@ namespace Gameplay.UI
                 PopupManager.ShowPopupPanel(error.Title, error.Message);
                 //Debug.LogError(error.OriginalException);
             }
+
+            throw error.OriginalException;
         }
     }
 }
