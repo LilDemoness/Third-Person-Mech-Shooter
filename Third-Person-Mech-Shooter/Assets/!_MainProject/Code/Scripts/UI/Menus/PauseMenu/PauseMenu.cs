@@ -1,4 +1,5 @@
 using ApplicationLifecycle.Messages;
+using Cysharp.Threading.Tasks;
 using Infrastructure;
 using Netcode.ConnectionManagement;
 using UnityEngine;
@@ -10,9 +11,10 @@ namespace Gameplay.UI.Menus.Pause
 {
     public class PauseMenu : ContainerMenu
     {
-        private const ClientInput.ActionTypes LOCKING_TYPES = ClientInput.ActionTypes.Everything & ~ClientInput.ActionTypes.UI;
+        private const ClientInput.ActionTypes LOCKING_TYPES = ClientInput.ActionTypes.Everything & ~(ClientInput.ActionTypes.UI | ClientInput.ActionTypes.MenuNavigation);
 
         private bool _isOpen;
+        private bool _isPerformingOpenCloseOperation;
         private CursorLockMode _previousLockMode;
 
 
@@ -29,53 +31,66 @@ namespace Gameplay.UI.Menus.Pause
         {
             ClientInput.OnPauseGamePerformed += OnPauseGamePerformed;
             _isOpen = false;
+            _isPerformingOpenCloseOperation = false;
 
-            Hide();
+            FinishClose().Forget();
         }
         private void OnDestroy()
         {
             ClientInput.OnPauseGamePerformed -= OnPauseGamePerformed;
 
             if (_isOpen)
-                FinishResume();
+                FinishClose().Forget();
         }
 
-        public override void Show()
+        public override void Open(bool selectFirstElement = true)
         {
-            base.Show();
+            if (_isOpen || _isPerformingOpenCloseOperation)
+                return;
 
-            if (!_isOpen && _resumeAfterFrameCoroutine == null)
-            {
-                // Perform game pausing logic here.
-                _isOpen = true;
-
-                _previousLockMode = Cursor.lockState;
-                Cursor.lockState = CursorLockMode.None;
-
-                Debug.Log("Prevention Added");
-                ClientInput.AddActionPrevention(typeof(PauseMenu), LOCKING_TYPES);
-            }
+            // Properly pause the game after a frame to prevent immediately re-opening cause we receive the input for PauseGame after we were just opened.
+            DelayFinishOpenForFrame(selectFirstElement).Forget();
         }
-        public override void Hide()
+        private async UniTaskVoid DelayFinishOpenForFrame(bool selectFirstElement)
         {
-            base.Hide();
+            _isPerformingOpenCloseOperation = true;
+            await UniTask.Yield();
+            _isPerformingOpenCloseOperation = false;
 
-            if (_isOpen && _resumeAfterFrameCoroutine == null)
-            {
-                // Properly resume the game after a frame to prevent immediately re-opening cause we receive the input for PauseGame after we were closed.
-                _resumeAfterFrameCoroutine = StartCoroutine(ResumeAfterFrame());
-            }
+            FinishPause(selectFirstElement);
+        }
+        private void FinishPause(bool selectFirstElement)
+        {
+            base.Open(selectFirstElement);
+
+            // Perform game pausing logic here.
+            _isOpen = true;
+
+            _previousLockMode = Cursor.lockState;
+            Cursor.lockState = CursorLockMode.None;
+
+            Debug.Log("Prevention Added");
+            ClientInput.AddActionPrevention(typeof(PauseMenu), LOCKING_TYPES);
         }
 
 
-        private Coroutine _resumeAfterFrameCoroutine;
-        private System.Collections.IEnumerator ResumeAfterFrame()
+        public override async UniTask<bool> Close()
         {
-            yield return null;
-            FinishResume();
+            if (!_isOpen || _isPerformingOpenCloseOperation)
+                return false;   // Failed to close as we are either already closed, in the process of closing, or in the process of opening.
+
+            // Properly resume the game after a frame to prevent immediately re-opening cause we receive the input for PauseGame after we were closed.
+            _isPerformingOpenCloseOperation = true;
+            await UniTask.Yield();
+            _isPerformingOpenCloseOperation = false;
+
+            await FinishClose();
+            return true;
         }
-        private void FinishResume()
+        private async UniTask FinishClose()
         {
+            await base.Close();
+
             // Perform game resuming logic here.
             _isOpen = false;
 
@@ -83,10 +98,8 @@ namespace Gameplay.UI.Menus.Pause
 
             Debug.Log("Prevention Removed");
             ClientInput.RemoveActionPrevention(typeof(PauseMenu), LOCKING_TYPES);
-
-            // Reset the resume delay coroutine to prevent it getting stack with a invalid but non-null value.
-            _resumeAfterFrameCoroutine = null;
         }
+        
 
 
         public void OnPauseGamePerformed()
@@ -97,12 +110,9 @@ namespace Gameplay.UI.Menus.Pause
 
 
         public void PauseGame() => MenuManager.SetActiveMenu(this, null);
-        public void ResumeGame()
-        {
-            MenuManager.CloseMenu(this);
-        }
+        public void ResumeGame() => MenuManager.CloseMenu(this);
 
-        //public void ShowOptionsMenu(UnityEngine.UI.Selectable sender) => MenuManager.OpenMenu(_optionsMenu, true, sender, hideCurrent: true);
+
         public void ShowOptionsMenu(UnityEngine.UI.Selectable sender) => EnterChild(_optionsMenu);
 
         public void OnExitToMainMenuPressed() => _connectionManager.RequestShutdown();

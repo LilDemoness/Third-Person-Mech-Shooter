@@ -3,12 +3,15 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using VContainer;
-using UnityServices.Sessions;
 
 namespace Gameplay.UI.Menus
 {
-    public class EditFiltersUI : Menu
+    public class EditFiltersUI : MonoBehaviour
     {
+        [field: SerializeField] public Selectable FirstSelectedElement { get; private set; }
+
+
+        [Header("Edit Filters References")]
         [SerializeField] private TMP_Dropdown _gameModeDropdown;
         private GameMode _currentGameModeFilter;
 
@@ -76,17 +79,14 @@ namespace Gameplay.UI.Menus
         }
 
 
-
         public void ApplyFiltersPressed()
         {
             ApplyFilters();
-            MenuManager.ReturnToPreviousMenu();
         }
         public void ResetFiltersPressed()
         {
             _lobbyUIMediator.ClearFilters();
             InitialiseValues();
-            MenuManager.ReturnToPreviousMenu();
         }
 
         private void ApplyFilters()
@@ -99,11 +99,27 @@ namespace Gameplay.UI.Menus
 
             // Show Password.
             Debug.Log("Show Password Protected Lobbies: " + _showPasswordProtectedLobbies);
+
+            _lobbyUIMediator.QueryLobbiesRequest(true).Forget();
         }
 
 
-        private void OnGameModeSelected(int selectionIndex) => _currentGameModeFilter = (GameMode)(selectionIndex - 1);    // As we're adding an addition index, subtract 1 from the index for our conversion GameMode.
-        private void OnMapSelected(int selectionIndex) => _mapNameIndex = selectionIndex - 1;    // As we're adding an addition index, subtract 1 to allow easy conversion to GameMode.
-        private void OnShowPasswordProtectedLobbiesChanged(bool newValue) => _showPasswordProtectedLobbies = newValue;
+        private void OnGameModeSelected(int selectionIndex)
+        {
+            // As we're adding an additional index for 'Any', subtract 1 from the index for our conversion GameMode.
+            _currentGameModeFilter = (GameMode)(selectionIndex - 1);
+            ApplyFilters();
+        }
+        private void OnMapSelected(int selectionIndex)
+        {
+            // As we're adding an additional index for 'Any', subtract 1 to allow easy conversion to GameMode.
+            _mapNameIndex = selectionIndex - 1;
+            ApplyFilters();
+        }
+        private void OnShowPasswordProtectedLobbiesChanged(bool newValue)
+        {
+            _showPasswordProtectedLobbies = newValue;
+            ApplyFilters();
+        }
     }
 }

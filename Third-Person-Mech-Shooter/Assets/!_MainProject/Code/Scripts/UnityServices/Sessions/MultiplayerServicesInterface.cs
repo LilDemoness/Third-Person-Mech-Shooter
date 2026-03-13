@@ -175,7 +175,7 @@ namespace UnityServices.Sessions
 
 
         public void SetGameModeFilter(Gameplay.GameMode gameMode) => SetFilterOptionForField(new FilterOption(GAME_MODE_QUERY_FIELD, gameMode.ToString(), FilterOperation.Equal));
-        public void SetMapFilter(string mapName) => SetFilterOptionForField(new FilterOption(MAP_QUERY_FIELD, mapName, FilterOperation.Contains));
+        public void SetMapFilter(string mapName) => SetFilterOptionForField(new FilterOption(MAP_QUERY_FIELD, mapName, FilterOperation.Equal));
         public void SetShowPasswordProtectedLobbies(bool showPasswordProtectedLobbies)
         {
             if (showPasswordProtectedLobbies)

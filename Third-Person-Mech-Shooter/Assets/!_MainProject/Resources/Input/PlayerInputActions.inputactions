@@ -824,6 +824,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "InvertSortOrder",
+                    "type": "Button",
+                    "id": "051e8475-5d34-4f91-a109-ac4c8da472c5",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -1066,6 +1075,28 @@
                     "processors": "",
                     "groups": ";Gamepad",
                     "action": "ResetFilters",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a075d930-baa3-478f-9ada-919fff4a30f2",
+                    "path": "<Keyboard>/g",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";MnK",
+                    "action": "InvertSortOrder",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "906781c0-ddc5-412d-9377-ff948d33a637",
+                    "path": "<Gamepad>/dpad/left",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "InvertSortOrder",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

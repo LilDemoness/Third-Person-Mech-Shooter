@@ -1,0 +1,63 @@
+{
+    "debugLevel": 2,
+    "currentThemeIndex": 0,
+    "colors": [
+        {
+            "guid": "6e38a59a-f0e4-4cfd-b685-26ed0e7e727b",
+            "name": "PrimaryBackground"
+        },
+        {
+            "guid": "b50995b1-48ce-4b54-9c09-16f4e2c40c2b",
+            "name": "PrimaryText"
+        },
+        {
+            "guid": "bbe1ebf6-9e89-42d9-9fe8-84db1313f98f",
+            "name": "SecondaryBackground"
+        },
+        {
+            "guid": "c4115a38-39f0-4b1e-8c3f-698ce94f8c96",
+            "name": "PanelOutline"
+        },
+        {
+            "guid": "1399161b-c15d-442c-864b-f84425a64276",
+            "name": "Button"
+        }
+    ],
+    "themes": [
+        {
+            "guid": "f62f6c42-3892-4f2e-924f-cf2179dd17a9",
+            "expanded": true,
+            "themeName": "PrimaryTheme",
+            "colors": [
+                {
+                    "guid": "6e38a59a-f0e4-4cfd-b685-26ed0e7e727b",
+                    "colorHex": "#00000066"
+                },
+                {
+                    "guid": "b50995b1-48ce-4b54-9c09-16f4e2c40c2b",
+                    "colorHex": "#FFFFFFFF"
+                },
+                {
+                    "guid": "c4115a38-39f0-4b1e-8c3f-698ce94f8c96",
+                    "colorHex": "#FFFFFFFF"
+                },
+                {
+                    "guid": "1399161b-c15d-442c-864b-f84425a64276",
+                    "colorHex": "#FFFFFFFF"
+                },
+                {
+                    "guid": "1399161b-c15d-442c-864b-f84425a64276",
+                    "colorHex": "#FFFFFFFF"
+                },
+                {
+                    "guid": "bbe1ebf6-9e89-42d9-9fe8-84db1313f98f",
+                    "colorHex": "#00000066"
+                },
+                {
+                    "guid": "bbe1ebf6-9e89-42d9-9fe8-84db1313f98f",
+                    "colorHex": "#FFFFFFFF"
+                }
+            ]
+        }
+    ]
+}

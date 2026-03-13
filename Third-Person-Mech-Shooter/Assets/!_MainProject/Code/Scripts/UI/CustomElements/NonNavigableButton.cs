@@ -52,7 +52,7 @@ namespace UI
             set
             {
                 _isInteractable = value;
-                _graphic.CrossFadeColor(_isInteractable ? _normalColor : _disabledColor, 0.0f, true, true);
+                CrossFadeGraphics(_isInteractable ? _normalColor : _disabledColor);
             }
         }
 
@@ -68,8 +68,8 @@ namespace UI
         public UltEvent OnButtonTriggered;
 
 
-        [Header("Hover Iteraction Indication")]
-        [SerializeField] private Graphic _graphic;
+        [Header("Iteraction Indication")]
+        [SerializeField] private Graphic[] _graphics;
         [SerializeField] private Color _normalColor = Color.white;
         [SerializeField] private Color _highlightedColor = new Color(0.8f, 0.8f, 0.8f);
         [SerializeField] private Color _pressedColor = new Color(0.6f, 0.6f, 0.6f);
@@ -95,7 +95,7 @@ namespace UI
                 UpdateSpriteIdentifiers();
             }
 
-            _graphic.CrossFadeColor(_isInteractable ? _normalColor : _disabledColor, 0.0f, true, true);
+            CrossFadeGraphics(_isInteractable ? _normalColor : _disabledColor);
         }
         private void OnEnable()
         {
@@ -188,11 +188,11 @@ namespace UI
         private void UpdateSelectionIndicator()
         {
             if (_isPressed)
-                _graphic.CrossFadeColor(_pressedColor, 0.0f, true, true);
+                CrossFadeGraphics(_pressedColor);
             else if (_isHighlighted)
-                _graphic.CrossFadeColor(_highlightedColor, 0.0f, true, true);
+                CrossFadeGraphics(_highlightedColor);
             else
-                _graphic.CrossFadeColor(_normalColor, 0.0f, true, true);
+                CrossFadeGraphics(_normalColor);
         }
 
 
@@ -236,12 +236,21 @@ namespace UI
         }
         private void UpdateIconDisplayImage(InputAction inputAction) => _iconDisplayImage.sprite = InputIconManager.GetIconForAction(inputAction);
 
+        private void CrossFadeGraphics(Color color)
+        {
+            for(int i = 0; i < _graphics.Length; ++i)
+            {
+                _graphics[i].CrossFadeColor(color, 0.0f, true, true);
+            }
+        }
+
+
 
 #if UNITY_EDITOR
 
         private void OnValidate()
         {
-            if (_graphic == null)
+            if (_graphics == null || _graphics.Length == 0)
                 Debug.LogWarning($"NonNavigableButton '{this.gameObject.name}' has no graphic set", this.gameObject);
 
             if (_iconDisplayText != null && _textFormattingString != null)

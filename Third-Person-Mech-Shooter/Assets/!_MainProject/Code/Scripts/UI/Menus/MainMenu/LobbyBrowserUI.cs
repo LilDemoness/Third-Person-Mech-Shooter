@@ -6,6 +6,7 @@ using UnityServices.Sessions;
 using System.Collections.Generic;
 using Unity.Services.Multiplayer;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 namespace Gameplay.UI.Menus
 {
@@ -22,11 +23,15 @@ namespace Gameplay.UI.Menus
         [SerializeField] private LobbyListItemUI _lobbyListItemPrototype;
         private List<LobbyListItemUI> _lobbyListItems;
 
+        [Space(5)]
+        [SerializeField] private LobbyListHeaderUI[] _lobbyListHeaders;
+        private int _selectedHeader;
+
+        [Space(5)]
         [SerializeField] private Graphic _noLobbiesLabel;
 
 
-        [Header("UI Indicator References")]
-        [SerializeField] private Image _sortOrderImage;
+
         private bool m_lobbyOrderInverted;
         private bool _lobbyOrderInverted
         {
@@ -34,13 +39,14 @@ namespace Gameplay.UI.Menus
             set
             {
                 m_lobbyOrderInverted = value;
-                UpdateSortOrderImage();
+                UpdateSortOrderUI();
             }
         }
 
 
         [Header("Submenu References")]
         [SerializeField] private EditFiltersUI _customiseFiltersMenu;
+
         [SerializeField] private JoinLobbyWithCodeUI _joinLobbyWithCodeMenu;
 
 
@@ -71,13 +77,19 @@ namespace Gameplay.UI.Menus
 
         private void Awake()
         {
-            _lobbyOrderInverted = false;
+            // Initialise & Subscribe to LobbyListHeaderUI elements for sorting lobbies.
+            for(int i = 0; i < _lobbyListHeaders.Length; ++i)
+                _lobbyListHeaders[i].SetHeaderIndex(i);
+            LobbyListHeaderUI.OnAnyHeaderSelected += SetSelectedLobbyHeader;
+            SetSelectedLobbyHeader(-1);
 
             // Hide the prototype list item.
             _lobbyListItemPrototype.gameObject.SetActive(false);
         }
         private void OnDisable()
         {
+            LobbyListHeaderUI.OnAnyHeaderSelected -= SetSelectedLobbyHeader;
+
             if (_updateRunner != null)
                 _updateRunner.Unsubscribe(PeriodicRefresh);
             if (_localSessionsRefreshedSubscriber != null)
@@ -113,12 +125,17 @@ namespace Gameplay.UI.Menus
             EnsureNumberOfActiveUISlots(message.LocalSessions.Count);
             for (int i = 0; i < message.LocalSessions.Count; ++i)
             {
-                ISessionInfo localSession = message.LocalSessions[i];
-                _lobbyListItems[i].SetData(localSession);
+                _lobbyListItems[i].SetData(message.LocalSessions[i]);
             }
 
-            // Toggle the empty sessions label as required.
-            _noLobbiesLabel.enabled = message.LocalSessions.Count == 0;
+            if (message.LocalSessions.Count == 0)
+            {
+                // No sessions.
+                _noLobbiesLabel.enabled = message.LocalSessions.Count == 0;
+                EventSystem.current.SetSelectedGameObject(null);
+            }
+            else
+                EventSystem.current.SetSelectedGameObject(_lobbyListItems[0].gameObject);
         }
 
         /// <summary>
@@ -156,31 +173,67 @@ namespace Gameplay.UI.Menus
 
 
 
-        public void OpenEditFiltersUI() => MenuManager.OpenChildMenu(_customiseFiltersMenu, null, this);
+        public void EditFiltersInputPerformed()
+        {
+            if (EventSystem.current.currentSelectedGameObject != null && EventSystem.current.currentSelectedGameObject.transform.IsChildOf(_customiseFiltersMenu.transform))
+                ExitEditFiltersUI();    // We are within the edit filters UI. Exit it.
+            else
+                EnterEditFiltersUI();   // We are not in the edit filters UI. Enter it.
+        }
+        private void EnterEditFiltersUI() => EventSystem.current.SetSelectedGameObject(_customiseFiltersMenu.FirstSelectedElement.gameObject);
+        private void ExitEditFiltersUI() => EventSystem.current.SetSelectedGameObject(_lobbyListItems.Count > 0 && _lobbyListItems[0].gameObject.activeInHierarchy ? _lobbyListItems[0].gameObject : null);
+
         public void OpenJoinCodePopup() => MenuManager.OpenChildMenu(_joinLobbyWithCodeMenu, null, this);
 
 
-        public void SetSortOrder(TMPro.TMP_Dropdown sourceDropdown)
+        public void SetSelectedLobbyHeader(int headerIndex)
         {
-            const int PLAYER_COUNT_INDEX = 3;
-            SortField sortField = sourceDropdown.value switch
+            if (_selectedHeader == headerIndex)
+                IncrementSortOrder();
+            else
             {
-                0 => SortField.CreationTime,            // Date Created.
-                1 => Constants.GAME_MODE_SORT_FIELD,    // Game Mode.
-                2 => Constants.MAP_SORT_FIELD,          // Map Name.
-                PLAYER_COUNT_INDEX => SortField.AvailableSlots, // Player Count.
-                _ => throw new System.NotImplementedException()
-            };
+                _selectedHeader = headerIndex;
+                SetSortOrder(GetSortField());
+            }
+        }
+        public void IncrementSelectedLobbyHeader() => SetSelectedLobbyHeader(MathUtils.Loop(_selectedHeader + 1, -1, _lobbyListHeaders.Length));
+        public void DecrementSelectedLobbyHeader() => SetSelectedLobbyHeader(MathUtils.Loop(_selectedHeader - 1, -1, _lobbyListHeaders.Length));
 
-            _lobbyOrderInverted = false;
-            _lobbyUIMediator.SetSortOrder(sortField, _lobbyOrderInverted);
+
+        public void SetSortOrder(SessionSortField sortField)
+        {
+            _lobbyOrderInverted = false;   // Calls UpdateSortOrderUI, so we don't need to do that here too.
+            _lobbyUIMediator.SetSortOrder(sortField.ToSortField(), _lobbyOrderInverted);
         }
         public void InvertSortOrder()
         {
             _lobbyOrderInverted = !_lobbyOrderInverted;
             _lobbyUIMediator.InvertSortOrder(_lobbyOrderInverted);
         }
+        /// <summary>
+        ///     Moves the Sort Order from Default > Inverted > Deselect Selected Element.
+        /// </summary>
+        private void IncrementSortOrder()
+        {
+            if (_lobbyOrderInverted)
+                SetSelectedLobbyHeader(-1); // Already inverted, so instead deselect.
+            else
+            {
+                // The sort order isn't inverted, so we can invert it.
+                _lobbyOrderInverted = true;
+                _lobbyUIMediator.InvertSortOrder(_lobbyOrderInverted);
+            }
+        }
 
-        private void UpdateSortOrderImage() => _sortOrderImage.rectTransform.eulerAngles = new Vector3(0.0f, 0.0f, _lobbyOrderInverted ? 180.0f : 0.0f);
+
+        private SessionSortField GetSortField() => _selectedHeader == -1 ? SessionSortField.Default : _lobbyListHeaders[_selectedHeader].SortField;
+        private void UpdateSortOrderUI()
+        {
+            SessionSortField sortField = GetSortField();
+            SessionSortOrder sortOrder = _lobbyOrderInverted ? SessionSortOrder.Descending : SessionSortOrder.Ascending;
+
+            for (int i = 0; i < _lobbyListHeaders.Length; ++i)
+                _lobbyListHeaders[i].OnSortFiltersChanged(sortField, sortOrder);
+        }
     }
 }
