@@ -6,7 +6,7 @@ namespace Gameplay.UI
 {
     public class SelectMultiGraphicHighlighter : MonoBehaviour
     {
-        [SerializeField] private SelectionNotifier[] _selectionNotifiers;
+        [SerializeField] private SelectableEvents[] _selectionNotifiers;
         [SerializeField] private Graphic[] _graphics;
 
 
@@ -19,7 +19,7 @@ namespace Gameplay.UI
 
         private void Awake()
         {
-            foreach (SelectionNotifier notifier in _selectionNotifiers)
+            foreach (SelectableEvents notifier in _selectionNotifiers)
             {
                 notifier.OnSelected += OnSelect;
                 notifier.OnDeselected += OnDeselect;
@@ -27,17 +27,17 @@ namespace Gameplay.UI
         }
         private void OnDestroy()
         {
-            foreach (SelectionNotifier notifier in _selectionNotifiers)
+            foreach (SelectableEvents notifier in _selectionNotifiers)
             {
                 notifier.OnSelected -= OnSelect;
                 notifier.OnDeselected -= OnDeselect;
             }
         }
 
-        private void OnSelect(BaseEventData _) => SetColor(_highlightedColor);
-        private void OnDeselect(BaseEventData _) => SetColor(_normalColor);
-        private void OnHighlighted(BaseEventData _) => SetColor(_highlightedColor);
-        private void OnDisabled(BaseEventData _) => SetColor(_disabledColor);
+        private void OnSelect() => SetColor(_highlightedColor);
+        private void OnDeselect() => SetColor(_normalColor);
+        private void OnHighlighted() => SetColor(_highlightedColor);
+        private void OnDisabled() => SetColor(_disabledColor);
 
         private void SetColor(Color color)
         {

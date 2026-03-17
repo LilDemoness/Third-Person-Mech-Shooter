@@ -94,7 +94,7 @@ namespace Gameplay.UI.Menus
         /// <summary>
         ///     Returns true if this Component is within the active Menu/Popup.
         /// </summary>
-        public static bool IsInActiveMenu(this Component componentToTest)
+        public static bool IsInActiveMenu(this Component componentToTest, bool checkParentContainers = true)
         {
             Menu parentMenu = componentToTest.transform.parent.GetComponentInParent<Menu>();
 
@@ -103,7 +103,7 @@ namespace Gameplay.UI.Menus
                 // No obstructing popups are open, so directly compare the parent menu to the selected menu.
                 if (parentMenu == ActiveMenuData?.Menu)
                     return true;
-                else if (ActiveMenuData != null)
+                else if (checkParentContainers && ActiveMenuData != null)
                 {
                     // Iterate upwards, checking ContainerMenus if we find them and stopping once we don't.
                     // This allows buttons in the root menu (Shared buttons) to still operate when children are open.

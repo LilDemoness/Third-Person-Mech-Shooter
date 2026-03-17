@@ -132,7 +132,7 @@ namespace Gameplay.UI.Menus
             {
                 // No sessions.
                 _noLobbiesLabel.enabled = message.LocalSessions.Count == 0;
-                EventSystem.current.SetSelectedGameObject(null);
+                EventSystem.current?.SetSelectedGameObject(null);
             }
             else
                 EventSystem.current.SetSelectedGameObject(_lobbyListItems[0].gameObject);

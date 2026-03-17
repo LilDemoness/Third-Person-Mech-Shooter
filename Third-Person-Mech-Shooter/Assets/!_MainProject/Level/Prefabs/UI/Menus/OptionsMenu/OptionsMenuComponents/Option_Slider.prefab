@@ -46,7 +46,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8413270130020991512}
   - component: {fileID: 5895283335030769495}
-  - component: {fileID: 3437858560889203902}
+  - component: {fileID: 5879456874404418769}
   m_Layer: 5
   m_Name: Slider
   m_TagString: Untagged
@@ -126,7 +126,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &3437858560889203902
+--- !u!114 &5879456874404418769
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -135,7 +135,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2934122233446668106}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef2277625c7eace4ca7a00205c0a3695, type: 3}
+  m_Script: {fileID: 11500000, guid: 7f1839bed0fe14f4db8c58def6ab83be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &4138001542278965494
@@ -488,7 +488,8 @@ GameObject:
   - component: {fileID: 5954307814589485983}
   - component: {fileID: 2313369897633175373}
   - component: {fileID: 859329309812875166}
-  - component: {fileID: 1734170391210762046}
+  - component: {fileID: 2330091917722818283}
+  - component: {fileID: 3598093326754612722}
   m_Layer: 5
   m_Name: SliderValue
   m_TagString: Untagged
@@ -669,7 +670,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _slider: {fileID: 4694771599150883761}
   _thisInputField: {fileID: 2313369897633175373}
---- !u!114 &1734170391210762046
+--- !u!114 &2330091917722818283
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -678,7 +679,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 7537885563545703130}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef2277625c7eace4ca7a00205c0a3695, type: 3}
+  m_Script: {fileID: 11500000, guid: 6d09b06b627540d4aa5a0e35a7f92d42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _selectable: {fileID: 2313369897633175373}
+--- !u!114 &3598093326754612722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7537885563545703130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f1839bed0fe14f4db8c58def6ab83be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &1703719147058197096
@@ -696,11 +710,11 @@ PrefabInstance:
     - target: {fileID: 1237627700952122691, guid: 33d513f9127bfd140ad618a7cee445e8, type: 3}
       propertyPath: '_selectionNotifiers.Array.data[0]'
       value: 
-      objectReference: {fileID: 3437858560889203902}
+      objectReference: {fileID: 5879456874404418769}
     - target: {fileID: 1237627700952122691, guid: 33d513f9127bfd140ad618a7cee445e8, type: 3}
       propertyPath: '_selectionNotifiers.Array.data[1]'
       value: 
-      objectReference: {fileID: 1734170391210762046}
+      objectReference: {fileID: 3598093326754612722}
     - target: {fileID: 1746455551506703589, guid: 33d513f9127bfd140ad618a7cee445e8, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -785,6 +799,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Option_Slider
       objectReference: {fileID: 0}
+    - target: {fileID: 8716806710448612695, guid: 33d513f9127bfd140ad618a7cee445e8, type: 3}
+      propertyPath: _selectable
+      value: 
+      objectReference: {fileID: 5895283335030769495}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:

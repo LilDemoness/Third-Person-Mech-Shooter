@@ -584,7 +584,7 @@ GameObject:
   - component: {fileID: 124982194895596980}
   - component: {fileID: 5023659086593093282}
   - component: {fileID: 6174966769000409277}
-  - component: {fileID: 4171853157737423920}
+  - component: {fileID: 8998094598290792469}
   m_Layer: 5
   m_Name: Dropdown
   m_TagString: Untagged
@@ -728,7 +728,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   m_AlphaFadeSpeed: 0.15
---- !u!114 &4171853157737423920
+--- !u!114 &8998094598290792469
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -737,7 +737,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3242047040672693828}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef2277625c7eace4ca7a00205c0a3695, type: 3}
+  m_Script: {fileID: 11500000, guid: 7f1839bed0fe14f4db8c58def6ab83be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &3673274478413836435
@@ -1217,7 +1217,7 @@ PrefabInstance:
     - target: {fileID: 1237627700952122691, guid: 33d513f9127bfd140ad618a7cee445e8, type: 3}
       propertyPath: '_selectionNotifiers.Array.data[0]'
       value: 
-      objectReference: {fileID: 4171853157737423920}
+      objectReference: {fileID: 8998094598290792469}
     - target: {fileID: 1746455551506703589, guid: 33d513f9127bfd140ad618a7cee445e8, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1302,6 +1302,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Option_Dropdown
       objectReference: {fileID: 0}
+    - target: {fileID: 8716806710448612695, guid: 33d513f9127bfd140ad618a7cee445e8, type: 3}
+      propertyPath: _selectable
+      value: 
+      objectReference: {fileID: 6174966769000409277}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:

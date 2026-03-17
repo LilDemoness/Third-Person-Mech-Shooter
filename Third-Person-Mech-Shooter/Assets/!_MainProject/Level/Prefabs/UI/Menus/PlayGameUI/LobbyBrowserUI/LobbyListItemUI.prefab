@@ -436,6 +436,7 @@ GameObject:
   - component: {fileID: 4410337615999837913}
   - component: {fileID: 2082287553466072745}
   - component: {fileID: 4645100364299681938}
+  - component: {fileID: 7458744793500875380}
   m_Layer: 0
   m_Name: LobbyListItemUI
   m_TagString: Untagged
@@ -579,6 +580,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &7458744793500875380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4600744366697909197}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d09b06b627540d4aa5a0e35a7f92d42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _selectable: {fileID: 4645100364299681938}
 --- !u!1 &5228257446899574586
 GameObject:
   m_ObjectHideFlags: 0

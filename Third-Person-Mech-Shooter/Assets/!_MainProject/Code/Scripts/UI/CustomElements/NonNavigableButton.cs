@@ -248,10 +248,22 @@ namespace UI
 
 #if UNITY_EDITOR
 
+        private Graphic[] _editorPreviousValidateGraphics;
         private void OnValidate()
         {
             if (_graphics == null || _graphics.Length == 0)
+            {
                 Debug.LogWarning($"NonNavigableButton '{this.gameObject.name}' has no graphic set", this.gameObject);
+                ResetEditorGraphics();
+            }
+            else
+            {
+                ResetEditorGraphics();
+
+                CrossFadeGraphics(_normalColor);
+            }
+            _editorPreviousValidateGraphics = _graphics;
+
 
             if (_iconDisplayText != null && _textFormattingString != null)
             {
@@ -259,6 +271,16 @@ namespace UI
                     Debug.LogWarning("NonNavigableButton has an invalid entry string", this.gameObject);
             }
         }
+        private void ResetEditorGraphics()
+        {
+            if (Application.isPlaying)
+                return;
+
+            if (_editorPreviousValidateGraphics != null)
+                for (int i = 0; i < _editorPreviousValidateGraphics.Length; ++i)
+                    _editorPreviousValidateGraphics[i].CrossFadeColor(Color.white, 0.0f, true, true);
+        }
+
 
         private bool Editor_IsFormattingStringValid()
         {

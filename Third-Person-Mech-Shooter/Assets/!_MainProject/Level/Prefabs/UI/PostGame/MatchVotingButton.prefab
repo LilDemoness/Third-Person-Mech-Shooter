@@ -89,6 +89,7 @@ GameObject:
   - component: {fileID: 4666647458506573854}
   - component: {fileID: 8590274522038206898}
   - component: {fileID: 8875896605321650412}
+  - component: {fileID: 7207552453293094239}
   m_Layer: 5
   m_Name: MatchVotingButton
   m_TagString: Untagged
@@ -170,8 +171,6 @@ MonoBehaviour:
   _gameType: 0
   _gameTypeText: {fileID: 5647551329711138358}
   _currentVotesText: {fileID: 5313514877636510870}
-  _networkPostGameState: {fileID: 0}
-  _clientPostGameState: {fileID: 0}
 --- !u!114 &8875896605321650412
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -194,9 +193,9 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_HighlightedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
+    m_PressedColor: {r: 0.6, g: 0.6, b: 0.6, a: 1}
+    m_SelectedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -228,6 +227,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &7207552453293094239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3448476282313905977}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d09b06b627540d4aa5a0e35a7f92d42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _selectable: {fileID: 8875896605321650412}
 --- !u!1 &6094042899548501486
 GameObject:
   m_ObjectHideFlags: 0

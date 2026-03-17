@@ -9,7 +9,7 @@ namespace Gameplay.UI.Menus.Options
     /// </summary>
     public abstract class BaseSetOption : MonoBehaviour
     {
-        private SelectionNotifier[] _selectionNotifiers;
+        private SelectableEvents[] _selectionNotifiers;
 
 
         public abstract Selectable PrimaryNavigationElement { get; }
@@ -23,7 +23,7 @@ namespace Gameplay.UI.Menus.Options
 
         protected virtual void Awake()
         {
-            _selectionNotifiers = GetComponentsInChildren<SelectionNotifier>();
+            _selectionNotifiers = GetComponentsInChildren<SelectableEvents>();
             for(int i = 0; i < _selectionNotifiers.Length; ++i)
             {
                 _selectionNotifiers[i].OnSelected += NotifyOnSelected;
@@ -45,8 +45,8 @@ namespace Gameplay.UI.Menus.Options
         }
 
 
-        private void NotifyOnSelected(UnityEngine.EventSystems.BaseEventData _) => OnAnySelected?.Invoke(this.OptionsValue);
-        private void NotifyOnDeselected(UnityEngine.EventSystems.BaseEventData _) => OnAnyDeselected?.Invoke();
+        private void NotifyOnSelected() => OnAnySelected?.Invoke(this.OptionsValue);
+        private void NotifyOnDeselected() => OnAnyDeselected?.Invoke();
 
 
         public virtual void Initialise()

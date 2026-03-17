@@ -893,7 +893,8 @@ MonoBehaviour:
   _allowInputWhenNotInFocus: 1
   OnButtonTriggered:
     _PersistentCalls: []
-  _graphic: {fileID: 4329246843150851468}
+  _graphics:
+  - {fileID: 4329246843150851468}
   _normalColor: {r: 1, g: 1, b: 1, a: 1}
   _highlightedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
   _pressedColor: {r: 0.6, g: 0.6, b: 0.6, a: 1}

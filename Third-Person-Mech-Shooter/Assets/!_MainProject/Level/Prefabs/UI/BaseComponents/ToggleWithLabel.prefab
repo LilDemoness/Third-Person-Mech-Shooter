@@ -316,7 +316,7 @@ GameObject:
   - component: {fileID: 7787419199202124712}
   - component: {fileID: 8923809592936805948}
   - component: {fileID: 2418735379881514554}
-  - component: {fileID: 1548114725792829409}
+  - component: {fileID: 4436363193910880839}
   m_Layer: 0
   m_Name: ToggleWithLabel
   m_TagString: Untagged
@@ -406,14 +406,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _selectionNotifiers:
-  - {fileID: 1548114725792829409}
+  - {fileID: 4436363193910880839}
   _graphics:
   - {fileID: 1261397556403634271}
   _normalColor: {r: 1, g: 1, b: 1, a: 1}
   _highlightedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
   _selectedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
   _disabledColor: {r: 0.8, g: 0.8, b: 0.8, a: 0.5019608}
---- !u!114 &1548114725792829409
+--- !u!114 &4436363193910880839
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -422,6 +422,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 7030956425068860931}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef2277625c7eace4ca7a00205c0a3695, type: 3}
+  m_Script: {fileID: 11500000, guid: 7f1839bed0fe14f4db8c58def6ab83be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
