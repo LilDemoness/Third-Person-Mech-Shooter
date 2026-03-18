@@ -21,6 +21,12 @@ namespace Gameplay.UI.Menus
         [Space(5)]
         [SerializeField] private bool _showOnSelect = true;
 
+        [Space(5)]
+        [SerializeField] private GameObject _selectionBackgroundObject;
+
+
+        private void Awake() => OnTabExited();
+
 
         public void OnSelect(BaseEventData _)
         {
@@ -31,5 +37,9 @@ namespace Gameplay.UI.Menus
         {
             _parentContainerMenu.EnterChild(_associatedChildMenu);
         }
+
+
+        public void OnTabEntered() => _selectionBackgroundObject.SetActive(true);
+        public void OnTabExited() => _selectionBackgroundObject.SetActive(false);
     }
 }

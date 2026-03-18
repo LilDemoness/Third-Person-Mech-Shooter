@@ -13,7 +13,18 @@ namespace Gameplay.UI.Menus
         public Menu[] Children;
         public MenuTabButton[] Buttons;
         [SerializeField] private bool _enterChildOnOpen = true;
-        private int _previouslySelectedChildIndex = 0;
+        private int m_previouslySelectedChildIndex = 0;
+        private int _previouslySelectedChildIndex
+        {
+            get => m_previouslySelectedChildIndex;
+            set
+            {
+                Buttons[m_previouslySelectedChildIndex]?.OnTabExited();
+
+                m_previouslySelectedChildIndex = value;
+                Buttons[value]?.OnTabEntered();
+            }
+        }
         protected Menu PreviouslySelectedChild => Children[_previouslySelectedChildIndex];
 
 
