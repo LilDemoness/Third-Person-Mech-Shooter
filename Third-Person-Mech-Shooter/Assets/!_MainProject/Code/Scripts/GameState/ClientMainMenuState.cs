@@ -12,6 +12,8 @@ using Gameplay.UI.Menus;
 using Gameplay.UI.Menus.Session;
 using Gameplay.UI.Tooltips;
 using UI;
+using ApplicationLifecycle.Messages;
+using Infrastructure;
 
 namespace Gameplay.GameState
 {
@@ -42,9 +44,12 @@ namespace Gameplay.GameState
         [SerializeField] private Menu _optionsMenu;
 
 
+
         [Header("Component References")]
         [SerializeField] private LobbyUIMediator _lobbyUIMediator;
         [SerializeField] private DirectIPUI _directIPUI;
+
+        private ButtonSelectionIndicator _selectedMenuRootButton;
 
 
         [Inject]
@@ -55,6 +60,8 @@ namespace Gameplay.GameState
         private LocalSession _localSession;
         [Inject]
         private ProfileManager _profileManager;
+        [Inject]
+        IPublisher<QuitApplicationMessage> _quitApplicationPub;
 
 
         protected override void Awake()
@@ -158,36 +165,43 @@ namespace Gameplay.GameState
 
         #region UI Button Functions
 
-        public void OnQuickJoinPressed()
+        public void OnQuickJoinPressed() => _lobbyUIMediator.QuickJoinRequest(ignoreFilters: true);
+        public void OnPlayGamePressed(Button sender)
         {
-            _lobbyUIMediator.QuickJoinRequest(ignoreFilters: true);
+            ChangeSelectedMenuIndicator(sender.GetComponent<ButtonSelectionIndicator>());
+            MenuManager.SetActiveMenu(_playGameMenu, sender);
         }
-        public void OnPlayGamePressed(Button sender) => MenuManager.SetActiveMenu(_playGameMenu, sender);
-        public void OnArmouryPressed()
+        public void OnArmouryPressed(Button sender)
         {
-
+            ChangeSelectedMenuIndicator(sender.GetComponent<ButtonSelectionIndicator>());
+            //MenuManager.SetActiveMenu(_armouryMenu, sender);
+            MenuManager.CloseAllMenus();
         }
         public void OnProfilePressed(Button sender)
         {
+            ChangeSelectedMenuIndicator(sender.GetComponent<ButtonSelectionIndicator>());
             MenuManager.SetActiveMenu(_profileMenu, sender);
         }
         public void OnOptionsPressed(Button sender)
         {
+            ChangeSelectedMenuIndicator(sender.GetComponent<ButtonSelectionIndicator>());
             MenuManager.SetActiveMenu(_optionsMenu, sender);
         }
-        public void OnQuitGamePressed()
-        {
-            Application.Quit();
-        }
+        public void OnQuitGamePressed() => _quitApplicationPub.Publish(new QuitApplicationMessage());
 
         #endregion
+
+        private void ChangeSelectedMenuIndicator(ButtonSelectionIndicator selectionIndicator)
+        {
+            _selectedMenuRootButton?.OnTabExited();
+            selectionIndicator?.OnTabEntered();
+            _selectedMenuRootButton = selectionIndicator;
+        }
+
 
         public void OnChangeProfileClicked()
         {
             _uiProfileSelector.Show();
-        }
-        public void OnOpenSettingsClicked()
-        {
         }
     }
 }

@@ -459,6 +459,30 @@ namespace Gameplay.UI.Menus
         }
 
 
+        private static async UniTask<bool> CloseAllMenusUniTask()
+        {
+            if (s_openMenusCount == 0)
+                return true;    // No menus to close.
+            CacheCurrentData();
+
+            // Close all active menus.
+            bool success;
+            while (s_openMenusCount > 0)
+            {
+                // Close the menu.
+                success = await CloseActiveMenuUniTask(reopenParentMenu: false, preventClosingOfChildlessContainer: true);
+                if (!success)
+                {
+                    RevertOperation();
+                    return false;
+                }
+            }
+
+            DiscardCachedData();
+            return true;
+        }
+
+
 
         #region External Access Functions
 
@@ -466,6 +490,7 @@ namespace Gameplay.UI.Menus
         ///     Closes the desired menu and reopens its parent (If it has one).
         /// </summary>
         public static void CloseMenu(Menu menu) => CloseMenusToReachUniTask(menu, MenuOperation.Close).Forget();
+        public static void CloseAllMenus() => CloseAllMenusUniTask().Forget();
         public static void ReturnToPreviousMenu() => CloseActiveMenuUniTask(reopenParentMenu: true).Forget();
 
         /// <summary>
