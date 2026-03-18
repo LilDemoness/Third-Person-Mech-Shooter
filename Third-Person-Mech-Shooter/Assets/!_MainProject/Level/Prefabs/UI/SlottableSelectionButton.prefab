@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7062250398228142178}
   - component: {fileID: 1098675253895633356}
-  - component: {fileID: 4745415009694405997}
   m_Layer: 5
   m_Name: SlottableSelectionButton
   m_TagString: Untagged
@@ -81,19 +80,6 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 9083239035117514040}
   _image: {fileID: 6406819212629787633}
---- !u!114 &4745415009694405997
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8080687814858122855}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d09b06b627540d4aa5a0e35a7f92d42, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _selectable: {fileID: 1098675253895633356}
 --- !u!1 &8376025482463978721
 GameObject:
   m_ObjectHideFlags: 0

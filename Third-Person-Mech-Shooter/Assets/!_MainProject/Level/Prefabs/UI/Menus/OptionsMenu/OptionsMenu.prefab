@@ -208,7 +208,7 @@ MonoBehaviour:
   - {fileID: 4995765814952291909}
   - {fileID: 1948129987139202708}
   _enterChildOnOpen: 1
-  _childClosedFallback: 0
+  _childClosedFallback: 1
   _gameplayMenu: {fileID: 3935778370281774925}
   _videoMenu: {fileID: 7118513821573843691}
   _audioMenu: {fileID: 4305097790262730380}
@@ -5581,10 +5581,6 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6522900372149033619, guid: 1b0c4ba99dca19a4cb08f7432863f7a2, type: 3}
-      propertyPath: <CanvasGroup>k__BackingField
-      value: 
-      objectReference: {fileID: 9074183229493820612}
     - target: {fileID: 8717148557778040201, guid: 1b0c4ba99dca19a4cb08f7432863f7a2, type: 3}
       propertyPath: m_Name
       value: GameplayTab
@@ -5616,11 +5612,6 @@ MonoBehaviour:
 --- !u!224 &8826126315923628515 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1614538095642911805, guid: 1b0c4ba99dca19a4cb08f7432863f7a2, type: 3}
-  m_PrefabInstance: {fileID: 7789906597483595230}
-  m_PrefabAsset: {fileID: 0}
---- !u!225 &9074183229493820612 stripped
-CanvasGroup:
-  m_CorrespondingSourceObject: {fileID: 1294423526881786138, guid: 1b0c4ba99dca19a4cb08f7432863f7a2, type: 3}
   m_PrefabInstance: {fileID: 7789906597483595230}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7982557005142588866

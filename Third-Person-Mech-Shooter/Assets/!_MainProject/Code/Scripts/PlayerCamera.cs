@@ -6,6 +6,9 @@ namespace Gameplay.GameplayObjects.Players
 {
     public class PlayerCamera : Singleton<PlayerCamera>
     {
+        [SerializeField] private FloatOptionValue _cameraFoVValue;
+
+
         private CinemachineCamera _cinemachineCamera;
         private Transform _trackingTarget;
         private Transform TrackingTarget
@@ -33,10 +36,13 @@ namespace Gameplay.GameplayObjects.Players
             if (this.TryGetComponent<CinemachineCamera>(out _cinemachineCamera))
                 _cinemachineCamera.Target = new CameraTarget() { TrackingTarget = _trackingTarget };
             Player.OnLocalPlayerBuildUpdated += PlayerManager_OnLocalPlayerBuildUpdated;
+
+            _cameraFoVValue.SubscribeToOnValueChangedAndTryTrigger(UpdateCameraFoV);
         }
         private void OnDestroy()
         {
             Player.OnLocalPlayerBuildUpdated -= PlayerManager_OnLocalPlayerBuildUpdated;
+            _cameraFoVValue.UnsubscribeFromOnValueChanged(UpdateCameraFoV);
         }
 
         private void PlayerManager_OnLocalPlayerBuildUpdated(BuildData buildData) => SetupCameraForFrame(buildData.GetFrameData());
@@ -54,6 +60,14 @@ namespace Gameplay.GameplayObjects.Players
             thirdPersonFollow.ShoulderOffset = frameData.ThirdPersonCameraOffset;
             thirdPersonFollow.VerticalArmLength = frameData.CameraVerticalArmLength;
             thirdPersonFollow.CameraDistance = frameData.CameraDistance;
+        }
+
+
+        private void UpdateCameraFoV() => _cinemachineCamera.Lens.FieldOfView = HorizontalToVerticalFOV(_cameraFoVValue.Value);
+        private static float HorizontalToVerticalFOV(float horizontalFov)
+        {
+            float aspectRatio = (float)Screen.currentResolution.width / (float)Screen.currentResolution.height;
+            return 2.0f * Mathf.Atan(Mathf.Tan(horizontalFov * Mathf.Deg2Rad / 2.0f) / aspectRatio) * Mathf.Rad2Deg;
         }
     }
 }

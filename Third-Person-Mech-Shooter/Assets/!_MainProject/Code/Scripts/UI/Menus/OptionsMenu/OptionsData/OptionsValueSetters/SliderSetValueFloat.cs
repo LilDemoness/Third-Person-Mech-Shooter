@@ -15,11 +15,6 @@ namespace Gameplay.UI.Menus.Options
         public override void SetValue(float newValue) => Slider.value = newValue;
 
 
-        protected override void Awake()
-        {
-            base.Awake();
-            Slider.onValueChanged.AddListener(OnSliderValueChanged);
-        }
         protected override void OnDestroy()
         {
             base.OnDestroy();
@@ -37,6 +32,8 @@ namespace Gameplay.UI.Menus.Options
             else
                 Debug.LogWarning("Float Option without limits attached to a slider. How should we handle this?");
 
+            Slider.onValueChanged.AddListener(OnSliderValueChanged);
+
             base.Initialise();
         }
 
@@ -44,6 +41,7 @@ namespace Gameplay.UI.Menus.Options
         public void OnSliderValueChanged(float newValue) => _floatOptionValue.SetValue(newValue);
         protected override void UpdateDisplayedValue()
         {
+            Debug.Log($"Update Displayed Value for {this.name}: " + _floatOptionValue.Value);
             Slider.SetValueWithoutNotify(_floatOptionValue.Value);
             base.UpdateDisplayedValue();
         }

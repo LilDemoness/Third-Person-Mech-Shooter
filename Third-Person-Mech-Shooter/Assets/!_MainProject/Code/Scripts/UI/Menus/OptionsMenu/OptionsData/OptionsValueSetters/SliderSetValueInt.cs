@@ -15,11 +15,6 @@ namespace Gameplay.UI.Menus.Options
         public override void SetValue(float newValue) => Slider.value = Mathf.RoundToInt(newValue);
 
 
-        protected override void Awake()
-        {
-            base.Awake();
-            Slider.onValueChanged.AddListener(OnSliderValueChanged);
-        }
         protected override void OnDestroy()
         {
             base.OnDestroy();
@@ -36,6 +31,8 @@ namespace Gameplay.UI.Menus.Options
             }
             else
                 Debug.LogWarning("Int Option without limits attached to a slider. How should we handle this?", this);
+
+            Slider.onValueChanged.AddListener(OnSliderValueChanged);
 
             base.Initialise();
         }

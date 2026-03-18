@@ -41,10 +41,15 @@ public class FloatOptionValue : OptionsValue<float>
     }
 
 
-    public override void SaveToPrefs() => PlayerPrefs.SetFloat(PrefsIdentifier, Value);
+    public override void SaveToPrefs()
+    {
+        Debug.Log("Save To Prefs: " + PrefsIdentifier + " = " + Value.ToString());
+        PlayerPrefs.SetFloat(PrefsIdentifier, Value);
+    }
     public override void LoadFromPrefs()
     {
         SetValueNoNotifyNoChecks(PlayerPrefs.GetFloat(PrefsIdentifier, DefaultValue));
+        Debug.Log("Load From Prefs: " + PrefsIdentifier + " = " + DefaultValue.ToString());
         InvokeOnValueChanged();
     }
 

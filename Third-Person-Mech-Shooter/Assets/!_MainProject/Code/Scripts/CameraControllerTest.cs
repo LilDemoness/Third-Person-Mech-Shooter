@@ -16,13 +16,30 @@ public class CameraControllerTest : NetworkBehaviour
     [SerializeField] private bool _swapTest;
 
 
+    [Header("Options References")]
+    [SerializeField] private FloatOptionValue _mnkHorizontalSensitivity;
+    [SerializeField] private FloatOptionValue _mnkVerticalSensitivity;
+    [SerializeField] private BoolOptionValue _mnkInvertX;
+    [SerializeField] private BoolOptionValue _mnkInvertY;
+
+    [Space(5)]
+    [SerializeField] private FloatOptionValue _gamepadHorizontalSensitivity;
+    [SerializeField] private FloatOptionValue _gamepadVerticalSensitivity;
+    [SerializeField] private BoolOptionValue _gamepadInvertX;
+    [SerializeField] private BoolOptionValue _gamepadInvertY;
+
+
+    private float _horizontalSensitivity => ClientInput.LastUsedDevice == ClientInput.DeviceType.MnK ? _mnkHorizontalSensitivity.Value : _gamepadHorizontalSensitivity.Value;
+    private float _verticalSensitivity => ClientInput.LastUsedDevice == ClientInput.DeviceType.MnK ? _mnkVerticalSensitivity.Value : _gamepadVerticalSensitivity.Value;
+    private bool _invertX => ClientInput.LastUsedDevice == ClientInput.DeviceType.MnK ? _mnkInvertX.Value : _gamepadInvertX.Value;
+    private bool _invertY => ClientInput.LastUsedDevice == ClientInput.DeviceType.MnK ? _mnkInvertY.Value : _gamepadInvertY.Value;
+
+
     [Header("Rotation Settings")]
 	[SerializeField] private Transform _rotationPivot;
     [SerializeField] private float _graphicsRotationRate = 720.0f;
 	
 	[Space(5)]
-    [SerializeField] private float _horizontalSensitivity = 35.0f;
-    [SerializeField] private float _verticalSensitivity = 20.0f;
     [SerializeField] private NetworkVariable<float> _rotationPivotYRotation = new NetworkVariable<float>(writePerm: NetworkVariableWritePermission.Owner);
     [SerializeField] private Vector2 _rotation;
     private bool _snapRotation = false;
@@ -86,8 +103,8 @@ public class CameraControllerTest : NetworkBehaviour
         {
             // Determine our desired rotation on the owner.
 			Vector2 cameraInput = ClientInput.LookInput;
-            _rotation.x -= cameraInput.y * _verticalSensitivity * Time.deltaTime;
-            _rotation.y += cameraInput.x * _horizontalSensitivity * Time.deltaTime;
+            _rotation.x -= cameraInput.y * _verticalSensitivity * (_invertY ? -1 : 1) * Time.deltaTime;
+            _rotation.y += cameraInput.x * _horizontalSensitivity * (_invertX ? -1 : 1) * Time.deltaTime;
 
             _rotation.x = Mathf.Clamp(_rotation.x, MIN_VERTICAL_ROTATION, MAX_VERTICAL_ROTATION);
 

@@ -456,7 +456,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58c0b45cf3b1ff64495130f9b553bcf9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _canvasGroup: {fileID: 1294423526881786138}
+  <CanvasGroup>k__BackingField: {fileID: 1294423526881786138}
+  _firstSelectedElement: {fileID: 0}
 --- !u!225 &1294423526881786138
 CanvasGroup:
   m_ObjectHideFlags: 0

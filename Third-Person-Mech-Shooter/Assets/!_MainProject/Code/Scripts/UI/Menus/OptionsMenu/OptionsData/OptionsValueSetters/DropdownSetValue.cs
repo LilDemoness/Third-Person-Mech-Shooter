@@ -18,12 +18,7 @@ namespace Gameplay.UI.Menus.Options
         private IDropdownSupportingOptionValue _optionsValue => (m_optionsValue as IDropdownSupportingOptionValue);
         protected override BaseOptionsValue OptionsValue => (_optionsValue as BaseOptionsValue);
 
-
-        protected override void Awake()
-        {
-            base.Awake();
-            _dropdown.onValueChanged.AddListener(OnValueChanged);
-        }
+        
         protected override void OnDestroy()
         {
             base.OnDestroy();
@@ -34,6 +29,7 @@ namespace Gameplay.UI.Menus.Options
         {
             base.Initialise();
             InitialiseDropdownWithResolutions();
+            _dropdown.onValueChanged.AddListener(OnValueChanged);
         }
 
         public void OnValueChanged(int resolutionValue) => _optionsValue.SetValue(resolutionValue);
