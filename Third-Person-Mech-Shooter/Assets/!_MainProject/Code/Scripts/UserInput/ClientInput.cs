@@ -18,7 +18,6 @@ namespace UserInput
         private static ClientInput s_instance;
         public static bool HasInputActions => s_inputActions != null;
 
-
         public static Vector2 MovementInput { get; private set; }
         public static event System.Action OnMovementInputChanged;
         private static Vector2 s_previousMovementInput;
@@ -114,6 +113,8 @@ namespace UserInput
             }
 
             CreateInputActions();
+            ControlsRebindingValue.Instance.SubscribeToOnValueChangedAndTryTrigger(UpdateInputOverrides);
+
 
             InputSystem.onDeviceChange += InputSystem_onDeviceChange;
             InputUser.onUnpairedDeviceUsed += InputUser_onUnpairedDeviceUsed;
@@ -127,6 +128,7 @@ namespace UserInput
             if (s_inputActions != null)
                 DestroyInputActions();  // Dispose of our InputActionMap.
 
+            ControlsRebindingValue.Instance.UnsubscribeFromOnValueChanged(UpdateInputOverrides);
             InputSystem.onDeviceChange -= InputSystem_onDeviceChange;
             InputUser.onUnpairedDeviceUsed -= InputUser_onUnpairedDeviceUsed;
         }
@@ -253,6 +255,8 @@ namespace UserInput
             s_inputActions = null;
         }
 
+        public static PlayerInputActions GetInputActionsInstance() => s_inputActions;
+
 
         private void Update()
         {
@@ -262,7 +266,7 @@ namespace UserInput
             CheckFocus();
 
             // Cache our movement input & notify listeners if it's changed since the last notification.
-            MovementInput = s_inputActions.Movement.Movement.ReadValue<Vector2>();
+            MovementInput = s_inputActions.Movement.Move.ReadValue<Vector2>();
             if (MovementInput != s_previousMovementInput)
             {
                 OnMovementInputChanged?.Invoke();
@@ -636,6 +640,35 @@ namespace UserInput
 
                 OnInputDeviceChanged?.Invoke();
             }
+        }
+
+        #endregion
+
+
+        #region Key Rebindings
+
+        private void UpdateInputOverrides()
+        {
+            Debug.Log("Update Input from Control Overrides");
+            LoadOverridesFromJSON(ControlsRebindingValue.Instance.Value);
+        }
+        private static void LoadOverridesFromJSON(string jsonString)
+        {
+            if (string.IsNullOrWhiteSpace(jsonString))
+                s_inputActions.RemoveAllBindingOverrides();
+            else
+                s_inputActions.LoadBindingOverridesFromJson(jsonString);
+        }
+        public static bool TryGetBindingOverridesAsJSON(out string jsonString)
+        {
+            if (s_inputActions == null)
+            {
+                jsonString = null;
+                return false;
+            }
+
+            jsonString = s_inputActions.SaveBindingOverridesAsJson();
+            return true;
         }
 
         #endregion

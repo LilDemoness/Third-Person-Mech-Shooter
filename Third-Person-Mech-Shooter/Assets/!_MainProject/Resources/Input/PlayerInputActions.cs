@@ -93,7 +93,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             ""id"": ""c1699997-ad6d-4dad-bcc1-9fd6ec4bb729"",
             ""actions"": [
                 {
-                    ""name"": ""Movement"",
+                    ""name"": ""Move"",
                     ""type"": ""Value"",
                     ""id"": ""8a957303-12c6-4a3c-907d-cc5ff6fe558f"",
                     ""expectedControlType"": ""Vector2"",
@@ -119,7 +119,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Movement"",
+                    ""action"": ""Move"",
                     ""isComposite"": true,
                     ""isPartOfComposite"": false
                 },
@@ -130,7 +130,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""MnK"",
-                    ""action"": ""Movement"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -141,7 +141,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""MnK"",
-                    ""action"": ""Movement"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -152,7 +152,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""MnK"",
-                    ""action"": ""Movement"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -163,7 +163,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""MnK"",
-                    ""action"": ""Movement"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -173,7 +173,18 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": "";MnK"",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8a123331-4a66-4cec-becb-0ea4c1f74e42"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -403,6 +414,51 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""name"": ""ToggleLeaderboardUI"",
                     ""type"": ""Button"",
                     ""id"": ""7dd1269b-6d6a-4e0c-8f5c-67794e422313"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RebindAction_Hover"",
+                    ""type"": ""Button"",
+                    ""id"": ""f32826e6-7e90-4140-9a78-87df03544a16"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ResetAction_Hover"",
+                    ""type"": ""Button"",
+                    ""id"": ""38d48d72-6c81-4e52-a85b-985b1ca4e8f3"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UnbindAction_Hover"",
+                    ""type"": ""Button"",
+                    ""id"": ""2b5bf57c-eebe-42c3-85fe-5b4246281477"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RebindAction_Selected"",
+                    ""type"": ""Button"",
+                    ""id"": ""4b307a22-cb9f-41be-8f93-819bc8f3409b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UnbindAction_Selected"",
+                    ""type"": ""Button"",
+                    ""id"": ""7797cbf0-aceb-4cb5-a6b5-5d85136eb0a6"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -803,6 +859,83 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";MnK"",
                     ""action"": ""ToggleLeaderboardUI"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c78dd2d7-f19f-47b8-9012-8a2ad551c2ad"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";MnK"",
+                    ""action"": ""RebindAction_Hover"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""541a2cc7-13de-4460-8624-b84394ab0d28"",
+                    ""path"": ""<Mouse>/middleButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";MnK"",
+                    ""action"": ""ResetAction_Hover"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0188082c-1496-4987-9189-7c46c3767c57"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";MnK"",
+                    ""action"": ""RebindAction_Selected"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3aab9972-c05c-43f2-a96b-eee64ee41723"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""RebindAction_Selected"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fc0daba9-c18f-4d8f-923a-6cabe430089c"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";MnK"",
+                    ""action"": ""UnbindAction_Hover"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c98f0833-91ee-453d-b316-b3ec73c7fad4"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";MnK"",
+                    ""action"": ""UnbindAction_Selected"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e390888a-95a1-4fc6-83e6-43185bfaf160"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""UnbindAction_Selected"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1511,7 +1644,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
 }");
         // Movement
         m_Movement = asset.FindActionMap("Movement", throwIfNotFound: true);
-        m_Movement_Movement = m_Movement.FindAction("Movement", throwIfNotFound: true);
+        m_Movement_Move = m_Movement.FindAction("Move", throwIfNotFound: true);
         m_Movement_Jump = m_Movement.FindAction("Jump", throwIfNotFound: true);
         // Camera
         m_Camera = asset.FindActionMap("Camera", throwIfNotFound: true);
@@ -1536,6 +1669,11 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_UI_TrackedDeviceOrientation = m_UI.FindAction("TrackedDeviceOrientation", throwIfNotFound: true);
         m_UI_Confirm = m_UI.FindAction("Confirm", throwIfNotFound: true);
         m_UI_ToggleLeaderboardUI = m_UI.FindAction("ToggleLeaderboardUI", throwIfNotFound: true);
+        m_UI_RebindAction_Hover = m_UI.FindAction("RebindAction_Hover", throwIfNotFound: true);
+        m_UI_ResetAction_Hover = m_UI.FindAction("ResetAction_Hover", throwIfNotFound: true);
+        m_UI_UnbindAction_Hover = m_UI.FindAction("UnbindAction_Hover", throwIfNotFound: true);
+        m_UI_RebindAction_Selected = m_UI.FindAction("RebindAction_Selected", throwIfNotFound: true);
+        m_UI_UnbindAction_Selected = m_UI.FindAction("UnbindAction_Selected", throwIfNotFound: true);
         // MainMenu
         m_MainMenu = asset.FindActionMap("MainMenu", throwIfNotFound: true);
         m_MainMenu_Back = m_MainMenu.FindAction("Back", throwIfNotFound: true);
@@ -1653,7 +1791,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     // Movement
     private readonly InputActionMap m_Movement;
     private List<IMovementActions> m_MovementActionsCallbackInterfaces = new List<IMovementActions>();
-    private readonly InputAction m_Movement_Movement;
+    private readonly InputAction m_Movement_Move;
     private readonly InputAction m_Movement_Jump;
     /// <summary>
     /// Provides access to input actions defined in input action map "Movement".
@@ -1667,9 +1805,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// </summary>
         public MovementActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
         /// <summary>
-        /// Provides access to the underlying input action "Movement/Movement".
+        /// Provides access to the underlying input action "Movement/Move".
         /// </summary>
-        public InputAction @Movement => m_Wrapper.m_Movement_Movement;
+        public InputAction @Move => m_Wrapper.m_Movement_Move;
         /// <summary>
         /// Provides access to the underlying input action "Movement/Jump".
         /// </summary>
@@ -1700,9 +1838,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         {
             if (instance == null || m_Wrapper.m_MovementActionsCallbackInterfaces.Contains(instance)) return;
             m_Wrapper.m_MovementActionsCallbackInterfaces.Add(instance);
-            @Movement.started += instance.OnMovement;
-            @Movement.performed += instance.OnMovement;
-            @Movement.canceled += instance.OnMovement;
+            @Move.started += instance.OnMove;
+            @Move.performed += instance.OnMove;
+            @Move.canceled += instance.OnMove;
             @Jump.started += instance.OnJump;
             @Jump.performed += instance.OnJump;
             @Jump.canceled += instance.OnJump;
@@ -1717,9 +1855,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="MovementActions" />
         private void UnregisterCallbacks(IMovementActions instance)
         {
-            @Movement.started -= instance.OnMovement;
-            @Movement.performed -= instance.OnMovement;
-            @Movement.canceled -= instance.OnMovement;
+            @Move.started -= instance.OnMove;
+            @Move.performed -= instance.OnMove;
+            @Move.canceled -= instance.OnMove;
             @Jump.started -= instance.OnJump;
             @Jump.performed -= instance.OnJump;
             @Jump.canceled -= instance.OnJump;
@@ -1997,6 +2135,11 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_TrackedDeviceOrientation;
     private readonly InputAction m_UI_Confirm;
     private readonly InputAction m_UI_ToggleLeaderboardUI;
+    private readonly InputAction m_UI_RebindAction_Hover;
+    private readonly InputAction m_UI_ResetAction_Hover;
+    private readonly InputAction m_UI_UnbindAction_Hover;
+    private readonly InputAction m_UI_RebindAction_Selected;
+    private readonly InputAction m_UI_UnbindAction_Selected;
     /// <summary>
     /// Provides access to input actions defined in input action map "UI".
     /// </summary>
@@ -2056,6 +2199,26 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "UI/ToggleLeaderboardUI".
         /// </summary>
         public InputAction @ToggleLeaderboardUI => m_Wrapper.m_UI_ToggleLeaderboardUI;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/RebindAction_Hover".
+        /// </summary>
+        public InputAction @RebindAction_Hover => m_Wrapper.m_UI_RebindAction_Hover;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/ResetAction_Hover".
+        /// </summary>
+        public InputAction @ResetAction_Hover => m_Wrapper.m_UI_ResetAction_Hover;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/UnbindAction_Hover".
+        /// </summary>
+        public InputAction @UnbindAction_Hover => m_Wrapper.m_UI_UnbindAction_Hover;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/RebindAction_Selected".
+        /// </summary>
+        public InputAction @RebindAction_Selected => m_Wrapper.m_UI_RebindAction_Selected;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/UnbindAction_Selected".
+        /// </summary>
+        public InputAction @UnbindAction_Selected => m_Wrapper.m_UI_UnbindAction_Selected;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -2118,6 +2281,21 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @ToggleLeaderboardUI.started += instance.OnToggleLeaderboardUI;
             @ToggleLeaderboardUI.performed += instance.OnToggleLeaderboardUI;
             @ToggleLeaderboardUI.canceled += instance.OnToggleLeaderboardUI;
+            @RebindAction_Hover.started += instance.OnRebindAction_Hover;
+            @RebindAction_Hover.performed += instance.OnRebindAction_Hover;
+            @RebindAction_Hover.canceled += instance.OnRebindAction_Hover;
+            @ResetAction_Hover.started += instance.OnResetAction_Hover;
+            @ResetAction_Hover.performed += instance.OnResetAction_Hover;
+            @ResetAction_Hover.canceled += instance.OnResetAction_Hover;
+            @UnbindAction_Hover.started += instance.OnUnbindAction_Hover;
+            @UnbindAction_Hover.performed += instance.OnUnbindAction_Hover;
+            @UnbindAction_Hover.canceled += instance.OnUnbindAction_Hover;
+            @RebindAction_Selected.started += instance.OnRebindAction_Selected;
+            @RebindAction_Selected.performed += instance.OnRebindAction_Selected;
+            @RebindAction_Selected.canceled += instance.OnRebindAction_Selected;
+            @UnbindAction_Selected.started += instance.OnUnbindAction_Selected;
+            @UnbindAction_Selected.performed += instance.OnUnbindAction_Selected;
+            @UnbindAction_Selected.canceled += instance.OnUnbindAction_Selected;
         }
 
         /// <summary>
@@ -2165,6 +2343,21 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @ToggleLeaderboardUI.started -= instance.OnToggleLeaderboardUI;
             @ToggleLeaderboardUI.performed -= instance.OnToggleLeaderboardUI;
             @ToggleLeaderboardUI.canceled -= instance.OnToggleLeaderboardUI;
+            @RebindAction_Hover.started -= instance.OnRebindAction_Hover;
+            @RebindAction_Hover.performed -= instance.OnRebindAction_Hover;
+            @RebindAction_Hover.canceled -= instance.OnRebindAction_Hover;
+            @ResetAction_Hover.started -= instance.OnResetAction_Hover;
+            @ResetAction_Hover.performed -= instance.OnResetAction_Hover;
+            @ResetAction_Hover.canceled -= instance.OnResetAction_Hover;
+            @UnbindAction_Hover.started -= instance.OnUnbindAction_Hover;
+            @UnbindAction_Hover.performed -= instance.OnUnbindAction_Hover;
+            @UnbindAction_Hover.canceled -= instance.OnUnbindAction_Hover;
+            @RebindAction_Selected.started -= instance.OnRebindAction_Selected;
+            @RebindAction_Selected.performed -= instance.OnRebindAction_Selected;
+            @RebindAction_Selected.canceled -= instance.OnRebindAction_Selected;
+            @UnbindAction_Selected.started -= instance.OnUnbindAction_Selected;
+            @UnbindAction_Selected.performed -= instance.OnUnbindAction_Selected;
+            @UnbindAction_Selected.canceled -= instance.OnUnbindAction_Selected;
         }
 
         /// <summary>
@@ -2814,12 +3007,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     public interface IMovementActions
     {
         /// <summary>
-        /// Method invoked when associated input action "Movement" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Move" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnMovement(InputAction.CallbackContext context);
+        void OnMove(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Jump" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
@@ -2970,6 +3163,41 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnToggleLeaderboardUI(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "RebindAction_Hover" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRebindAction_Hover(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ResetAction_Hover" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnResetAction_Hover(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "UnbindAction_Hover" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnUnbindAction_Hover(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "RebindAction_Selected" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRebindAction_Selected(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "UnbindAction_Selected" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnUnbindAction_Selected(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "MainMenu" which allows adding and removing callbacks.

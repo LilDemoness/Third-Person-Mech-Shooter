@@ -12,7 +12,7 @@ namespace Gameplay.UI.Menus.Options
         public bool HasChanges => _hasChanges;
 
 
-        private void OnDestroy() => BaseSetOption.OnAnyChanged -= OnAnyOptionChanged;
+        protected virtual void OnDestroy() => BaseSetOption.OnAnyChanged -= OnAnyOptionChanged;
 
 
         public override void Open(bool selectFirstElement = true)
@@ -40,6 +40,7 @@ namespace Gameplay.UI.Menus.Options
 
                 // Closing successfully completed.
                 await base.Close();
+                FinishClose();
                 return true;
 
                 void OnCancel() => success = false;
@@ -48,11 +49,15 @@ namespace Gameplay.UI.Menus.Options
             }
             else
             {
-                _hasChanges = false;
-                BaseSetOption.OnAnyChanged -= OnAnyOptionChanged;
                 await base.Close();
+                FinishClose();
                 return true;
             }
+        }
+        protected virtual void FinishClose()
+        {
+            _hasChanges = false;
+            BaseSetOption.OnAnyChanged -= OnAnyOptionChanged;
         }
 
 
@@ -62,14 +67,14 @@ namespace Gameplay.UI.Menus.Options
             InitialiseAllOptions();
             SetupNavigation();
         }
-        private void InitialiseAllOptions()
+        protected virtual void InitialiseAllOptions()
         {
             for(int i = 0; i < _optionSetters.Length; ++i)
             {
                 _optionSetters[i].Initialise();
             }
         }
-        private void SetupNavigation()
+        protected virtual void SetupNavigation()
         {
             if (_optionSetters.Length <= 1)
                 return;
@@ -86,7 +91,7 @@ namespace Gameplay.UI.Menus.Options
         }
 
 
-        public void SaveAllOptionsToPrefs()
+        public virtual void SaveAllOptionsToPrefs()
         {
             for (int i = 0; i < _optionSetters.Length; ++i)
             {
@@ -96,7 +101,7 @@ namespace Gameplay.UI.Menus.Options
             // We've saved all our changes, so no new changes exist.
             _hasChanges = false;
         }
-        public void LoadAllOptionsFromPrefs()
+        public virtual void LoadAllOptionsFromPrefs()
         {
             for (int i = 0; i < _optionSetters.Length; ++i)
             {
@@ -107,7 +112,7 @@ namespace Gameplay.UI.Menus.Options
             _hasChanges = false;
         }
 
-        public void ResetAllOptions()
+        public virtual void ResetAllOptions()
         {
             for (int i = 0; i < _optionSetters.Length; ++i)
             {
@@ -120,6 +125,6 @@ namespace Gameplay.UI.Menus.Options
 
 
 
-        private void OnAnyOptionChanged() => _hasChanges = true;
+        protected void OnAnyOptionChanged() => _hasChanges = true;
     }
 }

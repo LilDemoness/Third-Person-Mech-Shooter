@@ -7,7 +7,7 @@
             "id": "c1699997-ad6d-4dad-bcc1-9fd6ec4bb729",
             "actions": [
                 {
-                    "name": "Movement",
+                    "name": "Move",
                     "type": "Value",
                     "id": "8a957303-12c6-4a3c-907d-cc5ff6fe558f",
                     "expectedControlType": "Vector2",
@@ -33,7 +33,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Movement",
+                    "action": "Move",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -44,7 +44,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "MnK",
-                    "action": "Movement",
+                    "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -55,7 +55,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "MnK",
-                    "action": "Movement",
+                    "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -66,7 +66,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "MnK",
-                    "action": "Movement",
+                    "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -77,7 +77,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "MnK",
-                    "action": "Movement",
+                    "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -87,7 +87,18 @@
                     "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";MnK",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8a123331-4a66-4cec-becb-0ea4c1f74e42",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
                     "action": "Jump",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -317,6 +328,51 @@
                     "name": "ToggleLeaderboardUI",
                     "type": "Button",
                     "id": "7dd1269b-6d6a-4e0c-8f5c-67794e422313",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RebindAction_Hover",
+                    "type": "Button",
+                    "id": "f32826e6-7e90-4140-9a78-87df03544a16",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ResetAction_Hover",
+                    "type": "Button",
+                    "id": "38d48d72-6c81-4e52-a85b-985b1ca4e8f3",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "UnbindAction_Hover",
+                    "type": "Button",
+                    "id": "2b5bf57c-eebe-42c3-85fe-5b4246281477",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RebindAction_Selected",
+                    "type": "Button",
+                    "id": "4b307a22-cb9f-41be-8f93-819bc8f3409b",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "UnbindAction_Selected",
+                    "type": "Button",
+                    "id": "7797cbf0-aceb-4cb5-a6b5-5d85136eb0a6",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -717,6 +773,83 @@
                     "processors": "",
                     "groups": ";MnK",
                     "action": "ToggleLeaderboardUI",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c78dd2d7-f19f-47b8-9012-8a2ad551c2ad",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";MnK",
+                    "action": "RebindAction_Hover",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "541a2cc7-13de-4460-8624-b84394ab0d28",
+                    "path": "<Mouse>/middleButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";MnK",
+                    "action": "ResetAction_Hover",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0188082c-1496-4987-9189-7c46c3767c57",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";MnK",
+                    "action": "RebindAction_Selected",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3aab9972-c05c-43f2-a96b-eee64ee41723",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "RebindAction_Selected",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fc0daba9-c18f-4d8f-923a-6cabe430089c",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";MnK",
+                    "action": "UnbindAction_Hover",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c98f0833-91ee-453d-b316-b3ec73c7fad4",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";MnK",
+                    "action": "UnbindAction_Selected",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e390888a-95a1-4fc6-83e6-43185bfaf160",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "UnbindAction_Selected",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

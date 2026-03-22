@@ -112,6 +112,23 @@ namespace UI.Icons
 
             return output;
         }
+        /// <summary>
+        ///     Get the TMPro Sprite Tag text for the given control path and active Control Scheme.
+        /// </summary>
+        /// <param name="controlPath"> The control path for the action we are retrieving the Sprite Tags for.</param>
+        /// <returns>The TMPro Sprite Tags for the given InputAction and active Control Scheme.</returns>
+        public static string GetIconIdentifierForAction(string controlPath)
+        {
+            // Try to get the Sprite Identifier for the control path.
+            if (s_inputSystemIdentifierToSpriteIdenfitierDictionary.TryGetValue(controlPath, out string spriteIdentifier))
+            {
+                // We found the identifier.
+                // Add our sprite tag with the formatted action name to the output.
+                return $"<sprite name=\"{spriteIdentifier}\">";
+            }
+
+            return string.Empty;
+        }
 
         public static TMPro.TMP_SpriteAsset GetSpriteAsset() => s_inputIconData.GetSpriteAsset();
 
