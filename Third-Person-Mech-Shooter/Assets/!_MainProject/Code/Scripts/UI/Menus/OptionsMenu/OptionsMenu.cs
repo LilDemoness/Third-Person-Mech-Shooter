@@ -52,17 +52,17 @@ namespace Gameplay.UI.Menus.Options
 
         public override void ShowChild(int childIndex)
         {
-            _currentOpenMenu = Children[childIndex] as OptionsSubmenu;
+            _currentOpenMenu = Children[childIndex] as IOptionsSubmenu;
             base.ShowChild(childIndex);
         }
         public override void EnterChild(int childIndex)
         {
-            _currentOpenMenu = Children[childIndex] as OptionsSubmenu;
+            _currentOpenMenu = Children[childIndex] as IOptionsSubmenu;
             base.EnterChild(childIndex);
         }
 
 
-        protected override bool CanHideActiveChild() => PreviouslySelectedChild == null || !(PreviouslySelectedChild as OptionsSubmenu).HasChanges;
+        protected override bool CanHideActiveChild() => PreviouslySelectedChild == null || !(PreviouslySelectedChild as IOptionsSubmenu).HasChanges;
 
 
         #region UI Button Functions
