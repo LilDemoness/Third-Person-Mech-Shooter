@@ -696,6 +696,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""ResetAction_Selected"",
+                    ""type"": ""Button"",
+                    ""id"": ""330b9c6d-a795-4682-ba38-b0b035645953"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""ReadyUp"",
                     ""type"": ""Button"",
                     ""id"": ""391512a3-4edc-44ec-8c24-ee127eb6a5a2"",
@@ -1137,6 +1146,28 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""03b9bfb7-1210-4343-be95-f60bbf2fa10c"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";MnK"",
+                    ""action"": ""ResetAction_Selected"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""afdf1430-dedd-4205-aebe-598d20e4c898"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""ResetAction_Selected"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""0188082c-1496-4987-9189-7c46c3767c57"",
                     ""path"": ""<Keyboard>/enter"",
                     ""interactions"": """",
@@ -1171,7 +1202,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""c98f0833-91ee-453d-b316-b3ec73c7fad4"",
-                    ""path"": ""<Keyboard>/f"",
+                    ""path"": ""<Keyboard>/leftShift"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";MnK"",
@@ -1947,6 +1978,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_UI_UnbindAction_Hover = m_UI.FindAction("UnbindAction_Hover", throwIfNotFound: true);
         m_UI_RebindAction_Selected = m_UI.FindAction("RebindAction_Selected", throwIfNotFound: true);
         m_UI_UnbindAction_Selected = m_UI.FindAction("UnbindAction_Selected", throwIfNotFound: true);
+        m_UI_ResetAction_Selected = m_UI.FindAction("ResetAction_Selected", throwIfNotFound: true);
         m_UI_ReadyUp = m_UI.FindAction("ReadyUp", throwIfNotFound: true);
         // MainMenu
         m_MainMenu = asset.FindActionMap("MainMenu", throwIfNotFound: true);
@@ -2414,6 +2446,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_UnbindAction_Hover;
     private readonly InputAction m_UI_RebindAction_Selected;
     private readonly InputAction m_UI_UnbindAction_Selected;
+    private readonly InputAction m_UI_ResetAction_Selected;
     private readonly InputAction m_UI_ReadyUp;
     /// <summary>
     /// Provides access to input actions defined in input action map "UI".
@@ -2495,6 +2528,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @UnbindAction_Selected => m_Wrapper.m_UI_UnbindAction_Selected;
         /// <summary>
+        /// Provides access to the underlying input action "UI/ResetAction_Selected".
+        /// </summary>
+        public InputAction @ResetAction_Selected => m_Wrapper.m_UI_ResetAction_Selected;
+        /// <summary>
         /// Provides access to the underlying input action "UI/ReadyUp".
         /// </summary>
         public InputAction @ReadyUp => m_Wrapper.m_UI_ReadyUp;
@@ -2575,6 +2612,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @UnbindAction_Selected.started += instance.OnUnbindAction_Selected;
             @UnbindAction_Selected.performed += instance.OnUnbindAction_Selected;
             @UnbindAction_Selected.canceled += instance.OnUnbindAction_Selected;
+            @ResetAction_Selected.started += instance.OnResetAction_Selected;
+            @ResetAction_Selected.performed += instance.OnResetAction_Selected;
+            @ResetAction_Selected.canceled += instance.OnResetAction_Selected;
             @ReadyUp.started += instance.OnReadyUp;
             @ReadyUp.performed += instance.OnReadyUp;
             @ReadyUp.canceled += instance.OnReadyUp;
@@ -2640,6 +2680,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @UnbindAction_Selected.started -= instance.OnUnbindAction_Selected;
             @UnbindAction_Selected.performed -= instance.OnUnbindAction_Selected;
             @UnbindAction_Selected.canceled -= instance.OnUnbindAction_Selected;
+            @ResetAction_Selected.started -= instance.OnResetAction_Selected;
+            @ResetAction_Selected.performed -= instance.OnResetAction_Selected;
+            @ResetAction_Selected.canceled -= instance.OnResetAction_Selected;
             @ReadyUp.started -= instance.OnReadyUp;
             @ReadyUp.performed -= instance.OnReadyUp;
             @ReadyUp.canceled -= instance.OnReadyUp;
@@ -3483,6 +3526,13 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnUnbindAction_Selected(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ResetAction_Selected" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnResetAction_Selected(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "ReadyUp" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

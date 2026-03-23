@@ -610,6 +610,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "ResetAction_Selected",
+                    "type": "Button",
+                    "id": "330b9c6d-a795-4682-ba38-b0b035645953",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "ReadyUp",
                     "type": "Button",
                     "id": "391512a3-4edc-44ec-8c24-ee127eb6a5a2",
@@ -1051,6 +1060,28 @@
                 },
                 {
                     "name": "",
+                    "id": "03b9bfb7-1210-4343-be95-f60bbf2fa10c",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";MnK",
+                    "action": "ResetAction_Selected",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "afdf1430-dedd-4205-aebe-598d20e4c898",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "ResetAction_Selected",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "0188082c-1496-4987-9189-7c46c3767c57",
                     "path": "<Keyboard>/enter",
                     "interactions": "",
@@ -1085,7 +1116,7 @@
                 {
                     "name": "",
                     "id": "c98f0833-91ee-453d-b316-b3ec73c7fad4",
-                    "path": "<Keyboard>/f",
+                    "path": "<Keyboard>/leftShift",
                     "interactions": "",
                     "processors": "",
                     "groups": ";MnK",
