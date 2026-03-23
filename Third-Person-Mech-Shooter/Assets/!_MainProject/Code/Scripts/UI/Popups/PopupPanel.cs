@@ -45,7 +45,7 @@ namespace Gameplay.UI.Popups
         /// <summary>
         ///     Setup and show the Popup Panel.
         /// </summary>
-        public void SetupPopupPanel(string titleText, string mainText, bool closeableByUser = true, bool obstructInput = true, PopupButtonParameters[] popupButtonParameters = null)
+        public void SetupPopupPanel(string titleText, string mainText, bool closeableByUser = true, bool obstructInput = true, params PopupButtonParameters[] popupButtonParameters)
         {
             _titleText.text = titleText;
             _mainText.text = mainText;
@@ -53,24 +53,35 @@ namespace Gameplay.UI.Popups
             _obstructInput = obstructInput;
 
             if (closeableByUser)
-                CreateButton(new PopupButtonParameters("Close", Close));
-            if (popupButtonParameters != null)
             {
-                foreach (PopupButtonParameters parameter in popupButtonParameters)
-                {
-                    Debug.Log($"Param Text: " + parameter.ButtonText);
-                    CreateButton(parameter);
-                }
+                List<PopupButtonParameters> popupParams = new List<PopupButtonParameters>(popupButtonParameters);
+                popupParams.Insert(0, new PopupButtonParameters("Close", Close));
+                SetupPopupButtons(popupParams.ToArray());
             }
-            _loadingSpinner.SetActive(!_closableByUser);
+            else
+                SetupPopupButtons(popupButtonParameters);
 
-            SetupButtonNavigation();
+            if (_loadingSpinner)
+                _loadingSpinner.SetActive(!_closableByUser);
 
             // If we're obstructing input, achieve this by opening through the MenuManager. Otherwise, show normally.
             if (obstructInput)
                 MenuManager.LinkPopup(this);
             
             Open();
+        }
+        public void SetupPopupButtons(params PopupButtonParameters[] popupButtonParameters)
+        {
+            if (popupButtonParameters == null)
+                return;
+            
+            foreach (PopupButtonParameters parameter in popupButtonParameters)
+            {
+                Debug.Log($"Param Text: " + parameter.ButtonText);
+                CreateButton(parameter);
+            }
+
+            SetupButtonNavigation();
         }
 
 
@@ -147,6 +158,9 @@ namespace Gameplay.UI.Popups
         }
         private void CleanupButtons()
         {
+            if (!_buttonContainer)
+                return;
+
             for (int i = _buttonContainer.childCount - 1; i >= 0; --i)
             {
                 Destroy(_buttonContainer.GetChild(i).gameObject);
@@ -169,6 +183,7 @@ namespace Gameplay.UI.Popups
     }
 
 
+    [System.Serializable]
     public readonly struct PopupButtonParameters
     {
         public readonly string ButtonText;

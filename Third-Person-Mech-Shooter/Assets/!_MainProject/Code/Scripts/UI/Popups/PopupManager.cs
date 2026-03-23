@@ -1,4 +1,3 @@
-using Gameplay.UI.Menus;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,6 +10,7 @@ namespace Gameplay.UI.Popups
     public class PopupManager : MonoBehaviour
     {
         private static PopupManager s_instance;
+        public static GameObject Root => s_instance.gameObject;
 
         
         [SerializeField] private GameObject _popupPanelPrefab;
@@ -64,6 +64,7 @@ namespace Gameplay.UI.Popups
             // Create a popup menu with buttons corresponding to the values of 'popupOptions'.
             return s_instance.DisplayPopupPanel(titleText, bodyText, false, popupButtons);
         }
+
         public static PopupPanel ShowUnsavedChangesOptionsPanel(System.Action onCancelCallback, System.Action onDiscardCallback, System.Action onSaveCallback)
         {
             if (s_instance == null)

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UI.Icons;
+using UltEvents;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -541,8 +542,8 @@ public class RebindActionUI : MonoBehaviour
     }
 }
 [System.Serializable]
-public class UpdateBindingUIEvent : UnityEvent<RebindActionUI, string, string, string>
+public class UpdateBindingUIEvent : UltEvent<RebindActionUI, string, string, string>
 { }
 [System.Serializable]
-public class InteractiveRebindEvent : UnityEvent<RebindActionUI, InputActionRebindingExtensions.RebindingOperation>
+public class InteractiveRebindEvent : UltEvent<RebindActionUI, InputActionRebindingExtensions.RebindingOperation>
 { }

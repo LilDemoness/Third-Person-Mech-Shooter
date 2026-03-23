@@ -498,14 +498,37 @@ MonoBehaviour:
   m_rebindOverlay: {fileID: 0}
   _defaultInputActions: {fileID: -944628639613478452, guid: 832195adfe757804ab6ebd15233eab2e, type: 3}
   m_updateBindingUIEvent:
-    m_PersistentCalls:
-      m_Calls: []
+    _PersistentCalls: []
   m_rebindStartEvent:
-    m_PersistentCalls:
-      m_Calls: []
+    _PersistentCalls:
+    - _Target: {fileID: 0}
+      _MemberName: Gameplay.UI.Popups.RebindingPopupPanel, Assembly-CSharp, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null.ShowForRebinding
+      _PersistentArguments:
+      - _Type: 14
+        _Int: 0
+        _String: RebindActionUI, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+          PublicKeyToken=null
+        _X: 0
+        _Y: 0
+        _Z: 0
+        _W: 0
+        _Object: {fileID: 0}
+      - _Type: 14
+        _Int: 1
+        _String: UnityEngine.InputSystem.InputActionRebindingExtensions+RebindingOperation,
+          Unity.InputSystem, Version=1.14.2.0, Culture=neutral, PublicKeyToken=null
+        _X: 0
+        _Y: 0
+        _Z: 0
+        _W: 0
+        _Object: {fileID: 0}
   m_rebindStopEvent:
-    m_PersistentCalls:
-      m_Calls: []
+    _PersistentCalls:
+    - _Target: {fileID: 0}
+      _MemberName: Gameplay.UI.Popups.RebindingPopupPanel, Assembly-CSharp, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null.Hide
+      _PersistentArguments: []
 --- !u!114 &1941934251249608302
 MonoBehaviour:
   m_ObjectHideFlags: 0
