@@ -115,12 +115,10 @@ namespace UI.Customisation.FrameSelection
 
         private void SubscribeToInput()
         {
-            ClientInput.OnOpenFrameSelectionPerformed += ToggleSelectionOptions;
             ClientInput.OnConfirmPerformed += ClientInput_OnConfirmPerformed;
         }
         private void UnsubscribeFromInput()
         {
-            ClientInput.OnOpenFrameSelectionPerformed -= ToggleSelectionOptions;
             ClientInput.OnConfirmPerformed -= ClientInput_OnConfirmPerformed;
         }
 
@@ -156,6 +154,8 @@ namespace UI.Customisation.FrameSelection
         /// </summary>
         public void ToggleSelectionOptions()
         {
+            Debug.Log("Toggle");
+
             if (this.IsOpen)
                 Close();
             else

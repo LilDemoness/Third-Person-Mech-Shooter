@@ -169,6 +169,72 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""fc818486-ffeb-4468-93c7-780171f93c13"",
+                    ""path"": ""<Gamepad>/leftStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""GamepadDirectionalMovement"",
+                    ""id"": ""a82a96ea-9357-46e1-96ca-807760bb1ee4"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Up"",
+                    ""id"": ""8448a3e1-2ad7-4c88-b638-f3eec27fb974"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Down"",
+                    ""id"": ""e2770111-d296-4a4e-9f79-13dd4a6233d9"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Left"",
+                    ""id"": ""63d14717-4dce-420a-b3e2-4008ef46e5fd"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Right"",
+                    ""id"": ""3bf370cf-a116-4aa1-a1cf-2d4256bf1f33"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
                     ""id"": ""d9c51578-07fa-424c-bd11-18fd14209f91"",
                     ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
@@ -196,7 +262,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             ""id"": ""a599240b-141e-439a-8ecc-469e70fcb5e0"",
             ""actions"": [
                 {
-                    ""name"": ""LookInput"",
+                    ""name"": ""Look"",
                     ""type"": ""Value"",
                     ""id"": ""0b48b836-d29e-45eb-8b28-cccf8e9c8a11"",
                     ""expectedControlType"": ""Vector2"",
@@ -213,9 +279,130 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""MnK;TestMouse"",
-                    ""action"": ""LookInput"",
+                    ""action"": ""Look"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""MnKDirectionalLook"",
+                    ""id"": ""0afb6006-3d7b-42e9-850d-9fe801824d41"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Look"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""3fc11f4b-33f4-441a-b39c-b68ae714230f"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";MnK"",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""6da7d509-e00b-4050-9a80-9cab03726271"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";MnK"",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""b7b60cf0-1f83-4e0e-9dbd-3a9807bd6e6b"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";MnK"",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""3b99a249-79a7-4d1a-832b-e3fb3265be48"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";MnK"",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5758d940-5392-4428-b621-913c9e14d462"",
+                    ""path"": ""<Gamepad>/rightStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""GamepadDirectionalLook"",
+                    ""id"": ""ba4afb67-02d0-4998-bd78-65ae2deefbcb"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Look"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""a3f25071-ead9-4188-bc7a-360981120420"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""77409ea8-68d9-4d96-ac66-ff2b962dfe8c"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""ef69e8a4-4803-41b0-bf96-5f9e927d6c99"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""f4e545b0-aabd-4a16-a4c2-409961a772fa"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         },
@@ -274,11 +461,33 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""2af3cf9e-903c-4af3-a1c1-8b74452d2a21"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""ActivateSlot0"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""ee886116-261a-4de3-9dc7-0ae75e98f27b"",
                     ""path"": ""<Mouse>/rightButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""MnK"",
+                    ""action"": ""ActivateSlot1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7f957dcd-2a3f-4ba5-bd6f-02abfd6736c2"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
                     ""action"": ""ActivateSlot1"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -296,11 +505,33 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""1565d2ba-0c2f-4d8e-a8e9-63fc854e63fc"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""ActivateSlot2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""0f2edbe5-aa3f-4a9c-92d5-8050501c336b"",
                     ""path"": ""<Keyboard>/e"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""MnK"",
+                    ""action"": ""ActivateSlot3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""89bf57ef-72ea-45b2-a4ec-81bdc2ace0c8"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
                     ""action"": ""ActivateSlot3"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -459,6 +690,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""name"": ""UnbindAction_Selected"",
                     ""type"": ""Button"",
                     ""id"": ""7797cbf0-aceb-4cb5-a6b5-5d85136eb0a6"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ReadyUp"",
+                    ""type"": ""Button"",
+                    ""id"": ""391512a3-4edc-44ec-8c24-ee127eb6a5a2"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -938,6 +1178,28 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""UnbindAction_Selected"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a60349a6-9bbd-48c7-9a9d-85ffcfe73534"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";MnK"",
+                    ""action"": ""ReadyUp"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""da9d3027-01d6-49b6-8f6c-ad01170117ef"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""ReadyUp"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -1395,7 +1657,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""62e3ae34-53c2-42df-a76e-4f9869aa467d"",
-                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""path"": ""<Gamepad>/buttonEast"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
@@ -1648,7 +1910,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Movement_Jump = m_Movement.FindAction("Jump", throwIfNotFound: true);
         // Camera
         m_Camera = asset.FindActionMap("Camera", throwIfNotFound: true);
-        m_Camera_LookInput = m_Camera.FindAction("LookInput", throwIfNotFound: true);
+        m_Camera_Look = m_Camera.FindAction("Look", throwIfNotFound: true);
         // Combat
         m_Combat = asset.FindActionMap("Combat", throwIfNotFound: true);
         m_Combat_ActivateSlot0 = m_Combat.FindAction("ActivateSlot0", throwIfNotFound: true);
@@ -1674,6 +1936,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_UI_UnbindAction_Hover = m_UI.FindAction("UnbindAction_Hover", throwIfNotFound: true);
         m_UI_RebindAction_Selected = m_UI.FindAction("RebindAction_Selected", throwIfNotFound: true);
         m_UI_UnbindAction_Selected = m_UI.FindAction("UnbindAction_Selected", throwIfNotFound: true);
+        m_UI_ReadyUp = m_UI.FindAction("ReadyUp", throwIfNotFound: true);
         // MainMenu
         m_MainMenu = asset.FindActionMap("MainMenu", throwIfNotFound: true);
         m_MainMenu_Back = m_MainMenu.FindAction("Back", throwIfNotFound: true);
@@ -1898,7 +2161,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     // Camera
     private readonly InputActionMap m_Camera;
     private List<ICameraActions> m_CameraActionsCallbackInterfaces = new List<ICameraActions>();
-    private readonly InputAction m_Camera_LookInput;
+    private readonly InputAction m_Camera_Look;
     /// <summary>
     /// Provides access to input actions defined in input action map "Camera".
     /// </summary>
@@ -1911,9 +2174,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// </summary>
         public CameraActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
         /// <summary>
-        /// Provides access to the underlying input action "Camera/LookInput".
+        /// Provides access to the underlying input action "Camera/Look".
         /// </summary>
-        public InputAction @LookInput => m_Wrapper.m_Camera_LookInput;
+        public InputAction @Look => m_Wrapper.m_Camera_Look;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1940,9 +2203,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         {
             if (instance == null || m_Wrapper.m_CameraActionsCallbackInterfaces.Contains(instance)) return;
             m_Wrapper.m_CameraActionsCallbackInterfaces.Add(instance);
-            @LookInput.started += instance.OnLookInput;
-            @LookInput.performed += instance.OnLookInput;
-            @LookInput.canceled += instance.OnLookInput;
+            @Look.started += instance.OnLook;
+            @Look.performed += instance.OnLook;
+            @Look.canceled += instance.OnLook;
         }
 
         /// <summary>
@@ -1954,9 +2217,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="CameraActions" />
         private void UnregisterCallbacks(ICameraActions instance)
         {
-            @LookInput.started -= instance.OnLookInput;
-            @LookInput.performed -= instance.OnLookInput;
-            @LookInput.canceled -= instance.OnLookInput;
+            @Look.started -= instance.OnLook;
+            @Look.performed -= instance.OnLook;
+            @Look.canceled -= instance.OnLook;
         }
 
         /// <summary>
@@ -2140,6 +2403,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_UnbindAction_Hover;
     private readonly InputAction m_UI_RebindAction_Selected;
     private readonly InputAction m_UI_UnbindAction_Selected;
+    private readonly InputAction m_UI_ReadyUp;
     /// <summary>
     /// Provides access to input actions defined in input action map "UI".
     /// </summary>
@@ -2220,6 +2484,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @UnbindAction_Selected => m_Wrapper.m_UI_UnbindAction_Selected;
         /// <summary>
+        /// Provides access to the underlying input action "UI/ReadyUp".
+        /// </summary>
+        public InputAction @ReadyUp => m_Wrapper.m_UI_ReadyUp;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_UI; }
@@ -2296,6 +2564,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @UnbindAction_Selected.started += instance.OnUnbindAction_Selected;
             @UnbindAction_Selected.performed += instance.OnUnbindAction_Selected;
             @UnbindAction_Selected.canceled += instance.OnUnbindAction_Selected;
+            @ReadyUp.started += instance.OnReadyUp;
+            @ReadyUp.performed += instance.OnReadyUp;
+            @ReadyUp.canceled += instance.OnReadyUp;
         }
 
         /// <summary>
@@ -2358,6 +2629,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @UnbindAction_Selected.started -= instance.OnUnbindAction_Selected;
             @UnbindAction_Selected.performed -= instance.OnUnbindAction_Selected;
             @UnbindAction_Selected.canceled -= instance.OnUnbindAction_Selected;
+            @ReadyUp.started -= instance.OnReadyUp;
+            @ReadyUp.performed -= instance.OnReadyUp;
+            @ReadyUp.canceled -= instance.OnReadyUp;
         }
 
         /// <summary>
@@ -3029,12 +3303,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     public interface ICameraActions
     {
         /// <summary>
-        /// Method invoked when associated input action "LookInput" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Look" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnLookInput(InputAction.CallbackContext context);
+        void OnLook(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Combat" which allows adding and removing callbacks.
@@ -3198,6 +3472,13 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnUnbindAction_Selected(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ReadyUp" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnReadyUp(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "MainMenu" which allows adding and removing callbacks.

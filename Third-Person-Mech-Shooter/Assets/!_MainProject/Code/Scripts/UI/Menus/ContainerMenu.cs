@@ -13,7 +13,7 @@ namespace Gameplay.UI.Menus
         public Menu[] Children;
         public MenuTabButton[] Buttons;
         [SerializeField] private bool _enterChildOnOpen = true;
-        private int m_previouslySelectedChildIndex = 0;
+        private int m_previouslySelectedChildIndex;
         private int _previouslySelectedChildIndex
         {
             get => m_previouslySelectedChildIndex;
@@ -27,6 +27,8 @@ namespace Gameplay.UI.Menus
         }
         protected Menu PreviouslySelectedChild => Children[_previouslySelectedChildIndex];
 
+        protected virtual int DefaultChildIndex => 0;
+
 
         /// <summary>
         ///     What should occur when this menu's children are closed without new ones being opened.
@@ -38,11 +40,18 @@ namespace Gameplay.UI.Menus
             None = 0,
             // Closes self when a child is closed and no others take its place.
             CloseSelf = 1,
-            // Reopens the default child (Child 0). If the default child was the open child, instead closes self.
+            // Reopens the default child (Default: Child 0). If the default child was the open child, instead closes self.
             OpenDefaultChild = 2,
         }
         [SerializeField] private ChildClosedFallback _childClosedFallback = ChildClosedFallback.CloseSelf;
         public ChildClosedFallback OnChildClosedFallback => _childClosedFallback;
+
+
+
+        private void Awake()
+        {
+            _previouslySelectedChildIndex = DefaultChildIndex;
+        }
 
 
         public override void Open(bool selectFirstElement = true)
@@ -51,32 +60,33 @@ namespace Gameplay.UI.Menus
             HideAllChildren();
 
 
+            _previouslySelectedChildIndex = DefaultChildIndex;
             if (_enterChildOnOpen)
-                EnterChild(Children[_previouslySelectedChildIndex]);
+                EnterChild(Children[DefaultChildIndex]);
             else if (selectFirstElement)
-                EventSystem.current.SetSelectedGameObject(Buttons[_previouslySelectedChildIndex].gameObject);
+                EventSystem.current.SetSelectedGameObject(Buttons[DefaultChildIndex].gameObject);
             else
                 Debug.Log("Don't select first element");
         }
         public override async UniTask<bool> Close()
         {
             HideAllChildren();
-            _previouslySelectedChildIndex = 0;
+            _previouslySelectedChildIndex = DefaultChildIndex;
 
             return await base.Close();
         }
-        public virtual void ReopenWithDefaultChild(Selectable targetSelectable = null)
+        public void ReopenWithDefaultChild(Selectable targetSelectable = null)
         {
             HideAllChildren();
-            ShowChild(0);
+            ShowChild(DefaultChildIndex);
             base.Reopen(targetSelectable);
         }
 
 
         /// <summary>
-        ///     Returns true if the passed child is the default child (Child 0).
+        ///     Returns true if the passed child is the default child (Default: Child 0).
         /// </summary>
-        public bool IsDefaultChild(Menu childMenu) => GetChildIndex(childMenu) == 0;
+        public bool IsDefaultChild(Menu childMenu) => GetChildIndex(childMenu) == DefaultChildIndex;
 
 
         /// <summary>
@@ -129,7 +139,7 @@ namespace Gameplay.UI.Menus
         /// <summary>
         ///     Hides (Not Closes) all this menu's children.
         /// </summary>
-        private void HideAllChildren()
+        protected void HideAllChildren()
         {
             for (int i = 0; i < Children.Length; ++i)
                 Children[i].Hide();

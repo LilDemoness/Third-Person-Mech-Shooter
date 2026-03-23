@@ -71,5 +71,7 @@ namespace Gameplay.UI.Menus
 
         [ContextMenu("Debug/Log Open Menus")]
         private void DebugLog() => MenuManager.LogOpenMenus();
+
+        protected void SetFirstSelectedElement(Selectable selectable) => _firstSelectedElement = selectable;
     }
 }

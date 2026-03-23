@@ -10,9 +10,9 @@ namespace Gameplay.UI.Menus.Options
         [SerializeField] private OptionsSubmenu _videoMenu;
         [SerializeField] private OptionsSubmenu _audioMenu;
         [SerializeField] private OptionsSubmenu _controlsMenu;
-        [SerializeField] private OptionsSubmenu _keybindingsMenu;
+        [SerializeField] private RebindingRootMenu _keybindingsMenu;
         [SerializeField] private OptionsSubmenu _accessibilityMenu;
-        private OptionsSubmenu _currentOpenMenu;
+        private IOptionsSubmenu _currentOpenMenu;
 
 
 

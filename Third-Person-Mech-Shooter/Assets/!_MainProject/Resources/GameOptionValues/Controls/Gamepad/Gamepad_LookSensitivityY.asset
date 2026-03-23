@@ -16,7 +16,7 @@ MonoBehaviour:
   <Description>k__BackingField: Adjust the vertical sensitivity of the camera when
     using a gamepad.
   <PrefsIdentifier>k__BackingField: Gamepad_LookSensitivityY
-  <DefaultValue>k__BackingField: 15
+  <DefaultValue>k__BackingField: 125
   m_MinValue: 0
-  m_MaxValue: 60
+  m_MaxValue: 300
   m_roundingValue: 0.1

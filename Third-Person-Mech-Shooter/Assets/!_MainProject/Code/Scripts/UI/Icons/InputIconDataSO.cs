@@ -113,7 +113,8 @@ namespace UI.Icons
                 "start" => _startButton,
                 "select" => _selectButton,
 
-                _ => throw new System.Exception("Invalid Control Path"),
+                //_ => throw new System.Exception($"Invalid Control Path {controlPath}"),
+                _ => null
             };
         }
 

@@ -39,9 +39,6 @@ namespace UserInput
         // Confirmation.
         public static event System.Action OnConfirmPerformed;
 
-        // Customisation UI.
-        public static event System.Action OnOpenFrameSelectionPerformed;
-
         // Other.
         public static event System.Action OnToggleLeaderboardPerformed;
 
@@ -163,8 +160,6 @@ namespace UserInput
 
             #endregion
 
-            s_inputActions.MainMenu.OpenFrameSelection.performed += OpenFrameSelection_performed;
-
             #region Menu Navigation Events
 
             s_inputActions.MenuNavigation.ReturnToPreviousMenu.performed += ReturnToPreviousMenu_performed;
@@ -222,8 +217,6 @@ namespace UserInput
 
             #endregion
 
-            s_inputActions.MainMenu.OpenFrameSelection.performed      -= OpenFrameSelection_performed;
-
             #region Menu Navigation Events
 
             s_inputActions.MenuNavigation.ReturnToPreviousMenu.performed -= ReturnToPreviousMenu_performed;
@@ -273,7 +266,7 @@ namespace UserInput
                 s_previousMovementInput = MovementInput;
             }
 
-            LookInput = s_inputActions.Camera.LookInput.ReadValue<Vector2>();
+            LookInput = s_inputActions.Camera.Look.ReadValue<Vector2>();
         }
 
 
@@ -297,7 +290,6 @@ namespace UserInput
 
         private void Navigate_performed(InputAction.CallbackContext obj) => OnNavigatePerformed?.Invoke(obj.ReadValue<Vector2>());
 
-        private void OpenFrameSelection_performed(InputAction.CallbackContext obj) => OnOpenFrameSelectionPerformed?.Invoke();
         private void Confirm_performed(InputAction.CallbackContext obj) => OnConfirmPerformed?.Invoke();
 
         private void ToggleLeaderboardUI_performed(InputAction.CallbackContext obj) => OnToggleLeaderboardPerformed?.Invoke();

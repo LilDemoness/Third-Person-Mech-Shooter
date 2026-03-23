@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace Gameplay.UI.Menus.Options
 {
-    public class OptionsSubmenu : Menu
+    public class OptionsSubmenu : Menu, IOptionsSubmenu
     {
         private BaseSetOption[] _optionSetters;
         private static bool _hasChanges = false;
@@ -126,5 +126,16 @@ namespace Gameplay.UI.Menus.Options
 
 
         protected void OnAnyOptionChanged() => _hasChanges = true;
+    }
+
+
+    public interface IOptionsSubmenu
+    {
+        public bool HasChanges { get; }
+        public void Init();
+
+        public void SaveAllOptionsToPrefs();
+        public void LoadAllOptionsFromPrefs();
+        public void ResetAllOptions();
     }
 }

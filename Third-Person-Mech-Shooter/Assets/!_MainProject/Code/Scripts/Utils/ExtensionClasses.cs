@@ -19,6 +19,26 @@ public static class ComponentExtensions
 
         return activeComponent.transform.parent.TryGetComponentThroughParents<T>(out component);
     }
+    public static bool TryGetComponentInChildren<T>(this Component activeComponent, out T component)
+    {
+        // This object has the component.
+        if (activeComponent.TryGetComponent(out component))
+            return true;
+
+        // Search our children for the component.
+        foreach(Transform child in activeComponent.transform)
+        {
+            if (child.TryGetComponentInChildren<T>(out component))
+            {
+                // This child has our component.
+                return true;
+            }
+        }
+
+        // Failed to find a child with the component.
+        component = default(T);
+        return false;
+    }
 
     /// <summary>
     ///     Returns true if this component is any child of (Or on the same object of) the object with the passed transform.
@@ -78,6 +98,22 @@ public static class SelectableExtensions
         navigation.selectOnRight    = onRight;
         navigation.selectOnUp       = onUp;
         navigation.selectOnDown     = onDown;
+
+        // Set our selectable's navigation.
+        selectable.navigation = navigation;
+    }
+    /// <summary>
+    ///     Overrides the elements of the Navigation of the Selectable to the the non-null elements passed.
+    /// </summary>
+    public static void AddNavigation(this Selectable selectable, Selectable onLeft = null, Selectable onRight = null, Selectable onUp = null, Selectable onDown = null)
+    {
+        // Create and setup the new navigation.
+        Navigation navigation = new Navigation();
+        navigation.mode = Navigation.Mode.Explicit;
+        navigation.selectOnLeft     = onLeft    ?? selectable.navigation.selectOnLeft;
+        navigation.selectOnRight    = onRight   ?? selectable.navigation.selectOnRight;
+        navigation.selectOnUp       = onUp      ?? selectable.navigation.selectOnUp;
+        navigation.selectOnDown     = onDown    ?? selectable.navigation.selectOnDown;
 
         // Set our selectable's navigation.
         selectable.navigation = navigation;

@@ -255,7 +255,7 @@ public class RebindActionUI : MonoBehaviour
                 if (ResolveActionAndBinding(out InputAction action, out int bindingIndex))
                 {
                     string bindingName = action.bindings[bindingIndex].name;
-                    string displayName = bindingName != "" ? action.name + " " + bindingName.FirstCharToUpper() : action.name;
+                    string displayName = bindingName != "" && bindingName != null ? action.name + " " + bindingName.FirstCharToUpper() : action.name;
                     ActionNameLabel.text = displayName;
                 }
                 else
