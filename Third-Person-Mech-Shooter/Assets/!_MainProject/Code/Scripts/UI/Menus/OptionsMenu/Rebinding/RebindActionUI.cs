@@ -195,6 +195,12 @@ public class RebindActionUI : MonoBehaviour
 
 
     private static List<RebindActionUI> s_rebindActionUIs;
+    public static void UpdateAllBindingDisplays()
+    {
+        foreach(RebindActionUI rebindActionUI in s_rebindActionUIs)
+            rebindActionUI.UpdateBindingDisplay();
+    }
+    private static bool s_initialised = false;
 
 
 #if UNITY_EDITOR
@@ -208,6 +214,13 @@ public class RebindActionUI : MonoBehaviour
 
 #endif
 
+    private void Awake()
+    {
+        if (s_initialised)
+            return;
+        s_initialised = true;
+        ControlsRebindingValue.Instance.SubscribeToOnValueChanged(UpdateAllBindingDisplays);
+    }
     protected void OnEnable()
     {
         if (s_rebindActionUIs == null)
@@ -224,6 +237,8 @@ public class RebindActionUI : MonoBehaviour
 
         InputIconManager.OnSpriteAssetChanged += InputIconManager_OnSpriteAssetChanged;
         InputIconManager_OnSpriteAssetChanged();
+
+        UpdateBindingDisplay();
     }
     protected void OnDisable()
     {

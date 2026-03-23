@@ -25,12 +25,12 @@ namespace Gameplay.UI.Menus.Options
 
         public void Init()
         {
-            foreach(OptionsSubmenu child in Children)
+            foreach(RebindingSubmenu child in Children)
                 child.Init();
         }
 
-        public void SaveAllOptionsToPrefs() => (PreviouslySelectedChild as OptionsSubmenu).SaveAllOptionsToPrefs();
-        public void LoadAllOptionsFromPrefs() => (PreviouslySelectedChild as OptionsSubmenu).LoadAllOptionsFromPrefs();
-        public void ResetAllOptions() => (PreviouslySelectedChild as OptionsSubmenu).ResetAllOptions();
+        public void SaveAllOptionsToPrefs() => (PreviouslySelectedChild as RebindingSubmenu).SaveAllOptionsToPrefs();
+        public void LoadAllOptionsFromPrefs() => (PreviouslySelectedChild as RebindingSubmenu).LoadAllOptionsFromPrefs();
+        public void ResetAllOptions() => (PreviouslySelectedChild as RebindingSubmenu).ResetAllOptions();
     }
 }
