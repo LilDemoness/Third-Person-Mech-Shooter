@@ -3697,7 +3697,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 169089826027076986}
-  m_Father: {fileID: 3139051328848975877}
+  m_Father: {fileID: 6987218054178604321}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -5490,7 +5490,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4136783248960937527}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -5500,7 +5500,7 @@ RectTransform:
   - {fileID: 147449084588678500}
   - {fileID: 8454704510080750854}
   - {fileID: 4235684931617890720}
-  m_Father: {fileID: 3139051328848975877}
+  m_Father: {fileID: 6987218054178604321}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -6789,7 +6789,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1455109416569362460}
-  m_Father: {fileID: 3139051328848975877}
+  m_Father: {fileID: 6987218054178604321}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -9087,7 +9087,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 3139051328848975877}
+  m_Father: {fileID: 6987218054178604321}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -9515,7 +9515,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 9114796531464364906}
-  m_Father: {fileID: 3139051328848975877}
+  m_Father: {fileID: 6987218054178604321}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -10010,6 +10010,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6987218054178604321}
   - component: {fileID: 23858505449193763}
+  - component: {fileID: 6593400821383468255}
   m_Layer: 5
   m_Name: FrameSelection
   m_TagString: Untagged
@@ -10029,7 +10030,11 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 3139051328848975877}
+  - {fileID: 2558269244912380631}
+  - {fileID: 2437229840057351080}
+  - {fileID: 3323864233539875422}
+  - {fileID: 2533361765935789340}
+  - {fileID: 8331856053263674088}
   m_Father: {fileID: 3929851552600914285}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -10049,12 +10054,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80e09c6dfab737a4e83a8297c496c623, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _frameSelectionRoot: {fileID: 8227628878613168566}
+  <CanvasGroup>k__BackingField: {fileID: 6593400821383468255}
+  _firstSelectedElement: {fileID: 6773302566463681401}
+  _sourceButton: {fileID: 7725182192387360123}
   _frameOptionsContainer: {fileID: 2437229840057351080}
   _frameOptionSpacing: 200
   _frameVerticalOffset: -35
   _frameSelectionOptionPrefab: {fileID: 3343037966786833135, guid: 498075a2f3612b144b8e2c3a8c49d771, type: 3}
   _selectedFrameConfirmationButton: {fileID: 6773302566463681401}
+--- !u!225 &6593400821383468255
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7304920047259745109}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &7333593245237767868
 GameObject:
   m_ObjectHideFlags: 0
@@ -10928,46 +10947,6 @@ MonoBehaviour:
   _iconDisplayText: {fileID: 0}
   _textFormattingString: '{0}'
   _iconDisplayImage: {fileID: 6314663511047945741}
---- !u!1 &8227628878613168566
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3139051328848975877}
-  m_Layer: 5
-  m_Name: FrameSelectionUIRoot
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &3139051328848975877
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8227628878613168566}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 2558269244912380631}
-  - {fileID: 2437229840057351080}
-  - {fileID: 3323864233539875422}
-  - {fileID: 2533361765935789340}
-  - {fileID: 8331856053263674088}
-  m_Father: {fileID: 6987218054178604321}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8337934908554416928
 GameObject:
   m_ObjectHideFlags: 0

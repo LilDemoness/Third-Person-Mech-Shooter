@@ -121,18 +121,14 @@ namespace UI
 
         private void Action_performed(InputAction.CallbackContext ctx)
         {
-            Debug.Log($"Action Performed : {this.name}", this);
             if (!_isInteractable)
                 return; // The action is not interractable.
-            Debug.Log("Interactable");
 
             if (!CanUseInput_Focus())
                 return; // We are not in focus and aren't allowing out-of-focus input.
-            Debug.Log("In Focus");
 
             if (!IsValidActionInput(ref ctx))
                 return; // Invalid input for the action trigger type.
-            Debug.Log("Valid Action Input");
 
             // Valid input. Trigger our callback.
             OnButtonTriggered?.Invoke();
@@ -247,6 +243,10 @@ namespace UI
                 _graphics[i].CrossFadeColor(color, 0.0f, true, true);
             }
         }
+
+
+
+        public void SetAllowInputWhenNotInFocus(bool newValue) => _allowInputWhenNotInFocus = newValue;
 
 
 

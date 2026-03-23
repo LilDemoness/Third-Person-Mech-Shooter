@@ -5,23 +5,21 @@ using UserInput;
 using Gameplay.GameplayObjects.Character.Customisation;
 using Gameplay.GameplayObjects.Character.Customisation.Data;
 using Gameplay.GameplayObjects.Players;
+using Gameplay.UI.Menus;
+using Cysharp.Threading.Tasks;
 
 namespace UI.Customisation.FrameSelection
 {
     /// <summary>
     ///     The UI that handles the player selecting their desired frame.
     /// </summary>
-    public class FrameSelectionUI : OverlayMenu
+    public class FrameSelectionUI : Menu
     {
         private int _frameDataCount;
+        [SerializeField] private NonNavigableButton _sourceButton;
 
 
         [Header("Frame Selection")]
-        [SerializeField] private GameObject _frameSelectionRoot;
-        protected override GameObject RootObject => _frameSelectionRoot;
-
-
-        [Space(10)]
         [SerializeField] private Transform _frameOptionsContainer;
         [SerializeField] private float _frameOptionSpacing = 200.0f;
         [SerializeField] private float _frameVerticalOffset = -35.0f;
@@ -35,18 +33,20 @@ namespace UI.Customisation.FrameSelection
 
         [Header("Selection Navigation")]
         [SerializeField] private Button _selectedFrameConfirmationButton;
-        protected override GameObject FirstSelectedItem => _selectedFrameConfirmationButton.gameObject;
 
 
         private void Awake()
         {
             SetupFrameSelectionOptions();
-            Close(false);
 
             SubscribeToInput();
             PersistentPlayer.OnLocalPlayerBuildChanged += PersistentPlayer_OnLocalPlayerBuildChanged;
         }
-        private void Start() => PersistentPlayer_OnLocalPlayerBuildChanged(PersistentPlayer.LocalPersistentPlayer.NetworkBuildState.BuildDataReference);    // Temp - Ensure build data is loaded initially.
+        protected override void Start()
+        {
+            base.Start();
+            PersistentPlayer_OnLocalPlayerBuildChanged(PersistentPlayer.LocalPersistentPlayer.NetworkBuildState.BuildDataReference);    // Temp - Ensure build data is loaded initially.
+        }
         private void OnDestroy()
         {
             UnsubscribeFromInput();
@@ -106,6 +106,18 @@ namespace UI.Customisation.FrameSelection
         #endregion
 
 
+        public override void Show()
+        {
+            _sourceButton.SetAllowInputWhenNotInFocus(true);
+            base.Show();
+        }
+        public override void Hide()
+        {
+            _sourceButton.SetAllowInputWhenNotInFocus(false);
+            base.Hide();
+        }
+
+
         private void PersistentPlayer_OnLocalPlayerBuildChanged(BuildData buildData)
         {
             // Update the selected frame option.
@@ -124,7 +136,7 @@ namespace UI.Customisation.FrameSelection
 
         private void ClientInput_OnConfirmPerformed()
         {
-            if (this.IsActiveMenu)
+            if (this.IsActiveMenu())
                 EquipPreviewedFrameOption();
         }
 
@@ -154,25 +166,20 @@ namespace UI.Customisation.FrameSelection
         /// </summary>
         public void ToggleSelectionOptions()
         {
-            Debug.Log("Toggle");
-
-            if (this.IsOpen)
-                Close();
+            if (this.IsActiveMenu())
+                MenuManager.CloseMenu(this);
             else
-                Open();
+                MenuManager.OpenMenu(this, false, null);
         }
         /// <inheritdoc/>
-        public override void Open(GameObject initialSelectedObject)
+        public override void Open(bool selectFirstElement = true)
         {
-            base.Open(initialSelectedObject);
+            base.Open(selectFirstElement);
 
             // Start with previewing the selected frame.
             _currentPreviewedFrameIndex = _selectedFrameIndex;
             ScrollFrameOptionsToPreviewed(isInstant: true);      
         }
-        /// <inheritdoc/>
-        public override void Close(bool selectPreviousSelectable = true) => base.Close(selectPreviousSelectable);
-
 
         /// <summary>
         ///     Mark the next frame as our preview.
@@ -235,7 +242,8 @@ namespace UI.Customisation.FrameSelection
         public void EquipPreviewedFrameOption()
         {
             PersistentPlayer.LocalPersistentPlayer.NetworkBuildState.SelectFrame(_currentPreviewedFrameIndex);
-            Close();
+            if (this.IsActiveMenu())
+                MenuManager.CloseMenu(this);
         }
     }
 }
