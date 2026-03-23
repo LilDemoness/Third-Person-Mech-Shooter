@@ -593,12 +593,20 @@ namespace UserInput
 
 #if UNITY_EDITOR
 
+        [ContextMenu(itemName: "Display Active Lock Counts")]
+        private void DisplayLockCounts()
+        {
+            foreach (var kvp in s_actionPreventionDictionaries)
+            {
+                Debug.Log(kvp.Key.ToString() + ": " + kvp.Value.Count + "\n");
+            }
+        }
         [ContextMenu(itemName: "Display Active Locks")]
         private void DisplayLocks()
         {
             foreach (var kvp in s_actionPreventionDictionaries)
             {
-                Debug.Log(kvp.Key.ToString() + ": " + kvp.Value.Count + "\n" + string.Concat(kvp.Value.Keys));
+                Debug.Log(kvp.Key.ToString() + ": " + kvp.Value.Count + "\n" + string.Concat(kvp.Value.Keys) + "\n");
             }
         }
 

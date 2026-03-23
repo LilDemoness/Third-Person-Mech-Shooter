@@ -12,7 +12,7 @@ namespace UI.Customisation
     {
         [SerializeField] private CustomisationDummyManager _customisationDummyManager;
 
-        private const ClientInput.ActionTypes ALL_ACTIONS_BUT_UI = ClientInput.ActionTypes.Everything & ~ClientInput.ActionTypes.UI;
+        private const ClientInput.ActionTypes ALL_ACTIONS_BUT_UI = ClientInput.ActionTypes.Everything & ~(ClientInput.ActionTypes.UI | ClientInput.ActionTypes.MenuNavigation);
 
 
         public static event System.Action OnCustomisationUIOpened;

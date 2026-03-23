@@ -1093,6 +1093,17 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""2a052e0c-5984-499c-a5bb-d694a668067e"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Confirm"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""0ad58bc1-f4a4-4cc1-a1e8-aa65e297493a"",
                     ""path"": ""<Keyboard>/y"",
                     ""interactions"": """",
