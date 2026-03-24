@@ -7,7 +7,7 @@ using UserInput;
 public class ControlDisplayText : MonoBehaviour
 {
     [SerializeField] private TMP_Text _thisText;
-    [SerializeField] private string _formattingText = "{0}";
+    [SerializeField][TextArea(1, 5)] private string _formattingText = "{0}";
     [SerializeField] private InputActionReference _inputAction;
 
 

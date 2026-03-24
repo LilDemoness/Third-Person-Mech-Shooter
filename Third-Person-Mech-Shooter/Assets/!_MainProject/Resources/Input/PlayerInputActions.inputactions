@@ -1270,6 +1270,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "CreateNewProfile",
+                    "type": "Button",
+                    "id": "0b45d274-d761-4916-9a1a-53c13d62c8f9",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -1534,6 +1543,28 @@
                     "processors": "",
                     "groups": ";Gamepad",
                     "action": "InvertSortOrder",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9d43e646-fe3b-4303-acdb-2022b9131021",
+                    "path": "<Keyboard>/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";MnK",
+                    "action": "CreateNewProfile",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d5160f57-f9ea-4720-8fe0-7a170d825465",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "CreateNewProfile",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

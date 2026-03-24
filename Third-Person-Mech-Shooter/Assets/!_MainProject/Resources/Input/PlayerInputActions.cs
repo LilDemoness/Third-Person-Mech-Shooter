@@ -1356,6 +1356,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""CreateNewProfile"",
+                    ""type"": ""Button"",
+                    ""id"": ""0b45d274-d761-4916-9a1a-53c13d62c8f9"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1620,6 +1629,28 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
                     ""action"": ""InvertSortOrder"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9d43e646-fe3b-4303-acdb-2022b9131021"",
+                    ""path"": ""<Keyboard>/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";MnK"",
+                    ""action"": ""CreateNewProfile"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d5160f57-f9ea-4720-8fe0-7a170d825465"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""CreateNewProfile"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1994,6 +2025,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_MainMenu_ApplyFilters = m_MainMenu.FindAction("ApplyFilters", throwIfNotFound: true);
         m_MainMenu_ResetFilters = m_MainMenu.FindAction("ResetFilters", throwIfNotFound: true);
         m_MainMenu_InvertSortOrder = m_MainMenu.FindAction("InvertSortOrder", throwIfNotFound: true);
+        m_MainMenu_CreateNewProfile = m_MainMenu.FindAction("CreateNewProfile", throwIfNotFound: true);
         // MenuNavigation
         m_MenuNavigation = asset.FindActionMap("MenuNavigation", throwIfNotFound: true);
         m_MenuNavigation_ReturnToPreviousMenu = m_MenuNavigation.FindAction("ReturnToPreviousMenu", throwIfNotFound: true);
@@ -2735,6 +2767,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_MainMenu_ApplyFilters;
     private readonly InputAction m_MainMenu_ResetFilters;
     private readonly InputAction m_MainMenu_InvertSortOrder;
+    private readonly InputAction m_MainMenu_CreateNewProfile;
     /// <summary>
     /// Provides access to input actions defined in input action map "MainMenu".
     /// </summary>
@@ -2794,6 +2827,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "MainMenu/InvertSortOrder".
         /// </summary>
         public InputAction @InvertSortOrder => m_Wrapper.m_MainMenu_InvertSortOrder;
+        /// <summary>
+        /// Provides access to the underlying input action "MainMenu/CreateNewProfile".
+        /// </summary>
+        public InputAction @CreateNewProfile => m_Wrapper.m_MainMenu_CreateNewProfile;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -2856,6 +2893,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @InvertSortOrder.started += instance.OnInvertSortOrder;
             @InvertSortOrder.performed += instance.OnInvertSortOrder;
             @InvertSortOrder.canceled += instance.OnInvertSortOrder;
+            @CreateNewProfile.started += instance.OnCreateNewProfile;
+            @CreateNewProfile.performed += instance.OnCreateNewProfile;
+            @CreateNewProfile.canceled += instance.OnCreateNewProfile;
         }
 
         /// <summary>
@@ -2903,6 +2943,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @InvertSortOrder.started -= instance.OnInvertSortOrder;
             @InvertSortOrder.performed -= instance.OnInvertSortOrder;
             @InvertSortOrder.canceled -= instance.OnInvertSortOrder;
+            @CreateNewProfile.started -= instance.OnCreateNewProfile;
+            @CreateNewProfile.performed -= instance.OnCreateNewProfile;
+            @CreateNewProfile.canceled -= instance.OnCreateNewProfile;
         }
 
         /// <summary>
@@ -3632,6 +3675,13 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnInvertSortOrder(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CreateNewProfile" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCreateNewProfile(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "MenuNavigation" which allows adding and removing callbacks.
