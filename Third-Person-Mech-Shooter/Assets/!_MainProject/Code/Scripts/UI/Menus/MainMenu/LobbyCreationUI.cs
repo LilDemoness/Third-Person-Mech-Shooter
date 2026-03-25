@@ -81,12 +81,12 @@ namespace Gameplay.UI.Menus.Session
         {
             if (!IsLobbyNameValid())
             {
-                PopupManager.ShowPopupPanel("Lobby Creation Error", $"Invalid Lobby Name\nLength must be between {MIN_LOBBY_NAME_LENGTH} & {MAX_LOBBY_NAME_LENGTH}");
+                PopupManager.ShowDefaultPopup("Lobby Creation Error", $"Invalid Lobby Name\nLength must be between {MIN_LOBBY_NAME_LENGTH} & {MAX_LOBBY_NAME_LENGTH}");
                 return;
             }
             if (_usePasswordToggle.isOn && !IsLobbyPasswordValid())
             {
-                PopupManager.ShowPopupPanel("Lobby Creation Error", $"Invalid Lobby Password\nLength must be between {MIN_PASSWORD_LENGTH} & {MAX_PASSWORD_LENGTH}");
+                PopupManager.ShowDefaultPopup("Lobby Creation Error", $"Invalid Lobby Password\nLength must be between {MIN_PASSWORD_LENGTH} & {MAX_PASSWORD_LENGTH}");
                 return;
             }
 

@@ -71,7 +71,7 @@ namespace Gameplay.UI.Menus.Options
         public void SaveChanges() => _currentOpenMenu?.SaveAllOptionsToPrefs();
         public void ResetToDefault()
         {
-            PopupManager.ShowPopupPanel("Reset to Default", "Are you sure you wish to reset your options to their default values?",
+            PopupManager.ShowPopup("Reset to Default", "Are you sure you wish to reset your options to their default values?",
                 new PopupButtonParameters("Cancel", null),
                 new PopupButtonParameters("Reset", ResetCurrentSubmenuValues)
                 );

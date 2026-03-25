@@ -111,16 +111,21 @@ namespace Gameplay.UI.Menus
             }
             else
             {
-                PopupManager.ShowPopupPanel("Could not set Profile", $"{profileName} is an invalid profile for this build. Select another existing profile or create a new one.");
+                PopupManager.ShowDefaultPopup("Could not set Profile", $"{profileName} is an invalid profile for this build. Select another existing profile or create a new one.");
             }
         }
         public void DeleteProfile(string profileName)
         {
-            _profileManager.DeleteProfile(profileName);
-            UpdateUI();
+            PopupManager.ShowPopup($"Delete '{profileName}'?", "",
+                new PopupButtonParameters("Cancel", null),
+                new PopupButtonParameters("Delete", OnDelete));
+
+            void OnDelete()
+            {
+                _profileManager.DeleteProfile(profileName);
+                UpdateUI();
+            }
         }
-
-
 
         public void OpenCreateProfileUI() => MenuManager.OpenChildMenu(_createProfileMenu, null, this);
     }

@@ -32,7 +32,14 @@ namespace Gameplay.UI.Menus.Options
             if (_hasChanges)
             {
                 bool? success = null;
-                PopupManager.ShowUnsavedChangesOptionsPanel(OnCancel, OnDiscard, OnSave);
+
+                PopupManager.ShowPopup(
+                    titleText: "Unsaved Changes", 
+                    bodyText: "You have unsaved changes", null, LayoutOption.Horizontal,
+                    new PopupButtonParameters("Cancel", OnCancel),
+                    new PopupButtonParameters("Discard", OnDiscard),
+                    new PopupButtonParameters("Apply", OnSave));
+
                 await UniTask.WaitUntil(() => success.HasValue);
 
                 if (!success.Value)

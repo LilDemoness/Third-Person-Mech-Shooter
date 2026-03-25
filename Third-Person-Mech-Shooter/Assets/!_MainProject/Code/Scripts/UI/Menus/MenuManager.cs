@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Cysharp.Threading.Tasks;
+using Gameplay.UI.Popups;
 
 namespace Gameplay.UI.Menus
 {
@@ -136,7 +137,7 @@ namespace Gameplay.UI.Menus
         ///     Returns true if this popup is the active popup.<br/>
         ///     Defaults to true if no popups are active.
         /// </summary>
-        public static bool IsActivePopup(this Popup popup) => s_blockingPopups.Count > 0 ? s_blockingPopups[s_blockingPopups.Count - 1] == popup : true;
+        public static bool IsActivePopup(this ModalPopup popup) => s_blockingPopups.Count > 0 ? s_blockingPopups[s_blockingPopups.Count - 1] == popup : true;
 
 
 
@@ -544,13 +545,13 @@ namespace Gameplay.UI.Menus
     
 
         // Handle popups per menu? (Allows popups to appear behind menus?)
-        public static List<Popup> s_blockingPopups; // List so that we can remove popups even if they aren't the open one.
-        public static void LinkPopup(Popup popup)
+        public static List<ModalPopup> s_blockingPopups; // List so that we can remove popups even if they aren't the open one.
+        public static void LinkPopup(ModalPopup popup)
         {
             s_blockingPopups.Add(popup);
             popup.OnClose += UnlinkPopup;
         }
-        private static void UnlinkPopup(Popup popup)
+        private static void UnlinkPopup(ModalPopup popup)
         {
             s_blockingPopups.Remove(popup);
             popup.OnClose -= UnlinkPopup;
@@ -574,25 +575,7 @@ namespace Gameplay.UI.Menus
                 s_blockingPopups.Clear();
             }
             else
-                s_blockingPopups = new List<Popup>();
-        }
-    }
-
-
-    /// <summary>
-    ///     Base class for popups that can be linked to the MenuManager for Menu Management purposes.
-    /// </summary>
-    public class Popup : MonoBehaviour
-    {
-        public System.Action<Popup> OnClose;
-
-        private void OnDestroy() => Close();
-
-        public virtual void Open() => this.gameObject.SetActive(true);
-        public virtual void Close()
-        {
-            this.gameObject.SetActive(false);
-            OnClose?.Invoke(this);
+                s_blockingPopups = new List<ModalPopup>();
         }
     }
 }

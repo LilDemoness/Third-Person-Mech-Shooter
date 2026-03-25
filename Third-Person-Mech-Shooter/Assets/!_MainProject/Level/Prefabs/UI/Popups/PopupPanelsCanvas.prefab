@@ -48,7 +48,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f64fda6e7afb154b9979bfe1dc760b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _popupPanelPrefab: {fileID: 2976588882060794418, guid: 2bd9f5a46561a484facc94032349742d, type: 3}
+  _popupPanelPrefab: {fileID: 1713689722856501087, guid: 90d4f89cabde12f4fbc3dfe1d4f65def, type: 3}
   _canvas: {fileID: 8593685395729535240}
 --- !u!1 &8593685395729535240
 GameObject:

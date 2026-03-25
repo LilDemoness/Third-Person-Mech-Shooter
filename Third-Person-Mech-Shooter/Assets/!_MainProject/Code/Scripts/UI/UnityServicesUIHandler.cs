@@ -40,14 +40,14 @@ namespace Gameplay.UI
                 }
                 case UnityServiceErrorMessage.Service.Authentication:
                 {
-                    PopupManager.ShowPopupPanel(
+                    PopupManager.ShowDefaultPopup(
                         "Authentication Error",
                         $"{error.OriginalException.Message}\nTip: You can still use the Direct IP connection option.");
                     break;
                 }
                 default:
                 {
-                    PopupManager.ShowPopupPanel("Service Error: " + error.Title, error.Message);
+                    PopupManager.ShowDefaultPopup("Service Error: " + error.Title, error.Message);
                     break;
                 }
             }
@@ -61,16 +61,16 @@ namespace Gameplay.UI
                 switch (sessionException.Error)
                 {
                     case SessionError.SessionNotFound:
-                        PopupManager.ShowPopupPanel("Session Not Found", "Requested Session not found. The join code is incorrect or the session has ended.");
+                        PopupManager.ShowDefaultPopup("Session Not Found", "Requested Session not found. The join code is incorrect or the session has ended.");
                         break;
                     case SessionError.NotAuthorized:
-                        PopupManager.ShowPopupPanel("Session Error", "Received HTTP error 401: Unauthorized; from Session Service.");
+                        PopupManager.ShowDefaultPopup("Session Error", "Received HTTP error 401: Unauthorized; from Session Service.");
                         break;
                     case SessionError.MatchmakerAssignmentTimeout:  // This can occur while using Quick Join.
-                        PopupManager.ShowPopupPanel("Session Error", "Received HTTP error 408: Request Timed Out; from Session Service.");
+                        PopupManager.ShowDefaultPopup("Session Error", "Received HTTP error 408: Request Timed Out; from Session Service.");
                         break;
                     default:
-                        PopupManager.ShowPopupPanel("Unknown Error", sessionException.Message);
+                        PopupManager.ShowDefaultPopup("Unknown Error", sessionException.Message);
                         break;
                 }
             }
@@ -78,7 +78,7 @@ namespace Gameplay.UI
             {
                 // Default handling method for other exception types.
                 // We're not throwing so that they don't crash the game, but we still want to know that they're occuring.
-                PopupManager.ShowPopupPanel(error.Title, error.Message);
+                PopupManager.ShowDefaultPopup(error.Title, error.Message);
                 //Debug.LogError(error.OriginalException);
             }
 

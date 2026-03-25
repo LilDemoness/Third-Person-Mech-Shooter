@@ -57,21 +57,21 @@ namespace Gameplay.UI.Menus.Profile
             if (_profileManager.AvailableProfiles.Contains(newProfile))
             {
                 // Failed to create profile - Already Exists.
-                PopupManager.ShowPopupPanel("Could not create new Profile", "A profile already exists with this same name. Select one of the already existing profiles or create a new one.");
+                PopupManager.ShowDefaultPopup("Could not create new Profile", "A profile already exists with this same name. Select one of the already existing profiles or create a new one.");
                 return;
             }
 
             if (!_profileManager.TryCreateProfile(newProfile))
             {
                 // Failed to create profile - Invalid Profile.
-                PopupManager.ShowPopupPanel("Could not create new Profile", $"{newProfile} is an invalid profile name. Select one of the already existing profiles or create a new one.");
+                PopupManager.ShowDefaultPopup("Could not create new Profile", $"{newProfile} is an invalid profile name. Select one of the already existing profiles or create a new one.");
                 return;
             }
 
             if (!_profileManager.TrySetProfile(newProfile))
             {
                 // Failed to set profile.
-                PopupManager.ShowPopupPanel("Could not set Profile", "Select another existing profile or create a new one.");
+                PopupManager.ShowDefaultPopup("Could not set Profile", "Select another existing profile or create a new one.");
                 return;
             }
 
