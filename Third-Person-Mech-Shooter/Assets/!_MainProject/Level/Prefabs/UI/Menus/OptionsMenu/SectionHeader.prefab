@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6406998130916297583}
   - component: {fileID: 2117704740975676232}
   - component: {fileID: 6967561582865334226}
+  - component: {fileID: 1728880070139434284}
   m_Layer: 5
   m_Name: Underline
   m_TagString: Untagged
@@ -58,7 +59,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.6037736, g: 0.6037736, b: 0.6037736, a: 1}
+  m_Color: {r: 0.6, g: 0.6, b: 0.6, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -75,6 +76,23 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1728880070139434284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1727127149338811099}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15280b10c6a1d8d48a2e565da2b4857c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    colorGuid: 5cecbb73-de98-48e3-a3b9-f870e62a961e
+    overrideAlpha: 0
+    alpha: 1
+  target: {fileID: 6967561582865334226}
 --- !u!1 &8074244881666665353
 GameObject:
   m_ObjectHideFlags: 0
@@ -86,6 +104,7 @@ GameObject:
   - component: {fileID: 1425817870489789160}
   - component: {fileID: 88492125108536671}
   - component: {fileID: 3406176004339905633}
+  - component: {fileID: 1936644555555213204}
   m_Layer: 5
   m_Name: SectionHeader
   m_TagString: Untagged
@@ -212,3 +231,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &1936644555555213204
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8074244881666665353}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc899355c40e5d14189d36def2ebcfcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    colorGuid: b50995b1-48ce-4b54-9c09-16f4e2c40c2b
+    overrideAlpha: 0
+    alpha: 1
+  target: {fileID: 3406176004339905633}

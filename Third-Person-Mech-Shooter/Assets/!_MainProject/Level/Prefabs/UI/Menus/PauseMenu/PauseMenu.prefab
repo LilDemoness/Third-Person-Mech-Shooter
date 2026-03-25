@@ -2608,10 +2608,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 873db581fb81bec4091178f084a3beec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _selectionBackgroundObject: {fileID: 1018337210393139487}
   _parentContainerMenu: {fileID: 6415985918493768953}
   _associatedChildMenu: {fileID: 1139146946766983546}
   _showOnSelect: 0
-  _selectionBackgroundObject: {fileID: 1018337210393139487}
 --- !u!114 &5498059557132895363
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 920704460041841153}
   - component: {fileID: 1745034229318810926}
   - component: {fileID: 8426942211782563510}
+  - component: {fileID: 2195539427059934203}
   m_Layer: 5
   m_Name: SelectedTabBackground
   m_TagString: Untagged
@@ -75,6 +76,23 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2195539427059934203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3667096830848795838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15280b10c6a1d8d48a2e565da2b4857c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    colorGuid: 0b9bace1-bf93-45a0-8866-1533dba383fe
+    overrideAlpha: 0
+    alpha: 1
+  target: {fileID: 8426942211782563510}
 --- !u!1 &4222451099029512571
 GameObject:
   m_ObjectHideFlags: 0
@@ -88,6 +106,7 @@ GameObject:
   - component: {fileID: 8369834746518313319}
   - component: {fileID: 5208303163218784427}
   - component: {fileID: 2259260810403164903}
+  - component: {fileID: 9128020074331366616}
   m_Layer: 5
   m_Name: MenuTabButton
   m_TagString: Untagged
@@ -137,7 +156,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.39607844, g: 0.39607844, b: 0.39607844, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -166,10 +185,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 873db581fb81bec4091178f084a3beec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _selectionBackgroundObject: {fileID: 3667096830848795838}
   _parentContainerMenu: {fileID: 0}
   _associatedChildMenu: {fileID: 0}
   _showOnSelect: 0
-  _selectionBackgroundObject: {fileID: 3667096830848795838}
 --- !u!114 &2259260810403164903
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -193,13 +212,30 @@ MonoBehaviour:
       _PersistentArguments: []
   _graphics:
   - {fileID: 8369834746518313319}
-  _normalColor: {r: 1, g: 1, b: 1, a: 0}
-  _highlightedColor: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 0.29803923}
-  _pressedColor: {r: 0.29803923, g: 0.29803923, b: 0.29803923, a: 1}
+  _normalColor: {r: 1, g: 1, b: 1, a: 1}
+  _highlightedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
+  _pressedColor: {r: 0.6, g: 0.6, b: 0.6, a: 1}
   _disabledColor: {r: 1, g: 1, b: 1, a: 0}
   _iconDisplayText: {fileID: 0}
   _textFormattingString: '{0}'
   _iconDisplayImage: {fileID: 0}
+--- !u!114 &9128020074331366616
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4222451099029512571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15280b10c6a1d8d48a2e565da2b4857c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    colorGuid: 1399161b-c15d-442c-864b-f84425a64276
+    overrideAlpha: 0
+    alpha: 1
+  target: {fileID: 8369834746518313319}
 --- !u!1 &8247864475744191906
 GameObject:
   m_ObjectHideFlags: 0
@@ -211,6 +247,7 @@ GameObject:
   - component: {fileID: 4887768363351753476}
   - component: {fileID: 8486042807865067926}
   - component: {fileID: 5109256240627170656}
+  - component: {fileID: 8003154939731759901}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -336,3 +373,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &8003154939731759901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8247864475744191906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc899355c40e5d14189d36def2ebcfcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    colorGuid: 0aec4ff1-e803-47d3-97a4-7907bc31e69a
+    overrideAlpha: 0
+    alpha: 1
+  target: {fileID: 5109256240627170656}

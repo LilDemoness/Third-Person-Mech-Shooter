@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: _slider
       value: 
       objectReference: {fileID: 8444446839783858103}
+    - target: {fileID: 995907753790661653, guid: b28efaafebf9cbf49a653e261c805ac8, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 1123784015749289613, guid: b28efaafebf9cbf49a653e261c805ac8, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

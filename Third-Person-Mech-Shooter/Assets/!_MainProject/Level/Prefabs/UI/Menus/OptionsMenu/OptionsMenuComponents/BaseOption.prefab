@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8178014229616685380}
   - component: {fileID: 5269685600150432118}
   - component: {fileID: 1237627700952122691}
+  - component: {fileID: 1001237895213966762}
   m_Layer: 5
   m_Name: Label
   m_TagString: Untagged
@@ -156,6 +157,23 @@ MonoBehaviour:
   _highlightedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
   _selectedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
   _disabledColor: {r: 1, g: 1, b: 1, a: 0.5019608}
+--- !u!114 &1001237895213966762
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2489816633698893570}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc899355c40e5d14189d36def2ebcfcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    colorGuid: b50995b1-48ce-4b54-9c09-16f4e2c40c2b
+    overrideAlpha: 0
+    alpha: 1
+  target: {fileID: 5269685600150432118}
 --- !u!1 &4103534846051204867
 GameObject:
   m_ObjectHideFlags: 0
@@ -241,3 +259,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d09b06b627540d4aa5a0e35a7f92d42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _selectable: {fileID: 0}
