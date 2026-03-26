@@ -10,7 +10,7 @@ using VContainer;
 namespace Gameplay.UI.Menus
 {
     /// <summary>
-    ///     A UI Window that shows while a client is attempting to connect to a server. {Confirm]
+    ///     A UI Window that shows while a client is attempting to connect to a host via direct IP.
     /// </summary>
     public class IPConnectionWindow : MonoBehaviour
     {
