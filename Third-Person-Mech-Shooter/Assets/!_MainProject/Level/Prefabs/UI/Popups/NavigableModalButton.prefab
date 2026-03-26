@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 69162362679784850}
   - component: {fileID: 4701201776419511669}
   - component: {fileID: 6810281162005508542}
+  - component: {fileID: 1029144147468135903}
   m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -151,6 +152,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 2
   m_VerticalFit: 0
+--- !u!114 &1029144147468135903
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3328815190213153866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc899355c40e5d14189d36def2ebcfcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    colorGuid: 0aec4ff1-e803-47d3-97a4-7907bc31e69a
+    overrideAlpha: 0
+    alpha: 1
+  target: {fileID: 4701201776419511669}
 --- !u!1 &8789925797202942785
 GameObject:
   m_ObjectHideFlags: 0
@@ -166,6 +184,7 @@ GameObject:
   - component: {fileID: 2224119069308653526}
   - component: {fileID: 2241133223756511658}
   - component: {fileID: 6913610025630726312}
+  - component: {fileID: 2858699626147407793}
   m_Layer: 0
   m_Name: NavigableModalButton
   m_TagString: Untagged
@@ -335,3 +354,20 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &2858699626147407793
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8789925797202942785}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15280b10c6a1d8d48a2e565da2b4857c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    colorGuid: 1399161b-c15d-442c-864b-f84425a64276
+    overrideAlpha: 0
+    alpha: 1
+  target: {fileID: 8953946187356802586}

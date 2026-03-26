@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 41580433636647803}
   - component: {fileID: 5455770277110103599}
   - component: {fileID: 6034700677756086068}
+  - component: {fileID: 259394439165126840}
   m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -151,6 +152,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 2
   m_VerticalFit: 0
+--- !u!114 &259394439165126840
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6002989109698049315}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc899355c40e5d14189d36def2ebcfcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    colorGuid: 0aec4ff1-e803-47d3-97a4-7907bc31e69a
+    overrideAlpha: 0
+    alpha: 1
+  target: {fileID: 5455770277110103599}
 --- !u!1 &6257901202796777042
 GameObject:
   m_ObjectHideFlags: 0
@@ -166,6 +184,7 @@ GameObject:
   - component: {fileID: 2430860159128453916}
   - component: {fileID: 7795696192084314505}
   - component: {fileID: 1437473579250818579}
+  - component: {fileID: 1434535541657667714}
   m_Layer: 0
   m_Name: NonNavigableModalButton
   m_TagString: Untagged
@@ -318,3 +337,20 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &1434535541657667714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6257901202796777042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15280b10c6a1d8d48a2e565da2b4857c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    colorGuid: 1399161b-c15d-442c-864b-f84425a64276
+    overrideAlpha: 0
+    alpha: 1
+  target: {fileID: 858888612757966811}

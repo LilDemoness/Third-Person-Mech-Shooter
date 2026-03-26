@@ -171,6 +171,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _image: {fileID: 69035645}
   _inputAction: {fileID: 7489245568154878173, guid: 832195adfe757804ab6ebd15233eab2e, type: 3}
+  _useDeviceOverride: 0
+  _deviceTypeOverride: 0
 --- !u!114 &69035645
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -546,6 +548,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _image: {fileID: 255650553}
   _inputAction: {fileID: 7489245568154878173, guid: 832195adfe757804ab6ebd15233eab2e, type: 3}
+  _useDeviceOverride: 0
+  _deviceTypeOverride: 0
 --- !u!114 &255650553
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -596,6 +600,7 @@ GameObject:
   - component: {fileID: 269585477}
   - component: {fileID: 269585476}
   - component: {fileID: 269585475}
+  - component: {fileID: 269585478}
   m_Layer: 5
   m_Name: FinishCustomisationButton
   m_TagString: Untagged
@@ -668,7 +673,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.39607844, g: 0.39607844, b: 0.39607844, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -693,6 +698,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 269585473}
   m_CullTransparentMesh: 1
+--- !u!114 &269585478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 269585473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15280b10c6a1d8d48a2e565da2b4857c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    colorGuid: 1399161b-c15d-442c-864b-f84425a64276
+    overrideAlpha: 0
+    alpha: 1
+  target: {fileID: 269585476}
 --- !u!1 &508577630
 GameObject:
   m_ObjectHideFlags: 0
@@ -1189,6 +1211,7 @@ GameObject:
   - component: {fileID: 1120070484}
   - component: {fileID: 1120070486}
   - component: {fileID: 1120070485}
+  - component: {fileID: 1120070487}
   m_Layer: 5
   m_Name: FinishCustomisationText
   m_TagString: Untagged
@@ -1244,8 +1267,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
-  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1314,6 +1337,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1120070483}
   m_CullTransparentMesh: 1
+--- !u!114 &1120070487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1120070483}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc899355c40e5d14189d36def2ebcfcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    colorGuid: 0aec4ff1-e803-47d3-97a4-7907bc31e69a
+    overrideAlpha: 0
+    alpha: 1
+  target: {fileID: 1120070485}
 --- !u!1 &1215505417
 GameObject:
   m_ObjectHideFlags: 0
@@ -2414,6 +2454,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4076963173885804310, guid: 80b6380adbf4136489225a7af5ad2496, type: 3}
       propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4322974855664843271, guid: 80b6380adbf4136489225a7af5ad2496, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4322974855664843271, guid: 80b6380adbf4136489225a7af5ad2496, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4322974855664843271, guid: 80b6380adbf4136489225a7af5ad2496, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4322974855664843271, guid: 80b6380adbf4136489225a7af5ad2496, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4322974855664843271, guid: 80b6380adbf4136489225a7af5ad2496, type: 3}
+      propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4727758729741148598, guid: 80b6380adbf4136489225a7af5ad2496, type: 3}

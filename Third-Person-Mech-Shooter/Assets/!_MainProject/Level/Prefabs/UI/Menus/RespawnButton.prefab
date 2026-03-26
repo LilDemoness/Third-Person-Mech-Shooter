@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 5032748029763694302}
   - component: {fileID: 302747033510486881}
   - component: {fileID: 3443949888942445426}
+  - component: {fileID: 6842807071822033188}
   m_Layer: 5
   m_Name: RespawnButton
   m_TagString: Untagged
@@ -149,6 +150,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _selectable: {fileID: 5032748029763694302}
+--- !u!114 &6842807071822033188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2627639273025635608}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15280b10c6a1d8d48a2e565da2b4857c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    colorGuid: 1399161b-c15d-442c-864b-f84425a64276
+    overrideAlpha: 0
+    alpha: 1
+  target: {fileID: 1485631970425851571}
 --- !u!1 &2969192992198996157
 GameObject:
   m_ObjectHideFlags: 0
@@ -224,7 +242,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4278190335
-  m_fontColor: {r: 1, g: 0.25, b: 0, a: 1}
+  m_fontColor: {r: 1, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
