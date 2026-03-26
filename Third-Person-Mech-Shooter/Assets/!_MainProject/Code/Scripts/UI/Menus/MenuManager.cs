@@ -130,6 +130,17 @@ namespace Gameplay.UI.Menus
         }
 
         /// <summary>
+        ///     Returns true if this menu is open in the Menu Manager's hierarchy (Not necessarily the active menu).
+        /// </summary>
+        public static bool IsActiveMenuHierarchy(this Menu menu)
+        {
+            for (int i = 0; i < s_openMenusCount; ++i)
+                if (s_openMenuData[i].Menu == menu)
+                    return true;
+            // Passed menu is not open in our hierarchy.
+            return false;
+        }
+        /// <summary>
         ///     Returns true if this menu is the active menu.
         /// </summary>
         public static bool IsActiveMenu(this Menu menu) => s_openMenusCount > 0 ? ActiveMenuData.Menu == menu : false;
@@ -246,7 +257,7 @@ namespace Gameplay.UI.Menus
         /// <param name="parent"> The existing menu that the new menu should be opened under</param>
         public static void OpenChildMenu(Menu child, Selectable sourceSelectable, Menu parent) => OpenChildMenuUniTask(child, sourceSelectable, parent).Forget();
         /// <inheritdoc cref="OpenChildMenu(Menu, Selectable, Menu)"/>
-        private static async UniTask<bool> OpenChildMenuUniTask(Menu child, Selectable sourceSelectable, Menu parent)
+        public static async UniTask<bool> OpenChildMenuUniTask(Menu child, Selectable sourceSelectable, Menu parent)
         {
             if (parent == null)
                 OpenMenu(child, true, sourceSelectable, hideCurrent: false);

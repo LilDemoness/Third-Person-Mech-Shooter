@@ -13,18 +13,7 @@ namespace Gameplay.UI.Menus
         public Menu[] Children;
         public MenuTabButton[] Buttons;
         [SerializeField] private bool _enterChildOnOpen = true;
-        private int m_previouslySelectedChildIndex;
-        private int _previouslySelectedChildIndex
-        {
-            get => m_previouslySelectedChildIndex;
-            set
-            {
-                Buttons[m_previouslySelectedChildIndex]?.OnTabExited();
-
-                m_previouslySelectedChildIndex = value;
-                Buttons[value]?.OnTabEntered();
-            }
-        }
+        private int _previouslySelectedChildIndex;
         protected Menu PreviouslySelectedChild => Children[_previouslySelectedChildIndex];
 
         protected virtual int DefaultChildIndex => 0;
@@ -59,6 +48,8 @@ namespace Gameplay.UI.Menus
             Show();
             HideAllChildren();
 
+            MenuManager.OnActiveMenuChanged += UpdateHighlightedButton;
+
 
             _previouslySelectedChildIndex = DefaultChildIndex;
             if (_enterChildOnOpen)
@@ -70,6 +61,8 @@ namespace Gameplay.UI.Menus
         }
         public override async UniTask<bool> Close()
         {
+            MenuManager.OnActiveMenuChanged -= UpdateHighlightedButton;
+
             HideAllChildren();
             _previouslySelectedChildIndex = DefaultChildIndex;
 
@@ -80,6 +73,22 @@ namespace Gameplay.UI.Menus
             HideAllChildren();
             ShowChild(DefaultChildIndex);
             base.Reopen(targetSelectable);
+        }
+
+
+        private void UpdateHighlightedButton()
+        {
+            for(int i = 0; i < Children.Length; ++i)
+            {
+                if (MenuManager.IsActiveMenuHierarchy(Children[i]))
+                {
+                    Buttons[i]?.OnTabEntered();
+                }
+                else
+                {
+                    Buttons[i]?.OnTabExited();
+                }
+            }
         }
 
 
