@@ -68,6 +68,7 @@ namespace Gameplay.GameState
             SessionManager<SessionPlayerData>.Instance.OnSessionEnded();    // Clears data from removed players.
 
             _networkTimer.StartTimer(_timeTillNextScene);
+            _persistentGameState.IsInGameplay = false;
         }
 
 
@@ -102,7 +103,7 @@ namespace Gameplay.GameState
             if (votesInDuplicate < 0)
             {
                 // No votes. Choose a random GameType.
-                gameTypes = GameMode.Invalid.GetAllGameModes();
+                gameTypes = GameModeExtensions.GetAllGameModes();
                 return gameTypes[Random.Range(0, gameTypes.Length)];
             }
 

@@ -11,6 +11,8 @@ namespace Gameplay.GameState
     /// </summary>
     public class NetworkLobbyState : NetworkBehaviour
     {
+        [SerializeField] private ServerPreGameLobbyState _serverState;
+
         private NetworkList<SessionPlayerState> m_sessionPlayers;
         public NetworkList<SessionPlayerState> SessionPlayers => m_sessionPlayers;
 
@@ -19,7 +21,6 @@ namespace Gameplay.GameState
 
 
         public event System.Action<ulong, int, bool> OnClientChangedReadyState;
-
 
         private void Awake()
         {
@@ -34,6 +35,14 @@ namespace Gameplay.GameState
         public void ChangeReadyStateServerRpc(ulong clientId, int seatIndex, bool newReadyState)
         {
             OnClientChangedReadyState?.Invoke(clientId, seatIndex, newReadyState);
+        }
+
+        [Rpc(SendTo.ClientsAndHost, RequireOwnership = true)]
+        public void SyncGameDataClientRpc(GameMode gameMode, string mapName, RpcParams rpcParams = default) => SyncGameData(gameMode, mapName);
+        private void SyncGameData(GameMode gameMode, string mapName)
+        {
+            _serverState.PersistentGameState.GameMode = gameMode;
+            _serverState.PersistentGameState.MapName = mapName;
         }
 
 

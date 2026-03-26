@@ -60,7 +60,7 @@ namespace Gameplay.GameState
             if (_persistentGameState != null)
                 SetValues();
 
-            foreach(GameMode gameType in GameMode.Invalid.GetAllGameModes())
+            foreach(GameMode gameType in GameModeExtensions.GetAllGameModes())
                 PlayerVotes.Add(0);
         }
 

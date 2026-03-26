@@ -39,6 +39,9 @@ namespace Gameplay.MultiplayerChat.Text
 
             SetChatInputVisibility(false);
             _chatMessagesCanvasGroup.alpha = 0.0f;
+
+            _chatInput.onSubmit.AddListener(LogSubmit);
+            _chatInput.onEndEdit.AddListener(LogEndEdit);
         }
         public override void OnNetworkSpawn()
         {
@@ -48,6 +51,10 @@ namespace Gameplay.MultiplayerChat.Text
         {
             ClientInput.OnOpenChatPerformed -= OpenChatInput;
         }
+
+
+        private void LogSubmit(string text) => SubmitChat();
+        private void LogEndEdit(string text) => CancelChat();
 
 
         #region Opening/Closing
@@ -61,18 +68,14 @@ namespace Gameplay.MultiplayerChat.Text
             // Show the Input and Main Chat.
             SetChatInputVisibility(true);
             StopMainTextChatFade();
-
-            // Subscribe to Submission Events.
-            ClientInput.OnSubmitChatPerformed += SubmitChat;
-            ClientInput.OnCancelChatPerformed += CancelChat;
+            ClientInput.AddActionPrevention(typeof(ChatManager), ClientInput.ActionTypes.Everything & ~ClientInput.ActionTypes.MultiplayerChat);
 
             // Select the Input Field.
             // We are deselecting and then reselecting the next frame to prevent an error with having the input field selected but the user being unable to interact with it.
             EventSystem.current.SetSelectedGameObject(null);
             StartCoroutine(ReselectInputAfterFrame());
 
-            // Prevent Unrelated Input.
-            ClientInput.PreventActions(typeof(ChatManager), ALL_ACTIONS_BUT_CHAT);
+            // Note: Player input is prevented due to the fact that we're selecting an Input Field (This disables all input in the ClientInput script).
         }
         public void CloseChatInput()
         {
@@ -83,21 +86,17 @@ namespace Gameplay.MultiplayerChat.Text
             // Hide the Input Box & Start the Main Chat Fading.
             SetChatInputVisibility(false);
             StartMainTextChatFade();
-
-            // Unsubscribe from Submission Events.
-            ClientInput.OnSubmitChatPerformed -= SubmitChat;
-            ClientInput.OnCancelChatPerformed -= CancelChat;
-
-            // Allow Unrelated Input.
-            ClientInput.RemoveActionPrevention(typeof(ChatManager), ALL_ACTIONS_BUT_CHAT);
+            ClientInput.RemoveActionPrevention(typeof(ChatManager), ClientInput.ActionTypes.Everything & ~ClientInput.ActionTypes.MultiplayerChat);
         }
         private void SetChatInputVisibility(bool isVisible)
         {
             _chatInputCanvasGroup.alpha = isVisible ? 1.0f : 0.0f;
+            _chatInputCanvasGroup.interactable = isVisible;
             _chatInputCanvasGroup.blocksRaycasts = isVisible;
         }
 
         private IEnumerator ReselectInputAfterFrame() { yield return null; EventSystem.current.SetSelectedGameObject(_chatInput.gameObject); }
+        private IEnumerator AllowInputAfterFrame() { yield return null; ClientInput.RemoveActionPrevention(typeof(ChatManager), ClientInput.ActionTypes.Everything & ~ClientInput.ActionTypes.MultiplayerChat); }
 
         #endregion
 
@@ -107,6 +106,7 @@ namespace Gameplay.MultiplayerChat.Text
         public void SubmitChat()
         {
             SendChatMessage();
+            EventSystem.current.SetSelectedGameObject(null);
             CloseChatInput();
         }
         /// <summary>

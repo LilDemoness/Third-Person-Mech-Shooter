@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4078922377191853398}
   - component: {fileID: 2112530174999902905}
   - component: {fileID: 225656998447812567}
+  - component: {fileID: 4159996058297248118}
   m_Layer: 5
   m_Name: Kills
   m_TagString: Untagged
@@ -136,6 +137,23 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &4159996058297248118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 138563638537181594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc899355c40e5d14189d36def2ebcfcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    colorGuid: b50995b1-48ce-4b54-9c09-16f4e2c40c2b
+    overrideAlpha: 0
+    alpha: 1
+  target: {fileID: 225656998447812567}
 --- !u!1 &1658044048400682291
 GameObject:
   m_ObjectHideFlags: 0
@@ -149,6 +167,7 @@ GameObject:
   - component: {fileID: 5688924251999536983}
   - component: {fileID: 6034192372099124265}
   - component: {fileID: 4658847618097496087}
+  - component: {fileID: 5469193483792091648}
   m_Layer: 5
   m_Name: LeaderboardRow
   m_TagString: Untagged
@@ -201,7 +220,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 0.14901961, g: 0.14901961, b: 0.14901961, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -261,6 +280,23 @@ MonoBehaviour:
   _scoreText: {fileID: 4718530817686824991}
   _killsCountText: {fileID: 225656998447812567}
   _deathsCountText: {fileID: 9117176534361716394}
+--- !u!114 &5469193483792091648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1658044048400682291}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15280b10c6a1d8d48a2e565da2b4857c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    colorGuid: 5354ac2c-5adf-46df-9820-0d7da0bdfe21
+    overrideAlpha: 0
+    alpha: 1
+  target: {fileID: 5688924251999536983}
 --- !u!1 &1938170682144498148
 GameObject:
   m_ObjectHideFlags: 0
@@ -272,6 +308,7 @@ GameObject:
   - component: {fileID: 1481649067630438702}
   - component: {fileID: 2389205911385271390}
   - component: {fileID: 4718530817686824991}
+  - component: {fileID: 3802129266237297803}
   m_Layer: 5
   m_Name: Score
   m_TagString: Untagged
@@ -397,6 +434,23 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &3802129266237297803
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1938170682144498148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc899355c40e5d14189d36def2ebcfcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    colorGuid: b50995b1-48ce-4b54-9c09-16f4e2c40c2b
+    overrideAlpha: 0
+    alpha: 1
+  target: {fileID: 4718530817686824991}
 --- !u!1 &2733077848146202020
 GameObject:
   m_ObjectHideFlags: 0
@@ -408,6 +462,7 @@ GameObject:
   - component: {fileID: 333128152689724345}
   - component: {fileID: 9104265878663592086}
   - component: {fileID: 9117176534361716394}
+  - component: {fileID: 8268172000187147504}
   m_Layer: 5
   m_Name: Deaths
   m_TagString: Untagged
@@ -533,6 +588,23 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &8268172000187147504
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2733077848146202020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc899355c40e5d14189d36def2ebcfcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    colorGuid: b50995b1-48ce-4b54-9c09-16f4e2c40c2b
+    overrideAlpha: 0
+    alpha: 1
+  target: {fileID: 9117176534361716394}
 --- !u!1 &4251881089212361818
 GameObject:
   m_ObjectHideFlags: 0
@@ -544,6 +616,7 @@ GameObject:
   - component: {fileID: 52811984463778370}
   - component: {fileID: 7193731352160596560}
   - component: {fileID: 2483937417420159780}
+  - component: {fileID: 911482731521467722}
   m_Layer: 5
   m_Name: Index
   m_TagString: Untagged
@@ -669,6 +742,23 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &911482731521467722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4251881089212361818}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc899355c40e5d14189d36def2ebcfcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    colorGuid: b50995b1-48ce-4b54-9c09-16f4e2c40c2b
+    overrideAlpha: 0
+    alpha: 1
+  target: {fileID: 2483937417420159780}
 --- !u!1 &8654221632364124185
 GameObject:
   m_ObjectHideFlags: 0
@@ -680,6 +770,7 @@ GameObject:
   - component: {fileID: 1995287666382393286}
   - component: {fileID: 1484849947151117810}
   - component: {fileID: 8277945128254624857}
+  - component: {fileID: 8409269612503185000}
   m_Layer: 5
   m_Name: PlayerName
   m_TagString: Untagged
@@ -805,3 +896,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &8409269612503185000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8654221632364124185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc899355c40e5d14189d36def2ebcfcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    colorGuid: b50995b1-48ce-4b54-9c09-16f4e2c40c2b
+    overrideAlpha: 0
+    alpha: 1
+  target: {fileID: 8277945128254624857}

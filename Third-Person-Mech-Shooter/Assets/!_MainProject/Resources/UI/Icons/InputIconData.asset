@@ -58,12 +58,12 @@ MonoBehaviour:
     _space: {fileID: 2084908843, guid: db810887608b04641bccf5d4c0b8ad1a, type: 3}
     _shift: {fileID: 1004466449, guid: db810887608b04641bccf5d4c0b8ad1a, type: 3}
     _control: {fileID: 1870475402, guid: db810887608b04641bccf5d4c0b8ad1a, type: 3}
-    _return: {fileID: 0}
-    _backspace: {fileID: 0}
+    _return: {fileID: -1775339725, guid: db810887608b04641bccf5d4c0b8ad1a, type: 3}
+    _backspace: {fileID: 862114220, guid: db810887608b04641bccf5d4c0b8ad1a, type: 3}
     _escape: {fileID: -809905285, guid: db810887608b04641bccf5d4c0b8ad1a, type: 3}
-    _lmb: {fileID: 0}
-    _rmb: {fileID: 0}
-    _mmb: {fileID: 0}
+    _lmb: {fileID: -210250328, guid: db810887608b04641bccf5d4c0b8ad1a, type: 3}
+    _rmb: {fileID: -128984510, guid: db810887608b04641bccf5d4c0b8ad1a, type: 3}
+    _mmb: {fileID: 1297313835, guid: db810887608b04641bccf5d4c0b8ad1a, type: 3}
   _xboxIcons:
     _buttonNorth: {fileID: 1580661106, guid: 56bcab096aaa96041918f6c0bd3d8e43, type: 3}
     _buttonSouth: {fileID: -1729129668, guid: 56bcab096aaa96041918f6c0bd3d8e43, type: 3}

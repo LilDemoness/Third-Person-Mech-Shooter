@@ -79,6 +79,7 @@ GameObject:
   - component: {fileID: 1331074839665527665}
   - component: {fileID: 6448097684073268312}
   - component: {fileID: 478573615769139593}
+  - component: {fileID: 6763275906063031306}
   m_Layer: 5
   m_Name: Index
   m_TagString: Untagged
@@ -204,6 +205,23 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &6763275906063031306
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1933021439817738525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc899355c40e5d14189d36def2ebcfcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    colorGuid: b50995b1-48ce-4b54-9c09-16f4e2c40c2b
+    overrideAlpha: 0
+    alpha: 1
+  target: {fileID: 478573615769139593}
 --- !u!1 &2616674329461839308
 GameObject:
   m_ObjectHideFlags: 0
@@ -215,6 +233,7 @@ GameObject:
   - component: {fileID: 7481429254375224313}
   - component: {fileID: 7691296765897649987}
   - component: {fileID: 435778701800579693}
+  - component: {fileID: 8515800107986065879}
   m_Layer: 5
   m_Name: Score
   m_TagString: Untagged
@@ -340,6 +359,23 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &8515800107986065879
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2616674329461839308}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc899355c40e5d14189d36def2ebcfcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    colorGuid: b50995b1-48ce-4b54-9c09-16f4e2c40c2b
+    overrideAlpha: 0
+    alpha: 1
+  target: {fileID: 435778701800579693}
 --- !u!1 &2636320359854592729
 GameObject:
   m_ObjectHideFlags: 0
@@ -477,6 +513,7 @@ GameObject:
   - component: {fileID: 9107683075871518833}
   - component: {fileID: 6439469793586620404}
   - component: {fileID: 9085683603275541847}
+  - component: {fileID: 3672624558926135584}
   m_Layer: 5
   m_Name: PlayerName
   m_TagString: Untagged
@@ -602,6 +639,23 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &3672624558926135584
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3867462549328354462}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc899355c40e5d14189d36def2ebcfcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    colorGuid: b50995b1-48ce-4b54-9c09-16f4e2c40c2b
+    overrideAlpha: 0
+    alpha: 1
+  target: {fileID: 9085683603275541847}
 --- !u!1 &4053655068108918756
 GameObject:
   m_ObjectHideFlags: 0
@@ -685,6 +739,7 @@ GameObject:
   - component: {fileID: 1313309712935878426}
   - component: {fileID: 7722017299645484585}
   - component: {fileID: 108076303132363020}
+  - component: {fileID: 1963944376984594887}
   m_Layer: 5
   m_Name: Divider
   m_TagString: Untagged
@@ -732,7 +787,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.7490196, g: 0.7490196, b: 0.7490196, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -749,6 +804,23 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1963944376984594887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4954926502770057969}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15280b10c6a1d8d48a2e565da2b4857c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    colorGuid: 5cecbb73-de98-48e3-a3b9-f870e62a961e
+    overrideAlpha: 0
+    alpha: 1
+  target: {fileID: 108076303132363020}
 --- !u!1 &5102671263013084683
 GameObject:
   m_ObjectHideFlags: 0
@@ -867,6 +939,7 @@ GameObject:
   - component: {fileID: 2727444036197122994}
   - component: {fileID: 3927087930353731688}
   - component: {fileID: 1876277155160621060}
+  - component: {fileID: 8736669866219547813}
   m_Layer: 5
   m_Name: Deaths
   m_TagString: Untagged
@@ -992,6 +1065,23 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &8736669866219547813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5322903789190951096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc899355c40e5d14189d36def2ebcfcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    colorGuid: b50995b1-48ce-4b54-9c09-16f4e2c40c2b
+    overrideAlpha: 0
+    alpha: 1
+  target: {fileID: 1876277155160621060}
 --- !u!1 &5421669305048673160
 GameObject:
   m_ObjectHideFlags: 0
@@ -1004,6 +1094,7 @@ GameObject:
   - component: {fileID: 4871579414330595455}
   - component: {fileID: 8967463083250884279}
   - component: {fileID: 8635394653851982799}
+  - component: {fileID: 4336837504507916372}
   m_Layer: 5
   m_Name: LeaderboardUI
   m_TagString: Untagged
@@ -1055,7 +1146,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.7490196}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.69803923}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1086,6 +1177,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _leaderboardValuesContainer: {fileID: 374046791912780362}
   _leaderboardRowPrefab: {fileID: 4658847618097496087, guid: 9076b9ae1a2e0af46aeeebc94447e8c6, type: 3}
+--- !u!114 &4336837504507916372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5421669305048673160}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15280b10c6a1d8d48a2e565da2b4857c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    colorGuid: bbe1ebf6-9e89-42d9-9fe8-84db1313f98f
+    overrideAlpha: 0
+    alpha: 1
+  target: {fileID: 8967463083250884279}
 --- !u!1 &6043674858341592724
 GameObject:
   m_ObjectHideFlags: 0
@@ -1172,6 +1280,7 @@ GameObject:
   - component: {fileID: 6804799132419057646}
   - component: {fileID: 2659026788968667572}
   - component: {fileID: 1559227784464550624}
+  - component: {fileID: 5945298805041645746}
   m_Layer: 5
   m_Name: Kills
   m_TagString: Untagged
@@ -1297,6 +1406,23 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &5945298805041645746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6858106257979892122}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc899355c40e5d14189d36def2ebcfcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    colorGuid: b50995b1-48ce-4b54-9c09-16f4e2c40c2b
+    overrideAlpha: 0
+    alpha: 1
+  target: {fileID: 1559227784464550624}
 --- !u!1 &8056877869245805713
 GameObject:
   m_ObjectHideFlags: 0
@@ -1308,6 +1434,7 @@ GameObject:
   - component: {fileID: 2269315249941321524}
   - component: {fileID: 3356261622211667219}
   - component: {fileID: 6351171889633949037}
+  - component: {fileID: 7784065327174980920}
   m_Layer: 5
   m_Name: LeaderboardTitle
   m_TagString: Untagged
@@ -1433,6 +1560,23 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &7784065327174980920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8056877869245805713}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc899355c40e5d14189d36def2ebcfcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    colorGuid: b50995b1-48ce-4b54-9c09-16f4e2c40c2b
+    overrideAlpha: 0
+    alpha: 1
+  target: {fileID: 6351171889633949037}
 --- !u!1 &9003723763137664159
 GameObject:
   m_ObjectHideFlags: 0

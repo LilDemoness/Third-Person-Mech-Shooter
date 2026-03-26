@@ -1,3 +1,4 @@
+using Netcode.ConnectionManagement;
 using UnityEngine;
 using UserInput;
 using Utils;
@@ -20,6 +21,9 @@ namespace Gameplay.GameState
 
         [SerializeField] private GameObject _podiumRoot;
         [SerializeField] private GameObject _leaderboardRoot;
+
+        [Inject]
+        ConnectionManager _connectionManager;
 
 
         protected override void Configure(IContainerBuilder builder)
@@ -50,9 +54,6 @@ namespace Gameplay.GameState
             _podiumRoot.SetActive(false);
             _leaderboardRoot.SetActive(true);
         }
-        public void LeaveMatch()
-        {
-            Debug.Log("Leave Match");
-        }
+        public void LeaveMatch() => _connectionManager.RequestShutdown();
     }
 }

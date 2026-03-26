@@ -8,10 +8,12 @@ using UnityServices.Sessions;
 using Utils;
 using VContainer;
 using VContainer.Unity;
-using Gameplay.UI.MainMenu;
-using Gameplay.UI.MainMenu.Session;
+using Gameplay.UI.Menus;
+using Gameplay.UI.Menus.Session;
 using Gameplay.UI.Tooltips;
 using UI;
+using ApplicationLifecycle.Messages;
+using Infrastructure;
 
 namespace Gameplay.GameState
 {
@@ -30,13 +32,24 @@ namespace Gameplay.GameState
 
 
         [SerializeField] private NameGenerationData _nameGenerationData;
-        [SerializeField] private SessionUIMediator _sessionUIMediator;
-        [SerializeField] private IPUIMediator _IPUIMediator;
         [SerializeField] private Button _sessionButton;
         [SerializeField] private GameObject _signInSpinner;
         [SerializeField] private UIProfileSelector _uiProfileSelector;
         [SerializeField] private UITooltipDetector _ugsSetupTooltipDetector;
-        [SerializeField] private SettingsMenu _settingsMenu;
+
+
+        [Header("Menu References")]
+        [SerializeField] private Menu _playGameMenu;
+        [SerializeField] private Menu _profileMenu;
+        [SerializeField] private Menu _optionsMenu;
+
+
+
+        [Header("Component References")]
+        [SerializeField] private LobbyUIMediator _lobbyUIMediator;
+        [SerializeField] private DirectIPUI _directIPUI;
+
+        private ButtonSelectionIndicator _selectedMenuRootButton;
 
 
         [Inject]
@@ -47,6 +60,8 @@ namespace Gameplay.GameState
         private LocalSession _localSession;
         [Inject]
         private ProfileManager _profileManager;
+        [Inject]
+        IPublisher<QuitApplicationMessage> _quitApplicationPub;
 
 
         protected override void Awake()
@@ -54,7 +69,7 @@ namespace Gameplay.GameState
             base.Awake();
 
             _sessionButton.interactable = false;
-            _sessionUIMediator.Hide();
+            _playGameMenu.Hide();
 
             if (string.IsNullOrEmpty(Application.cloudProjectId))
             {
@@ -77,8 +92,8 @@ namespace Gameplay.GameState
         {
             base.Configure(builder);
             builder.RegisterComponent(_nameGenerationData);
-            builder.RegisterComponent(_sessionUIMediator);
-            builder.RegisterComponent(_IPUIMediator);
+            builder.RegisterComponent(_lobbyUIMediator);
+            builder.RegisterComponent(_directIPUI);
         }
 
 
@@ -104,9 +119,10 @@ namespace Gameplay.GameState
             _ugsSetupTooltipDetector.enabled = false;
             _signInSpinner.SetActive(false);
 
-            Debug.Log($"Signed in. Unity Player ID {AuthenticationService.Instance.PlayerId}");
+            Debug.Log($"Signed in. ID: {AuthenticationService.Instance.PlayerId}\nName: {_profileManager.Profile}");
 
             _localUser.ID = AuthenticationService.Instance.PlayerId;
+            _localUser.DisplayName = _profileManager.Profile;
 
             // The local SessionUser object will be hooked into the UI before the LocalSession is population
             //  during session join, so the LocalSession must know about it already when that happens.
@@ -136,36 +152,56 @@ namespace Gameplay.GameState
             _sessionButton.interactable = true;
             _signInSpinner.SetActive(false);
 
-            Debug.Log($"Signed in. Unity Player ID {AuthenticationService.Instance.PlayerId}");
+            Debug.Log($"Signed in. ID: {AuthenticationService.Instance.PlayerId}\nName: {_profileManager.Profile}");
 
             // Update the LocalUser and LocalSession.
             _localSession.RemoveUser(_localUser);
             _localUser.ID = AuthenticationService.Instance.PlayerId;
+            _localUser.DisplayName = _profileManager.Profile;
             _localSession.AddUser(_localUser);
         }
 
 
-        public void OnStartClicked()
+
+        #region UI Button Functions
+
+        public void OnQuickJoinPressed() => _lobbyUIMediator.QuickJoinRequest(ignoreFilters: true);
+        public void OnPlayGamePressed(Button sender)
         {
-            _sessionUIMediator.OpenJoinSessionUI();
-            _sessionUIMediator.Show();
+            ChangeSelectedMenuIndicator(sender.GetComponent<ButtonSelectionIndicator>());
+            MenuManager.SetActiveMenu(_playGameMenu, sender);
         }
-        public void OnDirectIPClicked()
+        public void OnArmouryPressed(Button sender)
         {
-            _sessionUIMediator.Hide();
-            _IPUIMediator.Show();
+            ChangeSelectedMenuIndicator(sender.GetComponent<ButtonSelectionIndicator>());
+            //MenuManager.SetActiveMenu(_armouryMenu, sender);
+            MenuManager.CloseAllMenus();
         }
+        public void OnProfilePressed(Button sender)
+        {
+            ChangeSelectedMenuIndicator(sender.GetComponent<ButtonSelectionIndicator>());
+            MenuManager.SetActiveMenu(_profileMenu, sender);
+        }
+        public void OnOptionsPressed(Button sender)
+        {
+            ChangeSelectedMenuIndicator(sender.GetComponent<ButtonSelectionIndicator>());
+            MenuManager.SetActiveMenu(_optionsMenu, sender);
+        }
+        public void OnQuitGamePressed() => _quitApplicationPub.Publish(new QuitApplicationMessage());
+
+        #endregion
+
+        private void ChangeSelectedMenuIndicator(ButtonSelectionIndicator selectionIndicator)
+        {
+            _selectedMenuRootButton?.OnTabExited();
+            selectionIndicator?.OnTabEntered();
+            _selectedMenuRootButton = selectionIndicator;
+        }
+
+
         public void OnChangeProfileClicked()
         {
             _uiProfileSelector.Show();
-        }
-        public void OnOpenSettingsClicked()
-        {
-            _settingsMenu.Show();
-        }
-        public void OnQuitClicked()
-        {
-            Application.Quit();
         }
     }
 }

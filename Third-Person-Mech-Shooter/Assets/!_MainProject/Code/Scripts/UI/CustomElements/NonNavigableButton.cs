@@ -1,16 +1,19 @@
+using Gameplay.UI.Menus;
 using TMPro;
 using UI.Icons;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
+using UserInput;
+using UltEvents;
 
 namespace UI
 {
     /// <summary>
     ///     A button that can be pressed by a mouse and triggered via a PlayerInputAction, but that cannot be selected via navigation
     /// </summary>
-    public class NonNavigableButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
+    public class NonNavigableButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler, IPointerClickHandler
     {
         [System.Serializable]
         private enum InputActionType
@@ -33,12 +36,24 @@ namespace UI
             VerticalNegative,
         }
 
+        private static NonNavigableButton s_currentHighlightedButton;
+        static NonNavigableButton()
+        {
+            MenuManager.OnActiveMenuChanged -= OnActiveMenuChanged;
+            MenuManager.OnActiveMenuChanged += OnActiveMenuChanged;
+        }
+        private static void OnActiveMenuChanged() => s_currentHighlightedButton?.OnPointerExit(null);
+
 
         [SerializeField] private bool _isInteractable = true;
         public bool IsInteractable
         {
             get => _isInteractable;
-            set => _isInteractable = true;
+            set
+            {
+                _isInteractable = value;
+                CrossFadeGraphics(_isInteractable ? _normalColor : _disabledColor);
+            }
         }
 
 
@@ -50,7 +65,15 @@ namespace UI
         [SerializeField] private bool _allowInputWhenNotInFocus = false;
 
         [Space(10)]
-        [SerializeField] private UnityEvent _onButtonTriggered;
+        public UltEvent OnButtonTriggered;
+
+
+        [Header("Iteraction Indication")]
+        [SerializeField] private Graphic[] _graphics;
+        [SerializeField] private Color _normalColor = Color.white;
+        [SerializeField] private Color _highlightedColor = new Color(0.8f, 0.8f, 0.8f);
+        [SerializeField] private Color _pressedColor = new Color(0.6f, 0.6f, 0.6f);
+        [SerializeField] private Color _disabledColor = new Color(0.8f, 0.8f, 0.8f, 0.5f);
 
 
         [Header("Text Updating")]
@@ -58,61 +81,125 @@ namespace UI
         [SerializeField][TextArea] private string _textFormattingString = "{0}";
 
 
+        [Header("Text Updating")]
+        [SerializeField] private Image _iconDisplayImage;
+
+
         private void Awake()
         {
-            if (_iconDisplayText != null && _inputAction != null)
+            if (_inputAction != null)
             {
-                InputIconManager.OnShouldUpdateSpriteIdentifiers += UpdateIconDisplayText;
+                InputIconManager.OnShouldUpdateSpriteIdentifiers += UpdateSpriteIdentifiers;
                 InputIconManager.OnSpriteAssetChanged += UpdateIconDisplayText;
 
-                UpdateIconDisplayText();
+                UpdateSpriteIdentifiers();
             }
+
+            CrossFadeGraphics(_isInteractable ? _normalColor : _disabledColor);
         }
         private void OnEnable()
         {
             if (_inputAction != null)
             {
-                _inputAction.action.Enable();
-                _inputAction.action.performed += Action_performed;
+                ClientInput.GetReferenceForAction(_inputAction.action).performed += Action_performed;
             }
         }
         private void OnDisable()
         {
-            if (_inputAction != null)
-                _inputAction.action.performed -= Action_performed;
+            if (_inputAction != null && ClientInput.HasInputActions)
+                ClientInput.GetReferenceForAction(_inputAction.action).performed -= Action_performed;
+
+            if (s_currentHighlightedButton == this)
+                s_currentHighlightedButton = null;
         }
         private void OnDestroy()
         {
-            InputIconManager.OnShouldUpdateSpriteIdentifiers -= UpdateIconDisplayText;
+            InputIconManager.OnShouldUpdateSpriteIdentifiers -= UpdateSpriteIdentifiers;
             InputIconManager.OnSpriteAssetChanged -= UpdateIconDisplayText;
         }
 
 
         private void Action_performed(InputAction.CallbackContext ctx)
         {
-            Debug.Log("Action Performed");
-
             if (!_isInteractable)
                 return; // The action is not interractable.
 
-            if (!_allowInputWhenNotInFocus && !OverlayMenu.IsWithinActiveMenu(this.transform))
+            if (!CanUseInput_Focus())
                 return; // We are not in focus and aren't allowing out-of-focus input.
 
             if (!IsValidActionInput(ref ctx))
                 return; // Invalid input for the action trigger type.
 
             // Valid input. Trigger our callback.
-            _onButtonTriggered?.Invoke();
+            OnButtonTriggered?.Invoke();
         }
+
+        private bool _isPressed = false;
+        private bool _isHighlighted = false;
         public void OnPointerClick(PointerEventData eventData)
         {
             if (!_isInteractable)
-                return; // The action is not interractable.
+                return; // The button is not interractable.
+            if (!CanUseInput_Focus())
+                return;
 
-            _onButtonTriggered?.Invoke();
+            OnButtonTriggered?.Invoke();
         }
-        public void OnPointerEnter(PointerEventData eventData) { }  // Required for IPointerClickHandler().
-        public void OnPointerExit(PointerEventData eventData) { }   // Required for IPointerClickHandler().
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            if (!_isInteractable)
+                return; // The button is not interractable.
+            if (!CanUseInput_Focus())
+                return;
+
+            _isPressed = true;
+            UpdateSelectionIndicator();
+        }
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            _isPressed = false;
+            UpdateSelectionIndicator();
+        }
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            if (!_isInteractable)
+                return; // The button is not interractable.
+            if (!CanUseInput_Focus())
+                return;
+
+            _isHighlighted = true;
+            UpdateSelectionIndicator();
+            s_currentHighlightedButton = this;
+        }
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            if (!_isInteractable)
+                return; // The button is not interractable.
+            /*if (!CanUseInput_Focus())
+                return;*/
+
+            _isHighlighted = false;
+            UpdateSelectionIndicator();
+
+            if (s_currentHighlightedButton == this)
+                s_currentHighlightedButton = null;
+        }
+
+        private void UpdateSelectionIndicator()
+        {
+            if (_isPressed)
+                CrossFadeGraphics(_pressedColor);
+            else if (_isHighlighted)
+                CrossFadeGraphics(_highlightedColor);
+            else
+                CrossFadeGraphics(_normalColor);
+        }
+
+
+        /// <summary>
+        ///     Returns true if this NonNavigableButton isn't being prevented from providing input from focus state.
+        /// </summary>
+        private bool CanUseInput_Focus() => _allowInputWhenNotInFocus || this.IsInActiveMenu();
 
 
         private bool IsValidActionInput(ref InputAction.CallbackContext ctx) => _inputActionType switch
@@ -132,29 +219,72 @@ namespace UI
         };
 
 
-        private void UpdateIconDisplayText()
+        private void UpdateSpriteIdentifiers()
         {
-            _iconDisplayText.text = InputIconManager.FormatTextForIconFromInputAction(_textFormattingString, _inputAction);
+            InputAction playerInputAction = ClientInput.GetReferenceForAction(_inputAction.action);
+
+            if (_iconDisplayText)
+                UpdateIconDisplayText(playerInputAction);
+            if (_iconDisplayImage)
+                UpdateIconDisplayImage(playerInputAction);
+        }
+        private void UpdateIconDisplayText() => ClientInput.GetReferenceForAction(_inputAction.action);
+        private void UpdateIconDisplayText(InputAction inputAction)
+        {
+            _iconDisplayText.text = InputIconManager.FormatTextForIconFromInputAction(_textFormattingString, inputAction);
             _iconDisplayText.spriteAsset = InputIconManager.GetSpriteAsset();
         }
+        private void UpdateIconDisplayImage(InputAction inputAction) => _iconDisplayImage.sprite = InputIconManager.GetIconForAction(inputAction);
+
+        private void CrossFadeGraphics(Color color)
+        {
+            for(int i = 0; i < _graphics.Length; ++i)
+            {
+                _graphics[i].CrossFadeColor(color, 0.0f, true, true);
+            }
+        }
+
+
+
+        public void SetAllowInputWhenNotInFocus(bool newValue) => _allowInputWhenNotInFocus = newValue;
+
 
 
 #if UNITY_EDITOR
 
+        private Graphic[] _editorPreviousValidateGraphics;
         private void OnValidate()
         {
-            if (_iconDisplayText != null && _inputAction != null)
+            if (_graphics == null || _graphics.Length == 0)
             {
-                if (Editor_IsFormattingStringValid())
-                {
-                    _iconDisplayText.text = _textFormattingString;
-                }
-                else
-                {
-                    _iconDisplayText.text = "!INVALID!";
-                }
+                Debug.LogWarning($"NonNavigableButton '{this.gameObject.name}' has no graphic set", this.gameObject);
+                ResetEditorGraphics();
+            }
+            else
+            {
+                ResetEditorGraphics();
+
+                CrossFadeGraphics(_normalColor);
+            }
+            _editorPreviousValidateGraphics = _graphics;
+
+
+            if (_iconDisplayText != null && _textFormattingString != null)
+            {
+                if (!Editor_IsFormattingStringValid())
+                    Debug.LogWarning("NonNavigableButton has an invalid entry string", this.gameObject);
             }
         }
+        private void ResetEditorGraphics()
+        {
+            if (Application.isPlaying)
+                return;
+
+            if (_editorPreviousValidateGraphics != null)
+                for (int i = 0; i < _editorPreviousValidateGraphics.Length; ++i)
+                    _editorPreviousValidateGraphics[i].CrossFadeColor(Color.white, 0.0f, true, true);
+        }
+
 
         private bool Editor_IsFormattingStringValid()
         {

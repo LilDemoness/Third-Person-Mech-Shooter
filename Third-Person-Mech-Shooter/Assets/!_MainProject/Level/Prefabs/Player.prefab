@@ -298,10 +298,16 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   _playerManager: {fileID: 5888572611276870901}
   _swapTest: 0
+  _mnkHorizontalSensitivity: {fileID: 11400000, guid: 78ce01e812adb154aaad853412f4a21a, type: 2}
+  _mnkVerticalSensitivity: {fileID: 11400000, guid: c00c5fc45880b3242bea5ea97ed5cf19, type: 2}
+  _mnkInvertX: {fileID: 11400000, guid: 6e32d1d383019e14aa08510d679ed6e6, type: 2}
+  _mnkInvertY: {fileID: 11400000, guid: b8d2552dac55fa747bb8b6e650cafb13, type: 2}
+  _gamepadHorizontalSensitivity: {fileID: 11400000, guid: b20893c67b85c284fbddad9e5b375f4a, type: 2}
+  _gamepadVerticalSensitivity: {fileID: 11400000, guid: 10c5f99ade5203740bd1dd0568e36e51, type: 2}
+  _gamepadInvertX: {fileID: 11400000, guid: 9b00c7c9c7d192e42beb3a2e3be11eba, type: 2}
+  _gamepadInvertY: {fileID: 11400000, guid: dde2ba5044eecfd41a238a1d14a5dc76, type: 2}
   _rotationPivot: {fileID: 1252660044655768242}
   _graphicsRotationRate: 180
-  _horizontalSensitivity: 17.5
-  _verticalSensitivity: 15
   _rotationPivotYRotation:
     m_InternalValue: 0
   _rotation: {x: 0, y: 0}

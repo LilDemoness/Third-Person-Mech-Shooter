@@ -89,6 +89,7 @@ namespace Gameplay.GameState
             }
 
             _persistentGameState.Reset();
+            _persistentGameState.IsInGameplay = true;
             _lifeStateChangedEventMessageSubscriber.Subscribe(OnLifeStateChangedEventMessage);
 
             NetworkManager.Singleton.OnConnectionEvent += OnConnectionEvent;
@@ -128,18 +129,19 @@ namespace Gameplay.GameState
             if (message.NewLifeState != LifeState.Dead)
                 return; // We're only wanting to process death events.
 
+            NetworkObject originCharacterNetworkObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[message.OriginCharacterObjectId];
 
             // If the inflicter was a ServerCharacter, increment their kills.
             if (message.HasInflicter)
             {
                 NetworkObject inflicterNetworkObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[message.InflicterObjectId];
-                if (inflicterNetworkObject.TryGetComponent<ServerCharacter>(out ServerCharacter inflicterServerCharacter))
+
+                if (inflicterNetworkObject != originCharacterNetworkObject && inflicterNetworkObject.TryGetComponent<ServerCharacter>(out ServerCharacter inflicterServerCharacter))
                 {
                     _networkGameplayState.IncrementScore(inflicterServerCharacter);
                 }
             }
 
-            NetworkObject originCharacterNetworkObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[message.OriginCharacterObjectId];
             if (originCharacterNetworkObject.TryGetComponent<ServerCharacter>(out ServerCharacter originServerCharacter))
             {
                 // Add a Death to the character who died.

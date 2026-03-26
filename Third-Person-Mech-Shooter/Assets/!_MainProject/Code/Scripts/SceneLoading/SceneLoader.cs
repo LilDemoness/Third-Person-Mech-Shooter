@@ -120,6 +120,8 @@ namespace SceneLoading
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
         {
+            Gameplay.UI.Menus.MenuManager.ClearData();
+
             if (!IsSpawned || NetworkManager.ShutdownInProgress)
             {
                 _clientLoadingScreen.StopLoadingScreen();
@@ -299,6 +301,9 @@ namespace SceneLoading
         {
             LoadNetworkScene(GetGameModePostGameScene(gameMode), LoadSceneMode.Single);
         }
+
+
+        public static bool IsValidMapName(string mapName) => SceneUtility.GetBuildIndexByScenePath(mapName) != -1;
 
 #endregion
     }

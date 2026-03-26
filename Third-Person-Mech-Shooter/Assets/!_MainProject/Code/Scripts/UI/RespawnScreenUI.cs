@@ -18,6 +18,7 @@ namespace UI
         private float _respawnElapsedTime;
         private float _respawnTimeRemaining => (_respawnElapsedTime - Time.time);
         private const string DEFAULT_KILLER_NAME = "SERVER";
+        private const string KILLED_BY_SELF_NAME = "Yourself";
 
 
         [Space(10)]
@@ -42,7 +43,12 @@ namespace UI
         private void Player_OnLocalPlayerDeath(object sender, Player.PlayerDeathEventArgs e)
         {
             // Only set the killer name when notified of the death on the local player as the required timings are sent through the NetworkGameplayState instead, but that doesn't have killer information.
-            SetKillerName(e.Inflicter);
+            if (e.Inflicter == null)
+                SetKillerName(DEFAULT_KILLER_NAME);
+            else if (e.Inflicter == e.Character)
+                SetKillerName(KILLED_BY_SELF_NAME);
+            else
+                SetKillerName(e.Inflicter.CharacterName);
         }
         private void NetworkGameplayState_OnLocalPlayerRespawnStarted(float respawnDelay)
             => Show(Time.time + respawnDelay - (NetworkManager.Singleton.LocalTime.TimeAsFloat - NetworkManager.Singleton.ServerTime.TimeAsFloat) / 2.0f);
@@ -55,12 +61,12 @@ namespace UI
 
 
 
-        private void SetKillerName(ServerCharacter killer) => _killerNameText.text = killer != null ? killer.CharacterName : DEFAULT_KILLER_NAME;
+        private void SetKillerName(string killerName) => _killerNameText.text = killerName;
         
         public void Show(ServerCharacter killer, float timeToRespawn)
         {
             // Killer Name.
-            SetKillerName(killer);
+            SetKillerName(killer == null ? DEFAULT_KILLER_NAME : killer.CharacterName);
 
             Show(timeToRespawn);
         }

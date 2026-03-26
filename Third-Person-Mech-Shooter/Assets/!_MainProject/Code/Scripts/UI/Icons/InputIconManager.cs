@@ -48,25 +48,26 @@ namespace UI.Icons
         /// <summary>
         ///     Retrieve the Sprite corresponding to the input options of the given InputAction.
         /// </summary>
-        public static Sprite GetIconForAction(InputAction inputAction)
+        public static Sprite GetIconForAction(InputAction inputAction) => GetIconForAction(inputAction, ClientInput.LastUsedDeviceName, ClientInput.LastUsedDevice);
+        public static Sprite GetIconForAction(InputAction inputAction, ClientInput.DeviceType deviceType) => GetIconForAction(inputAction, deviceType.ToString(), deviceType);
+        public static Sprite GetIconForAction(InputAction inputAction, string deviceTypeName, ClientInput.DeviceType deviceType)
         {
             var bindings = inputAction.bindings;
             var bindingCount = bindings.Count;
             for (int i = 0; i < bindingCount; ++i)
             {
-                if (bindings[i].groups.Contains(ClientInput.LastUsedDeviceName))
+                if (bindings[i].groups == null)
+                    continue;
+
+                if (bindings[i].groups.Contains(deviceTypeName))
                 {
                     // This binding is compatable with our active device. Use it to determine our Icon.
-                    inputAction.GetBindingDisplayString(i, out string deviceLayoutName, out string controlPath);
-
-                    if (s_inputSystemIdentifierToSpriteIdenfitierDictionary.TryGetValue(controlPath, out string spriteIdentifier))
-                    {
-                        return s_inputIconData.GetSprite(ClientInput.LastUsedDevice, spriteIdentifier);
-                    }
+                    inputAction.GetBindingDisplayString(i, out string _, out string controlPath);
+                    return s_inputIconData.GetSprite(deviceType, controlPath);
                 }
             }
 
-            Debug.LogError($"Error: No Binding for the action '{inputAction.name}' for the last used device ({ClientInput.LastUsedDeviceName})");
+            Debug.LogError($"Error: No Binding for the action '{inputAction.name}' for the last used device ({deviceTypeName})");
             return null;
         }
 
@@ -82,12 +83,17 @@ namespace UI.Icons
         {
             return string.Format(unformattedText, GetIconIdentifierForAction(inputAction));
         }
+        public static string FormatTextForIconFromInputAction(string unformattedText, InputAction inputAction, ClientInput.DeviceType deviceType)
+        {
+            return string.Format(unformattedText, GetIconIdentifierForAction(inputAction, deviceType.ToString()));
+        }
         /// <summary>
         ///     Get the TMPro Sprite Tag text for the given InputAction and active Control Scheme.
         /// </summary>
         /// <param name="inputAction"> The InputAction we are retrieving the Sprite Tags for.</param>
         /// <returns>The TMPro Sprite Tags for the given InputAction and active Control Scheme.</returns>
-        public static string GetIconIdentifierForAction(InputAction inputAction)
+        public static string GetIconIdentifierForAction(InputAction inputAction) => GetIconIdentifierForAction(inputAction, ClientInput.LastUsedDeviceName);
+        public static string GetIconIdentifierForAction(InputAction inputAction, string deviceName)
         {
             var bindings = inputAction.bindings;
             int bindingCount = bindings.Count;
@@ -95,7 +101,7 @@ namespace UI.Icons
 
             for(int i = 0; i < bindingCount; ++i)
             {
-                if (bindings[i].groups.Contains(ClientInput.LastUsedDeviceName))
+                if (bindings[i].groups.Contains(deviceName))
                 {
                     // This binding is compatible with our active input device. Use it to determine our icon.
                     // Get our Control Path.
@@ -112,6 +118,23 @@ namespace UI.Icons
             }
 
             return output;
+        }
+        /// <summary>
+        ///     Get the TMPro Sprite Tag text for the given control path and active Control Scheme.
+        /// </summary>
+        /// <param name="controlPath"> The control path for the action we are retrieving the Sprite Tags for.</param>
+        /// <returns>The TMPro Sprite Tags for the given InputAction and active Control Scheme.</returns>
+        public static string GetIconIdentifierForAction(string controlPath)
+        {
+            // Try to get the Sprite Identifier for the control path.
+            if (s_inputSystemIdentifierToSpriteIdenfitierDictionary.TryGetValue(controlPath, out string spriteIdentifier))
+            {
+                // We found the identifier.
+                // Add our sprite tag with the formatted action name to the output.
+                return $"<sprite name=\"{spriteIdentifier}\">";
+            }
+
+            return string.Empty;
         }
 
         public static TMPro.TMP_SpriteAsset GetSpriteAsset() => s_inputIconData.GetSpriteAsset();

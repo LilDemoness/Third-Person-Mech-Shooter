@@ -21,7 +21,7 @@ namespace Gameplay.GameplayObjects
 
         private void PersistentPlayerRuntimeCollection_ItemAdded(PersistentPlayer obj)
         {
-            Debug.Log("Added: " + obj.OwnerClientId);
+            Debug.Log("Added for ClientId: " + obj.OwnerClientId);
         }
 
         public bool TryGetPlayer(ulong clientID, out PersistentPlayer persistentPlayer)

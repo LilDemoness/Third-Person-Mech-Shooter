@@ -12,7 +12,7 @@ namespace UI.Customisation
     {
         [SerializeField] private CustomisationDummyManager _customisationDummyManager;
 
-        private const ClientInput.ActionTypes ALL_ACTIONS_BUT_UI = ClientInput.ActionTypes.Everything & ~ClientInput.ActionTypes.UI;
+        private const ClientInput.ActionTypes ALL_ACTIONS_BUT_UI = ClientInput.ActionTypes.Everything & ~(ClientInput.ActionTypes.UI | ClientInput.ActionTypes.MenuNavigation);
 
 
         public static event System.Action OnCustomisationUIOpened;
@@ -52,7 +52,7 @@ namespace UI.Customisation
             OnCustomisationUIOpened?.Invoke();
 
             // Prevent Non-Relevant Input.
-            ClientInput.PreventActions(typeof(MidGameCustomisationUI), ALL_ACTIONS_BUT_UI);
+            ClientInput.AddActionPrevention(typeof(MidGameCustomisationUI), ALL_ACTIONS_BUT_UI);
         }
         [ContextMenu("Hide")]
         public void Hide()
@@ -69,5 +69,8 @@ namespace UI.Customisation
             // Allow Non-Relevant Input.
             ClientInput.RemoveActionPrevention(typeof(MidGameCustomisationUI), ALL_ACTIONS_BUT_UI);
         }
+
+
+        public void OnFinishCustomisationPerformed() => Hide();
     }
 }

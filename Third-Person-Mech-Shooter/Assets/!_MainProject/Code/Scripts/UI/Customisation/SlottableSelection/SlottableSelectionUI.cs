@@ -196,7 +196,6 @@ namespace UI.Customisation.SlottableSelection
         {
             this._selectedFrameData = frameData;
             SetupTabs();
-            Debug.Log("Select Tab");
             SelectTab(AttachmentSlotIndex.Primary);
         }
 

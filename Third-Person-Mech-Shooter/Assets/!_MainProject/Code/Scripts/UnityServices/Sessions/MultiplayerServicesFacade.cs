@@ -5,7 +5,9 @@ using VContainer;
 using VContainer.Unity;
 using Unity.Services.Multiplayer;
 using System.Threading.Tasks;
-using static UnityEngine.Analytics.AnalyticsSessionInfo;
+using System.Collections.Generic;
+using Unity.Services.Lobbies.Models;
+using Cysharp.Threading.Tasks;
 
 namespace UnityServices.Sessions
 {
@@ -26,6 +28,8 @@ namespace UnityServices.Sessions
         IPublisher<UnityServiceErrorMessage> _unityServiceErrorMessagePublisher;
         [Inject]
         IPublisher<SessionListFetchedMessage> _sessionListFetchedPublisher;
+        [Inject]
+        private Gameplay.GameState.PersistentGameState _persistentGameState;
 
 
         private LifetimeScope _serviceScope;
@@ -36,7 +40,19 @@ namespace UnityServices.Sessions
         private RateLimitCooldown _rateLimitQuickJoin;
         private RateLimitCooldown _rateLimitHost;
 
-        public ISession CurrentUnitySession { get; private set; }
+
+        private ISession m_currentUnitySession;
+        public ISession CurrentUnitySession
+        {
+            get => m_currentUnitySession;
+            private set
+            {
+                m_currentUnitySession = value;
+                OnCurrentSessionSet?.Invoke();
+            }
+        }
+        public event System.Action OnCurrentSessionSet;
+        public event System.Action OnSessionUpdated;
         private bool _isTracking;
 
 
@@ -53,6 +69,9 @@ namespace UnityServices.Sessions
             _rateLimitJoin = new RateLimitCooldown(1.0f);
             _rateLimitQuickJoin = new RateLimitCooldown(1.0f);
             _rateLimitHost = new RateLimitCooldown(3.0f);
+
+
+            this.OnCurrentSessionSet += InvokeOnSessionUpdated;
         }
         public void Dispose()
         {
@@ -61,6 +80,8 @@ namespace UnityServices.Sessions
             {
                 _serviceScope.Dispose();
             }
+
+            this.OnCurrentSessionSet -= InvokeOnSessionUpdated;
         }
 
 
@@ -68,6 +89,8 @@ namespace UnityServices.Sessions
         {
             CurrentUnitySession = session;
             _localSession.ApplyRemoteData(session);
+
+            BeginTracking();
         }
 
         /// <summary>
@@ -111,7 +134,7 @@ namespace UnityServices.Sessions
         /// <summary>
         ///     Attempt to create a new session and then join it.
         /// </summary>
-        public async Task<(bool Success, ISession Session)> TryCreateSessionAsync(string sessionName, int maxPlayers, bool isPrivate)
+        public async Task<(bool Success, ISession Session)> TryCreateSessionAsync(string sessionName, int maxPlayers, bool isPrivate, string sessionPassword)
         {
             if (!_rateLimitHost.CanCall)
             {
@@ -126,6 +149,7 @@ namespace UnityServices.Sessions
                     sessionName,
                     maxPlayers,
                     isPrivate,
+                    sessionPassword,
                     _localUser.GetDataForUnityServices(),
                     null);
                 return (true, session);
@@ -142,7 +166,7 @@ namespace UnityServices.Sessions
         /// <summary>
         ///     Attempt to join an existing session with a join code.
         /// </summary>
-        public async Task<(bool Success, ISession Session)> TryJoinSessionByCodeAsync(string sessionCode)
+        public async Task<(bool Success, ISession Session)> TryJoinSessionByCodeAsync(string sessionCode, List<QueryFilter> filters = null)
         {
             if (!_rateLimitJoin.CanCall)
             {
@@ -210,7 +234,7 @@ namespace UnityServices.Sessions
         /// <summary>
         ///     Attempt to join the first available session that matches the filtered OnlineMode.
         /// </summary>
-        public async Task<(bool Success, ISession Session)> TryQuickJoinSessionAsync()
+        public async Task<(bool Success, ISession Session)> TryQuickJoinSessionAsync(bool ignoreFilters = false)
         {
             if (!_rateLimitJoin.CanCall)
             {
@@ -232,6 +256,24 @@ namespace UnityServices.Sessions
             // Failed to join the session.
             return (false, null);
         }
+
+
+
+        public void ClearFilters() => _multiplayerServicesInterface.ClearFilters();
+
+        public void SetGameModeFilter(Gameplay.GameMode gameMode) => _multiplayerServicesInterface.SetGameModeFilter(gameMode);
+        public void ClearGameModeFilter() => _multiplayerServicesInterface.ClearGameModeFilter();
+
+        public void SetMapFilter(string mapName) => _multiplayerServicesInterface.SetMapFilter(mapName);
+        public void ClearMapFilter() => _multiplayerServicesInterface.ClearMapFilter();
+
+        public void SetShowPasswordProtectedLobbies(bool newValue) => _multiplayerServicesInterface.SetShowPasswordProtectedLobbies(newValue);
+
+
+
+        public void SetSortOptions(SortField sortField, bool inverted) => _multiplayerServicesInterface.SetSortOptions(sortField, inverted);
+        public void InvertSortOptions(bool inverted) => _multiplayerServicesInterface.InvertSortOptions(inverted);
+        public void ClearSortOptions() => _multiplayerServicesInterface.ResetSortOptions();
 
 
 
@@ -329,19 +371,27 @@ namespace UnityServices.Sessions
         }
 
         private void OnPlayerPropertiesChanged() => Debug.Log("Player properties changed.");
-        private void OnSessionPropertiesChanged() => Debug.Log("Session properties changed.");
+        private void OnSessionPropertiesChanged()
+        {
+            RetrieveSessionInformation();
+            Debug.Log("Session properties changed.");
+        }
 
 
+        private bool _isRefreshing = false;
         /// <summary>
         ///     Used for getting the list of all active sessions without needing full info for each.
         /// </summary>
-        public async Task RetrieveAndPublishSessionListAsync()
+        /// <returns> True if this request started a refresh. False if another refresh request was already running.</returns>
+        public async UniTask<bool> RetrieveAndPublishSessionListAsync()
         {
+            if (_isRefreshing)  // Prevent duplicate requests from running and causing a rate limit error.
+                return false;
+            _isRefreshing = true;
+
             if (!_rateLimitQuery.CanCall)
-            {
-                Debug.LogWarning("Retrieving the session list hit the rate limit. Will try again soon...");
-                return;
-            }
+                await UniTask.WaitForSeconds(_rateLimitQuery.RemainingCooldownTime, true);  // Wait until our rate limit is valid to prevent a rate limit error.
+            _rateLimitQuery.PutOnCooldown();    // Prevent rate limit errors by always going into cooldown on a refresh.
 
             try
             {
@@ -352,6 +402,10 @@ namespace UnityServices.Sessions
             {
                 PublishError(e);
             }
+
+            // We've finished refreshing (Or we caught an error).
+            _isRefreshing = false;
+            return true;
         }
 
         /// <summary>
@@ -482,5 +536,38 @@ namespace UnityServices.Sessions
             string reason = e.InnerException == null ? e.Message : $"{e.Message} ({e.InnerException.Message})";    // Session error type, then HTTP error type.
             _unityServiceErrorMessagePublisher.Publish(new UnityServiceErrorMessage("Session Error", reason, UnityServiceErrorMessage.Service.Session, e));
         }
+
+
+
+        public void RetrieveSessionInformation()
+        {
+            if (!CurrentUnitySession.Properties.TryGetValue("GameMode", out SessionProperty gameModeSessionProperty))
+                Debug.LogError("Failed to retrieve GameMode from Session Properties");
+            else if (!Enum.TryParse<Gameplay.GameMode>(gameModeSessionProperty.Value, out Gameplay.GameMode gameMode))
+                Debug.LogError($"Retrieved GameMode \"{gameModeSessionProperty.Value}\" failed to convert to GameMode enum");
+            else
+                _persistentGameState.GameMode = gameMode;
+            
+            if (CurrentUnitySession.Properties.TryGetValue("Map", out SessionProperty mapSessionProperty))
+                _persistentGameState.MapName = mapSessionProperty.Value;
+            else
+                Debug.LogError("Failed to retrieve Map from Session Properties");
+
+            InvokeOnSessionUpdated();
+        }
+        public async void UpdateSessionInformation(Gameplay.GameMode gameMode, string mapName)
+        {
+            if (!CurrentUnitySession.IsHost)
+                return; // Non-hosts cannot update session information.
+            
+
+            IHostSession hostSession = CurrentUnitySession.AsHost();
+            hostSession.SetProperty("GameMode", new SessionProperty(gameMode.ToString(), index: Constants.GAME_MODE_PROPERTY_INDEX));
+            hostSession.SetProperty("Map", new SessionProperty(mapName, index: Constants.MAP_PROPERTY_INDEX));
+            await hostSession.SavePropertiesAsync();
+        }
+
+
+        private void InvokeOnSessionUpdated() => OnSessionUpdated?.Invoke();
     }
 }
