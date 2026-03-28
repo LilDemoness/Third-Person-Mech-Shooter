@@ -41,7 +41,6 @@ namespace Gameplay.UI.Menus.Options
         public void OnSliderValueChanged(float newValue) => _floatOptionValue.SetValue(newValue);
         protected override void UpdateDisplayedValue()
         {
-            Debug.Log($"Update Displayed Value for {this.name}: " + _floatOptionValue.Value);
             Slider.SetValueWithoutNotify(_floatOptionValue.Value);
             base.UpdateDisplayedValue();
         }

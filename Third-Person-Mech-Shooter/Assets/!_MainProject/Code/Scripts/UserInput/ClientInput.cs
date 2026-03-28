@@ -649,7 +649,6 @@ namespace UserInput
 
         private void UpdateInputOverrides()
         {
-            Debug.Log("Update Input from Control Overrides");
             LoadOverridesFromJSON(ControlsRebindingValue.Instance.Value);
         }
         private static void LoadOverridesFromJSON(string jsonString)
