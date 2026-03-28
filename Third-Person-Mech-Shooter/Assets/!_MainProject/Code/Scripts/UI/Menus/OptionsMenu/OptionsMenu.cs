@@ -16,7 +16,11 @@ namespace Gameplay.UI.Menus.Options
 
 
 
-        private void Awake() => InitialiseSubmenus();
+        protected override void Awake()
+        {
+            base.Awake();
+            InitialiseSubmenus();
+        }
 
 
         private void InitialiseSubmenus()

@@ -66,8 +66,9 @@ namespace Gameplay.UI.Menus
             }
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
             _connectStatusSubscriber?.Unsubscribe(OnConnectStatus);
         }
 

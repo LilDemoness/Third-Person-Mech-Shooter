@@ -27,20 +27,23 @@ namespace Gameplay.UI.Menus.Pause
         IPublisher<QuitApplicationMessage> _quitApplicationPub;
 
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             ClientInput.OnPauseGamePerformed += OnPauseGamePerformed;
             _isOpen = false;
             _isPerformingOpenCloseOperation = false;
 
             FinishClose(false).Forget();
         }
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
             ClientInput.OnPauseGamePerformed -= OnPauseGamePerformed;
 
             if (_isOpen)
                 FinishClose(false).Forget();
+            base.OnDestroy();
         }
 
         public override void Open(bool selectFirstElement = true)

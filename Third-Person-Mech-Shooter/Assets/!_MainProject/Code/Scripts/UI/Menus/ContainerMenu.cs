@@ -37,12 +37,13 @@ namespace Gameplay.UI.Menus
 
 
 
-        private void Awake()
+        protected virtual void Awake()
         {
             _previouslySelectedChildIndex = DefaultChildIndex;
         }
-        private void OnDestroy()
+        protected virtual void OnDestroy()
         {
+            Debug.Log($"{this.name} Unsubscribe");
             MenuManager.OnActiveMenuChanged -= UpdateHighlightedButton;
         }
 
@@ -52,6 +53,7 @@ namespace Gameplay.UI.Menus
             Show();
             HideAllChildren();
 
+            Debug.Log($"{this.name} Subscribe");
             MenuManager.OnActiveMenuChanged += UpdateHighlightedButton;
 
 
@@ -65,6 +67,7 @@ namespace Gameplay.UI.Menus
         }
         public override async UniTask<bool> Close()
         {
+            Debug.Log($"{this.name} Unsubscribe");
             MenuManager.OnActiveMenuChanged -= UpdateHighlightedButton;
 
             HideAllChildren();
