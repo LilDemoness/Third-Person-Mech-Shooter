@@ -6,8 +6,8 @@ namespace Gameplay.GameplayObjects
 {
     public class Weapon : MonoBehaviour
     {
-        [SerializeField] private SlottableData m_weaponData;
-        public SlottableData WeaponData => m_weaponData;
+        [SerializeField] private ModuleData m_weaponData;
+        public ModuleData WeaponData => m_weaponData;
 
 
         [SerializeField] private Transform _firingOrigin;

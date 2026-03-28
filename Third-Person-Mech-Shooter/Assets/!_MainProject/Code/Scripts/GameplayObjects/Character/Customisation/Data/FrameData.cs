@@ -1,22 +1,23 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Gameplay.GameplayObjects.Character.Customisation.Data
 {
     [CreateAssetMenu(menuName = "Data/FrameData")]
-    public class FrameData : ScriptableObject
+    public class FrameData : BaseCustomisationData
     {
-        [field: SerializeField] public string Name { get; private set; }
-        [field: SerializeField] public Sprite Sprite { get; private set; }
-
-
         public enum SizeCategory { Small, Medium, Large }
+
+        [field: Header("Frame Data")]
         [field: SerializeField] public SizeCategory FrameSize { get; private set; }
         [field: SerializeField] public int MaxHealth { get; private set; }
         [field: SerializeField] public int HeatCapacity { get; private set; }
         [field: SerializeField] public float MovementSpeed { get; private set; }
 
 
+        [field:Space(10)]
         [field: SerializeField] public AttachmentPoint[] AttachmentPoints { get; private set; }
+        [field: SerializeField] public CoreSystemData CoreSystem { get; private set; }
 
 
         [field: Header("Frame Camera Settings")]
@@ -28,8 +29,26 @@ namespace Gameplay.GameplayObjects.Character.Customisation.Data
     [System.Serializable]
     public class AttachmentPoint
     {
-        [SerializeField] private string _dataPlaceholder;   // Should hopefully prevent the slots being erased on editor reset.
+        [field: SerializeField] public ModuleSize MaxModuleSize { get; private set; }
 
-        public SlottableData[] ValidSlottableDatas => CustomisationOptionsDatabase.AllOptionsDatabase.SlottableDatas;
+        public List<ModuleData> ValidModuleDatas => CustomisationOptionsDatabase.AllOptionsDatabase.GetValidModulesForSize(MaxModuleSize);
+    }
+
+    [System.Serializable]
+    public enum ModuleSize
+    {
+        Auxilary,
+        Main,
+        Heavy
+    }
+    public static class ModuleSizeExtensions
+    {
+        public static string ToDisplayString(this ModuleSize moduleSize) => moduleSize switch
+        {
+            ModuleSize.Auxilary => "Aux",
+            ModuleSize.Main => "Main",
+            ModuleSize.Heavy => "Heavy",
+            _ => throw new System.NotImplementedException($"No Display String for Module Size: {moduleSize.ToString()}")
+        };
     }
 }

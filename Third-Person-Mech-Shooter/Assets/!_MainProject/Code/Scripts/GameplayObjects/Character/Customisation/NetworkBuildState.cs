@@ -203,12 +203,17 @@ namespace Gameplay.GameplayObjects
         [ContextMenu("Randomise Build")]
         private void Editor_RandomiseBuild()
         {
-            int randomIndex = Random.Range(0, CustomisationOptionsDatabase.AllOptionsDatabase.FrameDatas.Length);
-            int[] randomSlottableIndicies = new int[CustomisationOptionsDatabase.MAX_SLOTTABLE_DATAS];
-            for(int i = 0; i < CustomisationOptionsDatabase.MAX_SLOTTABLE_DATAS; ++i)
-                randomSlottableIndicies[i] = Random.Range(0, CustomisationOptionsDatabase.AllOptionsDatabase.SlottableDatas.Length);
+            int randomFrameIndex = Random.Range(0, CustomisationOptionsDatabase.AllOptionsDatabase.FrameDatas.Count);
+            FrameData frameData = CustomisationOptionsDatabase.AllOptionsDatabase.GetFrame(randomFrameIndex);
 
-            SetBuildServerRpc(randomIndex, randomSlottableIndicies);
+            int[] randomModuleIndicies = new int[frameData.AttachmentPoints.Length];
+            for(int i = 0; i < randomModuleIndicies.Length; ++i)
+            {
+                List<ModuleData> allValidModules = frameData.AttachmentPoints[i].ValidModuleDatas;
+                randomModuleIndicies[i] = CustomisationOptionsDatabase.AllOptionsDatabase.GetIndexForModuleData(allValidModules[Random.Range(0, allValidModules.Count)]);
+            }
+
+            SetBuildServerRpc(randomFrameIndex, randomModuleIndicies);
         }
 
         #endif

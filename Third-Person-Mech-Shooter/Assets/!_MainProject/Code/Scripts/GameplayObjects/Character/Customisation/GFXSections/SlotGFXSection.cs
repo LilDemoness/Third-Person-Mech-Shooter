@@ -6,7 +6,7 @@ namespace Gameplay.GameplayObjects.Character.Customisation.Sections
 {
     public class SlotGFXSection : MonoBehaviour
     {
-        [field: SerializeField] public SlottableData SlottableData { get; protected set; }
+        [field: SerializeField] public ModuleData SlottableData { get; protected set; }
 
 
         [SerializeField] private Transform _abilityOrigin;
@@ -25,7 +25,7 @@ namespace Gameplay.GameplayObjects.Character.Customisation.Sections
         }
 
 
-        public bool Toggle(SlottableData activeData)
+        public bool Toggle(ModuleData activeData)
         {
             bool newActive = activeData != null && activeData.Equals(SlottableData);
             this.gameObject.SetActive(newActive);

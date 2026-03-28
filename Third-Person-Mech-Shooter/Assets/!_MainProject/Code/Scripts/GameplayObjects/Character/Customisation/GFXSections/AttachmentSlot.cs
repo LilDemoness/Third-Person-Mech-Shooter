@@ -22,7 +22,7 @@ namespace Gameplay.GameplayObjects.Character.Customisation.Sections
         ///     Toggles all SlotGFXSections under this AttachmentSlot and returns the value of the active element (If one exists).
         /// </summary>
         /// <returns> False if no elements were enabled.</returns>
-        public bool Toggle(SlottableData activeData)
+        public bool Toggle(ModuleData activeData)
         {
             _activeGFXSlotIndex = -1;
             for (int i = 0; i < _slotGFXs.Length; ++i)

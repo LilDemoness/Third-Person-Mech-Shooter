@@ -78,7 +78,7 @@ namespace Gameplay.GameplayObjects.Character.Customisation.Sections
 
             return this;
         }
-        public FrameGFX OnSelectedSlottableDataChanged(AttachmentSlotIndex slotIndex, SlottableData activeData)
+        public FrameGFX OnSelectedSlottableDataChanged(AttachmentSlotIndex slotIndex, ModuleData activeData)
         {
             if (_slottableDataSlots.TryGetValue(slotIndex, out AttachmentSlot slottableDataSlot))
             {

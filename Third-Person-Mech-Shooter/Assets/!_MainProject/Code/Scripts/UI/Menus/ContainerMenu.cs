@@ -41,6 +41,10 @@ namespace Gameplay.UI.Menus
         {
             _previouslySelectedChildIndex = DefaultChildIndex;
         }
+        private void OnDestroy()
+        {
+            MenuManager.OnActiveMenuChanged -= UpdateHighlightedButton;
+        }
 
 
         public override void Open(bool selectFirstElement = true)

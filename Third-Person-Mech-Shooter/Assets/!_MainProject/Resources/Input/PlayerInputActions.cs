@@ -102,7 +102,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Jump"",
+                    ""name"": ""Boost"",
                     ""type"": ""Button"",
                     ""id"": ""701ca081-a103-4bc9-8042-e8f75b7665a6"",
                     ""expectedControlType"": """",
@@ -240,7 +240,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";MnK"",
-                    ""action"": ""Jump"",
+                    ""action"": ""Boost"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -251,7 +251,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
-                    ""action"": ""Jump"",
+                    ""action"": ""Boost"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -445,6 +445,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ActivateCoreSystem"",
+                    ""type"": ""Button"",
+                    ""id"": ""84ac87fb-1075-4111-ba93-6c27d0cab351"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -533,6 +542,17 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
                     ""action"": ""ActivateSlot3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1bf53862-ae9e-4e65-a51f-11426586271d"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ActivateCoreSystem"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1980,7 +2000,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         // Movement
         m_Movement = asset.FindActionMap("Movement", throwIfNotFound: true);
         m_Movement_Move = m_Movement.FindAction("Move", throwIfNotFound: true);
-        m_Movement_Jump = m_Movement.FindAction("Jump", throwIfNotFound: true);
+        m_Movement_Boost = m_Movement.FindAction("Boost", throwIfNotFound: true);
         // Camera
         m_Camera = asset.FindActionMap("Camera", throwIfNotFound: true);
         m_Camera_Look = m_Camera.FindAction("Look", throwIfNotFound: true);
@@ -1990,6 +2010,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Combat_ActivateSlot1 = m_Combat.FindAction("ActivateSlot1", throwIfNotFound: true);
         m_Combat_ActivateSlot2 = m_Combat.FindAction("ActivateSlot2", throwIfNotFound: true);
         m_Combat_ActivateSlot3 = m_Combat.FindAction("ActivateSlot3", throwIfNotFound: true);
+        m_Combat_ActivateCoreSystem = m_Combat.FindAction("ActivateCoreSystem", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -2130,7 +2151,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Movement;
     private List<IMovementActions> m_MovementActionsCallbackInterfaces = new List<IMovementActions>();
     private readonly InputAction m_Movement_Move;
-    private readonly InputAction m_Movement_Jump;
+    private readonly InputAction m_Movement_Boost;
     /// <summary>
     /// Provides access to input actions defined in input action map "Movement".
     /// </summary>
@@ -2147,9 +2168,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Move => m_Wrapper.m_Movement_Move;
         /// <summary>
-        /// Provides access to the underlying input action "Movement/Jump".
+        /// Provides access to the underlying input action "Movement/Boost".
         /// </summary>
-        public InputAction @Jump => m_Wrapper.m_Movement_Jump;
+        public InputAction @Boost => m_Wrapper.m_Movement_Boost;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -2179,9 +2200,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Move.started += instance.OnMove;
             @Move.performed += instance.OnMove;
             @Move.canceled += instance.OnMove;
-            @Jump.started += instance.OnJump;
-            @Jump.performed += instance.OnJump;
-            @Jump.canceled += instance.OnJump;
+            @Boost.started += instance.OnBoost;
+            @Boost.performed += instance.OnBoost;
+            @Boost.canceled += instance.OnBoost;
         }
 
         /// <summary>
@@ -2196,9 +2217,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Move.started -= instance.OnMove;
             @Move.performed -= instance.OnMove;
             @Move.canceled -= instance.OnMove;
-            @Jump.started -= instance.OnJump;
-            @Jump.performed -= instance.OnJump;
-            @Jump.canceled -= instance.OnJump;
+            @Boost.started -= instance.OnBoost;
+            @Boost.performed -= instance.OnBoost;
+            @Boost.canceled -= instance.OnBoost;
         }
 
         /// <summary>
@@ -2336,6 +2357,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Combat_ActivateSlot1;
     private readonly InputAction m_Combat_ActivateSlot2;
     private readonly InputAction m_Combat_ActivateSlot3;
+    private readonly InputAction m_Combat_ActivateCoreSystem;
     /// <summary>
     /// Provides access to input actions defined in input action map "Combat".
     /// </summary>
@@ -2363,6 +2385,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Combat/ActivateSlot3".
         /// </summary>
         public InputAction @ActivateSlot3 => m_Wrapper.m_Combat_ActivateSlot3;
+        /// <summary>
+        /// Provides access to the underlying input action "Combat/ActivateCoreSystem".
+        /// </summary>
+        public InputAction @ActivateCoreSystem => m_Wrapper.m_Combat_ActivateCoreSystem;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -2401,6 +2427,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @ActivateSlot3.started += instance.OnActivateSlot3;
             @ActivateSlot3.performed += instance.OnActivateSlot3;
             @ActivateSlot3.canceled += instance.OnActivateSlot3;
+            @ActivateCoreSystem.started += instance.OnActivateCoreSystem;
+            @ActivateCoreSystem.performed += instance.OnActivateCoreSystem;
+            @ActivateCoreSystem.canceled += instance.OnActivateCoreSystem;
         }
 
         /// <summary>
@@ -2424,6 +2453,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @ActivateSlot3.started -= instance.OnActivateSlot3;
             @ActivateSlot3.performed -= instance.OnActivateSlot3;
             @ActivateSlot3.canceled -= instance.OnActivateSlot3;
+            @ActivateCoreSystem.started -= instance.OnActivateCoreSystem;
+            @ActivateCoreSystem.performed -= instance.OnActivateCoreSystem;
+            @ActivateCoreSystem.canceled -= instance.OnActivateCoreSystem;
         }
 
         /// <summary>
@@ -3385,12 +3417,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMove(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "Jump" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Boost" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnJump(InputAction.CallbackContext context);
+        void OnBoost(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Camera" which allows adding and removing callbacks.
@@ -3442,6 +3474,13 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnActivateSlot3(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ActivateCoreSystem" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnActivateCoreSystem(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

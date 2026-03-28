@@ -16,7 +16,7 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Jump",
+                    "name": "Boost",
                     "type": "Button",
                     "id": "701ca081-a103-4bc9-8042-e8f75b7665a6",
                     "expectedControlType": "",
@@ -154,7 +154,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";MnK",
-                    "action": "Jump",
+                    "action": "Boost",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -165,7 +165,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
-                    "action": "Jump",
+                    "action": "Boost",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -359,6 +359,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "ActivateCoreSystem",
+                    "type": "Button",
+                    "id": "84ac87fb-1075-4111-ba93-6c27d0cab351",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -447,6 +456,17 @@
                     "processors": "",
                     "groups": ";Gamepad",
                     "action": "ActivateSlot3",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1bf53862-ae9e-4e65-a51f-11426586271d",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ActivateCoreSystem",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
