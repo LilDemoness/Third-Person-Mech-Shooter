@@ -52,8 +52,10 @@ namespace Gameplay.UI.Menus
         }
 
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             // Ensure that the Sign-in Spinner starts hidden.
             // Note: Move to always occur on showing.
             DisableSignInSpinner();
@@ -62,8 +64,9 @@ namespace Gameplay.UI.Menus
             _ipInputField.text = DEFAULT_IP;
             _portInputField.text = DEFAULT_PORT.ToString();
         }
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
             if (_connectStatusSubscriber != null)
                 _connectStatusSubscriber.Unsubscribe(OnConnectStatusMessage);
         }

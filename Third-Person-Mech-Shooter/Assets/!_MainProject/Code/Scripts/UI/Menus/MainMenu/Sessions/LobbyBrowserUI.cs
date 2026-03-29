@@ -75,10 +75,12 @@ namespace Gameplay.UI.Menus
         }
 
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             // Initialise & Subscribe to LobbyListHeaderUI elements for sorting lobbies.
-            for(int i = 0; i < _lobbyListHeaders.Length; ++i)
+            for (int i = 0; i < _lobbyListHeaders.Length; ++i)
                 _lobbyListHeaders[i].SetHeaderIndex(i);
             LobbyListHeaderUI.OnAnyHeaderSelected += SetSelectedLobbyHeader;
 

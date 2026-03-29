@@ -9,6 +9,10 @@ namespace Gameplay.UI.Menus.Customisation
     {
         public T CurrentData { get; private set; }
 
+        private Button _button;
+        public Selectable Selectable => _button as Selectable;
+
+
         public event System.Action<CustomiseElementButtonBase<T>> OnSelected;
         public event System.Action<CustomiseElementButtonBase<T>> OnClicked;
 
@@ -16,12 +20,13 @@ namespace Gameplay.UI.Menus.Customisation
         private void Awake()
         {
             GetComponent<SelectableEvents>().OnSelected += SelectableEvents_OnSelected;
-            GetComponent<Button>().onClick.AddListener(Button_OnClicked);
+            _button = GetComponent<Button>();
+            _button.onClick.AddListener(Button_OnClicked);
         }
         private void OnDestroy()
         {
             GetComponent<SelectableEvents>().OnSelected -= SelectableEvents_OnSelected;
-            GetComponent<Button>().onClick.RemoveListener(Button_OnClicked);
+            _button.onClick.RemoveListener(Button_OnClicked);
         }
 
         private void SelectableEvents_OnSelected() => OnSelected?.Invoke(this);

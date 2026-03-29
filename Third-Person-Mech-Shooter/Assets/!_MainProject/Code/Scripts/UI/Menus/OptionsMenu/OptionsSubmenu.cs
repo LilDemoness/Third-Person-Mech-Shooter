@@ -12,7 +12,11 @@ namespace Gameplay.UI.Menus.Options
         public bool HasChanges => _hasChanges;
 
 
-        protected virtual void OnDestroy() => BaseSetOption.OnAnyChanged -= OnAnyOptionChanged;
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            BaseSetOption.OnAnyChanged -= OnAnyOptionChanged;
+        }
 
 
         public override void Open(bool selectFirstElement = true)

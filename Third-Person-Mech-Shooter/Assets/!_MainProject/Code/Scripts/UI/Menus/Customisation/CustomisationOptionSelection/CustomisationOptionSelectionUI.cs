@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Gameplay.GameplayObjects.Character.Customisation.Data;
+using UnityEngine.EventSystems;
 
 namespace Gameplay.UI.Menus.Customisation
 {
-    public class CustomisationOptionSelectionUI : MonoBehaviour
+    public class CustomisationOptionSelectionUI : Menu
     {
-        [SerializeField] private CanvasGroup _canvasGroup;
         [SerializeField] private SelectedBuildElementInformationDisplay _selectedElementInfoDisplay;
 
 
@@ -17,7 +17,6 @@ namespace Gameplay.UI.Menus.Customisation
         [Header("Selection Options")]
         [SerializeField] private CustomisationOptionSelectionButton _customisationOptionButtonPrefab;
         private List<CustomisationOptionSelectionButton> _customisationOptionButtonInstances;
-        private int _firstInactiveButtonIndex;
 
         [SerializeField] private Transform _customisationOptionsContainer;
 
@@ -26,51 +25,58 @@ namespace Gameplay.UI.Menus.Customisation
         public void SetElementSelectedCallback(System.Action<BaseCustomisationData> callback) => _onElementSelectedCallback = callback;
 
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             Debug.LogWarning($"Not Yet Implemented: Selection Tabs (Temp Var: {_temp})");
 
             _customisationOptionButtonInstances = new List<CustomisationOptionSelectionButton>();
-            _firstInactiveButtonIndex = 0;
 
             for (int i = _customisationOptionsContainer.childCount - 1; i >= 0; --i)
                 Destroy(_customisationOptionsContainer.GetChild(i).gameObject);
-
-            Hide();
         }
 
 
-        public void Show<T>(List<T> customisationDatas) where T : BaseCustomisationData
+        public void SetDisplayedOptions<T>(List<T> customisationDatas) where T : BaseCustomisationData
         {
-            ClearInformationTable();
+            int currentSelectedElementIndex = 0;
+            int customisationDataCount = customisationDatas.Count;
+            int optionButtonsCount = _customisationOptionButtonInstances.Count;
 
-            for(int i = 0; i < customisationDatas.Count; ++i)
-                SetupOptionButton(customisationDatas[i]);
+            // Create enough button instances (Created separately from showing/hiding/updating to allow easier navigation setup).
+            for(int i = 0; i < customisationDataCount - optionButtonsCount; ++i)
+                CreateOptionButton();
 
-            _canvasGroup.Show();
-        }
-        public void Hide() => _canvasGroup.Hide();
-
-
-        private void SetupOptionButton<T>(T data) where T : BaseCustomisationData
-        {
-            if (_firstInactiveButtonIndex == _customisationOptionButtonInstances.Count)
+            // Show/Hide & Update Instance.
+            for (int i = 0; i < Mathf.Max(customisationDataCount, optionButtonsCount); ++i)
             {
-                CustomisationOptionSelectionButton button = Instantiate(_customisationOptionButtonPrefab, _customisationOptionsContainer);
-                button.OnSelected += OnButtonSelected;
-                button.OnClicked += OnButtonClicked;
-                _customisationOptionButtonInstances.Add(button);
-            }
+                if (i >= customisationDataCount)
+                {
+                    // This button is unneeded and should be set as inactive.
+                    _customisationOptionButtonInstances[i].Hide();
+                    continue;
+                }
 
-            _customisationOptionButtonInstances[_firstInactiveButtonIndex].Show();
-            _customisationOptionButtonInstances[_firstInactiveButtonIndex].Setup(data);
-            ++_firstInactiveButtonIndex;
+                // This button should be active.
+                _customisationOptionButtonInstances[i].Show();
+                _customisationOptionButtonInstances[i].Setup(customisationDatas[i]);
+
+                // Setup the button's navigation.
+                _customisationOptionButtonInstances[i].Selectable.SetNavigation(
+                    onUp: (i == 0 ? _customisationOptionButtonInstances[customisationDataCount - 1] : _customisationOptionButtonInstances[i - 1]).Selectable,
+                    onDown: (i == customisationDataCount - 1 ? _customisationOptionButtonInstances[0] : _customisationOptionButtonInstances[i + 1]).Selectable);
+
+                // Select this button if it is our desired.
+                if (i == currentSelectedElementIndex)
+                    EventSystem.current.SetSelectedGameObject(_customisationOptionButtonInstances[i].gameObject);
+            }
         }
-        private void ClearInformationTable()
+        private void CreateOptionButton()
         {
-            for (int i = 0; i < _firstInactiveButtonIndex; ++i)
-                _customisationOptionButtonInstances[i].Hide();
-            _firstInactiveButtonIndex = 0;
+            CustomisationOptionSelectionButton button = Instantiate(_customisationOptionButtonPrefab, _customisationOptionsContainer);
+            button.OnSelected += OnButtonSelected;
+            button.OnClicked += OnButtonClicked;
+            _customisationOptionButtonInstances.Add(button);
         }
 
 

@@ -6,7 +6,7 @@ using Gameplay.GameplayObjects.Players;
 
 namespace Gameplay.UI.Menus.Customisation
 {
-    public class BuildCustomisationUI : MonoBehaviour
+    public class BuildCustomisationUI : ContainerMenu
     {
         private const float HEADER_TOTAL_SIZE = 40.0f + 0.0f;  // Header Size + Spacing.
         private const float BUTTON_SIZE = 40.0f;
@@ -37,18 +37,19 @@ namespace Gameplay.UI.Menus.Customisation
 
 
         [Header("A")]
-        [SerializeField] private CanvasGroup _selectionRootCanvasGroup;
+        [SerializeField] private Menu _customisationTypeSelectionMenu;
         [SerializeField] private CustomisationOptionSelectionUI _customisationOptionSelectionUI;
 
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             _moduleButtonInstances = new List<CustomiseModuleButton>();
             _selectedModuleButtonIndex = -1;
             for(int i = _moduleButtonContainer.childCount - 1; i >= 0; --i)
                 Destroy(_moduleButtonContainer.GetChild(i).gameObject);
 
-            OpenCustomisationTypeSelectionMenu();
             SubscribeToButtonEvents();
 
             PersistentPlayer.OnLocalPlayerBuildChanged += OnBuildChanged;
@@ -56,10 +57,14 @@ namespace Gameplay.UI.Menus.Customisation
         private IEnumerator Start()
         {
             yield return null;
+            EnterChild(0);
             OnBuildChanged(PersistentPlayer.LocalPersistentPlayer.NetworkBuildState.BuildDataReference);    // Temp - Ensure build data is loaded initially.
         }
-        private void OnDestroy()
+        private void OnEnable() => MenuManager.SetRootMenu(this);
+        private void OnDisable() => MenuManager.TryUnsetRootMenu(this);
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
             UnsubscribeToButtonEvents();
 
             PersistentPlayer.OnLocalPlayerBuildChanged -= OnBuildChanged;
@@ -113,26 +118,52 @@ namespace Gameplay.UI.Menus.Customisation
             _frameButton.SetCurrentData(frameData);
             _coreSystemButton.SetCurrentData(frameData.CoreSystem);
 
-            // Update Module Buttons.
-            int moduleButtonsCount = _moduleButtonInstances.Count;
+
+            // Create the required Module Buttons (Created separately from updating to allow easier navigation setup).
             int desiredButtonsCount = frameData.AttachmentPoints.Length;
+            int moduleButtonsCount = _moduleButtonInstances.Count;
+            for(int i = 0; i < desiredButtonsCount - moduleButtonsCount; ++i)
+                CreateModuleButton();
+
+            // Update Module Buttons.
             for(int i = 0; i < Mathf.Max(desiredButtonsCount, moduleButtonsCount); ++i)
             {
-                if (i >= moduleButtonsCount)
-                    CreateModuleButton();
-
-                if (i >= desiredButtonsCount)
-                    _moduleButtonInstances[i].gameObject.SetActive(false);  // We're not wanting this button to be active.
-                else
+                if (i >= desiredButtonsCount) // This button is unneeded and should be set as inactive.
+                    _moduleButtonInstances[i].gameObject.SetActive(false);
+                else // This button should be active.
                 {
-                    // This button should be active. Set it up and show it.
+                    // Set up the button's data.
                     _moduleButtonInstances[i].SetCurrentData(buildData.GetSlottableData(i.ToSlotIndex()));
                     _moduleButtonInstances[i].SetMountSize(frameData.AttachmentPoints[i].MaxModuleSize);
+
+                    // Setup the button's navigation.
+                    _moduleButtonInstances[i].Selectable.AddNavigation(
+                        onUp: (i == 0 ? _coreSystemButton.Selectable : _moduleButtonInstances[i - 1].Selectable),
+                        onDown: (i == desiredButtonsCount - 1 ? _customisePrimaryColourButton.Selectable : _moduleButtonInstances[i + 1].Selectable));
+
+                    // Show the button.
                     _moduleButtonInstances[i].gameObject.SetActive(true);
                 }
             }
 
+            // Resize the module button container to ensure there isn't overlap between sections.
             (_moduleButtonContainer.transform.parent as RectTransform).SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, HEADER_TOTAL_SIZE + (BUTTON_SIZE * desiredButtonsCount) + (BUTTON_SPACING * Mathf.Max(desiredButtonsCount - 1, 0)));
+
+
+            // Setup Variable Navigation of other buttons.
+            _coreSystemButton.Selectable.AddNavigation(onDown: (desiredButtonsCount > 0 ? _moduleButtonInstances[0].Selectable : _customisePrimaryColourButton.Selectable));
+            _customisePrimaryColourButton.Selectable.AddNavigation(onUp: (desiredButtonsCount > 0 ? _moduleButtonInstances[desiredButtonsCount - 1].Selectable : _coreSystemButton.Selectable));
+
+
+            // Reselect our currently selected gameobject to update our information display.
+            StartCoroutine(ReselectCurrentSelection());
+        }
+        private IEnumerator ReselectCurrentSelection()
+        {
+            GameObject selectedObject = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject;
+            UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+            yield return null;
+            UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(selectedObject);
         }
         /// <summary>
         ///     Creates a new Module Button Instance, subscribes to its events, and adds it to the Module Button Instances list.
@@ -149,6 +180,9 @@ namespace Gameplay.UI.Menus.Customisation
 
         private void ElementButtonSelected<T>(CustomiseElementButtonBase<T> button) where T : BaseCustomisationData
         {
+            if (button.CurrentData == null)
+                return;
+
             _selectedElementInfoDisplay.DisplayForElement(button.CurrentData);
         }
 
@@ -201,16 +235,12 @@ namespace Gameplay.UI.Menus.Customisation
         }
 
 
-        public void OpenCustomisationTypeSelectionMenu() => CloseCustomisationElementSelectionMenu();
-        public void CloseCustomisationElementSelectionMenu()
-        {
-            _selectionRootCanvasGroup.Show();
-            _customisationOptionSelectionUI.Hide();
-        }
+        public void OpenCustomisationTypeSelectionMenu() => EnterChild(_customisationTypeSelectionMenu);
+        public void CloseCustomisationElementSelectionMenu() => EnterChild(_customisationTypeSelectionMenu);
         public void OpenCustomisationElementSelectionMenu<T>(List<T> customisationDatas) where T : BaseCustomisationData
         {
-            _selectionRootCanvasGroup.Hide();
-            _customisationOptionSelectionUI.Show(customisationDatas);
+            EnterChild(_customisationOptionSelectionUI, UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.GetComponent<UnityEngine.UI.Selectable>());
+            _customisationOptionSelectionUI.SetDisplayedOptions(customisationDatas);
         }
     }
 }

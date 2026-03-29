@@ -59,10 +59,10 @@ namespace Gameplay.UI.Menus.Options
             _currentOpenMenu = Children[childIndex] as IOptionsSubmenu;
             base.ShowChild(childIndex);
         }
-        public override void EnterChild(int childIndex)
+        public override void EnterChild(int childIndex, UnityEngine.UI.Selectable selectable = null)
         {
             _currentOpenMenu = Children[childIndex] as IOptionsSubmenu;
-            base.EnterChild(childIndex);
+            base.EnterChild(childIndex, selectable);
         }
 
 

@@ -74,24 +74,29 @@ namespace Gameplay.UI.Menus
             for (int i = 0; i < s_openMenuData.Count; ++i)
                 outputString += s_openMenuData[i].Menu.name + (i == s_openMenuData.Count - 1 ? "" : ",");
 
-            Debug.Log("Active Menus: " + outputString);
+            Debug.Log($"Active Menus ({s_openMenusCount}): " + outputString);
         }
 
 
         public static System.Action OnActiveMenuChanged;
 
 
+        private static MenuData s_rootMenuData;
+        private static Menu s_rootMenu => s_rootMenuData?.Menu;
+
         private static Selectable s_baseSelectable;     // For returning from the root menu to no menus open.
         private static List<MenuData> s_openMenuData;   // Data on all our open menus.
         private static int s_openMenusCount;            // How many menus are currently open. 0 is none.
-        private static bool s_parentMenuIsContainer => s_openMenusCount > 1 && s_openMenuData[s_openMenusCount - 2].Menu is ContainerMenu;
+        private static bool s_parentMenuIsContainer => (s_openMenusCount > 1 && s_openMenuData[s_openMenusCount - 2].Menu is ContainerMenu) || (s_openMenusCount == 0 && s_rootMenuData != null && s_rootMenuData.Menu is ContainerMenu);
 
         private static List<MenuData> s_cachedMenuData; // Data on all our open menus from before the current operation.
         private static Selectable s_priorSelectedObject;
 
-        public static MenuData ActiveMenuData => s_openMenusCount > 0 ? s_openMenuData[s_openMenusCount - 1] : null;
+        public static MenuData ActiveMenuData => s_openMenusCount > 0 ? s_openMenuData[s_openMenusCount - 1] : s_rootMenuData;
 
 
+
+        public static bool IsRootMenuActive() => s_openMenusCount == 0;
         /// <summary>
         ///     Returns true if this Component is within the active Menu/Popup.
         /// </summary>
@@ -143,7 +148,7 @@ namespace Gameplay.UI.Menus
         /// <summary>
         ///     Returns true if this menu is the active menu.
         /// </summary>
-        public static bool IsActiveMenu(this Menu menu) => s_openMenusCount > 0 ? ActiveMenuData.Menu == menu : false;
+        public static bool IsActiveMenu(this Menu menu) => s_openMenusCount > 0 ? ActiveMenuData.Menu == menu : s_rootMenu == menu;
         /// <summary>
         ///     Returns true if this popup is the active popup.<br/>
         ///     Defaults to true if no popups are active.
@@ -239,7 +244,16 @@ namespace Gameplay.UI.Menus
 
             // Hide our current menu, if desired.
             if (hideCurrent)
-                ActiveMenuData?.Menu.Hide();    // Close instead?
+            {
+                if (s_openMenusCount > 0)
+                {
+                    ActiveMenuData.Menu.Hide();
+                }
+                else if (s_rootMenu != null)
+                {
+                    s_rootMenu.Hide();
+                }
+            }
 
             // Add the new menu.
             s_openMenuData.Add(new MenuData(menu));
@@ -353,7 +367,7 @@ namespace Gameplay.UI.Menus
         {
             // Find out how many menus we need to close.
             int menuIndex = GetIndexOfMenu(menu);
-            if (menuIndex == -1)
+            if (menuIndex == -1 && s_rootMenu != menu)
                 return false; // The desired menu isn't open in our hierarchy.
 
             CacheCurrentData();
@@ -391,6 +405,7 @@ namespace Gameplay.UI.Menus
 
 
             DiscardCachedData();
+            OnActiveMenuChanged?.Invoke();
             return true;
         }
         /// <summary>
@@ -466,7 +481,11 @@ namespace Gameplay.UI.Menus
                     ReopenActiveMenu();
             }
 
-            if (isPrimaryCacher) { DiscardCachedData(); }
+            if (isPrimaryCacher)
+            {
+                DiscardCachedData();
+                OnActiveMenuChanged?.Invoke();
+            }
             return true;
         }
 
@@ -491,6 +510,7 @@ namespace Gameplay.UI.Menus
             }
 
             DiscardCachedData();
+            OnActiveMenuChanged?.Invoke();
             return true;
         }
 
@@ -513,6 +533,66 @@ namespace Gameplay.UI.Menus
             // Quick and dirty way to force our back target selection to be correct when we are using a non-button to trigger.
             s_priorSelectedObject = EventSystem.current.currentSelectedGameObject ? EventSystem.current.currentSelectedGameObject.GetComponent<Selectable>() : s_priorSelectedObject;
             CloseActiveMenuUniTask(reopenParentMenu: true).Forget();
+        }
+
+
+        public static void SetRootMenu(Menu menu, bool selectFirstElement = true)
+        {
+            Debug.Log($"Root Menu Set to: {menu.name}");
+
+            s_rootMenuData = new MenuData(menu);
+            if (s_openMenusCount == 0)
+                ShowRootMenu(selectFirstElement);
+        }
+        public static bool TryUnsetRootMenu(Menu menu)
+        {
+            if (s_rootMenu == null)
+                return true;
+            if (s_rootMenu != menu)
+                return false;
+
+            s_rootMenuData = null;
+            return true;
+        }
+        public static void ShowRootMenu(bool selectFirstElement) => ShowRootMenuUniTask(selectFirstElement).Forget();
+        private static async UniTask<bool> ShowRootMenuUniTask(bool selectFirstElement)
+        {
+            if (s_rootMenu == null)
+                return true;
+
+            bool success = await CloseAllMenusUniTask();
+            if (!success)
+                return false;   // A menu failed to close.
+
+            // All menus are now closed.
+            // Open the root menu.
+            s_rootMenu.Open(selectFirstElement);
+            OnActiveMenuChanged?.Invoke();
+            return true;
+        }
+
+        public static void OnMenuDestroyed(Menu menu)
+        {
+            if(s_rootMenuData != null && s_rootMenuData.Menu == menu)
+                s_rootMenuData = null;
+
+            // Remove the menu from our open menu datas.
+            for(int i = s_openMenuData.Count - 1; i >= 0; --i)
+            {
+                if (s_openMenuData[i].Menu == menu)
+                {
+                    s_openMenuData.RemoveAt(i);
+                    --s_openMenusCount;
+                }
+            }
+            
+            // Remove the menu from the cached data (Just in case).
+            if (s_cachedMenuData != null)
+            {
+                for(int i = s_cachedMenuData.Count - 1; i >= 0; --i)
+                    if (s_cachedMenuData[i].Menu == menu)
+                        s_cachedMenuData.RemoveAt(i);
+            }
         }
 
         #endregion

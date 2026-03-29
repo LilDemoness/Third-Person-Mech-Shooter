@@ -16,9 +16,14 @@ namespace Gameplay.UI.Menus
 
         public GameObject NavigationTarget => FirstSelectedElement;
 
-        protected virtual void Start()
+        protected virtual void Awake()
         {
-            Hide();
+            if (!this.IsActiveMenu())
+                Hide();
+        }
+        protected virtual void OnDestroy()
+        {
+            MenuManager.OnMenuDestroyed(this);
         }
 
 

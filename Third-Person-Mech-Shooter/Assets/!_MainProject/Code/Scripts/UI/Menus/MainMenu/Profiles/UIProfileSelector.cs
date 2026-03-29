@@ -26,8 +26,9 @@ namespace Gameplay.UI.Menus
 
 
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             _profileListItemPrototype.gameObject.SetActive(false);
             Hide();
         }

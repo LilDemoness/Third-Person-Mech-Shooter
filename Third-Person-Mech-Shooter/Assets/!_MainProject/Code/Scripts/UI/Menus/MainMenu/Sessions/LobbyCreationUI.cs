@@ -30,13 +30,15 @@ namespace Gameplay.UI.Menus.Session
         private LobbyUIMediator _lobbyUIMediator;
 
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             InitialiseUI();
             EnableUnityRelayUI();
         }
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
             _usePasswordToggle.onValueChanged.RemoveListener(OnUsePasswordToggleChanged);
             _lobbyPasswordInputField.onValueChanged.RemoveListener(OnLobbyPasswordChanged);
         }

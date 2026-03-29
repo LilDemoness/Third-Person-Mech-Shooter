@@ -2,7 +2,10 @@ using ApplicationLifecycle.Messages;
 using Cysharp.Threading.Tasks;
 using Infrastructure;
 using Netcode.ConnectionManagement;
+using NUnit.Framework.Constraints;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UserInput;
 using VContainer;
@@ -16,6 +19,8 @@ namespace Gameplay.UI.Menus.Pause
         private bool _isOpen;
         private bool _isPerformingOpenCloseOperation;
         private CursorLockMode _previousLockMode;
+
+        private bool _subscribedToPauseGameEvent;
 
 
         [SerializeField] private Menu _optionsMenu;
@@ -32,6 +37,9 @@ namespace Gameplay.UI.Menus.Pause
             base.Awake();
 
             ClientInput.OnPauseGamePerformed += OnPauseGamePerformed;
+            MenuManager.OnActiveMenuChanged += MenuManager_OnActiveMenuChanged;
+            _subscribedToPauseGameEvent = true;
+
             _isOpen = false;
             _isPerformingOpenCloseOperation = false;
 
@@ -40,6 +48,8 @@ namespace Gameplay.UI.Menus.Pause
         protected override void OnDestroy()
         {
             ClientInput.OnPauseGamePerformed -= OnPauseGamePerformed;
+            MenuManager.OnActiveMenuChanged -= MenuManager_OnActiveMenuChanged;
+            _subscribedToPauseGameEvent = false;
 
             if (_isOpen)
                 FinishClose(false).Forget();
@@ -108,12 +118,36 @@ namespace Gameplay.UI.Menus.Pause
 
         public void OnPauseGamePerformed()
         {
+            if (!_subscribedToPauseGameEvent)
+                return;
+
             if (!_isOpen)
                 PauseGame();
+            else
+                ResumeGame();
+        }
+        private void MenuManager_OnActiveMenuChanged()
+        {
+            if (MenuManager.IsRootMenuActive() || (this.IsActiveMenuHierarchy() && PreviouslySelectedChildIndex == DefaultChildIndex))
+            {
+                if (!_subscribedToPauseGameEvent)
+                {
+                    StartCoroutine(DelaySubscriptionChange(true));
+                }
+            }
+            else if (_subscribedToPauseGameEvent)
+            {
+                StartCoroutine(DelaySubscriptionChange(false));
+            }
+        }
+        private IEnumerator DelaySubscriptionChange(bool subscribe)
+        {
+            yield return null;
+            _subscribedToPauseGameEvent = subscribe;
         }
 
 
-        public void PauseGame() => MenuManager.SetActiveMenu(this, null);
+        public void PauseGame() => MenuManager.OpenMenu(this, true, EventSystem.current.currentSelectedGameObject?.GetComponent<Selectable>(), hideCurrent: false);
         public void ResumeGame() => MenuManager.CloseMenu(this);
 
 

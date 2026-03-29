@@ -14,6 +14,7 @@ namespace Gameplay.UI.Menus
         public MenuTabButton[] Buttons;
         [SerializeField] private bool _enterChildOnOpen = true;
         private int _previouslySelectedChildIndex;
+        protected int PreviouslySelectedChildIndex => _previouslySelectedChildIndex;
         protected Menu PreviouslySelectedChild => Children[_previouslySelectedChildIndex];
 
         protected virtual int DefaultChildIndex => 0;
@@ -37,12 +38,14 @@ namespace Gameplay.UI.Menus
 
 
 
-        protected virtual void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             _previouslySelectedChildIndex = DefaultChildIndex;
         }
-        protected virtual void OnDestroy()
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
             MenuManager.OnActiveMenuChanged -= UpdateHighlightedButton;
         }
 
@@ -123,14 +126,15 @@ namespace Gameplay.UI.Menus
         /// <summary>
         ///     Enters the desired child via the <see cref="MenuManager"/>.
         /// </summary>
-        public void EnterChild(Menu childMenu) => EnterChild(GetChildIndex(childMenu));
+        public void EnterChild(Menu childMenu, Selectable selectableOverride = null) => EnterChild(GetChildIndex(childMenu), selectableOverride);
         /// <summary>
         ///     Enters the child with the given index via the <see cref="MenuManager"/>.
         /// </summary>
-        public virtual void EnterChild(int childIndex)
+        public virtual void EnterChild(int childIndex, Selectable selectableOverride = null)
         {
             _previouslySelectedChildIndex = childIndex;
-            MenuManager.OpenChildMenu(Children[childIndex], Buttons[childIndex]?.GetComponent<Button>(), this);
+            Debug.Log("Open Child " + childIndex);
+            MenuManager.OpenChildMenu(Children[childIndex], selectableOverride ?? Buttons[childIndex]?.GetComponent<Button>(), this);
         }
 
 
@@ -160,7 +164,7 @@ namespace Gameplay.UI.Menus
 
 
         /// <summary>
-        ///     Returns the index for the passed Menu, throwing an exception if it does not exist under this ContainerMenu.
+        ///     Returns the index for the passed Menu, or -1 if it does not exist under this ContainerMenu.
         /// </summary>
         protected int GetChildIndex(Menu childMenu)
         {
@@ -168,7 +172,8 @@ namespace Gameplay.UI.Menus
                 if (Children[i] == childMenu)
                     return i;
 
-            throw new System.ArgumentException($"Passed Menu \"{childMenu.name}\" is not within \"{this.name}\"'s 'Children'");
+            return -1;
+            //throw new System.ArgumentException($"Passed Menu \"{childMenu.name}\" is not within \"{this.name}\"'s 'Children'");
         }
     }
 }
