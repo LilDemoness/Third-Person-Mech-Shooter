@@ -78,5 +78,18 @@ namespace Gameplay.UI.Menus
         private void DebugLog() => MenuManager.LogOpenMenus();
 
         protected void SetFirstSelectedElement(Selectable selectable) => _firstSelectedElement = selectable;
+
+
+#if UNITY_EDITOR
+
+        private void OnValidate()
+        {
+            if (this.TryGetComponentThroughParents<Menu>(out Menu parentMenu, checkSelf: false) && parentMenu.GetType().IsAssignableFrom(typeof(ContainerMenu)))
+            {
+                Debug.LogWarning($"The Menu '{this.name}' has a non-Container parent: '{parentMenu.name}'", this);
+            }
+        }
+
+#endif
     }
 }

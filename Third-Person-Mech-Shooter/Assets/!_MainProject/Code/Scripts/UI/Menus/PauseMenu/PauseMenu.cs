@@ -2,7 +2,6 @@ using ApplicationLifecycle.Messages;
 using Cysharp.Threading.Tasks;
 using Infrastructure;
 using Netcode.ConnectionManagement;
-using NUnit.Framework.Constraints;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -24,6 +23,7 @@ namespace Gameplay.UI.Menus.Pause
 
 
         [SerializeField] private Menu _optionsMenu;
+        private Coroutine _delaySubscriptionCoroutine;
 
 
         [Inject]
@@ -113,7 +113,7 @@ namespace Gameplay.UI.Menus.Pause
             Debug.Log("Prevention Removed");
             ClientInput.RemoveActionPrevention(typeof(PauseMenu), LOCKING_TYPES);
         }
-        
+
 
 
         public void OnPauseGamePerformed()
@@ -123,22 +123,19 @@ namespace Gameplay.UI.Menus.Pause
 
             if (!_isOpen)
                 PauseGame();
-            else
-                ResumeGame();
         }
         private void MenuManager_OnActiveMenuChanged()
         {
-            if (MenuManager.IsRootMenuActive() || (this.IsActiveMenuHierarchy() && PreviouslySelectedChildIndex == DefaultChildIndex))
+            if (_delaySubscriptionCoroutine != null)
+                StopCoroutine(_delaySubscriptionCoroutine);
+
+            if (MenuManager.IsBaseRootMenuActive() || (this.IsInActiveMenuHierarchy() && MenuContainer.IsOpenChildDefault()))
             {
-                if (!_subscribedToPauseGameEvent)
-                {
-                    StartCoroutine(DelaySubscriptionChange(true));
-                }
+                if (!_subscribedToPauseGameEvent)                
+                    _delaySubscriptionCoroutine = StartCoroutine(DelaySubscriptionChange(true));
             }
             else if (_subscribedToPauseGameEvent)
-            {
-                StartCoroutine(DelaySubscriptionChange(false));
-            }
+                _delaySubscriptionCoroutine = StartCoroutine(DelaySubscriptionChange(false));
         }
         private IEnumerator DelaySubscriptionChange(bool subscribe)
         {
@@ -151,7 +148,7 @@ namespace Gameplay.UI.Menus.Pause
         public void ResumeGame() => MenuManager.CloseMenu(this);
 
 
-        public void ShowOptionsMenu(UnityEngine.UI.Selectable sender) => EnterChild(_optionsMenu);
+        public void ShowOptionsMenu(UnityEngine.UI.Selectable sender) => MenuContainer.EnterChild(_optionsMenu);
 
         public void OnExitToMainMenuPressed() => _connectionManager.RequestShutdown();
         public void OnExitToDesktopPressed() => _quitApplicationPub.Publish(new QuitApplicationMessage());

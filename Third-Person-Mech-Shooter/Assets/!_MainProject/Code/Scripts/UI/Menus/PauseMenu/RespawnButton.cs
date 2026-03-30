@@ -11,13 +11,15 @@ namespace Gameplay.UI.Menus.Pause
         [SerializeField] private PauseMenu _pauseMenu;
         private Button _thisButton;
 
+
         private void Awake()
         {
             _thisButton = GetComponent<Button>();
-
             GameStateBehaviour.OnActiveStateChanged += UpdateActiveState;
+
             UpdateActiveState();
         }
+
         private void OnDestroy()
         {
             _thisButton.onClick.RemoveListener(OnRespawnPressed);
@@ -33,8 +35,8 @@ namespace Gameplay.UI.Menus.Pause
             }
             else
             {
-                this.enabled = false;
                 _thisButton.interactable = false;
+                _thisButton.onClick.RemoveListener(OnRespawnPressed);
             }
         }
         private void OnRespawnPressed()

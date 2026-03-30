@@ -1473,16 +1473,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8007f5e94ce380e4096c56ea75f04fe7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <CanvasGroup>k__BackingField: {fileID: 1312698465389870572}
-  _firstSelectedElement: {fileID: 0}
-  Children:
-  - {fileID: 3364706792504524370}
-  - {fileID: 1121514328772154766}
-  Buttons:
-  - {fileID: 0}
-  - {fileID: 0}
+  <Children>k__BackingField:
+  - Menu: {fileID: 3364706792504524370}
+    Button: {fileID: 0}
+  - Menu: {fileID: 1121514328772154766}
+    Button: {fileID: 0}
   _enterChildOnOpen: 1
-  _childClosedFallback: 2
   _frameButton: {fileID: 2874944387338503542}
   _coreSystemButton: {fileID: 8214617558172044026}
   _moduleButtonPrefab: {fileID: 6440980562192663791, guid: d4a5901cb761818428b06952d423752d, type: 3}

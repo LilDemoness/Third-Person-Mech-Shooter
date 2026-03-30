@@ -15,7 +15,7 @@ namespace Gameplay.UI.Menus
          * - Navigate W/ Keyboard/Gamepad: Show Submenu (Don't enter)
          */
 
-        [SerializeField] private ContainerMenu _parentContainerMenu;
+        [SerializeField] private MenuContainer _parentContainerMenu;
         [SerializeField] private Menu _associatedChildMenu;
 
         [Space(5)]

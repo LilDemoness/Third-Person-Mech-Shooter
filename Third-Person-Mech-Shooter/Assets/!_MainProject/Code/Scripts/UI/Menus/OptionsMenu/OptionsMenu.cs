@@ -10,15 +10,18 @@ namespace Gameplay.UI.Menus.Options
         [SerializeField] private OptionsSubmenu _videoMenu;
         [SerializeField] private OptionsSubmenu _audioMenu;
         [SerializeField] private OptionsSubmenu _controlsMenu;
-        [SerializeField] private RebindingRootMenu _keybindingsMenu;
+        [SerializeField] private RebindingRootContainerMenu _keybindingsMenu;
         [SerializeField] private OptionsSubmenu _accessibilityMenu;
-        private IOptionsSubmenu _currentOpenMenu;
 
 
 
         protected override void Awake()
         {
             base.Awake();
+            MenuContainer.SetCanHideActiveChildFunc(CanHideActiveChild);
+        }
+        private void Start()
+        {
             InitialiseSubmenus();
         }
 
@@ -50,29 +53,19 @@ namespace Gameplay.UI.Menus.Options
             _keybindingsMenu.LoadAllOptionsFromPrefs();
             _accessibilityMenu.LoadAllOptionsFromPrefs();
         }
-        private void ResetCurrentSubmenuValues() => _currentOpenMenu?.ResetAllOptions();
+
+        private IOptionsSubmenu GetCurrentSubmenu() => (MenuContainer.GetActiveChild() as IOptionsSubmenu);
+        private void ResetCurrentSubmenuValues() => GetCurrentSubmenu().ResetAllOptions();
 
 
 
-        public override void ShowChild(int childIndex)
-        {
-            _currentOpenMenu = Children[childIndex] as IOptionsSubmenu;
-            base.ShowChild(childIndex);
-        }
-        public override void EnterChild(int childIndex, UnityEngine.UI.Selectable selectable = null)
-        {
-            _currentOpenMenu = Children[childIndex] as IOptionsSubmenu;
-            base.EnterChild(childIndex, selectable);
-        }
-
-
-        protected override bool CanHideActiveChild() => PreviouslySelectedChild == null || !(PreviouslySelectedChild as IOptionsSubmenu).HasChanges;
+        private bool CanHideActiveChild(Menu activeChild) => activeChild == null || !(activeChild as IOptionsSubmenu).HasChanges;
 
 
         #region UI Button Functions
 
-        public void DiscardChanges() => _currentOpenMenu?.LoadAllOptionsFromPrefs();
-        public void SaveChanges() => _currentOpenMenu?.SaveAllOptionsToPrefs();
+        public void DiscardChanges() => GetCurrentSubmenu().LoadAllOptionsFromPrefs();
+        public void SaveChanges() => GetCurrentSubmenu().SaveAllOptionsToPrefs();
         public void ResetToDefault()
         {
             PopupManager.ShowPopup("Reset to Default", "Are you sure you wish to reset your options to their default values?",

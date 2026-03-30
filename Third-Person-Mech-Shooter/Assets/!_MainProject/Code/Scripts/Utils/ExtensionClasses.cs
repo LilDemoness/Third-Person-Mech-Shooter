@@ -9,15 +9,17 @@ public static class ComponentExtensions
     ///     Attempt to retrieve the first component of the desired type,
     ///     searching this component's parent's until there are none left or it finds an instance of the desired component type.
     /// </summary>
-    public static bool TryGetComponentThroughParents<T>(this Component activeComponent, out T component)
+    public static bool TryGetComponentThroughParents<T>(this Component activeComponent, out T component, bool checkSelf = false)
     {
-        if (activeComponent.TryGetComponent(out component))
+        component = default(T);
+
+        if (checkSelf && activeComponent.TryGetComponent(out component))
             return true;
 
         if (activeComponent.transform.parent == null)
             return false;
 
-        return activeComponent.transform.parent.TryGetComponentThroughParents<T>(out component);
+        return activeComponent.transform.parent.TryGetComponentThroughParents<T>(out component, checkSelf: true);
     }
     public static bool TryGetComponentInChildren<T>(this Component activeComponent, out T component)
     {

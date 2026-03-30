@@ -81,22 +81,29 @@ namespace Gameplay.UI.Menus
         public static System.Action OnActiveMenuChanged;
 
 
-        private static MenuData s_rootMenuData;
-        private static Menu s_rootMenu => s_rootMenuData?.Menu;
-
         private static Selectable s_baseSelectable;     // For returning from the root menu to no menus open.
         private static List<MenuData> s_openMenuData;   // Data on all our open menus.
         private static int s_openMenusCount;            // How many menus are currently open. 0 is none.
-        private static bool s_parentMenuIsContainer => (s_openMenusCount > 1 && s_openMenuData[s_openMenusCount - 2].Menu is ContainerMenu) || (s_openMenusCount == 0 && s_rootMenuData != null && s_rootMenuData.Menu is ContainerMenu);
 
         private static List<MenuData> s_cachedMenuData; // Data on all our open menus from before the current operation.
         private static Selectable s_priorSelectedObject;
 
-        public static MenuData ActiveMenuData => s_openMenusCount > 0 ? s_openMenuData[s_openMenusCount - 1] : s_rootMenuData;
+        public static MenuData ActiveMenuData => s_openMenusCount > 0 ? s_openMenuData[s_openMenusCount - 1] : null;
 
 
 
-        public static bool IsRootMenuActive() => s_openMenusCount == 0;
+        #region Menu Comparison
+
+        /// <summary>
+        ///     Returns true if the open menu is within the root menu.<br/>
+        ///     (Either no menus are open or the open menu is the default child of a non-menu MenuContainer).
+        /// </summary>
+        public static bool IsRootMenuActive() => s_openMenusCount == 0 || ActiveMenuData.Menu.IsWithinRootMenu();
+        /// <summary>
+        ///     Returns true if the open menu is the base menu within the root menu OR there is no root menu.<br/>
+        /// </summary>
+        public static bool IsBaseRootMenuActive() => s_openMenusCount == 0 || ActiveMenuData.Menu.IsWithinRootMenu(out MenuContainer menuContainer) && menuContainer.IsOpenChildDefault();
+
         /// <summary>
         ///     Returns true if this Component is within the active Menu/Popup.
         /// </summary>
@@ -104,40 +111,53 @@ namespace Gameplay.UI.Menus
         {
             Menu parentMenu = componentToTest.transform.parent.GetComponentInParent<Menu>();
 
-            if (s_blockingPopups.Count == 0)
+            // Check popups.
+            if (s_blockingPopups.Count > 0)
             {
-                // No obstructing popups are open, so directly compare the parent menu to the selected menu.
-                if (parentMenu == ActiveMenuData?.Menu)
-                    return true;
-                else if (checkParentContainers && ActiveMenuData != null)
-                {
-                    // Iterate upwards, checking ContainerMenus if we find them and stopping once we don't.
-                    // This allows buttons in the root menu (Shared buttons) to still operate when children are open.
-                    for(int i = s_openMenusCount - 2; i >= 0; --i)
-                    {
-                        if (s_openMenuData[i].Menu is not ContainerMenu)
-                            break;
+                if (parentMenu == null)
+                    return false;   // An object without a menu parent will never be in focus when there is an obstructing popup open.
 
-                        // This menu is a container menu. Perform a comparison check.
-                        if (s_openMenuData[i].Menu == parentMenu)
-                            return true;
-                    }
-                }
-
-                return false;
+                // Check to see if the object is under the blocking popup.
+                return parentMenu == s_blockingPopups[s_blockingPopups.Count - 1];
             }
 
-            if (parentMenu == null)
-                return false;   // An object without a menu parent will never be in focus when there is an obstructing popup open.
+            // No obstructing popups are open.
 
-            // Check to see if the object is under the blocking popup.
-            return parentMenu == s_blockingPopups[s_blockingPopups.Count - 1];
+            if (parentMenu == ActiveMenuData?.Menu)
+                return true;    // Our parent menu is the active menu.
+            else if (parentMenu == null || parentMenu.IsWithinRootMenu())
+                return IsRootMenuActive();  // No parent menu, or the parent menu is under a non-menu menu container, therefore this component exists within a root menu.
+            else if (checkParentContainers && ActiveMenuData != null)
+            {
+                // Iterate upwards, checking ContainerMenus if we find them and stopping once we don't.
+                // This allows buttons in parent container menus (Shared buttons) to still operate when children are open.
+                
+                // Note: This could have unintended behaviours if the default open menu ("Root Menu") is a ContainerMenu.
+                //      Maybe replace with iterating up the parents of the active menu, checking if they're within the hierarchy.
+                for(int i = s_openMenusCount - 2; i >= 0; --i)
+                {
+                    if (s_openMenuData[i].Menu is not ContainerMenu)
+                        break;
+
+                    // This menu is a container menu. Perform a comparison check.
+                    if (s_openMenuData[i].Menu == parentMenu)
+                        return true;
+                }
+            }
+
+            return false;
         }
+
+        /// <summary>
+        ///     Returns true if a given menu is within the root menu.
+        /// </summary>
+        public static bool IsWithinRootMenu(this Menu menu, out MenuContainer menuContainer) => menu.TryGetComponentThroughParents<MenuContainer>(out menuContainer) && !menuContainer.TryGetComponent<ContainerMenu>(out ContainerMenu _);
+        public static bool IsWithinRootMenu(this Menu menu) => IsWithinRootMenu(menu, out MenuContainer _);
 
         /// <summary>
         ///     Returns true if this menu is open in the Menu Manager's hierarchy (Not necessarily the active menu).
         /// </summary>
-        public static bool IsActiveMenuHierarchy(this Menu menu)
+        public static bool IsInActiveMenuHierarchy(this Menu menu)
         {
             for (int i = 0; i < s_openMenusCount; ++i)
                 if (s_openMenuData[i].Menu == menu)
@@ -148,13 +168,14 @@ namespace Gameplay.UI.Menus
         /// <summary>
         ///     Returns true if this menu is the active menu.
         /// </summary>
-        public static bool IsActiveMenu(this Menu menu) => s_openMenusCount > 0 ? ActiveMenuData.Menu == menu : s_rootMenu == menu;
+        public static bool IsActiveMenu(this Menu menu) => s_openMenusCount > 0 && ActiveMenuData.Menu == menu;
         /// <summary>
         ///     Returns true if this popup is the active popup.<br/>
         ///     Defaults to true if no popups are active.
         /// </summary>
         public static bool IsActivePopup(this ModalPopup popup) => s_blockingPopups.Count > 0 ? s_blockingPopups[s_blockingPopups.Count - 1] == popup : true;
 
+        #endregion
 
 
         /// <summary>
@@ -246,13 +267,7 @@ namespace Gameplay.UI.Menus
             if (hideCurrent)
             {
                 if (s_openMenusCount > 0)
-                {
                     ActiveMenuData.Menu.Hide();
-                }
-                else if (s_rootMenu != null)
-                {
-                    s_rootMenu.Hide();
-                }
             }
 
             // Add the new menu.
@@ -263,33 +278,53 @@ namespace Gameplay.UI.Menus
             menu.Open(selectFirstElement);
             OnActiveMenuChanged?.Invoke();
         }
+
+
         /// <summary>
-        ///     Opens a child menu under the desired parent, closing any menus to reach it as required.
+        ///     Opens a child menu under the desired ContainerMenu, closing any menus to reach it as required.
         /// </summary>
         /// <param name="child"> The menu you wish to open.</param>
         /// <param name="sourceSelectable"> The selectable that triggered this opening, or null if no selectable triggered it. Used when returning to the previous menu.</param>
         /// <param name="parent"> The existing menu that the new menu should be opened under</param>
-        public static void OpenChildMenu(Menu child, Selectable sourceSelectable, Menu parent) => OpenChildMenuUniTask(child, sourceSelectable, parent).Forget();
+        public static void OpenChildMenu(Menu child, Selectable sourceSelectable, MenuContainer parent) => OpenChildMenuUniTask(child, sourceSelectable, parent).Forget();
         /// <inheritdoc cref="OpenChildMenu(Menu, Selectable, Menu)"/>
-        public static async UniTask<bool> OpenChildMenuUniTask(Menu child, Selectable sourceSelectable, Menu parent)
+        public static async UniTask<bool> OpenChildMenuUniTask(Menu child, Selectable sourceSelectable, MenuContainer parent)
         {
-            if (parent == null)
-                OpenMenu(child, true, sourceSelectable, hideCurrent: false);
+            Debug.Log(s_openMenusCount);
+            CacheCurrentData();
+
+            Menu parentMenu = null;
+            if (parent == null || !parent.TryGetComponent<Menu>(out parentMenu))
+            {
+                // The menu has no desired parent, so its parent will be the Root (No Menu).
+                // Close all menus to open this menu under the root.
+
+                // Note: This is currently not working as the menu is automatically reopened. Add an option to force close all.
+                bool success = await CloseAllMenusUniTask();
+                if (!success)
+                {
+                    Debug.LogWarning("Failed to return to root menu");
+                    RevertOperation();
+                    return false;
+                }
+            }
             else
             {
                 // The menu has a desired parent.
-                // Close to reach the parent without closing the parent.
-                bool success = await CloseMenusToReachUniTask(parent, MenuOperation.None);
+                // Close to reach the parent menu without closing the parent.
+                bool success = await CloseMenusToReachUniTask(parentMenu, MenuOperation.None);
                 if (!success)
                 {
                     Debug.LogWarning("Failed to open parent");
+                    RevertOperation();
                     return false;
                 }
-
-                // Open our child under the parent.
-                OpenMenu(child, true, sourceSelectable, hideCurrent: false);
             }
 
+            // Open our child under the desired parent.
+            OpenMenu(child, true, sourceSelectable, hideCurrent: false);
+
+            DiscardCachedData();
             return true;
         }
 
@@ -367,10 +402,10 @@ namespace Gameplay.UI.Menus
         {
             // Find out how many menus we need to close.
             int menuIndex = GetIndexOfMenu(menu);
-            if (menuIndex == -1 && s_rootMenu != menu)
+            if (menuIndex == -1)
                 return false; // The desired menu isn't open in our hierarchy.
 
-            CacheCurrentData();
+            bool isPrimaryCacher = CacheCurrentData();
             bool success;
 
             // Close menus until we reach our desired.
@@ -404,8 +439,11 @@ namespace Gameplay.UI.Menus
             }
 
 
-            DiscardCachedData();
-            OnActiveMenuChanged?.Invoke();
+            if (isPrimaryCacher)
+            {
+                DiscardCachedData();
+                OnActiveMenuChanged?.Invoke();
+            }
             return true;
         }
         /// <summary>
@@ -441,36 +479,46 @@ namespace Gameplay.UI.Menus
             //    + "\n Active is Container: " + (ActiveMenuData != null && ActiveMenuData.Menu is ContainerMenu)
             //    + "\n Active has Fallback for Closed Children: " + (ActiveMenuData != null && ActiveMenuData.Menu is ContainerMenu && (ActiveMenuData.Menu as ContainerMenu).OnChildClosedFallback != ContainerMenu.ChildClosedFallback.None)
             //    );
-            if (!preventClosingOfChildlessContainer && ActiveMenuData != null && ActiveMenuData.Menu is ContainerMenu && (ActiveMenuData.Menu as ContainerMenu).OnChildClosedFallback != ContainerMenu.ChildClosedFallback.None)
+            if (!preventClosingOfChildlessContainer && activeMenu.TryGetComponentThroughParents<MenuContainer>(out MenuContainer parentMenuContainer))
             {
-                // Our parent is a ContainerMenu that cannot be open without its children, so close it too.
-                ContainerMenu activeContainerMenu = ActiveMenuData.Menu as ContainerMenu;
-                switch(activeContainerMenu.OnChildClosedFallback)
+                if (ActiveMenuData != null && ActiveMenuData.Menu is ContainerMenu)
                 {
-                    case ContainerMenu.ChildClosedFallback.CloseSelf:
-                        success = await CloseActiveMenuUniTask(reopenParentMenu);
-                        break;
-                    case ContainerMenu.ChildClosedFallback.OpenDefaultChild:
-                        if (activeContainerMenu.IsDefaultChild(activeMenu))
+                    if ((ActiveMenuData.Menu as ContainerMenu).OnChildClosedFallback != ContainerMenu.ChildClosedFallback.None)
+                    {
+                        // Our parent is a ContainerMenu that cannot be open without its children, so close it too.
+                        ContainerMenu activeContainerMenu = ActiveMenuData.Menu as ContainerMenu;
+                        switch(activeContainerMenu.OnChildClosedFallback)
                         {
-                            // The default child was open. Close this menu.
-                            success = await CloseActiveMenuUniTask(reopenParentMenu);
-                        }
-                        else
-                        {
-                            // The default child wasn't open. Open it.
-                            activeContainerMenu.ReopenWithDefaultChild(ActiveMenuData.SelectableTargetForReopen);
-                            success = true;
+                            case ContainerMenu.ChildClosedFallback.CloseSelf:
+                                success = await CloseActiveMenuUniTask(reopenParentMenu);
+                                break;
+                            case ContainerMenu.ChildClosedFallback.OpenDefaultChild:
+                                if (activeContainerMenu.MenuContainer.IsDefaultChild(activeMenu))
+                                {
+                                    // The default child was open. Close this menu.
+                                    success = await CloseActiveMenuUniTask(reopenParentMenu);
+                                }
+                                else
+                                {
+                                    // The default child wasn't open. Open it.
+                                    activeContainerMenu.Reopen(ActiveMenuData.SelectableTargetForReopen);
+                                    success = true;
+                                }
+
+                                break;
                         }
 
-                        break;
+
+                        if (!success)
+                        {
+                            if (isPrimaryCacher) { RevertOperation(); }
+                            return false;
+                        }
+                    }
                 }
-
-
-                if (!success)
+                else if (ActiveMenuData == null || ActiveMenuData.Menu == null)
                 {
-                    if (isPrimaryCacher) { RevertOperation(); }
-                    return false;
+                    parentMenuContainer.OnReopen();
                 }
             }
             else
@@ -494,7 +542,7 @@ namespace Gameplay.UI.Menus
         {
             if (s_openMenusCount == 0)
                 return true;    // No menus to close.
-            CacheCurrentData();
+            bool isPrimaryCacher = CacheCurrentData();
 
             // Close all active menus.
             bool success;
@@ -509,8 +557,11 @@ namespace Gameplay.UI.Menus
                 }
             }
 
-            DiscardCachedData();
-            OnActiveMenuChanged?.Invoke();
+            if (isPrimaryCacher)
+            {
+                DiscardCachedData();
+                OnActiveMenuChanged?.Invoke();
+            }
             return true;
         }
 
@@ -536,46 +587,8 @@ namespace Gameplay.UI.Menus
         }
 
 
-        public static void SetRootMenu(Menu menu, bool selectFirstElement = true)
-        {
-            Debug.Log($"Root Menu Set to: {menu.name}");
-
-            s_rootMenuData = new MenuData(menu);
-            if (s_openMenusCount == 0)
-                ShowRootMenu(selectFirstElement);
-        }
-        public static bool TryUnsetRootMenu(Menu menu)
-        {
-            if (s_rootMenu == null)
-                return true;
-            if (s_rootMenu != menu)
-                return false;
-
-            s_rootMenuData = null;
-            return true;
-        }
-        public static void ShowRootMenu(bool selectFirstElement) => ShowRootMenuUniTask(selectFirstElement).Forget();
-        private static async UniTask<bool> ShowRootMenuUniTask(bool selectFirstElement)
-        {
-            if (s_rootMenu == null)
-                return true;
-
-            bool success = await CloseAllMenusUniTask();
-            if (!success)
-                return false;   // A menu failed to close.
-
-            // All menus are now closed.
-            // Open the root menu.
-            s_rootMenu.Open(selectFirstElement);
-            OnActiveMenuChanged?.Invoke();
-            return true;
-        }
-
         public static void OnMenuDestroyed(Menu menu)
         {
-            if(s_rootMenuData != null && s_rootMenuData.Menu == menu)
-                s_rootMenuData = null;
-
             // Remove the menu from our open menu datas.
             for(int i = s_openMenuData.Count - 1; i >= 0; --i)
             {

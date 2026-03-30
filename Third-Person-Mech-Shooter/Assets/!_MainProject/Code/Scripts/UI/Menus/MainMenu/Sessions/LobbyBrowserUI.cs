@@ -185,7 +185,7 @@ namespace Gameplay.UI.Menus
         private void EnterEditFiltersUI() => EventSystem.current.SetSelectedGameObject(_customiseFiltersMenu.FirstSelectedElement.gameObject);
         private void ExitEditFiltersUI() => EventSystem.current.SetSelectedGameObject(_lobbyListItems.Count > 0 && _lobbyListItems[0].gameObject.activeInHierarchy ? _lobbyListItems[0].gameObject : null);
 
-        public void OpenJoinCodePopup() => MenuManager.OpenChildMenu(_joinLobbyWithCodeMenu, null, this);
+        public void OpenJoinCodePopup() => MenuManager.OpenMenu(_joinLobbyWithCodeMenu, true, null, hideCurrent: false);
 
 
         public void SetSelectedLobbyHeader(int headerIndex)

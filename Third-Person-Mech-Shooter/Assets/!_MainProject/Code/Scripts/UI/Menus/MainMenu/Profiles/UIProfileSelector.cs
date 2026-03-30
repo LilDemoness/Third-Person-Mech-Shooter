@@ -128,6 +128,6 @@ namespace Gameplay.UI.Menus
             }
         }
 
-        public void OpenCreateProfileUI() => MenuManager.OpenChildMenu(_createProfileMenu, null, this);
+        public void OpenCreateProfileUI() => MenuManager.OpenMenu(_createProfileMenu, true, null, hideCurrent: false);
     }
 }

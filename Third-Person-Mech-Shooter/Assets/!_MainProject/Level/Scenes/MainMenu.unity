@@ -11593,7 +11593,7 @@ PrefabInstance:
     - target: {fileID: 9085933465013550881, guid: 4f6d352c0b9724d40ad1b5a3d81abeed, type: 3}
       propertyPath: _parentContainerMenu
       value: 
-      objectReference: {fileID: 1069460219}
+      objectReference: {fileID: 1069460221}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -12715,6 +12715,7 @@ GameObject:
   - component: {fileID: 1069460220}
   - component: {fileID: 1069460219}
   - component: {fileID: 1069460216}
+  - component: {fileID: 1069460221}
   m_Layer: 0
   m_Name: PlayGameUI
   m_TagString: Untagged
@@ -12808,15 +12809,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <CanvasGroup>k__BackingField: {fileID: 1069460216}
   _firstSelectedElement: {fileID: 0}
-  Children:
-  - {fileID: 1815424989}
-  - {fileID: 248659022}
-  - {fileID: 29766206}
-  Buttons:
-  - {fileID: 1663241883}
-  - {fileID: 932485270}
-  - {fileID: 1144021432}
-  _enterChildOnOpen: 1
   _childClosedFallback: 1
   _canvasGroup: {fileID: 1069460216}
   _loadingSpinner: {fileID: 1122977560}
@@ -12837,6 +12829,26 @@ MonoBehaviour:
     overrideAlpha: 0
     alpha: 1
   target: {fileID: 1069460217}
+--- !u!114 &1069460221
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1069460214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18a6605b27e34fb45944d491c1568cd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Children>k__BackingField:
+  - Menu: {fileID: 1815424989}
+    Button: {fileID: 1663241883}
+  - Menu: {fileID: 248659022}
+    Button: {fileID: 932485270}
+  - Menu: {fileID: 29766206}
+    Button: {fileID: 1144021432}
+  _enterChildOnOpen: 1
 --- !u!1 &1103595256
 GameObject:
   m_ObjectHideFlags: 0
@@ -13934,7 +13946,7 @@ PrefabInstance:
     - target: {fileID: 9085933465013550881, guid: 4f6d352c0b9724d40ad1b5a3d81abeed, type: 3}
       propertyPath: _parentContainerMenu
       value: 
-      objectReference: {fileID: 1069460219}
+      objectReference: {fileID: 1069460221}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -24401,7 +24413,7 @@ PrefabInstance:
     - target: {fileID: 9085933465013550881, guid: 4f6d352c0b9724d40ad1b5a3d81abeed, type: 3}
       propertyPath: _parentContainerMenu
       value: 
-      objectReference: {fileID: 1069460219}
+      objectReference: {fileID: 1069460221}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -6,7 +6,7 @@ using Gameplay.GameplayObjects.Players;
 
 namespace Gameplay.UI.Menus.Customisation
 {
-    public class BuildCustomisationUI : ContainerMenu
+    public class BuildCustomisationUI : MenuContainer
     {
         private const float HEADER_TOTAL_SIZE = 40.0f + 0.0f;  // Header Size + Spacing.
         private const float BUTTON_SIZE = 40.0f;
@@ -60,8 +60,6 @@ namespace Gameplay.UI.Menus.Customisation
             EnterChild(0);
             OnBuildChanged(PersistentPlayer.LocalPersistentPlayer.NetworkBuildState.BuildDataReference);    // Temp - Ensure build data is loaded initially.
         }
-        private void OnEnable() => MenuManager.SetRootMenu(this);
-        private void OnDisable() => MenuManager.TryUnsetRootMenu(this);
         protected override void OnDestroy()
         {
             base.OnDestroy();
