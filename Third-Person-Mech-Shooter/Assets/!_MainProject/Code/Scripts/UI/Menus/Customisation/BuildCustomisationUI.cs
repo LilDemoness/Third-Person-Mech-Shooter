@@ -153,6 +153,11 @@ namespace Gameplay.UI.Menus.Customisation
             _customisePrimaryColourButton.Selectable.AddNavigation(onUp: (desiredButtonsCount > 0 ? _moduleButtonInstances[desiredButtonsCount - 1].Selectable : _coreSystemButton.Selectable));
 
 
+
+            // Update Customisation Selection Tabs.
+            _customisationOptionSelectionUI.SetDisplayedTabs(frameData.AttachmentPoints);
+
+
             // Reselect our currently selected gameobject to update our information display.
             StartCoroutine(ReselectCurrentSelection());
         }
@@ -185,16 +190,15 @@ namespace Gameplay.UI.Menus.Customisation
         }
 
 
-        private void OnFrameButtonClicked(CustomiseElementButtonBase<FrameData> button)
+        private void OnFrameButtonClicked(CustomiseElementButtonBase<FrameData> button) => SelectFrameMenu();
+        private void SelectFrameMenu()
         {
-            OpenCustomisationElementSelectionMenu(CustomisationOptionsDatabase.AllOptionsDatabase.FrameDatas);
+            _selectedModuleButtonIndex = -1;
+            OpenCustomisationElementSelectionMenu(CustomisationOptionsDatabase.AllOptionsDatabase.FrameDatas, "Frames");
             _customisationOptionSelectionUI.SetElementSelectedCallback(OnFrameSelected);
         }
         private void OnModuleButtonClicked(CustomiseElementButtonBase<ModuleData> button)
         {
-            // Get the selected frame.
-            FrameData frameData = CustomisationOptionsDatabase.AllOptionsDatabase.GetFrame(PersistentPlayer.LocalPersistentPlayer.NetworkBuildState.ActiveFrameIndex.Value);
-
             // Get the index of the button.
             _selectedModuleButtonIndex = -1;
             for(int i = 0; i < _moduleButtonInstances.Count; ++i)
@@ -207,11 +211,61 @@ namespace Gameplay.UI.Menus.Customisation
             }
 
             // Show the valid module datas.
-            OpenCustomisationElementSelectionMenu(frameData.AttachmentPoints[_selectedModuleButtonIndex].ValidModuleDatas);
+            SelectModuleMenu(_selectedModuleButtonIndex);
+        }
+        private void SelectModuleMenu(int moduleIndex)
+        {
+            // Get the selected frame.
+            FrameData frameData = CustomisationOptionsDatabase.AllOptionsDatabase.GetFrame(PersistentPlayer.LocalPersistentPlayer.NetworkBuildState.ActiveFrameIndex.Value);
+
+            _selectedModuleButtonIndex = moduleIndex;
+            OpenCustomisationElementSelectionMenu(frameData.AttachmentPoints[_selectedModuleButtonIndex].ValidModuleDatas, string.Format("Attachment Slot {0}", _selectedModuleButtonIndex));
             _customisationOptionSelectionUI.SetElementSelectedCallback(OnModuleSelected);
         }
 
         public void OnCustomiseColourButtonClicked() { }
+
+
+        public void SelectPreviousElement()
+        {
+            // Frame > Modules.
+            if(_selectedModuleButtonIndex == 0)
+            {
+                // Select Frame.
+                SelectFrameMenu();
+            }
+            else if(_selectedModuleButtonIndex == -1)
+            {
+                // Select Last Module.
+                FrameData frameData = CustomisationOptionsDatabase.AllOptionsDatabase.GetFrame(PersistentPlayer.LocalPersistentPlayer.NetworkBuildState.ActiveFrameIndex.Value);
+                SelectModuleMenu(frameData.AttachmentPoints.Length - 1);
+            }
+            else
+            {
+                // Select Previous Module.
+                SelectModuleMenu(_selectedModuleButtonIndex - 1);
+            }
+        }
+        public void SelectNextElement()
+        {
+            // Frame > Modules.
+            FrameData frameData = CustomisationOptionsDatabase.AllOptionsDatabase.GetFrame(PersistentPlayer.LocalPersistentPlayer.NetworkBuildState.ActiveFrameIndex.Value);
+            if (_selectedModuleButtonIndex == frameData.AttachmentPoints.Length - 1)
+            {
+                // Select Frame.
+                SelectFrameMenu();
+            }
+            else if (_selectedModuleButtonIndex == -1)
+            {
+                // Select First Module.
+                SelectModuleMenu(0);
+            }
+            else
+            {
+                // Select Next Module.
+                SelectModuleMenu(_selectedModuleButtonIndex + 1);
+            }
+        }
 
 
 
@@ -235,10 +289,10 @@ namespace Gameplay.UI.Menus.Customisation
 
         public void OpenCustomisationTypeSelectionMenu() => EnterChild(_customisationTypeSelectionMenu);
         public void CloseCustomisationElementSelectionMenu() => EnterChild(_customisationTypeSelectionMenu);
-        public void OpenCustomisationElementSelectionMenu<T>(List<T> customisationDatas) where T : BaseCustomisationData
+        public void OpenCustomisationElementSelectionMenu<T>(List<T> customisationDatas, string name) where T : BaseCustomisationData
         {
             EnterChild(_customisationOptionSelectionUI, UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.GetComponent<UnityEngine.UI.Selectable>());
-            _customisationOptionSelectionUI.SetDisplayedOptions(customisationDatas);
+            _customisationOptionSelectionUI.SetDisplayedOptions(customisationDatas, name, _selectedModuleButtonIndex);
         }
     }
 }

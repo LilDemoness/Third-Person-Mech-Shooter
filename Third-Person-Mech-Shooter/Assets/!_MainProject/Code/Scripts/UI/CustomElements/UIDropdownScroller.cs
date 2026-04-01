@@ -39,6 +39,8 @@ public class UIDropdownScroller : MonoBehaviour, ISelectHandler
     {
         if (!_scrollRect) return; // Prevents an error when this object is first loaded.
         Debug.Log(_scrollPosition, this);
+
+        // Change to: 'https://discussions.unity.com/t/scrollview-scroll-position/659577/5'
         _scrollRect.verticalScrollbar.value = _scrollPosition;
     }
 }

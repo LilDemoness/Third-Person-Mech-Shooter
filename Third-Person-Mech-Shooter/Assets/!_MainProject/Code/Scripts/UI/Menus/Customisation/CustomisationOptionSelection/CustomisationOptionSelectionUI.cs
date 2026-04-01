@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Gameplay.GameplayObjects.Character.Customisation.Data;
 using UnityEngine.EventSystems;
+using TMPro;
 
 namespace Gameplay.UI.Menus.Customisation
 {
@@ -11,9 +12,20 @@ namespace Gameplay.UI.Menus.Customisation
 
 
         [Header("Selection Tabs Display")]
-        [SerializeField] private bool _temp;
+        [SerializeField] private TMP_Text _selectedTabLabel;
 
-        
+        [Space(5)]
+        [SerializeField] private CustomisationSelectionTab _selectedTabPrefab;
+        private List<CustomisationSelectionTab> _selectedTabInstances;
+
+        [SerializeField] private Transform _selectedTabsContainer;
+
+
+        [Space(5)]
+        [SerializeField] private Sprite _frameSprite;
+        [SerializeField] private Sprite _moduleSprite;
+
+
         [Header("Selection Options")]
         [SerializeField] private CustomisationOptionSelectionButton _customisationOptionButtonPrefab;
         private List<CustomisationOptionSelectionButton> _customisationOptionButtonInstances;
@@ -28,16 +40,49 @@ namespace Gameplay.UI.Menus.Customisation
         protected override void Awake()
         {
             base.Awake();
-            Debug.LogWarning($"Not Yet Implemented: Selection Tabs (Temp Var: {_temp})");
 
+            // Customisation Category/Type Buttons.
+            _selectedTabInstances = new List<CustomisationSelectionTab>();
+            for(int i = _selectedTabsContainer.childCount - 1; i >= 0; --i)
+                Destroy(_selectedTabsContainer.GetChild(i).gameObject);
+
+
+            // Customisation Selection Buttons.
             _customisationOptionButtonInstances = new List<CustomisationOptionSelectionButton>();
-
             for (int i = _customisationOptionsContainer.childCount - 1; i >= 0; --i)
                 Destroy(_customisationOptionsContainer.GetChild(i).gameObject);
         }
 
 
-        public void SetDisplayedOptions<T>(List<T> customisationDatas) where T : BaseCustomisationData
+        public void SetDisplayedTabs(AttachmentPoint[] attachmentSlots)
+        {
+            const int DEFAULT_TABS_COUNT = 1;
+            int requiredButtonsCount = DEFAULT_TABS_COUNT + attachmentSlots.Length;
+            int currentButtonsCount = _selectedTabInstances.Count;
+            for(int i = 0; i < requiredButtonsCount - currentButtonsCount; ++i)
+                CreateTabButton();
+
+            // Frame.
+            _selectedTabInstances[0].Show();
+            _selectedTabInstances[0].Setup(_frameSprite);   // Set Graphic.
+
+            // Modules (Attachment Slots).
+            for(int i = 0; i < attachmentSlots.Length; ++i)
+            {
+                _selectedTabInstances[i + 1].Show();
+                _selectedTabInstances[i + 1].Setup(_moduleSprite);   // Set Graphic.
+            }
+
+            // Customisation?
+        }
+        private void CreateTabButton()
+        {
+            CustomisationSelectionTab tab = Instantiate(_selectedTabPrefab, _selectedTabsContainer);
+            _selectedTabInstances.Add(tab);
+        }
+
+
+        public void SetDisplayedOptions<T>(List<T> customisationDatas, string tabName, int tabIndex) where T : BaseCustomisationData
         {
             int currentSelectedElementIndex = 0;
             int customisationDataCount = customisationDatas.Count;
@@ -70,6 +115,13 @@ namespace Gameplay.UI.Menus.Customisation
                 if (i == currentSelectedElementIndex)
                     EventSystem.current.SetSelectedGameObject(_customisationOptionButtonInstances[i].gameObject);
             }
+
+
+            // Highlight the proper tab.
+            for(int i = 0; i < _selectedTabInstances.Count; ++i)
+                _selectedTabInstances[i].SetSelected(i == tabIndex + 1);
+
+            _selectedTabLabel.text = tabName;
         }
         private void CreateOptionButton()
         {

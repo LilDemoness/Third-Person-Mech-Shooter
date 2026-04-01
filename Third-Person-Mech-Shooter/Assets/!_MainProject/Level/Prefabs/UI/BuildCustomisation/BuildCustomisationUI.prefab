@@ -386,6 +386,7 @@ GameObject:
   - component: {fileID: 7981659623762431904}
   - component: {fileID: 1785331999938475778}
   - component: {fileID: 7250613412717282375}
+  - component: {fileID: 6503255958687861492}
   m_Layer: 5
   m_Name: SelectionTabs
   m_TagString: Untagged
@@ -405,7 +406,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1804505509748542249}
+  - {fileID: 9161815199912420504}
   m_Father: {fileID: 5401504469930620819}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
@@ -464,6 +465,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ShowMaskGraphic: 1
+--- !u!114 &6503255958687861492
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 832097869104645550}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1aa08ab6e0800fa44ae55d278d1423e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Content: {fileID: 1804505509748542249}
+  m_Horizontal: 1
+  m_Vertical: 0
+  m_MovementType: 0
+  m_Elasticity: 0.1
+  m_Inertia: 1
+  m_DecelerationRate: 0.135
+  m_ScrollSensitivity: 1
+  m_Viewport: {fileID: 9161815199912420504}
+  m_HorizontalScrollbar: {fileID: 0}
+  m_VerticalScrollbar: {fileID: 0}
+  m_HorizontalScrollbarVisibility: 0
+  m_VerticalScrollbarVisibility: 0
+  m_HorizontalScrollbarSpacing: 0
+  m_VerticalScrollbarSpacing: 0
+  m_OnValueChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1251339542061816589
 GameObject:
   m_ObjectHideFlags: 0
@@ -641,7 +672,7 @@ GameObject:
   - component: {fileID: 461295477800759340}
   - component: {fileID: 3918027366203383980}
   - component: {fileID: 3951866063786672217}
-  - component: {fileID: 644287068876553374}
+  - component: {fileID: 1325045546207822363}
   m_Layer: 5
   m_Name: SelectPreviousTabIndicator
   m_TagString: Untagged
@@ -706,7 +737,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &644287068876553374
+--- !u!114 &1325045546207822363
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -715,13 +746,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 1694607044266262449}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1af155c4231904646ad671c21fe9815a, type: 3}
+  m_Script: {fileID: 11500000, guid: b29e33449519d354e92951e868d2982b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _image: {fileID: 3951866063786672217}
+  _isInteractable: 1
   _inputAction: {fileID: -2416609305073008045, guid: 832195adfe757804ab6ebd15233eab2e, type: 3}
-  _useDeviceOverride: 0
-  _deviceTypeOverride: 0
+  _inputActionType: 0
+  _allowInputWhenNotInFocus: 0
+  OnButtonTriggered:
+    _PersistentCalls:
+    - _Target: {fileID: 4232810273150124102}
+      _MemberName: SelectPreviousElement
+      _PersistentArguments: []
+  _graphics: []
+  _normalColor: {r: 1, g: 1, b: 1, a: 1}
+  _highlightedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
+  _pressedColor: {r: 0.6, g: 0.6, b: 0.6, a: 1}
+  _disabledColor: {r: 0.8, g: 0.8, b: 0.8, a: 0.5}
+  _iconDisplayText: {fileID: 0}
+  _textFormattingString: '{0}'
+  _iconDisplayImage: {fileID: 3951866063786672217}
 --- !u!1 &2012448242685611173
 GameObject:
   m_ObjectHideFlags: 0
@@ -1432,7 +1476,7 @@ GameObject:
   - component: {fileID: 4232810273150124102}
   - component: {fileID: 1312698465389870572}
   m_Layer: 5
-  m_Name: BuildCustomisationCanvas
+  m_Name: BuildCustomisationUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1884,6 +1928,42 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &5071712744128395427
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9161815199912420504}
+  m_Layer: 5
+  m_Name: Viewport
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &9161815199912420504
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5071712744128395427}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1804505509748542249}
+  m_Father: {fileID: 5336290569486746061}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 400, y: 60}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &5191826005989570240
 GameObject:
   m_ObjectHideFlags: 0
@@ -2658,13 +2738,13 @@ RectTransform:
   - {fileID: 2321443779633594794}
   - {fileID: 589398676379603772}
   - {fileID: 4687231872709593581}
-  m_Father: {fileID: 5336290569486746061}
+  m_Father: {fileID: 9161815199912420504}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 30}
-  m_SizeDelta: {x: 400, y: 60}
-  m_Pivot: {x: 0.5, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &720478746597957030
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2822,7 +2902,11 @@ MonoBehaviour:
   <CanvasGroup>k__BackingField: {fileID: 3022017135132404550}
   _firstSelectedElement: {fileID: 0}
   _selectedElementInfoDisplay: {fileID: 8690184257181155419}
-  _temp: 0
+  _selectedTabLabel: {fileID: 9019923668950355707}
+  _selectedTabPrefab: {fileID: -8792464448942164727, guid: 63e33541ccf1bbf42b324c34409056ef, type: 3}
+  _selectedTabsContainer: {fileID: 1804505509748542249}
+  _frameSprite: {fileID: 21300000, guid: f51cc6236190d574cbe96f5013184c84, type: 3}
+  _moduleSprite: {fileID: 21300000, guid: 4dfe7ef424518b04bbe3cc1876d235ff, type: 3}
   _customisationOptionButtonPrefab: {fileID: 1927961140970906381, guid: a68ac370fc5350b4a85769fbfde1bda7, type: 3}
   _customisationOptionsContainer: {fileID: 8442955449285449237}
 --- !u!225 &3022017135132404550
@@ -3075,7 +3159,7 @@ GameObject:
   - component: {fileID: 8943056624451308679}
   - component: {fileID: 1707608612786152315}
   - component: {fileID: 8138049173194750454}
-  - component: {fileID: 1619302259536596124}
+  - component: {fileID: 6617555641782977762}
   m_Layer: 5
   m_Name: SelectNextTabIndicator
   m_TagString: Untagged
@@ -3140,7 +3224,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &1619302259536596124
+--- !u!114 &6617555641782977762
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3149,13 +3233,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 8304589212410974249}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1af155c4231904646ad671c21fe9815a, type: 3}
+  m_Script: {fileID: 11500000, guid: b29e33449519d354e92951e868d2982b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _image: {fileID: 8138049173194750454}
+  _isInteractable: 1
   _inputAction: {fileID: 378473869570891819, guid: 832195adfe757804ab6ebd15233eab2e, type: 3}
-  _useDeviceOverride: 0
-  _deviceTypeOverride: 0
+  _inputActionType: 0
+  _allowInputWhenNotInFocus: 0
+  OnButtonTriggered:
+    _PersistentCalls:
+    - _Target: {fileID: 4232810273150124102}
+      _MemberName: SelectNextElement
+      _PersistentArguments: []
+  _graphics: []
+  _normalColor: {r: 1, g: 1, b: 1, a: 1}
+  _highlightedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
+  _pressedColor: {r: 0.6, g: 0.6, b: 0.6, a: 1}
+  _disabledColor: {r: 0.8, g: 0.8, b: 0.8, a: 0.5}
+  _iconDisplayText: {fileID: 0}
+  _textFormattingString: '{0}'
+  _iconDisplayImage: {fileID: 8138049173194750454}
 --- !u!1 &8600536499996045458
 GameObject:
   m_ObjectHideFlags: 0
@@ -6248,7 +6345,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5063193730147050168, guid: 3e5b0f688e05fda4c8c7a7bbb0d1f5b1, type: 3}
       propertyPath: m_text
-      value: <sprite name="Button_East> Close
+      value: <sprite name="Button_East> Back
       objectReference: {fileID: 0}
     - target: {fileID: 5583471692921927087, guid: 3e5b0f688e05fda4c8c7a7bbb0d1f5b1, type: 3}
       propertyPath: OnButtonTriggered._PersistentCalls.Array.data[0]._Target
@@ -6340,7 +6437,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6651665383495111820, guid: 3e5b0f688e05fda4c8c7a7bbb0d1f5b1, type: 3}
       propertyPath: _formattingText
-      value: '{0} Close'
+      value: '{0} Back'
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
