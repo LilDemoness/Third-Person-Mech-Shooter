@@ -255,7 +255,7 @@ namespace UI
         private Graphic[] _editorPreviousValidateGraphics;
         private void OnValidate()
         {
-            if (_graphics == null || _graphics.Length == 0)
+            if (_graphics == null || _graphics.Length == 0 || _graphics[0] == null)
             {
                 Debug.LogWarning($"NonNavigableButton '{this.gameObject.name}' has no graphic set", this.gameObject);
                 ResetEditorGraphics();

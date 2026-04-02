@@ -53,6 +53,7 @@ namespace Gameplay.UI.Menus.Customisation
             SubscribeToButtonEvents();
 
             PersistentPlayer.OnLocalPlayerBuildChanged += OnBuildChanged;
+            _customisationOptionSelectionUI.OnCustomisationTabButtonPressed += CustomisationOptionSelectionUI_OnCustomisationTabButtonPressed;
         }
         private IEnumerator Start()
         {
@@ -66,6 +67,7 @@ namespace Gameplay.UI.Menus.Customisation
             UnsubscribeToButtonEvents();
 
             PersistentPlayer.OnLocalPlayerBuildChanged -= OnBuildChanged;
+            _customisationOptionSelectionUI.OnCustomisationTabButtonPressed -= CustomisationOptionSelectionUI_OnCustomisationTabButtonPressed;
         }
 
         private void SubscribeToButtonEvents()
@@ -181,6 +183,15 @@ namespace Gameplay.UI.Menus.Customisation
         }
 
 
+        private void CustomisationOptionSelectionUI_OnCustomisationTabButtonPressed(int moduleIndex)
+        {
+            if (moduleIndex == -1)
+                SelectFrameMenu();
+            else
+                SelectModuleMenu(moduleIndex);
+        }
+
+
         private void ElementButtonSelected<T>(CustomiseElementButtonBase<T> button) where T : BaseCustomisationData
         {
             if (button.CurrentData == null)
@@ -291,7 +302,7 @@ namespace Gameplay.UI.Menus.Customisation
         public void CloseCustomisationElementSelectionMenu() => EnterChild(_customisationTypeSelectionMenu);
         public void OpenCustomisationElementSelectionMenu<T>(List<T> customisationDatas, string name) where T : BaseCustomisationData
         {
-            EnterChild(_customisationOptionSelectionUI, UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.GetComponent<UnityEngine.UI.Selectable>());
+            EnterChild(_customisationOptionSelectionUI, UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject?.GetComponent<UnityEngine.UI.Selectable>());
             _customisationOptionSelectionUI.SetDisplayedOptions(customisationDatas, name, _selectedModuleButtonIndex);
         }
     }

@@ -136,82 +136,60 @@ public static class SelectableExtensions
 
 public static class ScrollRectExtensions
 {
+    /// <inheritdoc cref="ScrollTo(ScrollRect, RectTransform, float)"/>
+    public static void ScrollTo(this ScrollRect scrollRect, Transform target, float padding = 0.0f) => scrollRect.ScrollTo(target as RectTransform, padding);
     /// <summary>
-    ///     Ensure that the child element of this ScrollRect is visible within the contents.
+    ///     Scrolls a RectTransform along the horizontal and vertical axies to have <paramref name="child"/> be visible with the desired padding.<br/>
+    ///     Ignores horizontal movement if the scroll rect has horizontal disabled, with the same corresponding to vertical.
     /// </summary>
-    // Source: 'https://stackoverflow.com/a/62005575'.
-    public static void BringChildIntoView(this ScrollRect instance, RectTransform child)
+    /// <param name="scrollRect"></param>
+    /// <param name="child"></param>
+    /// <param name="padding"></param>
+    public static void ScrollTo(this ScrollRect scrollRect, RectTransform child, float padding = 0.0f)
     {
-        // Ensure that our RectTransforms have been updated.
-        instance.content.ForceUpdateRectTransforms();
-        instance.viewport.ForceUpdateRectTransforms();
+        Canvas.ForceUpdateCanvases();
+        // Cache repeatedly required values)
+        float viewportWidth = scrollRect.viewport.rect.width;
+        float viewportHeight = scrollRect.viewport.rect.height;
+        Vector2 scrollPosition = scrollRect.content.anchoredPosition;
 
-        // Take scaling into account.
-        Vector2 viewportLocalPosition = instance.viewport.localPosition;
-        Vector2 childLocalPosition = child.localPosition;
-        Vector2 newContentPosition = new Vector2(
-            0 - ((viewportLocalPosition.x * instance.viewport.localScale.x) + (childLocalPosition.x * instance.content.localScale.x)),
-            0 - ((viewportLocalPosition.y * instance.viewport.localScale.y) + (childLocalPosition.y * instance.content.localScale.y))
-        );
+        // Calculate the Top-Left and Bottom-Right corners of our child element.
+        Vector2 elementTopLeft = child.anchoredPosition + new Vector2(-child.pivot.x * child.rect.width, (1.0f - child.pivot.y) * child.rect.height);
+        Vector2 elementBottomright = elementTopLeft + new Vector2(child.rect.width, -child.rect.height);
 
+        // Calculate the Top-Left and Bottom-Right corners of the visible area (Accounting for padding).
+        Vector2 visibleContentTopLeft = new Vector2(
+            -scrollPosition.x + padding,
+            -scrollPosition.y - padding
+            );
+        Vector2 visibleContentBottomRight = new Vector2(
+            -scrollPosition.x + viewportWidth - padding,
+            -scrollPosition.y - viewportHeight + padding
+            );
 
-        // Clamp Positions.
-        instance.content.localPosition = newContentPosition;
-        Rect contentRectInViewport = TransformRectFromTo(instance.content.transform, instance.viewport);
-        float deltaXMin = contentRectInViewport.xMin - instance.viewport.rect.xMin;
-        // Clamp to <= 0.
-        if (deltaXMin > 0)
+        if (scrollRect.vertical)
         {
-            newContentPosition.x -= deltaXMin;
+            // Handle keeping the child in view vertically.
+            float scrollDelta =
+                elementTopLeft.y > visibleContentTopLeft.y ? visibleContentTopLeft.y - elementTopLeft.y :
+                elementBottomright.y < visibleContentBottomRight.y ? visibleContentBottomRight.y - elementBottomright.y :
+                0f;
+
+            scrollPosition.y += scrollDelta;
         }
-        // Clamp to >= 0.
-        float deltaXMax = contentRectInViewport.xMax - instance.viewport.rect.xMax;
-        if (deltaXMax < 0)
+        if (scrollRect.horizontal)
         {
-            newContentPosition.x -= deltaXMax;
-        }
-        // Clamp to <= 0.
-        float deltaYMin = contentRectInViewport.yMin - instance.viewport.rect.yMin;
-        if (deltaYMin > 0)
-        {
-            newContentPosition.y -= deltaYMin;
-        }
-        // Clamp to >= 0.
-        float deltaYMax = contentRectInViewport.yMax - instance.viewport.rect.yMax;
-        if (deltaYMax < 0)
-        {
-            newContentPosition.y -= deltaYMax;
-        }
+            // Handle keeping the child in view horizontally.
+            float scrollDelta =
+                elementTopLeft.x < visibleContentTopLeft.x ? visibleContentTopLeft.x - elementTopLeft.x :
+                elementBottomright.x > visibleContentBottomRight.x ? visibleContentBottomRight.x - elementBottomright.x :
+                0f;
 
-
-        // Apply final position.
-        instance.content.localPosition = newContentPosition;
-        instance.content.ForceUpdateRectTransforms();
-    }
-
-    /// <summary>
-    ///     Converts a Rect from one RectTransfrom to another RectTransfrom.
-    /// </summary>
-    /// <remarks> Use the root Canvas Transform as "to" to get the reference pixel positions.</remarks>
-    public static Rect TransformRectFromTo(Transform from, Transform to)
-    {
-        RectTransform fromRectTrans = from.GetComponent<RectTransform>();
-        RectTransform toRectTrans = to.GetComponent<RectTransform>();
-
-        if (fromRectTrans == null || toRectTrans == null)
-            return default(Rect);   // One of our entered transforms wasn't a RectTransform and therefore was invalid.
-
-
-        Vector3[] fromWorldCorners = new Vector3[4];
-        Vector3[] toLocalCorners = new Vector3[4];
-        Matrix4x4 toLocal = to.worldToLocalMatrix;
-        fromRectTrans.GetWorldCorners(fromWorldCorners);
-        for (int i = 0; i < 4; i++)
-        {
-            toLocalCorners[i] = toLocal.MultiplyPoint3x4(fromWorldCorners[i]);
+            scrollPosition.x += scrollDelta;
         }
 
-        return new Rect(toLocalCorners[0].x, toLocalCorners[0].y, toLocalCorners[2].x - toLocalCorners[1].x, toLocalCorners[1].y - toLocalCorners[0].y);
+        // Set the position to keep the child in view.
+        scrollRect.content.anchoredPosition = scrollPosition;
     }
 }
 

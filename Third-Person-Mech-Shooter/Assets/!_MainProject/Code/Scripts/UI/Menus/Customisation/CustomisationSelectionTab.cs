@@ -8,6 +8,8 @@ namespace Gameplay.UI.Menus.Customisation
         [SerializeField] private Image _tabDisplayImage;
         [SerializeField] private GameObject _selectedBackground;
 
+        public event System.Action<CustomisationSelectionTab> OnSelectViaButton;
+
 
         private void Awake() => SetSelected(false);
         public void Setup(Sprite sprite) => _tabDisplayImage.sprite = sprite;
@@ -19,7 +21,11 @@ namespace Gameplay.UI.Menus.Customisation
         public void SetSelected(bool isSelected)
         {
             _selectedBackground.SetActive(isSelected);
-            GetComponent<UIDropdownScroller>().OnSelect();
+            if (isSelected)
+                GetComponent<UIDropdownScroller>().OnSelect();
         }
+
+
+        public void SelectViaButton() => OnSelectViaButton?.Invoke(this);
     }
 }

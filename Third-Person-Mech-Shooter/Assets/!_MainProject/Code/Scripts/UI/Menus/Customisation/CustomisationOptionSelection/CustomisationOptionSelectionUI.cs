@@ -36,6 +36,8 @@ namespace Gameplay.UI.Menus.Customisation
         private System.Action<BaseCustomisationData> _onElementSelectedCallback;
         public void SetElementSelectedCallback(System.Action<BaseCustomisationData> callback) => _onElementSelectedCallback = callback;
 
+        public event System.Action<int> OnCustomisationTabButtonPressed;
+
 
         protected override void Awake()
         {
@@ -51,6 +53,12 @@ namespace Gameplay.UI.Menus.Customisation
             _customisationOptionButtonInstances = new List<CustomisationOptionSelectionButton>();
             for (int i = _customisationOptionsContainer.childCount - 1; i >= 0; --i)
                 Destroy(_customisationOptionsContainer.GetChild(i).gameObject);
+        }
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            for(int i = 0; i < _selectedTabInstances.Count; ++i)
+                _selectedTabInstances[i].OnSelectViaButton -= CustomisationSelectionTab_OnSelectViaButton;
         }
 
 
@@ -78,11 +86,23 @@ namespace Gameplay.UI.Menus.Customisation
         private void CreateTabButton()
         {
             CustomisationSelectionTab tab = Instantiate(_selectedTabPrefab, _selectedTabsContainer);
+            tab.OnSelectViaButton += CustomisationSelectionTab_OnSelectViaButton;
             _selectedTabInstances.Add(tab);
         }
 
+        private void CustomisationSelectionTab_OnSelectViaButton(CustomisationSelectionTab tab)
+        {
+            for (int i = 0; i < _selectedTabInstances.Count; ++i)
+            {
+                if (_selectedTabInstances[i] == tab)
+                {
+                    OnCustomisationTabButtonPressed?.Invoke(i - 1); // -1 As '0' is Frame (-1) and 1+ is Modules (0+).
+                    return;
+                }
+            }
+        }
 
-        public void SetDisplayedOptions<T>(List<T> customisationDatas, string tabName, int tabIndex) where T : BaseCustomisationData
+            public void SetDisplayedOptions<T>(List<T> customisationDatas, string tabName, int tabIndex) where T : BaseCustomisationData
         {
             int currentSelectedElementIndex = 0;
             int customisationDataCount = customisationDatas.Count;

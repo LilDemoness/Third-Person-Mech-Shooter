@@ -485,9 +485,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7446815241818196487, guid: 33d513f9127bfd140ad618a7cee445e8, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4424868730791093107}
-    - targetCorrespondingSourceObject: {fileID: 7446815241818196487, guid: 33d513f9127bfd140ad618a7cee445e8, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1941934251249608302}
   m_SourcePrefab: {fileID: 100100000, guid: 33d513f9127bfd140ad618a7cee445e8, type: 3}
 --- !u!1 &5084531594885893089 stripped
 GameObject:
@@ -547,18 +544,6 @@ MonoBehaviour:
       _MemberName: Gameplay.UI.Popups.RebindingPopupPanel, Assembly-CSharp, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null.Hide
       _PersistentArguments: []
---- !u!114 &1941934251249608302
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5084531594885893089}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac73b76fc8a27eb48bfcd85b70500109, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &6621581508207853333 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8805400141560512243, guid: 33d513f9127bfd140ad618a7cee445e8, type: 3}
