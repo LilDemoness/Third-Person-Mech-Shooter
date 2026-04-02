@@ -8,6 +8,7 @@ namespace Gameplay.UI.Menus.Customisation
     public class CustomisationOptionSelectionButton : MonoBehaviour
     {
         [SerializeField] private Image _icon;
+        [SerializeField] private GameObject _equippedIndicator;
         private BaseCustomisationData _customisationData;
 
 
@@ -40,9 +41,15 @@ namespace Gameplay.UI.Menus.Customisation
         {
             this._customisationData = customisationData;
             this._icon.sprite = customisationData.Sprite;
+
+            SetEquipped(false);
         }
+        public void SetEquipped(bool isEquipped) => _equippedIndicator.SetActive(isEquipped);
 
         public void Show() => this.gameObject.SetActive(true);
         public void Hide() => this.gameObject.SetActive(false);
+
+
+        public bool CompareData(BaseCustomisationData baseCustomisationData) => baseCustomisationData == _customisationData;
     }
 }

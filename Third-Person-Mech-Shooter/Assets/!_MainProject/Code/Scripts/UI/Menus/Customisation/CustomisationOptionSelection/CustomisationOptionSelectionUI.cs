@@ -70,18 +70,21 @@ namespace Gameplay.UI.Menus.Customisation
             for(int i = 0; i < requiredButtonsCount - currentButtonsCount; ++i)
                 CreateTabButton();
 
-            // Frame.
-            _selectedTabInstances[0].Show();
-            _selectedTabInstances[0].Setup(_frameSprite);   // Set Graphic.
-
-            // Modules (Attachment Slots).
-            for(int i = 0; i < attachmentSlots.Length; ++i)
+            // Show & setup all required buttons.
+            for(int i = 0; i < requiredButtonsCount; ++i)
             {
-                _selectedTabInstances[i + 1].Show();
-                _selectedTabInstances[i + 1].Setup(_moduleSprite);   // Set Graphic.
+                _selectedTabInstances[i].Show();
+
+                // Set Graphics as appropriate.
+                if (i == 0) // Frame.
+                    _selectedTabInstances[i].Setup(_frameSprite);
+                else        // Modules.
+                    _selectedTabInstances[i].Setup(_moduleSprite);
             }
 
-            // Customisation?
+            // Hide non-required buttons.
+            for(int i = requiredButtonsCount; i < currentButtonsCount; ++i)
+                    _selectedTabInstances[i].Hide();
         }
         private void CreateTabButton()
         {
@@ -102,43 +105,39 @@ namespace Gameplay.UI.Menus.Customisation
             }
         }
 
-            public void SetDisplayedOptions<T>(List<T> customisationDatas, string tabName, int tabIndex) where T : BaseCustomisationData
+        public void SetDisplayedOptions<T>(List<T> customisationDatas, string tabName, int tabIndex) where T : BaseCustomisationData
         {
             int currentSelectedElementIndex = 0;
-            int customisationDataCount = customisationDatas.Count;
-            int optionButtonsCount = _customisationOptionButtonInstances.Count;
+            int requiredButtonsCount = customisationDatas.Count;
+            int currentButtonsCount = _customisationOptionButtonInstances.Count;
 
             // Create enough button instances (Created separately from showing/hiding/updating to allow easier navigation setup).
-            for(int i = 0; i < customisationDataCount - optionButtonsCount; ++i)
+            for(int i = 0; i < requiredButtonsCount - currentButtonsCount; ++i)
                 CreateOptionButton();
 
-            // Show/Hide & Update Instance.
-            for (int i = 0; i < Mathf.Max(customisationDataCount, optionButtonsCount); ++i)
+            // Show & Update Required Button Instances.
+            for (int i = 0; i < requiredButtonsCount; ++i)
             {
-                if (i >= customisationDataCount)
-                {
-                    // This button is unneeded and should be set as inactive.
-                    _customisationOptionButtonInstances[i].Hide();
-                    continue;
-                }
-
-                // This button should be active.
                 _customisationOptionButtonInstances[i].Show();
                 _customisationOptionButtonInstances[i].Setup(customisationDatas[i]);
 
                 // Setup the button's navigation.
                 _customisationOptionButtonInstances[i].Selectable.SetNavigation(
-                    onUp: (i == 0 ? _customisationOptionButtonInstances[customisationDataCount - 1] : _customisationOptionButtonInstances[i - 1]).Selectable,
-                    onDown: (i == customisationDataCount - 1 ? _customisationOptionButtonInstances[0] : _customisationOptionButtonInstances[i + 1]).Selectable);
+                    onUp: (i == 0 ? _customisationOptionButtonInstances[requiredButtonsCount - 1] : _customisationOptionButtonInstances[i - 1]).Selectable,
+                    onDown: (i == requiredButtonsCount - 1 ? _customisationOptionButtonInstances[0] : _customisationOptionButtonInstances[i + 1]).Selectable);
 
                 // Select this button if it is our desired.
                 if (i == currentSelectedElementIndex)
                     EventSystem.current.SetSelectedGameObject(_customisationOptionButtonInstances[i].gameObject);
             }
 
+            // Hide non-required button instances.
+            for (int i = requiredButtonsCount; i < currentButtonsCount; ++i)
+            _customisationOptionButtonInstances[i].Hide();
+
 
             // Highlight the proper tab.
-            for(int i = 0; i < _selectedTabInstances.Count; ++i)
+            for (int i = 0; i < _selectedTabInstances.Count; ++i)
                 _selectedTabInstances[i].SetSelected(i == tabIndex + 1);
 
             _selectedTabLabel.text = tabName;
@@ -153,6 +152,13 @@ namespace Gameplay.UI.Menus.Customisation
 
 
         private void OnButtonSelected(BaseCustomisationData baseCustomisation) => _selectedElementInfoDisplay.DisplayForElement(baseCustomisation);
-        private void OnButtonClicked(BaseCustomisationData baseCustomisation) => _onElementSelectedCallback?.Invoke(baseCustomisation);
+        private void OnButtonClicked(BaseCustomisationData baseCustomisation)
+        {
+            _onElementSelectedCallback?.Invoke(baseCustomisation);
+
+            // Highlight only the equipped button.
+            for (int i = 0; i < _customisationOptionButtonInstances.Count; ++i)
+                _customisationOptionButtonInstances[i].SetEquipped(_customisationOptionButtonInstances[i].CompareData(baseCustomisation));
+        }
     }
 }
