@@ -242,6 +242,7 @@ namespace UserInput
 
 
             // Dispose of the Input Actions.
+            s_inputActions.Disable();   // Disable before disposing to prevent a memory leak error.
             s_inputActions.Dispose();
 
             // Remove our Reference.
