@@ -15,4 +15,5 @@ MonoBehaviour:
   <Name>k__BackingField: Example System
   <Sprite>k__BackingField: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   <Description>k__BackingField: 
+  <PassiveFeatureDefinition>k__BackingField: {fileID: 11400000, guid: 71793aa1386c8794db0f46f66c3cda66, type: 2}
   <ActiveActionDefinition>k__BackingField: {fileID: 0}

@@ -1,4 +1,5 @@
 using Gameplay.Actions.Definitions;
+using Gameplay.Passives;
 using UnityEngine;
 
 namespace Gameplay.GameplayObjects.Character.Customisation.Data
@@ -7,6 +8,7 @@ namespace Gameplay.GameplayObjects.Character.Customisation.Data
     public class CoreSystemData : BaseCustomisationData
     {
         // Passive Feature.
+        [field: SerializeField] public PassiveDefinition PassiveFeatureDefinition { get; private set; }
 
 
         // Active Feature.
