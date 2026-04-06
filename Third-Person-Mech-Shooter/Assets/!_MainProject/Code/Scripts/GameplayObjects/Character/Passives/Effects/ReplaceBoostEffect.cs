@@ -9,6 +9,12 @@ namespace Gameplay.Passives
     public class ReplaceBoostEffect : PassiveEffect
     {
         // How do we handle having multiple of these effects active at the same time?
+
+        public override void Stop(ServerCharacter character)
+        {
+            throw new System.NotImplementedException("ReplaceBoostEffect's Stop() not implemented");
+        }
+
         protected override void Trigger(ServerCharacter character, float lifetime, float timeSinceDesiredUpdate)
         {
             throw new System.NotImplementedException("Replace ServerCharacter's Boost Action Here");

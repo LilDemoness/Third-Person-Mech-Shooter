@@ -44,7 +44,7 @@ public class HitEffectManager : NetworkSingleton<HitEffectManager>
 
     private void NetworkHealthComponent_OnAnyHealthChange(NetworkHealthComponent.AnyHealthChangeEventArgs args)
     {
-        if (args.Inflicter.OwnerClientId == NetworkManager.LocalClientId)
+        if (args.Inflicter != null && args.Inflicter.OwnerClientId == NetworkManager.LocalClientId)
             PlayHitEffectAudio();
     }
 

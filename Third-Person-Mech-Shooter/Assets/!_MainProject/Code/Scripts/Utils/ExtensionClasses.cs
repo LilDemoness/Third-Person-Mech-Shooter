@@ -215,6 +215,39 @@ public static class DictionaryExtensions
             .Where(kvp => !kvp.Key.Equals(null))
             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
     }
+
+
+
+    /// <summary>
+    ///     Tries to retrieve the value for the desired key, creating and returning a new instance if no already exist.
+    /// </summary>
+    public static TValue GetOrCreateAndReturnValue<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key) where TValue : new()
+    {
+        if (dict.TryGetValue(key, out TValue value))
+            return value;
+
+        TValue newValue = new TValue();
+        dict.Add(key, newValue);
+        return newValue;
+    }
+
+
+    public static void LogPairs<TKey, TValue>(this Dictionary<TKey, TValue> dict, bool logIndividually = false)
+    {
+        if (logIndividually)
+        {
+            foreach(var kvp in dict)
+                Debug.Log(kvp.Key.ToString() + ": " + kvp.Value.ToString());
+        }
+        else
+        {
+            string output = string.Empty;
+            foreach(var kvp in dict)
+                output += kvp.Key.ToString() + ": " + kvp.Value.ToString() + "\n";
+            
+            Debug.Log(output);
+        }
+    }
 }
 
 

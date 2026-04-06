@@ -4,6 +4,7 @@ using Gameplay.GameplayObjects.Players;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
+using static Gameplay.GameplayObjects.NetworkHealthComponent;
 
 namespace UI.Debugging
 {
@@ -38,21 +39,24 @@ namespace UI.Debugging
         }
         private void Player_OnLocalPlayerSet()
         {
+            Debug.Log("Initialise UI");
+
             // Subscribe to change events.
-            Player.LocalClientInstance.ServerCharacter.NetworkHealthComponent.OnHealthChanged += OnHealthChanged;
-            Player.LocalClientInstance.ServerCharacter.CurrentHeat.OnValueChanged += OnHeatChanged;
+            NetworkHealthComponent.OnAnyHealthChange += OnAnyHealthChanged;
+            Player.LocalClientInstance.ServerCharacter.OnHeatChanged += OnHeatChanged;
 
             // Ensure that late joiners receive the initial state.
-            OnHealthChanged(0.0f, Player.LocalClientInstance.ServerCharacter.NetworkHealthComponent.GetCurrentHealth());
-            OnHeatChanged(0.0f, Player.LocalClientInstance.ServerCharacter.CurrentHeat.Value);
+            NetworkHealthComponent localPlayerHealthComponent = Player.LocalClientInstance.ServerCharacter.NetworkHealthComponent;
+            SetHealthText(localPlayerHealthComponent.GetCurrentHealth(), localPlayerHealthComponent.MaxHealth);
+            SetHeatText(0.0f, Player.LocalClientInstance.ServerCharacter.MaxHeat);
         }
         public override void OnNetworkDespawn()
         {
             // Unsubscribe to change events.
             if (Player.LocalClientInstance != null)
             {
-                Player.LocalClientInstance.ServerCharacter.NetworkHealthComponent.OnHealthChanged -= OnHealthChanged;
-                Player.LocalClientInstance.ServerCharacter.CurrentHeat.OnValueChanged -= OnHeatChanged;
+                NetworkHealthComponent.OnAnyHealthChange -= OnAnyHealthChanged;
+                Player.LocalClientInstance.ServerCharacter.OnHeatChanged += OnHeatChanged;
             }
         }
         public override void OnDestroy()
@@ -62,8 +66,14 @@ namespace UI.Debugging
         }
 
 
-        private void OnHealthChanged(float _, float newHealth) => SetHealthText(newHealth, Player.LocalClientInstance.ServerCharacter.NetworkHealthComponent.MaxHealth);
-        private void OnHeatChanged(float _, float newValue) => SetHeatText(newValue, Player.LocalClientInstance.ServerCharacter.MaxHeat);
+        private void OnAnyHealthChanged(AnyHealthChangeEventArgs e)
+        {
+            if (e.ThisCharacter != Player.LocalClientInstance.ServerCharacter)
+                return;
+
+            SetHealthText(e.NewCurrentHealth, e.NewMaxHealth);
+        }
+        private void OnHeatChanged(float currentValue, float maxValue) => SetHeatText(currentValue, maxValue);
 
 
         private void SetHealthText(float currentHealth, float maxHealth)

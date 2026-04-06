@@ -5,6 +5,8 @@ using Gameplay.GameplayObjects.Character.Customisation.Data;
 using Gameplay.StatusEffects;
 using Utils;
 using System.Collections.Generic;
+using Gameplay.GameplayObjects.Character.Statistics;
+using Gameplay.Passives;
 
 namespace Gameplay.GameplayObjects.Character
 {
@@ -63,14 +65,16 @@ namespace Gameplay.GameplayObjects.Character
         // Heat.
 
         public NetworkVariable<float> CurrentHeat { get; private set; } = new NetworkVariable<float>();
-        public float MaxHeat => _buildDataReference.GetFrameData().HeatCapacity;
+        public float MaxHeat => _characterStats.GetStatisticValue(Statistic.MaxHeat);
         private float _lastHeatIncreaseTime = 0.0f;
+
+        public event System.Action<float, float> OnHeatChanged; // Current, Max.
 
         [SerializeField] private Gameplay.StatusEffects.Definitions.Overheating _overheatingEffectDefinition;
 
 
         // Movement.
-        public float BaseMoveSpeed => _buildDataReference.GetFrameData().MovementSpeed;
+        public float BaseMoveSpeed => _characterStats.GetStatisticValue(Statistic.MovementSpeed);
 
 
         // References.
@@ -91,9 +95,17 @@ namespace Gameplay.GameplayObjects.Character
         public ServerStatusEffectPlayer StatusEffectPlayer => m_statusEffectPlayer;
         private ServerStatusEffectPlayer m_statusEffectPlayer;
 
+        public ServerPassivePlayer ServerPassivePlayer => m_serverPassiveManager;
+        private ServerPassivePlayer m_serverPassiveManager;
+
 
         [SerializeField] private ServerCharacterMovement _movement; 
         public ServerCharacterMovement Movement => _movement;
+
+
+        [SerializeField] private CharacterStats _characterStats; 
+        public CharacterStats CharacterStats => _characterStats;
+
 
         public NetworkVariable<int> TeamID { get; set; } = new NetworkVariable<int>(-1);
 
@@ -105,7 +117,17 @@ namespace Gameplay.GameplayObjects.Character
         {
             m_serverActionPlayer = new ServerActionPlayer(this);
             m_statusEffectPlayer = new ServerStatusEffectPlayer(this);
+            m_serverPassiveManager = new ServerPassivePlayer(this);
+
+            _characterStats.OnAnyStatisticChanged += CharacterStats_OnAnyStatisticChanged;
         }
+        public override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            _characterStats.OnAnyStatisticChanged -= CharacterStats_OnAnyStatisticChanged;
+        }
+
         public override void OnNetworkSpawn()
         {
             s_AllServerCharacters.Add(this.OwnerClientId, this);
@@ -115,23 +137,31 @@ namespace Gameplay.GameplayObjects.Character
                 this.enabled = false;
                 return;
             }
-
-            CurrentHeat.OnValueChanged += CheckIfExceededHeatCap;
+            
+            CurrentHeat.OnValueChanged += OnCurrentHeatChanged;
             NetworkHealthComponent.OnDied += OnCharacterDied;
             ActionPlayer.OnActionQueueFilled += ServerActionPlayer_OnActionQueueFilled;
             ActionPlayer.OnActionQueueEmptied += ServerActionPlayer_OnActionQueueEmptied;
         }
         public override void OnNetworkDespawn()
         {
+            s_AllServerCharacters.Remove(this.OwnerClientId);
+
             // Unsubscribe from NetworkVariable Events.
-            CurrentHeat.OnValueChanged -= CheckIfExceededHeatCap;
+            CurrentHeat.OnValueChanged -= OnCurrentHeatChanged;
             NetworkHealthComponent.OnDied -= OnCharacterDied;
             ActionPlayer.OnActionQueueFilled -= ServerActionPlayer_OnActionQueueFilled;
             ActionPlayer.OnActionQueueEmptied -= ServerActionPlayer_OnActionQueueEmptied;
-
-            s_AllServerCharacters.Remove(NetworkManager.LocalClientId);
         }
 
+
+        private void CharacterStats_OnAnyStatisticChanged()
+        {
+            if (IsServer)
+                NetworkHealthComponent.SetMaxHealth_Server(null, Mathf.CeilToInt(_characterStats.GetStatisticValue(Statistic.MaxHealth)), true, false);
+
+            NotifyOfHeatChange();
+        }
 
 
         /// <summary>
@@ -242,6 +272,7 @@ namespace Gameplay.GameplayObjects.Character
         {
             ActionPlayer.OnUpdate();
             StatusEffectPlayer.OnUpdate();
+            ServerPassivePlayer.OnUpdate(Time.deltaTime);
 
             float heatDecreaseDelay = 1.0f;
             float heatDecreaseRate = 1.0f;
@@ -286,6 +317,16 @@ namespace Gameplay.GameplayObjects.Character
 
             CurrentHeat.Value = Mathf.Clamp(newValue, 0, MaxHeat);
         }
+
+
+        private void OnCurrentHeatChanged(float previousHeat, float newHeat)
+        {
+            CheckIfExceededHeatCap(previousHeat, newHeat);
+            NotifyOfHeatChange();
+        }
+        private void NotifyOfHeatChange() => OnHeatChanged?.Invoke(CurrentHeat.Value, MaxHeat);
+
+
         private void CheckIfExceededHeatCap(float previousHeat, float newHeat)
         {
             if (newHeat >= MaxHeat && previousHeat < MaxHeat)
@@ -317,7 +358,11 @@ namespace Gameplay.GameplayObjects.Character
 
         private void ServerCharacter_OnBuildDataChanged(BuildData buildData)
         {
-            _networkHealthComponent.InitialiseDamageReceiver_Server(buildData.GetFrameData().MaxHealth);
+            ServerPassivePlayer.ClearAllPassives();
+            ServerPassivePlayer.AddPassive(_buildDataReference.GetFrameData().CoreSystem.PassiveFeatureDefinition);
+
+            //_networkHealthComponent.InitialiseDamageReceiver_Server(buildData.GetFrameData().MaxHealth);
+            _networkHealthComponent.InitialiseDamageReceiver_Server(_characterStats.GetStatisticValue(Statistic.MaxHealth));
             InitialiseHeat();
         }
 

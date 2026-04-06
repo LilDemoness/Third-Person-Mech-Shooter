@@ -10,7 +10,7 @@ namespace Gameplay.Passives
     public abstract class PassiveEffect
     {
         [SerializeField] private bool _updates = false;
-        [SerializeField] private bool _triggerAtStart = false;
+        [SerializeField] private bool _triggerAtStart = true;
         [SerializeReference, SubclassSelector] private PassiveCondition[] _passiveConditions;
 
 
@@ -21,7 +21,7 @@ namespace Gameplay.Passives
             if (!_triggerAtStart)
                 return;
 
-            throw new System.NotImplementedException("PassiveEffect Start() Not Implemented");
+            Trigger(character, 0.0f, 0.0f);
         }
         public bool Update(ServerCharacter character, float lifetime, float timeSinceLastUpdateCall, float timeSinceLastTrigger)
         {
@@ -29,7 +29,7 @@ namespace Gameplay.Passives
                 return false;
 
             // Evaluate Conditions.
-            float maxTimeSinceDesiredUpdate = 0.0f;
+            float minTimeSinceDesiredUpdate = float.PositiveInfinity;
             for(int i = 0; i < _passiveConditions.Length; ++i)
             {
                 if (!_passiveConditions[i].TestCondition(character, lifetime, timeSinceLastUpdateCall, timeSinceLastTrigger, out float timeSinceDesiredUpdate))
@@ -38,13 +38,14 @@ namespace Gameplay.Passives
                     return false; // A Condition Failed.
                 }
 
-                if (timeSinceDesiredUpdate > maxTimeSinceDesiredUpdate)
-                    maxTimeSinceDesiredUpdate = timeSinceDesiredUpdate;
+                if (timeSinceDesiredUpdate < minTimeSinceDesiredUpdate)
+                    minTimeSinceDesiredUpdate = timeSinceDesiredUpdate;
             }
 
-            Trigger(character, lifetime, maxTimeSinceDesiredUpdate);
+            Trigger(character, lifetime, minTimeSinceDesiredUpdate);
             return true;
         }
+        public virtual void Stop(ServerCharacter character) { }
 
 
 

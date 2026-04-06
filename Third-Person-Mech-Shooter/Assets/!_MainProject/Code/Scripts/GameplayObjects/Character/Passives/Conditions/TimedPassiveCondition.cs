@@ -4,19 +4,18 @@ using UnityEngine;
 namespace Gameplay.Passives
 {
     /// <summary>
-    ///     A <see cref="PassiveCondition"/> based on triggering after fixed periods of time.
+    ///     A <see cref="PassiveCondition"/> based on triggering after a fixed period of time since the last successful update.
     /// </summary>
     [System.Serializable]
     public class TimedPassiveCondition : PassiveCondition
     {
         [SerializeField, Min(0)] private float _period;
 
-        public override bool TestCondition(ServerCharacter character, float lifetime, float timeSinceLastUpdateCall, float timeSinceLastTrigger, out float timeSinceDesiredUpdate)
+        public override bool TestCondition(ServerCharacter character, float lifetime, float timeSinceLastUpdateCall, float timeSinceLastSuccessfulUpdate, out float timeSinceDesiredUpdate)
         {
             // Calculate if we've passed an update period since the last 'Update' call.
-            Debug.LogWarning("This doesn't consider what happens if the Trigger is postponed by another condition. It will treat the passive as having been triggered and will wait.");
-            timeSinceDesiredUpdate = lifetime % _period;
-            return timeSinceDesiredUpdate <= timeSinceLastTrigger;
+            timeSinceDesiredUpdate = Mathf.Max(timeSinceLastSuccessfulUpdate - _period, 0.0f);
+            return timeSinceLastSuccessfulUpdate >= _period;
         }
     }
 }

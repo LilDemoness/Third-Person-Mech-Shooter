@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1536520540174567601}
   - component: {fileID: 781988145697744951}
   - component: {fileID: 3256541695494498627}
+  - component: {fileID: 4145569306345955613}
   - component: {fileID: 4491751200945467721}
   - component: {fileID: 2257280709253185089}
   - component: {fileID: 4308262964034644391}
@@ -132,6 +133,7 @@ MonoBehaviour:
   _overheatingEffectDefinition: {fileID: 11400000, guid: 1b22461243af62a4b8eb5c6e9254a8a1, type: 2}
   CanPerformActionInstantly: 1
   _movement: {fileID: 2257280709253185089}
+  _characterStats: {fileID: 4145569306345955613}
   _gfxRoot: {fileID: 0}
   _deathExplosionEffectPrefab: {fileID: 5773077417751078236, guid: 6ecf76dc4f268d340b2666896a954bcc, type: 3}
 --- !u!114 &3256541695494498627
@@ -148,6 +150,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   IsInitialised: 0
+--- !u!114 &4145569306345955613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 702022887536766587}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f455ffaad709ca34e936392b44540de0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  _serverCharacter: {fileID: 781988145697744951}
 --- !u!114 &4491751200945467721
 MonoBehaviour:
   m_ObjectHideFlags: 0

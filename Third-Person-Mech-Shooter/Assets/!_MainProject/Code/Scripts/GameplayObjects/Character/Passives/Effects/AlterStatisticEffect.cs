@@ -1,4 +1,6 @@
-﻿using Gameplay.GameplayObjects.Character;
+﻿using UnityEngine;
+using Gameplay.GameplayObjects.Character;
+using Gameplay.GameplayObjects.Character.Statistics;
 
 namespace Gameplay.Passives
 {
@@ -8,50 +10,52 @@ namespace Gameplay.Passives
     [System.Serializable]
     public class AlterStatisticEffect : PassiveEffect
     {
-        /* Statistics (Unless otherwise specified: Addition, Multiplier):
-         * - Max Health
-         * - Damage Reduction
-         * - Health Resistance Types (Damage Type | Base, Addition, Multiplier)
-         * 
-         * - Regenerating Health/Shield
-         * - Regenerating Health/Shield Resistance Types (Damage Type | Base, Addition, Multiplier)
-         * - Shielded External Heat Gain Rate
-         * 
-         * - Max Heat
-         * - Personal Heat Gain Rate
-         * - External Heat Gain Rate?
-         * - Heat Loss Rate
-         * 
-         * - Movement Speed
-         * - Boost Count (Base, Addition)
-         * - Boost Recharge Rate
-         */
+        [System.Serializable, System.Flags]
+        public enum DamageTypes
+        {
+            // Damage dealt by physical projectiles.
+            Ballistic,
+            // Damage dealt from explosives.
+            Explosive,
+            // Damage dealt to Heat by enemies (Such as Lasers). (Replace with "ExternalHeatGainRate"?)
+            Heat,
+            // Damage taken from Overheating or special enemy abilities.
+            Overheating,
+        }
 
-        /* Statistic Alteration Type:
-         * - Base: Overrides the default base value. If multiple bases exist, determine the base value by adding their offsets from the default and applying that (E.g. Default = 5, Overrides = 3 & 6, New Base = ((3 - 5) + (6 - 5) + 5) = (-2 + 1 + 5) = 4).
-         * - Addition: Adds to the base value.
-         * - Multiplier: Multiplies the value after Base + Addition (E.g. Base = 4, Addition = 2, Multiplier = 1.5, Total = (5 + 2) * 1.5 = 9).
-         */
+        [SerializeField] private Statistic _affectedStatistic;
 
-        /* Damage Types:
-         * - Ballistic
-         * - Explosive
-         * - Heat (From enemy weapons/effects)
-         * - Overheating (Replaces Heat and instead have heat from enemies managed by "external heat gain rate"?)
-         */
+        [Space(5)]
+        [SerializeField] private StatisticAlterationType _alterationType;
+        [SerializeField] private float _alterationValue;
+
+        [Space(5)]
+        [SerializeField] private bool _removeEffectOnConditionFailed = false;
+
 
 
         protected override void Trigger(ServerCharacter character, float lifetime, float timeSinceDesiredUpdate) => ApplyEffect(character);
         protected virtual void ApplyEffect(ServerCharacter character)
         {
-            throw new System.NotImplementedException("Apply/Reactivate Statistic Change Here");
+            character.CharacterStats.AddStatisticChangeServerRpc(_affectedStatistic, _alterationType, _alterationValue);
         }
 
 
         protected override void OnConditionFailed(ServerCharacter character) => SuspendEffect(character);
         protected virtual void SuspendEffect(ServerCharacter character)
         {
-            throw new System.NotImplementedException("Suspend Statistic Change Here");
+            if (_removeEffectOnConditionFailed)
+                character.CharacterStats.RemoveStatisticChangeServerRpc(_affectedStatistic, _alterationType, _alterationValue);
         }
+
+
+        public override void Stop(ServerCharacter character) => RemoveEffect(character);
+        protected virtual void RemoveEffect(ServerCharacter character) => character.CharacterStats.RemoveStatisticChangeServerRpc(_affectedStatistic, _alterationType, _alterationValue);
+    }
+
+    public class DamageResistanceStatisticEffect : AlterStatisticEffect
+    {
+        [Space(10)]
+        [SerializeField] private DamageTypes _damageTypes;
     }
 }

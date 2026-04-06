@@ -4,7 +4,8 @@ using UnityEngine;
 namespace Gameplay.Passives
 {
     /// <summary>
-    ///     Instance class container for a <see cref="PassiveDefinition"/>.
+    ///     Instance class container for a <see cref="PassiveDefinition"/>.<br/>
+    ///     Passives are started & updated on the Server.
     /// </summary>
     public class Passive
     {
@@ -16,11 +17,17 @@ namespace Gameplay.Passives
         private float[] _lastSuccessfulTriggerTimes;
 
 
+        public Passive(PassiveDefinition definition)
+        {
+            this.Definition = definition;
+        }
 
-        public void Start(ServerCharacter serverCharacter)
+
+        public void Start(ServerCharacter character)
         {
             TimeStarted = Time.time;
-            Definition.StartEffects(serverCharacter, out _lastSuccessfulTriggerTimes);
+            TimeRunning = 0.0f;
+            Definition.StartEffects(character, out _lastSuccessfulTriggerTimes);
         }
         public void Update(ServerCharacter character, float deltaTime)
         {
@@ -28,6 +35,10 @@ namespace Gameplay.Passives
             Definition.UpdateEffects(character, TimeRunning, deltaTime, ref _lastSuccessfulTriggerTimes);
 
             TimeRunning += deltaTime;
+        }
+        public void Stop(ServerCharacter character)
+        {
+            Definition.Stop(character);
         }
     }
 }

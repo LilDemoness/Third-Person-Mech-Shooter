@@ -2221,6 +2221,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5722275127336832440, guid: aabf11e718b73404b807245fce05dc2c, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5821018222958032307, guid: aabf11e718b73404b807245fce05dc2c, type: 3}
       propertyPath: m_fontColor.a
       value: 1
@@ -2823,12 +2827,12 @@ PrefabInstance:
       objectReference: {fileID: 418112739}
     - target: {fileID: 3291983828192758338, guid: 123177635a50e444e80037dd66b497a9, type: 3}
       propertyPath: autoInjectGameObjects.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3291983828192758338, guid: 123177635a50e444e80037dd66b497a9, type: 3}
       propertyPath: 'autoInjectGameObjects.Array.data[0]'
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 204536410}
     - target: {fileID: 3291983828192758338, guid: 123177635a50e444e80037dd66b497a9, type: 3}
       propertyPath: 'autoInjectGameObjects.Array.data[1]'
       value: 

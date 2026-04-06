@@ -12,7 +12,10 @@ namespace Gameplay.GameplayObjects.Character.Customisation.Data
         [field: SerializeField] public SizeCategory FrameSize { get; private set; }
         [field: SerializeField] public int MaxHealth { get; private set; }
         [field: SerializeField] public int HeatCapacity { get; private set; }
+
+        [field: Space(5)]
         [field: SerializeField] public float MovementSpeed { get; private set; }
+        [field: SerializeField] public int BoostCount { get; private set; }
 
 
         [field:Space(10)]

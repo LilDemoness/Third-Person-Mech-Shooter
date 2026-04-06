@@ -168,7 +168,7 @@ namespace Netcode.ConnectionManagement
                 return playerId;
             }
 
-            Debug.Log($"No client player ID found mapped to the given client ID: {clientId}");
+            //Debug.Log($"No client player ID found mapped to the given client ID: {clientId}");
             return null;
         }
 
@@ -186,7 +186,7 @@ namespace Netcode.ConnectionManagement
                 return GetPlayerData(playerId);
             }
 
-            Debug.Log($"No client player ID found mapped to the given client ID: {clientId}");
+            //Debug.Log($"No client player ID found mapped to the given client ID: {clientId}");
             return null;
         }
 
@@ -216,7 +216,7 @@ namespace Netcode.ConnectionManagement
             if (_clientIDToPlayerId.TryGetValue(clientID, out string playerId))
             {
                 // We should have data for this client. Update it.
-                Debug.Log("Set Player Data");
+                //Debug.Log("Set Player Data");
                 _clientData[playerId] = sessionPlayerData;
             }
             else

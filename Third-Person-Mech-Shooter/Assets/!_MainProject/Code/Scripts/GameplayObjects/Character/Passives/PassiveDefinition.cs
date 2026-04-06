@@ -42,5 +42,10 @@ namespace Gameplay.Passives
                 ++updatedEffectsIndex;
             }
         }
+        public void Stop(ServerCharacter character)
+        {
+            for(int i = 0; i < _effects.Length; ++i)
+                _effects[i].Stop(character);
+        }
     }
 }

@@ -1,6 +1,8 @@
+using Cysharp.Threading.Tasks;
 using Gameplay.GameState;
 using TMPro;
 using Unity.Netcode;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityServices.Sessions;
 using VContainer;
@@ -49,12 +51,26 @@ namespace Gameplay.UI.Menus
                 persistentPlayer.NetworkNameState.Name.OnValueChanged += UpdatePlayerName;
                 UpdatePlayerName(default, persistentPlayer.NetworkNameState.Name.Value);
             }
+            else
+                _persistentPlayerCollection.ItemAdded += PersistentPlayerCollection_ItemAdded;
 
             if (_multiplayerServicesFacade.CurrentUnitySession != null)
                 UpdateSessionInfoUI();
             else
-                InitialiseData();
+                InitialiseDataUniTask().Forget();
         }
+
+        private void PersistentPlayerCollection_ItemAdded(GameplayObjects.Players.PersistentPlayer persistentPlayer)
+        {
+            if (persistentPlayer.OwnerClientId != NetworkManager.Singleton.LocalClientId)
+                return;
+
+            persistentPlayer.NetworkNameState.Name.OnValueChanged += UpdatePlayerName;
+            UpdatePlayerName(default, persistentPlayer.NetworkNameState.Name.Value);
+            _persistentPlayerCollection.ItemAdded -= PersistentPlayerCollection_ItemAdded;
+        }
+
+
         private void OnDestroy()
         {
             if (_persistentGameState != null)
@@ -71,10 +87,13 @@ namespace Gameplay.UI.Menus
         }
 
 
-        private void InitialiseData()
+        private async UniTaskVoid InitialiseDataUniTask()
         {
-            UpdateSessionName(GetHostName());
             UpdateJoinCode(JOIN_CODE_FALLBACK_TEXT);
+
+            string hostName = await GetHostNameUniTask();
+            Debug.Log(hostName);
+            UpdateSessionName($"{hostName}'s Session");
         }
 
 
@@ -99,12 +118,23 @@ namespace Gameplay.UI.Menus
         private void UpdateMapName(string mapName) => _mapNameLabel.text = string.Concat(MAP_NAME_PREFIX_TEXT, mapName);
 
 
-        private string GetHostName()
+        private async UniTask<string> GetHostNameUniTask()
         {
-            var hostClient = NetworkManager.Singleton.ConnectedClients[NetworkManager.Singleton.CurrentSessionOwner];
+            float startTime = Time.time;
+            const float MAX_WAIT_TIME = 0.5f;
+            NetworkClient hostClient = null;
+            do
+            {
+                hostClient = NetworkManager.Singleton.ConnectedClients[NetworkManager.Singleton.CurrentSessionOwner];
 
-            if (hostClient != null)
+                await UniTask.WaitForEndOfFrame();
+            } while((hostClient == null || hostClient.PlayerObject == null) && (Time.time - startTime < MAX_WAIT_TIME));
+
+
+            if (hostClient != null && hostClient.PlayerObject != null)
+            {
                 return hostClient.PlayerObject.GetComponent<Utils.NetworkNameState>().Name.Value;
+            }
             else
             {
                 Debug.LogWarning("Warning: No host client found for session");

@@ -1,4 +1,5 @@
-﻿using Gameplay.Actions.Definitions;
+﻿using Gameplay.Actions;
+using Gameplay.Actions.Definitions;
 using Gameplay.GameplayObjects.Character;
 using UnityEngine;
 
@@ -13,11 +14,15 @@ namespace Gameplay.Passives
         [SerializeField] private ActionDefinition _associatedAction;
 
 
+        public override void Stop(ServerCharacter character)
+        {
+            character.ActionPlayer.CancelRunningActionsByID(_associatedAction.ActionID, cancelNonBlocking: true, forceCancel: true);
+        }
         protected override void Trigger(ServerCharacter character, float lifetime, float timeSinceDesiredUpdate)
         {
-            throw new System.NotImplementedException("Trigger Action Here");
-            // Q: How will we handle action persistance/updates?
-            //  A: Triggering the action through the character should do this automatically.
+            ActionRequestData actionRequestData = ActionRequestData.Create(_associatedAction);
+            character.ActionPlayer.PlayAction(ref actionRequestData);
+            //character.PlayActionServerRpc(actionRequestData);
         }
     }
 }
