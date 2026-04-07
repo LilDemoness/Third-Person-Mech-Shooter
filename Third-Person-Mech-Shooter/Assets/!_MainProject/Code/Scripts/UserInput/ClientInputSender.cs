@@ -49,6 +49,7 @@ namespace UserInput
 
         private bool _hasMoveRequest;
         private Vector2 _movementInput;
+        private bool _hasBoostRequest;
 
 
         [SerializeField] private ServerCharacter _serverCharacter;
@@ -80,6 +81,7 @@ namespace UserInput
         private void SubscribeToClientInput()
         {
             ClientInput.OnMovementInputChanged += ClientInput_OnMovementInputChanged;
+            ClientInput.OnBoostPerformed += ClientInput_OnBoostPerformed;
 
             ClientInput.OnActivateSlotStarted += ClientInput_OnActivateSlotStarted;
             ClientInput.OnActivateSlotCancelled += ClientInput_OnActivateSlotCancelled;
@@ -87,6 +89,7 @@ namespace UserInput
         private void UnsubscribeFromClientInput()
         {
             ClientInput.OnMovementInputChanged -= ClientInput_OnMovementInputChanged;
+            ClientInput.OnBoostPerformed -= ClientInput_OnBoostPerformed;
 
             ClientInput.OnActivateSlotStarted -= ClientInput_OnActivateSlotStarted;
             ClientInput.OnActivateSlotCancelled -= ClientInput_OnActivateSlotCancelled;
@@ -99,6 +102,7 @@ namespace UserInput
             _movementInput = ClientInput.MovementInput;
             _hasMoveRequest = true;
         }
+        private void ClientInput_OnBoostPerformed() => _hasBoostRequest = true;
         private void ClientInput_OnActivateSlotStarted(int slotIndex) => _serverSlotController.ActivateSlot(slotIndex);//_serverWeaponController.ActivateSlotServerRpc(slotIndex);
         private void ClientInput_OnActivateSlotCancelled(int slotIndex) => _serverSlotController.DeactivateSlotServerRpc(slotIndex);
         
@@ -143,6 +147,11 @@ namespace UserInput
 
                     _serverCharacter.SendCharacterMovementInputServerRpc(_movementInput);
                 }
+            }
+            if (_hasBoostRequest)
+            {
+                _serverCharacter.SendCharacterBoostRequestServerRpc();
+                _hasBoostRequest = false;
             }
         }
 

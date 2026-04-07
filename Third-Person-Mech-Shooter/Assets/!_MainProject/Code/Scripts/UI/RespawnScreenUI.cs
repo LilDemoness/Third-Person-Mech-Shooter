@@ -5,7 +5,7 @@ using Gameplay.GameplayObjects.Players;
 using System.Collections;
 using Unity.Netcode;
 
-namespace UI
+namespace UI.Players
 {
     /// <summary>
     ///     UI Element Representing the Respawn Screen for a Player.

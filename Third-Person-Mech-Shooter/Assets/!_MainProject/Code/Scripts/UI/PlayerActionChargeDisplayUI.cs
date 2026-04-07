@@ -6,7 +6,7 @@ using Gameplay.GameplayObjects.Character;
 using Gameplay.GameplayObjects.Players;
 using Gameplay.Actions;
 
-namespace UI.Actions
+namespace UI.Players
 {
     public class PlayerActionChargeDisplayUI : MonoBehaviour
     {
@@ -33,6 +33,8 @@ namespace UI.Actions
         /// </summary>
         private static void Action_ClientStartedCharging(object sender, Action.StartedChargingEventArgs e)
         {
+            if (e.AttachmentSlotIndex == AttachmentSlotIndex.Unset)
+                return; // Not something we can display charge for.
             if (e.Client.OwnerClientId != NetworkManager.Singleton.LocalClientId)
                 return; // Not the local client.
 
@@ -52,6 +54,8 @@ namespace UI.Actions
         /// </summary>
         private static void Action_ClientStoppedCharging(object sender, Action.StoppedChargingEventArgs e)
         {
+            if (e.AttachmentSlotIndex == AttachmentSlotIndex.Unset)
+                return; // Not something we can display charge for.
             if (e.Client.OwnerClientId != NetworkManager.Singleton.LocalClientId)
                 return; // Not the local client.
 
@@ -71,6 +75,8 @@ namespace UI.Actions
         /// </summary>
         private static void Action_ClientResetChargeDisplay(object sender, Action.ResetChargingEventArgs e)
         {
+            if (e.AttachmentSlotIndex == AttachmentSlotIndex.Unset)
+                return; // Not something we can display charge for.
             if (e.Client.OwnerClientId != NetworkManager.Singleton.LocalClientId)
                 return; // Not the local client.
 

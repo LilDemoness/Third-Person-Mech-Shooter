@@ -119,12 +119,14 @@ namespace Gameplay.GameplayObjects.Character
             m_statusEffectPlayer = new ServerStatusEffectPlayer(this);
             m_serverPassiveManager = new ServerPassivePlayer(this);
 
+            _movement.OnMovementStatusChanged += MovementScript_OnMovementStatusChanged;
             _characterStats.OnAnyStatisticChanged += CharacterStats_OnAnyStatisticChanged;
         }
         public override void OnDestroy()
         {
             base.OnDestroy();
 
+            _movement.OnMovementStatusChanged -= MovementScript_OnMovementStatusChanged;
             _characterStats.OnAnyStatisticChanged -= CharacterStats_OnAnyStatisticChanged;
         }
 
@@ -155,6 +157,7 @@ namespace Gameplay.GameplayObjects.Character
         }
 
 
+        private void MovementScript_OnMovementStatusChanged(MovementStatus newState) => MovementStatus.Value = newState;
         private void CharacterStats_OnAnyStatisticChanged()
         {
             if (IsServer)
@@ -185,6 +188,24 @@ namespace Gameplay.GameplayObjects.Character
             // We can move.
 
             _movement.SetMovementInput(movementInput);
+        }
+        [Rpc(SendTo.Server)]
+        public void SendCharacterBoostRequestServerRpc()
+        {
+            Debug.Log("Try Boost - Character");
+            // Check that we're not dead or currently experiencing forced movement (E.g. Knockback/Charge).
+            if (!CanPerformActions || _movement.IsPerformingForcedMovement())
+                return;
+
+            // Check if our current action prevents movement.
+            if (ActionPlayer.GetActiveActionInfo(out ActionRequestData data))
+            {
+                if (data.PreventMovement)
+                    return;
+            }
+
+            // We can boost.
+            _movement.PerformBoost();
         }
 
 

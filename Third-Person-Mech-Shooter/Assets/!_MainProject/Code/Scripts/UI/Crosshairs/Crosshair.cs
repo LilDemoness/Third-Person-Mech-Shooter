@@ -1,5 +1,5 @@
 using Gameplay.GameplayObjects.Character.Customisation.Sections;
-using UI.Actions;
+using UI.Players;
 using UnityEngine;
 
 namespace UI.Crosshairs

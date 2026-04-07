@@ -56,7 +56,7 @@ namespace UI.Debugging
             if (Player.LocalClientInstance != null)
             {
                 NetworkHealthComponent.OnAnyHealthChange -= OnAnyHealthChanged;
-                Player.LocalClientInstance.ServerCharacter.OnHeatChanged += OnHeatChanged;
+                Player.LocalClientInstance.ServerCharacter.OnHeatChanged -= OnHeatChanged;
             }
         }
         public override void OnDestroy()

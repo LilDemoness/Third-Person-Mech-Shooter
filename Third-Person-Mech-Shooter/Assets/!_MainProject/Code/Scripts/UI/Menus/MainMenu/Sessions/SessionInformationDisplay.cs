@@ -11,7 +11,7 @@ namespace Gameplay.UI.Menus
 {
     public class SessionInformationDisplay : MonoBehaviour
     {
-        [SerializeField] private Gameplay.GameplayObjects.PersistentPlayerRuntimeCollection _persistentPlayerCollection;
+        [SerializeField] private Gameplay.GameplayObjects.Players.PersistentPlayerRuntimeCollection _persistentPlayerCollection;
 
 
         [SerializeField] private TMP_Text _sessionNameLabel;

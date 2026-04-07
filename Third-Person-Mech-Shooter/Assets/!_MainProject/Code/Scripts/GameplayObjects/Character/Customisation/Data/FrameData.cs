@@ -15,7 +15,7 @@ namespace Gameplay.GameplayObjects.Character.Customisation.Data
 
         [field: Space(5)]
         [field: SerializeField] public float MovementSpeed { get; private set; }
-        [field: SerializeField] public int BoostCount { get; private set; }
+        [field: SerializeField] public int BoostCount { get; private set; } = 2;
 
 
         [field:Space(10)]

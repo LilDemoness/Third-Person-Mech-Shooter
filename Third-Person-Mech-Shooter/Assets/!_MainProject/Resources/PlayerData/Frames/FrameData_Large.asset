@@ -19,6 +19,7 @@ MonoBehaviour:
   <MaxHealth>k__BackingField: 12
   <HeatCapacity>k__BackingField: 10
   <MovementSpeed>k__BackingField: 12.5
+  <BoostCount>k__BackingField: 2
   <AttachmentPoints>k__BackingField:
   - <MaxModuleSize>k__BackingField: 0
   - <MaxModuleSize>k__BackingField: 0

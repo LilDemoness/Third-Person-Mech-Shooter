@@ -191,9 +191,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  _characterLogic: {fileID: 781988145697744951}
+  _serverCharacter: {fileID: 781988145697744951}
+  _characterStats: {fileID: 4145569306345955613}
   _rotationPivot: {fileID: 7621494308545332439}
   _characterController: {fileID: 4308262964034644391}
+  _boostAction: {fileID: 11400000, guid: 63d7d0dea6025354193f58de39cdbf23, type: 2}
   _gravityMultiplier: 1
   _airSpeedDecreaseRate: 1
   _groundCheckRadius: 0.5

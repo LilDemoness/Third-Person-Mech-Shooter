@@ -146,8 +146,15 @@ namespace Gameplay.GameplayObjects.Character.Statistics
             };
         }
 
-        [ContextMenu("Log Health Changes")]
-        private void Editor_LogHealthChanges() => Debug.Log(_statisticChanges.GetOrCreateAndReturnValue(Statistic.MaxHealth).ToString());
+        [ContextMenu("Log/Health")] private void Editor_LogHealth() => Editor_LogStatisticChange(Statistic.MaxHealth);
+        [ContextMenu("Log/Boost Count")] private void Editor_LogBoostCount() => Editor_LogStatisticChange(Statistic.BoostCount);
+        [ContextMenu("Log/Boost Recharge Multiplier")] private void Editor_LogBoostRechargeMultiplier() => Editor_LogStatisticChange(Statistic.BoostRechargeMultiplier);
+
+        private void Editor_LogStatisticChange(Statistic statistic)
+        {
+            StatisticAlteration statisticAlteration = _statisticChanges.GetOrCreateAndReturnValue(statistic);
+            Debug.Log(statisticAlteration.GetTotal(GetBaseValue(statistic)) + "\n" + statisticAlteration.ToString());
+        }
 
         #endif
 
@@ -245,19 +252,22 @@ namespace Gameplay.GameplayObjects.Character.Statistics
     // (Unless otherwise specified: Addition, Multiplier)
     public enum Statistic
     {
-        MaxHealth,
-        DamageResistances,              // (Damage Type | Base, Addition, Multiplier)
+        MaxHealth,      // Implemented - ServerCharacter listens to onChange event and modifies NetworkHealthComponent value.
+        // (Damage Type | Base, Addition, Multiplier)
+        DamageResistances,
 
         RegeneratingShield,
-        RegeneratingShieldResistances,  // (Damage Type | Base, Addition, Multiplier)
+        // (Damage Type | Base, Addition, Multiplier)
+        RegeneratingShieldResistances,
         ShieldedExternalHeatGainMultiplier,
 
-        MaxHeat,
+        MaxHeat,        // Implemented - ServerCharacter's MaxHeat value directly reads from this.
         PersonalHeatGainMultiplier,
         ExternalHeatGainMultiplier,
 
-        MovementSpeed,
-        BoostCount,     // Base & Addition
+        MovementSpeed,  // Implemented - ServerCharacter's MovementSpeed value directly reads from this.
+        // Base & Addition
+        BoostCount,
         BoostRechargeMultiplier,
     }
     [System.Serializable]

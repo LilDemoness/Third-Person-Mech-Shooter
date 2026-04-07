@@ -1,6 +1,8 @@
 using UnityEngine;
 using Unity.Netcode;
-using UnityEngine.AI;
+using Gameplay.GameplayObjects.Character.Statistics;
+using Gameplay.Actions.Definitions;
+using Gameplay.Actions;
 
 namespace Gameplay.GameplayObjects.Character
 {
@@ -13,19 +15,43 @@ namespace Gameplay.GameplayObjects.Character
         private Vector3 _desiredVelocity;
 
 
-        private MovementState _movementState;
-        private MovementStatus _previousState;
+        private MovementType _movementState;
+        private MovementStatus _previousMovementStatus;
+
+        public event System.Action<MovementStatus> OnMovementStatusChanged;
+
 
         [Header("General References")]
-        [SerializeField] private ServerCharacter _characterLogic;
+        [SerializeField] private ServerCharacter _serverCharacter;
+        [SerializeField] private CharacterStats _characterStats;
         [SerializeField] private Transform _rotationPivot;
         [SerializeField] private CharacterController _characterController;
 
 
+        private float _movementSpeed => _characterStats.GetStatisticValue(Statistic.MovementSpeed);
+
+
+        [Header("Boost Settings")]
+        [SerializeField] private ActionDefinition _boostAction;
+
+        private int _boostCount { get; set; }
+
+
+        const float BOOST_RECHARGE_DURATION = 2.0f; // Time in Seconds.
+        const float BOOST_RECHARGE_RATE = 1.0f / BOOST_RECHARGE_DURATION;  // Percentage / Second.
+        
+        private float _boostRechargeMultiplier => _characterStats.GetStatisticValue(Statistic.BoostRechargeMultiplier);
+        private int _boostCountRemaining;
+        private float _boostRechargeProgress;
+
+
+        public event System.Action<int> OnBoostStatsChanged;
+        public event System.EventHandler<OnBoostChargeValuesChangedEventArgs> OnBoostRechargeValuesChanged;
+
 
         [Header("In-Air Settings")]
-        private const float GRAVITY = -9.81f;
         [SerializeField] private float _gravityMultiplier = 1.0f;
+        private const float GRAVITY = -9.81f;
         private float _verticalVelocity;
 
         [SerializeField] private float _airSpeedDecreaseRate = 1.0f;
@@ -53,17 +79,21 @@ namespace Gameplay.GameplayObjects.Character
 
             // On the server, enable our other components and initialise ourself.
             this._characterController.enabled = true;
+
+            // Subscribe to events.
+            _characterStats.OnAnyStatisticChanged += CharacterStats_OnAnyStatisticChanged;
         }
         private void FixedUpdate()
         {
             CheckIsGrounded();
             PerformMovement();
+            RechargeBoostFramewise();
 
             var currentState = GetMovementStatus(_movementState);
-            if (_previousState != currentState)
+            if (_previousMovementStatus != currentState)
             {
-                _characterLogic.MovementStatus.Value = currentState;
-                _previousState = currentState;
+                OnMovementStatusChanged?.Invoke(currentState);
+                _previousMovementStatus = currentState;
             }
         }
         public override void OnNetworkDespawn()
@@ -72,8 +102,23 @@ namespace Gameplay.GameplayObjects.Character
             {
                 // Disable server components when despawning.
                 this.enabled = false;
+
+                // Unsubscribe from events.
+                _characterStats.OnAnyStatisticChanged += CharacterStats_OnAnyStatisticChanged;
             }
         }
+
+        private void CharacterStats_OnAnyStatisticChanged()
+        {
+            int boostCount = Mathf.CeilToInt(_characterStats.GetStatisticValue(Statistic.BoostCount));
+            if (boostCount != _boostCount)
+            {
+                _boostCount = boostCount;
+                _boostCountRemaining = _boostCount;
+                OnBoostStatsChanged?.Invoke(boostCount);
+            }
+        }
+
 
 
         public void SetPositionAndRotation(Vector3 newPosition, Quaternion newRotation)
@@ -96,16 +141,16 @@ namespace Gameplay.GameplayObjects.Character
         private void CheckIsGrounded() => _isGrounded = Physics.CheckSphere(transform.position, _groundCheckRadius, _groundLayers, QueryTriggerInteraction.Ignore);
         private Vector3 CalculateDesiredMovement()
         {
-            if (_movementState == MovementState.Idle)
+            if (_movementState == MovementType.Idle)
                 return Vector3.zero;
 
 
             // Calculate Movement.
-            if (_movementState == MovementState.ForcedMovement)
+            if (_movementState == MovementType.ForcedMovement)
             {
                 // Calculate from Forced Movement.
             }
-            else if (_movementState == MovementState.FollowingPath)
+            else if (_movementState == MovementType.FollowingPath)
             {
                 // Pathfinding-based Movement.
                 Vector3 movementVector = Vector3.zero;
@@ -113,24 +158,23 @@ namespace Gameplay.GameplayObjects.Character
                 // If we didn't move, then stop moving (We reached the end of the path).
                 if (movementVector == Vector3.zero)
                 {
-                    _movementState = MovementState.Idle;
+                    _movementState = MovementType.Idle;
                     return Vector3.zero;
                 }
 
                 // To-do: Calculate desired movementVector to reach next point in path.
             }
-            else if (_movementState == MovementState.DirectInput)
+            else if (_movementState == MovementType.DirectInput)
             {
                 // Input-based movement.
-                Vector3 movementVector = _rotationPivot.right * _movementInput.x + _rotationPivot.forward * _movementInput.y;
-                movementVector = Vector3.ProjectOnPlane(movementVector, Vector3.up).normalized * movementVector.magnitude;
-                movementVector *= GetMovementSpeed();
-                return movementVector;
+                return GetProjectedMovementVector() * _movementSpeed;
             }
 
 
             return Vector3.zero;
         }
+        private Vector3 GetProjectedMovementVector() => GetProjectedVector(_rotationPivot.right * _movementInput.x + _rotationPivot.forward * _movementInput.y);
+        private Vector3 GetProjectedVector(Vector3 vector) => Vector3.ProjectOnPlane(vector, Vector3.up).normalized * vector.magnitude;
         private void PerformMovement()
         {
             if (_isGrounded)
@@ -152,6 +196,25 @@ namespace Gameplay.GameplayObjects.Character
         }
 
 
+        private void RechargeBoostFramewise()
+        {
+            if(_boostCountRemaining == _boostCount)
+            {
+                // Already at our max boost, so don't continue recharging.
+                _boostRechargeProgress = 0.0f;
+                return;
+            }
+
+            _boostRechargeProgress += BOOST_RECHARGE_RATE * _boostRechargeMultiplier * Time.deltaTime;
+            while (_boostRechargeProgress >= 1.0f && _boostCountRemaining < _boostCount)
+            {
+                ++_boostCountRemaining;
+                _boostRechargeProgress -= 1.0f;
+            }
+        }
+
+
+
         /// <summary>
         ///     Sets our movement input for direct control (E.g. Players controlling with movement keys).
         /// </summary>
@@ -160,11 +223,11 @@ namespace Gameplay.GameplayObjects.Character
         {
             if (movementInput == Vector2.zero)
             {
-                _movementState = MovementState.Idle;
+                _movementState = MovementType.Idle;
                 return;
             }
 
-            _movementState = MovementState.DirectInput;
+            _movementState = MovementType.DirectInput;
             this._movementInput = movementInput;
         }
         /// <summary>
@@ -173,48 +236,86 @@ namespace Gameplay.GameplayObjects.Character
         /// <param name="position"> Position in world space to pathfind towards.</param>
         public void SetMovementTarget(Vector3 position)
         {
-            _movementState = MovementState.FollowingPath;
+            _movementState = MovementType.FollowingPath;
+            throw new System.NotImplementedException("Moving to Target Logic not implemented");
+        }
+
+
+        public void PerformBoost()
+        {
+            if (_boostCountRemaining <= 0)
+                return;
+            --_boostCountRemaining;
+
+            NotifyListenersOfBoostRechargeValuesChanged();
+            
+            ActionRequestData actionRequestData = new ActionRequestData()
+            {
+                ActionID = _boostAction.ActionID,
+                IActionSourceObjectID = _serverCharacter.NetworkObjectId,
+                Direction = _movementInput != Vector2.zero ? GetProjectedMovementVector() : GetProjectedVector(_characterController.transform.forward),
+            };
+            _serverCharacter.ActionPlayer.PlayAction(ref actionRequestData);
+        }
+        private void NotifyListenersOfBoostRechargeValuesChanged()
+        {
+            float rechargeStartTime = NetworkManager.Singleton.ServerTime.TimeAsFloat;
+
+            float currentTotalBoostsPercentage = (_boostCountRemaining + _boostRechargeProgress) / (float)_boostCount;   // Our current percent of boosts in total (E.g. 1.5 boosts / 2 max = 0.75).
+
+            float timeFromZeroToMaxBoosts = BOOST_RECHARGE_DURATION * _boostCount; // How long it would take to recharge all boosts from 0% (In seconds).
+            float percentageTillFullBoosts = 1.0f - currentTotalBoostsPercentage;
+            float rechargeEndTime = rechargeStartTime + (timeFromZeroToMaxBoosts * percentageTillFullBoosts);
+
+            OnBoostRechargeValuesChanged?.Invoke(this, new OnBoostChargeValuesChangedEventArgs(rechargeStartTime, currentTotalBoostsPercentage, rechargeEndTime));
         }
 
 
         /// <summary>
         ///     Returns true if the current mvoement mode is unabortable (E.g. A knockback effect).
         /// </summary>
-        public bool IsPerformingForcedMovement() => _movementState == MovementState.ForcedMovement;
+        public bool IsPerformingForcedMovement() => _movementState == MovementType.ForcedMovement;
 
         /// <summary>
         ///     Returns true if the character is actively moving, false otherwise.
         /// </summary>
-        public bool IsMoving() => _movementState != MovementState.Idle;
+        public bool IsMoving() => _movementState != MovementType.Idle;
 
         /// <summary>
         ///     Cancels any moves that are currently in progress.
         /// </summary>
         public void CancelMove()
         {
-            _movementState = MovementState.Idle;
-        }
-
-
-        /// <summary>
-        ///     Retrieves the actual speed for this character, based on the Base Speed & any changes or multipliers.
-        /// </summary>
-        private float GetMovementSpeed()
-        {
-            return _characterLogic.BaseMoveSpeed;
+            _movementState = MovementType.Idle;
         }
 
         /// <summary>
         ///     Determines the appropriate MovementStatus for the character. <br></br>
         ///     MovementStatus is used by the client code when animating the character.
         /// </summary>
-        private MovementStatus GetMovementStatus(MovementState movementState)
+        private MovementStatus GetMovementStatus(MovementType movementState)
         {
             return movementState switch
             {
-                MovementState.Idle => MovementStatus.Idle,
+                MovementType.Idle => MovementStatus.Idle,
                 _ => MovementStatus.Normal,
             };
+        }
+
+
+
+        public class OnBoostChargeValuesChangedEventArgs : System.EventArgs
+        {
+            public readonly float ChargeStartTime;
+            public readonly float ChargeStartPercentage;
+            public readonly float ChargeEndTime;
+
+            public OnBoostChargeValuesChangedEventArgs(float chargeStartTime, float chargeStartPercentage, float chargeEndTime)
+            {
+                ChargeStartTime = chargeStartTime;
+                ChargeStartPercentage = chargeStartPercentage;
+                ChargeEndTime = chargeEndTime;
+            }
         }
     }
 
@@ -222,7 +323,7 @@ namespace Gameplay.GameplayObjects.Character
     /// <summary>
     ///     The current movement state of a ServerCharacter.
     /// </summary>
-    public enum MovementState
+    public enum MovementType
     {
         Idle = 0,
         DirectInput = 1,

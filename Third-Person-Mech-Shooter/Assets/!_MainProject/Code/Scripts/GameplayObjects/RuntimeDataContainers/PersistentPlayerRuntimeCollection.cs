@@ -1,8 +1,7 @@
-using Gameplay.GameplayObjects.Players;
 using Infrastructure;
 using UnityEngine;
 
-namespace Gameplay.GameplayObjects
+namespace Gameplay.GameplayObjects.Players
 {
     /// <summary>
     ///     A runtime list of <see cref="PersistentPlayer"/> objects that is populated on both clients and server.

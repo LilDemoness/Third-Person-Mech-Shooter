@@ -25,6 +25,12 @@ namespace UserInput
         public static Vector2 LookInput { get; private set; }
 
 
+        #region Movement Events
+
+        public static event System.Action OnBoostPerformed;
+
+        #endregion
+
         #region Combat Events
 
         public static event System.Action<int> OnActivateSlotStarted;
@@ -136,6 +142,13 @@ namespace UserInput
 
 
             // Subscribe to Input Events.
+
+            #region Movement
+
+            s_inputActions.Movement.Boost.performed += Boost_performed;
+
+            #endregion
+
             #region Combat Events
 
             s_inputActions.Combat.ActivateSlot0.started  += ActivateSlot0_started;
@@ -193,6 +206,13 @@ namespace UserInput
         private void DestroyInputActions()
         {
             // Unsubscribe from Input Events.
+
+            #region Movement
+
+            s_inputActions.Movement.Boost.performed -= Boost_performed;
+
+            #endregion
+
             #region Combat Events
 
             s_inputActions.Combat.ActivateSlot0.started  -= ActivateSlot0_started;
@@ -270,6 +290,13 @@ namespace UserInput
             LookInput = s_inputActions.Camera.Look.ReadValue<Vector2>();
         }
 
+
+
+        #region Movement Event Functions
+
+        private void Boost_performed(InputAction.CallbackContext obj) => OnBoostPerformed?.Invoke();
+
+        #endregion
 
         #region Combat Event Functions
 

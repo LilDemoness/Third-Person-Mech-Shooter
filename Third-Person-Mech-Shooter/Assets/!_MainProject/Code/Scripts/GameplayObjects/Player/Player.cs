@@ -303,7 +303,7 @@ namespace Gameplay.GameplayObjects.Players
         public int GetActivationSlotCount() => _slotIndexToActiveGFXDict.Count;
 
 
-        public Transform GetOriginTransform(AttachmentSlotIndex attachmentSlotIndex) => _slotIndexToActiveGFXDict[attachmentSlotIndex].GetAbilityOriginTransform();
+        public Transform GetOriginTransform(AttachmentSlotIndex attachmentSlotIndex) => attachmentSlotIndex == AttachmentSlotIndex.Unset ? this.transform : _slotIndexToActiveGFXDict[attachmentSlotIndex].GetAbilityOriginTransform();
 
 
         struct PlayerGFXWrapper
