@@ -84,7 +84,7 @@ namespace UI.Players
             float spacingPercent = 1.0f / boostCount;
             float spacingValue = _boostDivierContainer.sizeDelta.x * spacingPercent;
             Vector2 startWorldPos = new Vector2(_boostDivierContainer.position.x - _boostDivierContainer.sizeDelta.x, _boostDivierContainer.position.y);
-            for (int i = 1; i < boostCount + 1; ++i)
+            for (int i = 1; i < boostCount; ++i)
             {
                 RectTransform child = _boostDivierContainer.GetChild(i) as RectTransform;
 
@@ -114,7 +114,6 @@ namespace UI.Players
             // Calculate and display our charge percentage, calculated from the last time we boosted.
             float chargeProgressionPercent = (serverTime - _boostChargeStartTime) / (_boostChargeEndTime - _boostChargeStartTime);
             float additionalChargePercent = (1.0f - _boostChargeStartPercentage) * chargeProgressionPercent;
-            Debug.Log($"Progression Percent: {chargeProgressionPercent}\nCurrent Percentage: {_boostChargeStartPercentage + additionalChargePercent}");
             _boostChargeBar.SetValues(current: _boostChargeStartPercentage + additionalChargePercent, max: 1.0f);
         }
     }

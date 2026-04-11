@@ -53,7 +53,6 @@ namespace Gameplay.Actions
                 if (_originTransform == null)
                 {
                     NetworkObject networkObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[IActionSourceObjectID];
-                    Debug.Log(networkObject.name, networkObject);
 
                     if (networkObject.TryGetComponent<IActionSource>(out IActionSource actionSource))
                         _originTransform = actionSource.GetOriginTransform(AttachmentSlotIndex);

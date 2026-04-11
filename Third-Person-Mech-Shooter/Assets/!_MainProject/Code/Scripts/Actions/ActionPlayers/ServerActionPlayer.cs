@@ -63,7 +63,7 @@ namespace Gameplay.Actions
         public bool PlayAction(ref ActionRequestData action)
         {
             // Check if we should interrupt the active action.
-            if (!action.ShouldQueue && _actionQueue.Count > 0 && (/*_actionQueue[0].ActionInterruptible || */_actionQueue[0].CanBeInterruptedBy(action.ActionID)))
+            if (!action.ShouldQueue && _actionQueue.Count > 0 && (/*_actionQueue[0].ActionInterruptible || */_actionQueue[0].CanBeInterrupted()))
             {
                 ClearActions(false);
             }
@@ -153,7 +153,7 @@ namespace Gameplay.Actions
             if (_actionQueue.Count > 0)
             {
                 // Only check the active action (Index 0) as the others haven't been started and therefore cannot be interrupted.
-                if (action.ShouldCancelAction(ref action.Data, ref _actionQueue[0].Data))
+                if (action.CanBeCancelled()/*ShouldCancelAction(ref action.Data, ref _actionQueue[0].Data)*/)
                 {
                     // Cancel this action.
                     CancelAction(_actionQueue[0]);
@@ -164,7 +164,7 @@ namespace Gameplay.Actions
             for(int i = _nonBlockingActions.Count - 1; i >= 0; --i)
             {
                 Action nonBlockingAction = _nonBlockingActions[i];
-                if (action.ShouldCancelAction(ref action.Data, ref nonBlockingAction.Data))
+                if (action.CanBeCancelled()/*ShouldCancelAction(ref action.Data, ref _actionQueue[0].Data)*/)
                 {
                     // Cancel this action
                     CancelAction(nonBlockingAction);
@@ -248,7 +248,6 @@ namespace Gameplay.Actions
 
             _slotIndexToChargeDepletedTimeDict.TryGetValue(_actionQueue[0].Data.AttachmentSlotIndex, out float chargeDepletedTime);
 
-            _actionQueue[0].TimeStarted = NetworkManager.Singleton.ServerTime.TimeAsFloat;
             bool play = _actionQueue[0].OnStart(_serverCharacter, chargeDepletedTime);
             if (!play)
             {
@@ -294,7 +293,7 @@ namespace Gameplay.Actions
                 // Remove the currently active action.
                 if (callEndOnRemoved)
                 {
-                    _actionQueue[0].End(_serverCharacter);
+                    _actionQueue[0].OnEnd(_serverCharacter);
                     if (_actionQueue[0].ChainIntoNewAction(ref _pendingSynthesisedAction))
                     {
                         _hasPendingSynthesisedAction = true;
@@ -362,7 +361,7 @@ namespace Gameplay.Actions
                 if (!UpdateAction(runningAction))
                 {
                     // The action has concluded. Remove it.
-                    runningAction.End(_serverCharacter);
+                    runningAction.OnEnd(_serverCharacter);
                     _nonBlockingActions.RemoveAt(i);
                     TryReturnAction(runningAction);
                 }
@@ -380,7 +379,7 @@ namespace Gameplay.Actions
             if (action.IsGhost)
                 return !action.CanBeCancelled();
 
-            return (shouldKeepGoing && !action.HasExpired);
+            return (shouldKeepGoing && !action.HasExpired());
         }
 
 
@@ -388,7 +387,7 @@ namespace Gameplay.Actions
         {
             // If our action's retrigger delay exceeds its cooldown duration, then start a small cooldown
             //      to prevent the player from being able to cancel and restart the action to activate it faster.
-            if (action.Definition.RetriggerDelay > action.Definition.ActionCooldown)
+            if (action.Definition.RetriggerDelay > action.Definition.CooldownTime)
             {
                 _timestampComparison.SetValues(action.ActionID, action.Data.AttachmentSlotIndex);
                 _actionCooldownCompleteTime[_timestampComparison] = NetworkManager.Singleton.ServerTime.TimeAsFloat + action.Definition.RetriggerDelay;
@@ -578,7 +577,7 @@ namespace Gameplay.Actions
             bool tryStartNextAction = _actionQueue.Count > 0 && actionToCancel == _actionQueue[0];  // If this is the blocking action, cache our desire to start the next action in the queue.
 
             // Cancel the action.
-            actionToCancel.Cancel(_serverCharacter, out float chargeDepletedTime);
+            actionToCancel.OnCancel(_serverCharacter, out float chargeDepletedTime);
 
             // Calculate & Save Charge Depletion Time.
             if (!_slotIndexToChargeDepletedTimeDict.TryAdd(actionToCancel.Data.AttachmentSlotIndex, chargeDepletedTime))
@@ -592,7 +591,7 @@ namespace Gameplay.Actions
                 _timestampComparison.SetValues(actionToCancel.ActionID, actionToCancel.Data.AttachmentSlotIndex);
 
                 // Calculate the desired cooldown time.
-                float cooldownCompleteTime = NetworkManager.Singleton.ServerTime.TimeAsFloat + actionToCancel.Definition.ActionCooldown;
+                float cooldownCompleteTime = NetworkManager.Singleton.ServerTime.TimeAsFloat + actionToCancel.Definition.CooldownTime;
                 if (_actionCooldownCompleteTime.TryGetValue(_timestampComparison, out float currentCooldownCompleteTime))
                 {
                     // Our current cooldown time may be greater than our desired one (Such as if our retrigger delay is larger than our cooldown time).

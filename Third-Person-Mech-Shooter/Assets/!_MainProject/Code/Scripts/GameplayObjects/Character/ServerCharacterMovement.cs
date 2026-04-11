@@ -3,6 +3,7 @@ using Unity.Netcode;
 using Gameplay.GameplayObjects.Character.Statistics;
 using Gameplay.Actions.Definitions;
 using Gameplay.Actions;
+using System.Collections.Generic;
 
 namespace Gameplay.GameplayObjects.Character
 {
@@ -63,6 +64,13 @@ namespace Gameplay.GameplayObjects.Character
         private bool _isGrounded;
 
 
+        [Header("Uncontrolled Movement")]
+        private Dictionary<object, ForcedMovementData> _forcedMovementValues;
+        private Vector3 _currentForces;
+        private float _allowInputTime;
+        private float _forceDecreaseRate = 2.0f;
+
+
         private void Awake()
         {
             // Disable ourselves until we have been spawned
@@ -79,6 +87,12 @@ namespace Gameplay.GameplayObjects.Character
 
             // On the server, enable our other components and initialise ourself.
             this._characterController.enabled = true;
+
+
+            // Initialise Values.
+            _forcedMovementValues = new Dictionary<object, ForcedMovementData>();
+            _allowInputTime = 0.0f;
+
 
             // Subscribe to events.
             _characterStats.OnAnyStatisticChanged += CharacterStats_OnAnyStatisticChanged;
@@ -177,9 +191,18 @@ namespace Gameplay.GameplayObjects.Character
         private Vector3 GetProjectedVector(Vector3 vector) => Vector3.ProjectOnPlane(vector, Vector3.up).normalized * vector.magnitude;
         private void PerformMovement()
         {
-            if (_isGrounded)
-                _desiredVelocity = CalculateDesiredMovement();  // We are grounded, so handle movement normally.
-            else
+            if (_movementState == MovementType.ForcedMovement)
+            {
+                AdjustForcedMovement();
+                _desiredVelocity = CalculateForcedMovement();
+            }
+            else if (_isGrounded)
+                _desiredVelocity = Vector3.MoveTowards(_desiredVelocity, CalculateDesiredMovement(), _movementSpeed * _movementSpeed * Time.deltaTime);  // We are grounded, so handle movement normally.
+
+            _desiredVelocity += _currentForces;
+            _currentForces = Vector3.Lerp(_currentForces, Vector3.zero, _forceDecreaseRate * Time.fixedDeltaTime);
+
+            if (!_isGrounded)
                 _desiredVelocity = Vector3.Lerp(_desiredVelocity, Vector3.zero, _airSpeedDecreaseRate * Time.fixedDeltaTime);   // Prevent change in movement direction while in-air, but also decrease towards 0 to simulate resistance.
 
             Vector3 movementVector = _desiredVelocity;  // Use a separate Vector3 so that we can modify it without affecting our desired velocity.
@@ -194,6 +217,39 @@ namespace Gameplay.GameplayObjects.Character
             // Perform Movement.
             _characterController.Move(movementVector * Time.fixedDeltaTime);
         }
+
+        private void AdjustForcedMovement()
+        {
+            if (_movementInput == Vector2.zero)
+                return;
+
+            Quaternion targetRotation = Quaternion.LookRotation(GetProjectedMovementVector(), Vector3.up);
+
+            foreach (var kvp in _forcedMovementValues)
+            {
+                if (kvp.Value.InputRotationRate <= 0.0f)
+                    continue;
+
+                Quaternion rotation = Quaternion.RotateTowards(Quaternion.LookRotation(kvp.Value.Direction, Vector3.up), targetRotation, kvp.Value.InputRotationRate * Time.deltaTime);
+                _forcedMovementValues[kvp.Key].Direction = rotation * Vector3.forward;
+            }
+        }
+        private Vector3 CalculateForcedMovement()
+        {
+            Vector3 movement = Vector3.zero;
+            foreach(var forcedMovementData in _forcedMovementValues.Values)
+            {
+                Debug.DrawRay(transform.position, forcedMovementData.Direction * 5.0f, Color.red, 0.25f);
+
+                if (forcedMovementData.TransformToGround)
+                    movement += TransformToGround(forcedMovementData.Direction) * forcedMovementData.Speed;
+                else
+                    movement += forcedMovementData.Direction * forcedMovementData.Speed;
+            }
+
+            return movement;
+        }
+        private Vector3 TransformToGround(Vector3 direction) => throw new System.NotImplementedException();
 
 
         private void RechargeBoostFramewise()
@@ -221,14 +277,11 @@ namespace Gameplay.GameplayObjects.Character
         /// <param name="movementInput"></param>
         public void SetMovementInput(Vector2 movementInput)
         {
-            if (movementInput == Vector2.zero)
-            {
-                _movementState = MovementType.Idle;
-                return;
-            }
-
-            _movementState = MovementType.DirectInput;
             this._movementInput = movementInput;
+
+            if (_movementState == MovementType.ForcedMovement)
+                return;
+            _movementState = movementInput == Vector2.zero ? MovementType.Idle : MovementType.DirectInput;
         }
         /// <summary>
         ///     Sets a movement target for the character to pathfind towards, avoiding static obstacles.
@@ -241,34 +294,104 @@ namespace Gameplay.GameplayObjects.Character
         }
 
 
+        public void SetPosition(Vector3 newPosition, bool performObstructionChecks) => AddPosition(newPosition - transform.position, performObstructionChecks);
+        public void AddPosition(Vector3 positionOffset, bool performObstructionChecks)
+        {
+            if (!performObstructionChecks)
+            {
+                transform.position += positionOffset;
+            }
+            else
+            {
+                _characterController.Move(positionOffset);
+            }
+        }
+
+        /// <summary>
+        ///     Adds a instant knockback force to the character.
+        /// </summary>
+        public void AddKnockbackForce(Vector3 force, float preventMovementTime = 0.0f)
+        {
+            _currentForces += force;
+            UpdatePreventMovementTime(preventMovementTime);
+        }
+
+        /// <summary>
+        ///     Adds an instance of forced movement from a given <paramref name="source"/>.
+        /// </summary>
+        /// <param name="direction"> The direction of forced movement.</param>
+        /// <param name="speed"> The speed of the forced movement.</param>
+        /// <param name="preventMovementTime"> The time (In Seconds) that the player is unable to perform input.</param>
+        /// <param name="inputRotationRate"> The rate of rotation (In Degrees/Second) that the player can rotate the forced movement. Leave at 0 for input to not affect the direction.</param>
+        /// <param name="transformToGround"> If true, adjusts the direction to allow for an easier time going up/down slopes when the character is already on them.</param>
+        public void AddContinuousForcedMovement(object source, Vector3 direction, float speed, float preventMovementTime = 0.0f, float inputRotationRate = 0.0f, bool transformToGround = false)
+        {
+            _movementState = MovementType.ForcedMovement;
+
+            // Input Prevention.
+            UpdatePreventMovementTime(preventMovementTime);
+
+            // Create and store our forced movement.
+            ForcedMovementData forcedMovementData = new ForcedMovementData(direction, speed, inputRotationRate, transformToGround);
+            if (!_forcedMovementValues.TryAdd(source, forcedMovementData))
+                _forcedMovementValues[source] = forcedMovementData;
+        }
+        /// <summary>
+        ///     Removes all instances of forced movement from a given <paramref name="source"/>.
+        /// </summary>
+        public void RemoveContinuousForcedMovement(object source)
+        {
+            _forcedMovementValues.Remove(source);
+
+            if (_forcedMovementValues.Count == 0)
+                _movementState = _movementInput == Vector2.zero ? MovementType.Idle : MovementType.DirectInput;
+        }
+
+        /// <summary>
+        ///     Sets the value of '_allowInputTime' if ServerTime + <paramref name="inputPreventionDuration"/> is greater than its current value.
+        /// </summary>
+        private void UpdatePreventMovementTime(float inputPreventionDuration)
+        {
+            if (inputPreventionDuration > 0.0f)
+                _allowInputTime = Mathf.Max(_allowInputTime, NetworkManager.Singleton.ServerTime.TimeAsFloat + inputPreventionDuration);
+        }
+
+
         public void PerformBoost()
         {
             if (_boostCountRemaining <= 0)
                 return;
             --_boostCountRemaining;
 
-            NotifyListenersOfBoostRechargeValuesChanged();
+            NotifyListenersOfBoostRechargeValuesChangedServerRpc();
             
             ActionRequestData actionRequestData = new ActionRequestData()
             {
                 ActionID = _boostAction.ActionID,
                 IActionSourceObjectID = _serverCharacter.NetworkObjectId,
-                Direction = _movementInput != Vector2.zero ? GetProjectedMovementVector() : GetProjectedVector(_characterController.transform.forward),
+                Direction = _movementInput != Vector2.zero ? GetProjectedMovementVector() : GetProjectedVector(_rotationPivot.forward),
             };
             _serverCharacter.ActionPlayer.PlayAction(ref actionRequestData);
         }
-        private void NotifyListenersOfBoostRechargeValuesChanged()
+        [Rpc(SendTo.Server)]
+        private void NotifyListenersOfBoostRechargeValuesChangedServerRpc()
         {
+            // Calculate Values.
             float rechargeStartTime = NetworkManager.Singleton.ServerTime.TimeAsFloat;
 
-            float currentTotalBoostsPercentage = (_boostCountRemaining + _boostRechargeProgress) / (float)_boostCount;   // Our current percent of boosts in total (E.g. 1.5 boosts / 2 max = 0.75).
+            float currentTotalBoostPercentage = (_boostCountRemaining + _boostRechargeProgress) / (float)_boostCount;   // Our current percent of boosts in total (E.g. 1.5 boosts / 2 max = 0.75).
 
             float timeFromZeroToMaxBoosts = BOOST_RECHARGE_DURATION * _boostCount; // How long it would take to recharge all boosts from 0% (In seconds).
-            float percentageTillFullBoosts = 1.0f - currentTotalBoostsPercentage;
+            float percentageTillFullBoosts = 1.0f - currentTotalBoostPercentage;
             float rechargeEndTime = rechargeStartTime + (timeFromZeroToMaxBoosts * percentageTillFullBoosts);
 
-            OnBoostRechargeValuesChanged?.Invoke(this, new OnBoostChargeValuesChangedEventArgs(rechargeStartTime, currentTotalBoostsPercentage, rechargeEndTime));
+
+            // Notify owner so they can update their UI and such.
+            NotifyListenersOfBoostRechargeValuesChangedOwnerRpc(rechargeStartTime, currentTotalBoostPercentage, rechargeEndTime);
         }
+        [Rpc(SendTo.Owner)]
+        private void NotifyListenersOfBoostRechargeValuesChangedOwnerRpc(float rechargeStartTime, float currentTotalBoostPercentage, float rechargeEndTime) => OnBoostRechargeValuesChanged?.Invoke(this, new OnBoostChargeValuesChangedEventArgs(rechargeStartTime, currentTotalBoostPercentage, rechargeEndTime));
+        
 
 
         /// <summary>
@@ -315,6 +438,23 @@ namespace Gameplay.GameplayObjects.Character
                 ChargeStartTime = chargeStartTime;
                 ChargeStartPercentage = chargeStartPercentage;
                 ChargeEndTime = chargeEndTime;
+            }
+        }
+        private class ForcedMovementData    // Class so it's passed ByRef.
+        {
+            public Vector3 Direction;
+            public float Speed;             // Units/Sec
+
+            public float InputRotationRate; // Degrees/Sec
+            public bool TransformToGround;
+
+
+            public ForcedMovementData(Vector3 direction, float speed, float inputRotationRate, bool transformToGround)
+            {
+                this.Direction = direction;
+                this.Speed = speed;
+                this.InputRotationRate = inputRotationRate;
+                this.TransformToGround = transformToGround;
             }
         }
     }

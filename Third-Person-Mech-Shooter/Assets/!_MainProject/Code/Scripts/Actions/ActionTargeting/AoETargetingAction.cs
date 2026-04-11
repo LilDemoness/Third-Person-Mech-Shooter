@@ -6,13 +6,13 @@ using System;
 namespace Gameplay.Actions.Definitions
 {
     /// <summary>
-    ///     An action that selects targets within an Area of Effect using a given <see cref="AoETargeting"/> method.
+    ///     An action that selects targets within an Area of Effect using a given <see cref="AoETargetingMethod"/>.
     /// </summary>
     [CreateAssetMenu(menuName = "Actions/AoE Action", order = 4)]
     public class AoETargetingAction : ActionDefinition
     {
         [Header("Targeting")]
-        [SerializeReference, SubclassSelector] private AoETargeting _targetingMethod;
+        [SerializeReference, SubclassSelector] private AoETargetingMethod _targetingMethod;
         public string RangeString => _targetingMethod.RangeString;
 
         [Space(10)]
@@ -23,8 +23,8 @@ namespace Gameplay.Actions.Definitions
         [SerializeField] private bool _useMaxRangeOnRaycastFailure = false;
 
 
-        public override bool OnStart(ServerCharacter owner, ref ActionRequestData data) => ActionConclusion.Continue;
-        public override bool OnUpdate(ServerCharacter owner, ref ActionRequestData data, float chargePercentage = 1.0f)
+        public override bool OnStart(Action action, ServerCharacter owner, ref ActionRequestData data) => ActionConclusion.Continue;
+        protected override bool HandleTrigger(Action action, ServerCharacter owner, Vector3 direction, ref ActionRequestData data, float chargePercentage)
         {
             // Determine our desired origin & direction.
             Vector3 actionOrigin = base.GetActionOrigin(ref data);
@@ -75,9 +75,9 @@ namespace Gameplay.Actions.Definitions
             Debug.DrawRay(hitInfo.HitPoint, hitInfo.HitForward, Color.yellow, 1.0f);
 
             // Perform this action's effects (Damage, Applying Statuses, etc) on the server (Changes are perpetuated to clients).
-            for (int i = 0; i < ActionEffects.Length; ++i)
+            for (int i = 0; i < HitEffects.Length; ++i)
             {
-                ActionEffects[i].ApplyEffect(owner, hitInfo, chargePercentage);
+                HitEffects[i].ApplyEffect(owner, hitInfo, chargePercentage);
             }
         }
 
@@ -86,7 +86,7 @@ namespace Gameplay.Actions.Definitions
         /// <summary>
         ///     Base class for an AoE Targeting Method.
         /// </summary>
-        private abstract class AoETargeting
+        private abstract class AoETargetingMethod
         {
             public abstract string RangeString { get; }
 
@@ -135,7 +135,7 @@ namespace Gameplay.Actions.Definitions
         ///     AoE Targeting Method using a Sphere.
         /// </summary>
         [System.Serializable]
-        private class SphereAoETargeting : AoETargeting
+        private class SphereAoETargeting : AoETargetingMethod
         {
             public override string RangeString => _sphereRadius + Units.DISTANCE_UNITS + " Sphere";
 
@@ -165,7 +165,7 @@ namespace Gameplay.Actions.Definitions
         ///     AoE Targeting Method using a line/capsule with the desired thickness/radius.
         /// </summary>
         [System.Serializable]
-        private class LineAoETargeting : AoETargeting
+        private class LineAoETargeting : AoETargetingMethod
         {
             public override string RangeString => _lineLength + Units.DISTANCE_UNITS + " Long " + _lineRadius + Units.DISTANCE_UNITS + " Wide Line";
 
@@ -202,7 +202,7 @@ namespace Gameplay.Actions.Definitions
         /// </summary>
         // Note: Effectively a Sphere but discarding targets outwith specified Angle.
         [System.Serializable]
-        private class ConeAoETargeting : AoETargeting
+        private class ConeAoETargeting : AoETargetingMethod
         {
             public override string RangeString => _coneLength + Units.DISTANCE_UNITS + " Long " + _coneAngle + Units.DEGREES_UNITS + " Angle Cone";
             [SerializeField] private float _coneLength;

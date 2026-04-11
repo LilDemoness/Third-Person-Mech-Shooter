@@ -10,18 +10,18 @@ namespace Gameplay.GameplayObjects
         public static GameDataSource Instance { get; private set; }
 
 
-        [SerializeField] private ActionDefinition m_generalChaseActionDefinition;
-        [SerializeField] private ActionDefinition m_generalTargetActionDefinition;
-        [SerializeField] private ActionDefinition m_stunnedActionDefinition;
+        //[SerializeField] private ActionDefinition m_generalChaseActionDefinition;
+        //[SerializeField] private ActionDefinition m_generalTargetActionDefinition;
+        //[SerializeField] private ActionDefinition m_stunnedActionDefinition;
 
 
         [Tooltip("All Action Prototype Scriptable Objects")]
         [SerializeField] private ActionDefinition[] _actionDefinitions;
 
 
-        public ActionDefinition GeneralChaseActionDefinition => m_generalChaseActionDefinition;
-        public ActionDefinition GeneralTargetActionDefinition => m_generalTargetActionDefinition;
-        public ActionDefinition StunnedActionDefinition => m_stunnedActionDefinition;
+        //public ActionDefinition GeneralChaseActionDefinition => m_generalChaseActionDefinition;
+        //public ActionDefinition GeneralTargetActionDefinition => m_generalTargetActionDefinition;
+        //public ActionDefinition StunnedActionDefinition => m_stunnedActionDefinition;
 
         private List<ActionDefinition> _allActionDefinitions;
 
@@ -43,9 +43,9 @@ namespace Gameplay.GameplayObjects
             HashSet<ActionDefinition> uniqueDefinitions = new HashSet<ActionDefinition>(_actionDefinitions);
 
             // Add our General Action Prototypes.
-            uniqueDefinitions.Add(m_generalChaseActionDefinition);
-            uniqueDefinitions.Add(m_generalTargetActionDefinition);
-            uniqueDefinitions.Add(m_stunnedActionDefinition);
+            //uniqueDefinitions.Add(m_generalChaseActionDefinition);
+            //uniqueDefinitions.Add(m_generalTargetActionDefinition);
+            //uniqueDefinitions.Add(m_stunnedActionDefinition);
 
             _allActionDefinitions = new List<ActionDefinition>(uniqueDefinitions.Count);
 

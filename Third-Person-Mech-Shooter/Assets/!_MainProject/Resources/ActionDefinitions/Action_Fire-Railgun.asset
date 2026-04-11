@@ -12,73 +12,80 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67be874d7b7220a48860d93d2458ae04, type: 3}
   m_Name: Action_Fire-Railgun
   m_EditorClassIdentifier: 
-  IsHostileAction: 1
+  <IsHostileAction>k__BackingField: 1
   <ShouldNotifyClient>k__BackingField: 1
   <ActivationStyle>k__BackingField: 0
+  <InterruptableStages>k__BackingField: -1
   <ImmediateHeat>k__BackingField: 0.2
+  <ChargingContinuousHeat>k__BackingField: 0.1
   <ContinuousHeat>k__BackingField: 0
-  <RetriggerHeat>k__BackingField: 1
-  <ExecutionDelay>k__BackingField: 0
-  <ActionCooldown>k__BackingField: 0
+  <RetriggerHeat>k__BackingField: 0.5
+  <WindupTime>k__BackingField: 0
+  <RecoveryTime>k__BackingField: 0
+  <CooldownTime>k__BackingField: 0
   <BlockingMode>k__BackingField: 1
   <MaxActiveDuration>k__BackingField: 0
   <CanCharge>k__BackingField: 1
-  <MaxChargeTime>k__BackingField: 0.8
+  <ChargeTime>k__BackingField: 0.8
   <MinChargeActivationPercentage>k__BackingField: 1
-  <RetainChargeAfterFull>k__BackingField: 0
-  <MaxChargeDepletionTime>k__BackingField: 1.6
+  <ExecuteImmediatelyOnceAtFullCharge>k__BackingField: 1
+  <RetainChargeOnceFull>k__BackingField: 0
+  <ChargeDepletionTime>k__BackingField: 1.6
   <UIChargeDepletionTime>k__BackingField: 0.1
   <TriggerType>k__BackingField: 2
   <CancelOnLastTrigger>k__BackingField: 1
   <RetriggerDelay>k__BackingField: 0.4
   <Bursts>k__BackingField: 3
   <BurstDelay>k__BackingField: 0.1
-  <IsInterruptable>k__BackingField: 0
-  ActionEffects:
-  - rid: 6632896607793709159
-  TriggeringVisuals:
-  - rid: 6632896609068777570
-  - rid: 1083950434222342645
-  - rid: 6632896607793709162
-  - rid: 1083950434222342644
-  HitVisuals:
-  - rid: 1083950434222342314
+  <TriggeringVisuals>k__BackingField:
+  - rid: 981910298840793213
+  - rid: 981910298840793215
+  - rid: 981910298840793214
+  - rid: 981910298840793216
+  <HitVisuals>k__BackingField:
+  - rid: 981910305249689694
   <ActionCrosshairPrefab>k__BackingField: {fileID: 830966631555543426, guid: 9d14fbeb532b8d64a99f11ce9df584f9, type: 3}
+  <HitEffects>k__BackingField:
+  - rid: 981910298840793205
+  <ActivationsPerTrigger>k__BackingField: 1
+  <ActivationDeviationPattern>k__BackingField: 0
+  <TargetingStartDeviation>k__BackingField: 0
+  <TargetingInnerDeviation>k__BackingField: 0
   <MaxRange>k__BackingField: 100
   <ValidLayers>k__BackingField:
     serializedVersion: 2
-    m_Bits: 329
+    m_Bits: 73
   <Pierces>k__BackingField: 3
   references:
     version: 2
     RefIds:
-    - rid: 1083950434222342314
-      type: {class: SpecialFXActionVisual, ns: Gameplay.Actions.Visuals, asm: Assembly-CSharp}
+    - rid: 981910298840793205
+      type: {class: HealthChangeEffect, ns: Gameplay.Actions.Effects, asm: Assembly-CSharp}
       data:
-        _triggerTimes: 4
-        _specialFXGraphic: {fileID: 7886655476902268161, guid: 20b31fcfaed0cb842a56fbbe2419428f, type: 3}
-    - rid: 1083950434222342644
-      type: {class: PlayAudioActionVisual, ns: Gameplay.Actions.Visuals, asm: Assembly-CSharp}
-      data:
-        _triggerTimes: 4
-        _clip: {fileID: 8300000, guid: 76c09b428d672a94c9f1cb703ab8908b, type: 3}
-    - rid: 1083950434222342645
+        _healthChange: 3
+        _scaleValueWithCharge: 1
+    - rid: 981910298840793213
       type: {class: PlayAudioActionVisual, ns: Gameplay.Actions.Visuals, asm: Assembly-CSharp}
       data:
         _triggerTimes: 2
         _clip: {fileID: 8300000, guid: ec3ea3941cfa7774d8204d95fcb1b0c1, type: 3}
-    - rid: 6632896607793709159
-      type: {class: HealthChangeEffect, ns: Gameplay.Actions.Effects, asm: Assembly-CSharp}
-      data:
-        _healthChange: -7
-        _scaleValueWithCharge: 1
-    - rid: 6632896607793709162
-      type: {class: SpecialFXActionVisual, ns: Gameplay.Actions.Visuals, asm: Assembly-CSharp}
+    - rid: 981910298840793214
+      type: {class: PlayAudioActionVisual, ns: Gameplay.Actions.Visuals, asm: Assembly-CSharp}
       data:
         _triggerTimes: 4
-        _specialFXGraphic: {fileID: 7920825190360787008, guid: 5773fbaebd2655948aed0300f4bb2a3e, type: 3}
-    - rid: 6632896609068777570
+        _clip: {fileID: 8300000, guid: 76c09b428d672a94c9f1cb703ab8908b, type: 3}
+    - rid: 981910298840793215
       type: {class: SpecialFXActionVisual, ns: Gameplay.Actions.Visuals, asm: Assembly-CSharp}
       data:
         _triggerTimes: 2
         _specialFXGraphic: {fileID: 4037183185398935712, guid: 23e0f9a3cb233bc429cae2ff4f765694, type: 3}
+    - rid: 981910298840793216
+      type: {class: SpecialFXActionVisual, ns: Gameplay.Actions.Visuals, asm: Assembly-CSharp}
+      data:
+        _triggerTimes: 4
+        _specialFXGraphic: {fileID: 4037183185398935712, guid: de6513b59a0ab6e45827e1457b43a2b3, type: 3}
+    - rid: 981910305249689694
+      type: {class: SpecialFXActionVisual, ns: Gameplay.Actions.Visuals, asm: Assembly-CSharp}
+      data:
+        _triggerTimes: 4
+        _specialFXGraphic: {fileID: 7886655476902268161, guid: 20b31fcfaed0cb842a56fbbe2419428f, type: 3}

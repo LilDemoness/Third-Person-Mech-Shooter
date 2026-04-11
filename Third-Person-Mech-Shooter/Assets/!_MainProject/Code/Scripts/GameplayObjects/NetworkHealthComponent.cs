@@ -1,5 +1,4 @@
 using Gameplay.GameplayObjects.Character;
-using Unity.Collections.LowLevel.Unsafe;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -40,6 +39,9 @@ namespace Gameplay.GameplayObjects
         public event System.Action<BaseDamageReceiverEventArgs> OnDied;
         public event System.Action<BaseDamageReceiverEventArgs> OnRevived;
         public event System.Action<ulong?, LifeState> OnLifeStateChanged;
+
+
+        public event System.Action<Collision> CollisionEntered;
 
         #endregion
 
@@ -302,6 +304,12 @@ namespace Gameplay.GameplayObjects
             }
             else
                 throw new System.Exception($"Invalid Object ID ({objectId}): No corresponding NetworkObject");
+        }
+
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            CollisionEntered?.Invoke(collision);
         }
 
 

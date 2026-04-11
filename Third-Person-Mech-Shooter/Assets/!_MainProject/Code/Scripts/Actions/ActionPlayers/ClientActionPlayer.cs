@@ -70,7 +70,7 @@ namespace Gameplay.Actions
             if (action.IsGhost)
                 return !action.CanBeCancelled();
             
-            return shouldKeepGoing && !action.HasExpired && !hasTimedOut;
+            return shouldKeepGoing && !action.HasExpired() && !hasTimedOut;
         }
 
         /// <summary> A helper wrapper for a FindIndex call on _playingActions.</summary>

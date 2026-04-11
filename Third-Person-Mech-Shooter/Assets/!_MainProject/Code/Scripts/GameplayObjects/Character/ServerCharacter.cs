@@ -142,6 +142,7 @@ namespace Gameplay.GameplayObjects.Character
             
             CurrentHeat.OnValueChanged += OnCurrentHeatChanged;
             NetworkHealthComponent.OnDied += OnCharacterDied;
+            NetworkHealthComponent.CollisionEntered += CollisionEntered;
             ActionPlayer.OnActionQueueFilled += ServerActionPlayer_OnActionQueueFilled;
             ActionPlayer.OnActionQueueEmptied += ServerActionPlayer_OnActionQueueEmptied;
         }
@@ -152,6 +153,7 @@ namespace Gameplay.GameplayObjects.Character
             // Unsubscribe from NetworkVariable Events.
             CurrentHeat.OnValueChanged -= OnCurrentHeatChanged;
             NetworkHealthComponent.OnDied -= OnCharacterDied;
+            NetworkHealthComponent.CollisionEntered -= CollisionEntered;
             ActionPlayer.OnActionQueueFilled -= ServerActionPlayer_OnActionQueueFilled;
             ActionPlayer.OnActionQueueEmptied -= ServerActionPlayer_OnActionQueueEmptied;
         }
@@ -175,7 +177,7 @@ namespace Gameplay.GameplayObjects.Character
         public void SendCharacterMovementInputServerRpc(Vector2 movementInput)
         {
             // Check that we're not dead or currently experiencing forced movement (E.g. Knockback/Charge).
-            if (!CanPerformActions || _movement.IsPerformingForcedMovement())
+            if (!CanPerformActions)// || _movement.IsPerformingForcedMovement())
                 return;
 
             // Check if our current action prevents movement.
@@ -194,7 +196,7 @@ namespace Gameplay.GameplayObjects.Character
         {
             Debug.Log("Try Boost - Character");
             // Check that we're not dead or currently experiencing forced movement (E.g. Knockback/Charge).
-            if (!CanPerformActions || _movement.IsPerformingForcedMovement())
+            if (!CanPerformActions)// || _movement.IsPerformingForcedMovement())
                 return;
 
             // Check if our current action prevents movement.
@@ -439,6 +441,12 @@ namespace Gameplay.GameplayObjects.Character
 
         #endregion
 
+
+        private void CollisionEntered(Collision collision)
+        {
+            if (ActionPlayer != null)
+                ActionPlayer.CollisionEntered(collision);
+        }
 
 
         #region Editor Testing Functions

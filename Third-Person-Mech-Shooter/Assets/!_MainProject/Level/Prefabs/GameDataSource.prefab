@@ -44,13 +44,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9197c9c1e343398438e44d218c68f527, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_generalChaseActionDefinition: {fileID: 11400000, guid: 790aff09baa275a41a474786517981f4, type: 2}
-  m_generalTargetActionDefinition: {fileID: 11400000, guid: a4953145727676e43bf558403a831116, type: 2}
-  m_stunnedActionDefinition: {fileID: 11400000, guid: 9004329d20ce0024a8acf5587efeeac5, type: 2}
   _actionDefinitions:
   - {fileID: 11400000, guid: 73bcf9cdef3b4c341a4888e24bc924d9, type: 2}
   - {fileID: 11400000, guid: f3d267d6606c18b409b63f9da8f09559, type: 2}
   - {fileID: 11400000, guid: e39a066565a86c14e8cc32f9e4068494, type: 2}
   - {fileID: 11400000, guid: e9561157cb9850545b65ef1e3eb07d97, type: 2}
   - {fileID: 11400000, guid: 649c4f2d3bdd98c408d1fc3533078f8b, type: 2}
-  - {fileID: 11400000, guid: 63d7d0dea6025354193f58de39cdbf23, type: 2}
+  - {fileID: 11400000, guid: d65effb287142e7419569850e1910bc2, type: 2}

@@ -269,6 +269,8 @@ namespace Gameplay.GameplayObjects.Character.Statistics
         // Base & Addition
         BoostCount,
         BoostRechargeMultiplier,
+
+        KnockbackForceMultiplier,
     }
     [System.Serializable]
     public enum StatisticAlterationType
