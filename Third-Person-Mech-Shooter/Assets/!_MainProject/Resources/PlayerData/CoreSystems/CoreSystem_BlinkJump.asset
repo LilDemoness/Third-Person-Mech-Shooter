@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1e7e938cddfc8e4684449ab6e53b594, type: 3}
+  m_Name: CoreSystem_BlinkJump
+  m_EditorClassIdentifier: 
+  <Name>k__BackingField: Blink Jump
+  <Sprite>k__BackingField: {fileID: 0}
+  <Description>k__BackingField: Replaces Boost with a short-range teleport. Activating
+    System makes you intangible (Invisible and unable to be affected by attacks)
+    for a short duration.
+  <PassiveFeatureDefinition>k__BackingField: {fileID: 11400000, guid: 211dcba9dbe244b4f8f78ac7ef320b40, type: 2}
+  <ActiveActionDefinition>k__BackingField: {fileID: 11400000, guid: 61b2feb0218ed6546964cafca82ea51c, type: 2}

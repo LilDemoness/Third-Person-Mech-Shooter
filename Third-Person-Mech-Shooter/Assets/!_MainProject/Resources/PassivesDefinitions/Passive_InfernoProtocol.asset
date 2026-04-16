@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 003ff003d1f273043acd2bde9443d191, type: 3}
+  m_Name: Passive_InfernoProtocol
+  m_EditorClassIdentifier: 
+  _effects:
+  - rid: 981910439197933665
+  references:
+    version: 2
+    RefIds:
+    - rid: 981910439197933665
+      type: {class: AlterStatisticEffect, ns: Gameplay.Passives, asm: Assembly-CSharp}
+      data:
+        _updates: 1
+        _triggerAtStart: 0
+        _passiveConditions:
+        - rid: 981910439197933666
+        _affectedStatistic: 12
+        _alterationType: 2
+        _alterationValue: 1.5
+        _removeEffectOnConditionFailed: 1
+    - rid: 981910439197933666
+      type: {class: StatisticCondition, ns: Gameplay.Passives, asm: Assembly-CSharp}
+      data:
+        _statisticToCheck: 1
+        _minPercentage: 0.5
+        _maxPercentage: 1

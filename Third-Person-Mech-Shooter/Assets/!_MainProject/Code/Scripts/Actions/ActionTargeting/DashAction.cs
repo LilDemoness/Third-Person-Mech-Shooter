@@ -50,7 +50,7 @@ namespace Gameplay.Actions.Definitions
 
         public override bool OnStart(Action action, ServerCharacter owner)
         {
-            if (_dashSpeed == 0.0f)
+            if (Mathf.Approximately(_dashSpeed, 0.0f))
             {
                 owner.Movement.AddPosition(action.Data.Direction * _dashMaxDistance, true);
                 return ActionConclusion.Stop;

@@ -15,8 +15,8 @@ namespace Gameplay.GameplayObjects
         //[SerializeField] private ActionDefinition m_stunnedActionDefinition;
 
 
-        [Tooltip("All Action Prototype Scriptable Objects")]
-        [SerializeField] private ActionDefinition[] _actionDefinitions;
+        //[Tooltip("All Action Prototype Scriptable Objects")]
+        //[SerializeField] private ActionDefinition[] _actionDefinitions;
 
 
         //public ActionDefinition GeneralChaseActionDefinition => m_generalChaseActionDefinition;
@@ -40,7 +40,7 @@ namespace Gameplay.GameplayObjects
         }
         private void BuildActionIDs()
         {
-            HashSet<ActionDefinition> uniqueDefinitions = new HashSet<ActionDefinition>(_actionDefinitions);
+            HashSet<ActionDefinition> uniqueDefinitions = new HashSet<ActionDefinition>(Resources.LoadAll<ActionDefinition>(""));
 
             // Add our General Action Prototypes.
             //uniqueDefinitions.Add(m_generalChaseActionDefinition);

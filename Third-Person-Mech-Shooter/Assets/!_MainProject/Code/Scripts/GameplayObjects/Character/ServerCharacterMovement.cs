@@ -33,9 +33,11 @@ namespace Gameplay.GameplayObjects.Character
 
 
         [Header("Boost Settings")]
-        [SerializeField] private ActionDefinition _boostAction;
+        [SerializeField] private ActionDefinition _defaultBoostAction;
+        [SerializeField, ReadOnly] private ActionDefinition _boostActionOverride;
+        private ActionDefinition _boostAction => _boostActionOverride ?? _defaultBoostAction;
 
-        private int _boostCount { get; set; }
+        private int _boostCount => Mathf.CeilToInt(_characterStats.GetStatisticValue(Statistic.BoostCount));
 
 
         const float BOOST_RECHARGE_DURATION = 2.0f; // Time in Seconds.
@@ -46,7 +48,10 @@ namespace Gameplay.GameplayObjects.Character
         private float _boostRechargeProgress;
 
 
-        public event System.Action<int> OnBoostStatsChanged;
+        public void OnBoostStatsChanged_SubscribeAndCallback(System.Action<int> callback) { _onBoostStatsChanged += callback; callback?.Invoke(_boostCount); }
+        public void OnBoostStatsChanged_Unsubscribe(System.Action<int> callback) => _onBoostStatsChanged -= callback;
+        private event System.Action<int> _onBoostStatsChanged;
+
         public event System.EventHandler<OnBoostChargeValuesChangedEventArgs> OnBoostRechargeValuesChanged;
 
 
@@ -95,7 +100,8 @@ namespace Gameplay.GameplayObjects.Character
 
 
             // Subscribe to events.
-            _characterStats.OnAnyStatisticChanged += CharacterStats_OnAnyStatisticChanged;
+            _characterStats.OnStatisticChanged += CharacterStats_OnStatisticChanged;
+            CharacterStats_OnStatisticChanged(Statistic.BoostCount);
         }
         private void FixedUpdate()
         {
@@ -118,19 +124,21 @@ namespace Gameplay.GameplayObjects.Character
                 this.enabled = false;
 
                 // Unsubscribe from events.
-                _characterStats.OnAnyStatisticChanged += CharacterStats_OnAnyStatisticChanged;
+                _characterStats.OnStatisticChanged -= CharacterStats_OnStatisticChanged;
             }
         }
 
-        private void CharacterStats_OnAnyStatisticChanged()
+        private void CharacterStats_OnStatisticChanged(Statistic statistic)
         {
-            int boostCount = Mathf.CeilToInt(_characterStats.GetStatisticValue(Statistic.BoostCount));
-            if (boostCount != _boostCount)
-            {
-                _boostCount = boostCount;
-                _boostCountRemaining = _boostCount;
-                OnBoostStatsChanged?.Invoke(boostCount);
-            }
+            if (statistic != Statistic.BoostCount)
+                return;
+
+            Debug.Log("Boost Count Changed: " + _boostCount);
+
+            _boostCountRemaining = _boostCount;
+            _onBoostStatsChanged?.Invoke(_boostCount);
+
+            NotifyListenersOfBoostRechargeValuesChangedServerRpc();
         }
 
 
@@ -360,7 +368,10 @@ namespace Gameplay.GameplayObjects.Character
         public void PerformBoost()
         {
             if (_boostCountRemaining <= 0)
+            {
+                Debug.Log("Out of boosts");
                 return;
+            }
             --_boostCountRemaining;
 
             NotifyListenersOfBoostRechargeValuesChangedServerRpc();
@@ -391,7 +402,16 @@ namespace Gameplay.GameplayObjects.Character
         }
         [Rpc(SendTo.Owner)]
         private void NotifyListenersOfBoostRechargeValuesChangedOwnerRpc(float rechargeStartTime, float currentTotalBoostPercentage, float rechargeEndTime) => OnBoostRechargeValuesChanged?.Invoke(this, new OnBoostChargeValuesChangedEventArgs(rechargeStartTime, currentTotalBoostPercentage, rechargeEndTime));
-        
+
+
+        private void SetBoostAction(ActionDefinition newBoostAction) => _boostActionOverride = newBoostAction;
+        [Rpc(SendTo.Server)]
+        public void SetBoostActionServerRpc(ActionID actionID) => SetBoostAction(GameDataSource.Instance.GetActionDefinitionByID(actionID));
+
+        private void ClearBoostActionOverride() => _boostActionOverride = null;
+        [Rpc(SendTo.Server)]
+        public void ClearBoostActionOverrideServerRpc() => ClearBoostActionOverride();
+
 
 
         /// <summary>

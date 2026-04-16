@@ -13,6 +13,7 @@ namespace Gameplay.GameplayObjects.Character.Statistics
         private Dictionary<Statistic, float> _statisticTotals;                  // Never accessed on the server.
 
         public event System.Action OnAnyStatisticChanged;
+        public event System.Action<Statistic> OnStatisticChanged;
 
 
         private void Awake()
@@ -99,6 +100,8 @@ namespace Gameplay.GameplayObjects.Character.Statistics
 
             _statisticTotals.LogPairs();
             OnAnyStatisticChanged?.Invoke();
+            for (int i = 0; i < keys.Length; ++i)
+                OnStatisticChanged?.Invoke(keys[i]);
         }
 
         [Rpc(SendTo.Server)]
@@ -115,6 +118,7 @@ namespace Gameplay.GameplayObjects.Character.Statistics
 
             Debug.Log(statistic.ToString() + ": " + newTotal, this);
             OnAnyStatisticChanged?.Invoke();
+            OnStatisticChanged?.Invoke(statistic);
         }
 
 
@@ -271,6 +275,8 @@ namespace Gameplay.GameplayObjects.Character.Statistics
         BoostRechargeMultiplier,
 
         KnockbackForceMultiplier,
+
+        Damage,
     }
     [System.Serializable]
     public enum StatisticAlterationType

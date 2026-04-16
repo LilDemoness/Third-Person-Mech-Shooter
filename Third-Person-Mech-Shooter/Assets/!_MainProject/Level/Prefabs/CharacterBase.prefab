@@ -52,7 +52,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1314757462
+  GlobalObjectIdHash: 4132376802
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -196,7 +196,8 @@ MonoBehaviour:
   _characterStats: {fileID: 4145569306345955613}
   _rotationPivot: {fileID: 7621494308545332439}
   _characterController: {fileID: 4308262964034644391}
-  _boostAction: {fileID: 11400000, guid: d65effb287142e7419569850e1910bc2, type: 2}
+  _defaultBoostAction: {fileID: 11400000, guid: d65effb287142e7419569850e1910bc2, type: 2}
+  _boostActionOverride: {fileID: 0}
   _gravityMultiplier: 1
   _airSpeedDecreaseRate: 1
   _groundCheckRadius: 0.5

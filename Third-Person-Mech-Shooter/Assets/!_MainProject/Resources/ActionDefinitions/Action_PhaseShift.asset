@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d2cae861ac9e7f4eb3e9d954ac1508d, type: 3}
+  m_Name: Action_PhaseShift
+  m_EditorClassIdentifier: 
+  <IsHostileAction>k__BackingField: 1
+  <ShouldNotifyClient>k__BackingField: 1
+  <ActivationStyle>k__BackingField: 0
+  <InterruptableStages>k__BackingField: -1
+  <ImmediateHeat>k__BackingField: 0
+  <ChargingContinuousHeat>k__BackingField: 0
+  <ContinuousHeat>k__BackingField: 0
+  <RetriggerHeat>k__BackingField: 0
+  <WindupTime>k__BackingField: 0
+  <RecoveryTime>k__BackingField: 0
+  <CooldownTime>k__BackingField: 0
+  <BlockingMode>k__BackingField: 1
+  <MaxActiveDuration>k__BackingField: 0
+  <CanCharge>k__BackingField: 0
+  <ChargeTime>k__BackingField: 0
+  <MinChargeActivationPercentage>k__BackingField: 1
+  <ExecuteImmediatelyOnceAtFullCharge>k__BackingField: 1
+  <RetainChargeOnceFull>k__BackingField: 0
+  <ChargeDepletionTime>k__BackingField: 0
+  <UIChargeDepletionTime>k__BackingField: 0
+  <TriggerType>k__BackingField: 0
+  <CancelOnLastTrigger>k__BackingField: 1
+  <RetriggerDelay>k__BackingField: 0
+  <Bursts>k__BackingField: 0
+  <BurstDelay>k__BackingField: 0
+  <TriggeringVisuals>k__BackingField: []
+  <HitVisuals>k__BackingField: []
+  <ActionCrosshairPrefab>k__BackingField: {fileID: 0}
+  <HitEffects>k__BackingField: []
+  <ActivationsPerTrigger>k__BackingField: 1
+  <ActivationDeviationPattern>k__BackingField: 0
+  <TargetingStartDeviation>k__BackingField: 0
+  <TargetingInnerDeviation>k__BackingField: 0
+  _overrideOriginToOwnerPosition: 1
+  _overrideDirectionToOwnerUp: 1
+  references:
+    version: 2
+    RefIds: []

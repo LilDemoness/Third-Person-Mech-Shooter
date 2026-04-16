@@ -32,7 +32,7 @@ namespace UI.Players
             Player.OnLocalPlayerSet -= Player_OnLocalPlayerSet;
             if (Player.LocalClientInstance != null)
             {
-                Player.LocalClientInstance.ServerCharacter.Movement.OnBoostStatsChanged -= ServerCharacterMovement_OnClientBoostStatsChanged;
+                Player.LocalClientInstance.ServerCharacter.Movement.OnBoostStatsChanged_Unsubscribe(ServerCharacterMovement_OnClientBoostStatsChanged);
                 Player.LocalClientInstance.ServerCharacter.Movement.OnBoostRechargeValuesChanged -= ServerCharacterMovement_OnClientBoostChargeValuesChanged;
             }
         }
@@ -43,7 +43,7 @@ namespace UI.Players
         {
             this.enabled = true;
 
-            Player.LocalClientInstance.ServerCharacter.Movement.OnBoostStatsChanged += ServerCharacterMovement_OnClientBoostStatsChanged;
+            Player.LocalClientInstance.ServerCharacter.Movement.OnBoostStatsChanged_SubscribeAndCallback(ServerCharacterMovement_OnClientBoostStatsChanged);
             Player.LocalClientInstance.ServerCharacter.Movement.OnBoostRechargeValuesChanged += ServerCharacterMovement_OnClientBoostChargeValuesChanged;
         }
 
@@ -59,6 +59,7 @@ namespace UI.Players
 
         private void SetupBoostDividers(int boostCount)
         {
+            Debug.Log($"Setup dividers for {boostCount} boosts");
             if (boostCount == 0)
             {
                 // Hide Boost UI when we have no ability to boost.
@@ -81,15 +82,16 @@ namespace UI.Players
                 Instantiate(_boostDivierPrototype, _boostDivierContainer);
 
             // Enable and position required dividers.
-            float spacingPercent = 1.0f / boostCount;
-            float spacingValue = _boostDivierContainer.sizeDelta.x * spacingPercent;
-            Vector2 startWorldPos = new Vector2(_boostDivierContainer.position.x - _boostDivierContainer.sizeDelta.x, _boostDivierContainer.position.y);
+            float spacingPercent = 1.0f / (float)boostCount;
+            float spacingValue = _boostDivierContainer.rect.width * spacingPercent;
+            Vector2 startWorldPos = new Vector2(_boostDivierContainer.position.x - _boostDivierContainer.rect.width / 2.0f, _boostDivierContainer.position.y);
             for (int i = 1; i < boostCount; ++i)
             {
                 RectTransform child = _boostDivierContainer.GetChild(i) as RectTransform;
 
                 // Position the child.
                 child.position = startWorldPos + new Vector2(spacingValue * i, 0.0f);
+                Debug.Log("X Offset: " + spacingValue);
 
                 // Show the child.
                 child.gameObject.SetActive(true);
