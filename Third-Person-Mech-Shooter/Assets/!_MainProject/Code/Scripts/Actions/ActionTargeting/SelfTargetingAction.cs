@@ -14,11 +14,11 @@ namespace Gameplay.Actions.Definitions
         [SerializeField] private bool _overrideDirectionToOwnerUp = true;
 
 
-        public override bool OnStart(Action action, ServerCharacter owner, ref ActionRequestData data) => ActionConclusion.Continue;
-        protected override bool HandleTrigger(Action action, ServerCharacter owner, Vector3 direction, ref ActionRequestData data, float chargePercentage)
+        public override bool OnStart(Action action, ServerCharacter owner) => ActionConclusion.Continue;
+        protected override bool HandleTrigger(Action action, ServerCharacter owner, Vector3 direction, float chargePercentage)
         {
-            Vector3 origin = _overrideOriginToOwnerPosition ? owner.transform.position : GetActionOrigin(ref data);
-            direction = _overrideDirectionToOwnerUp ? owner.transform.up : GetActionDirection(ref data);
+            Vector3 origin = _overrideOriginToOwnerPosition ? owner.transform.position : GetActionOrigin(action);
+            direction = _overrideDirectionToOwnerUp ? owner.transform.up : GetActionDirection(action);
             Vector3 forward = Vector3.Cross(direction, owner.transform.right); // To-do: Fix & Test
 
             ActionHitInformation hitInfo = new ActionHitInformation(owner.transform, origin, direction, forward);

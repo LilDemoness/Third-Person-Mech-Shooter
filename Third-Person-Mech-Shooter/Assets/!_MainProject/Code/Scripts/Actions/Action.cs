@@ -261,7 +261,7 @@ namespace Gameplay.Actions
             owner.ReceiveHeatChange(owner, _definition.ImmediateHeat);
 
             // Call our OnStart function.
-            return _definition.OnStart(this, owner, ref Data);
+            return _definition.OnStart(this, owner);
         }
 
 
@@ -387,7 +387,7 @@ namespace Gameplay.Actions
 
             // Update the action.
             OnUpdateTriggered?.Invoke(this);
-            if (_definition.OnUpdate(this, owner, ref Data) == false)
+            if (_definition.OnUpdate(this, owner) == false)
                 return ActionConclusion.Stop;   // The action has concluded. Stop.
 
 
@@ -406,7 +406,7 @@ namespace Gameplay.Actions
         ///     Called when the Action ends naturally.<br/>
         ///     Server Only.
         /// </summary>
-        public virtual void OnEnd(ServerCharacter owner) => _definition.OnEnd(this, owner, ref Data);
+        public virtual void OnEnd(ServerCharacter owner) => _definition.OnEnd(this, owner);
         
 
         /// <summary>
@@ -443,7 +443,7 @@ namespace Gameplay.Actions
                 const float CHARGE_ROUNDING_TARGET = 0.05f;
                 chargePercentage = Mathf.Round(chargePercentage / CHARGE_ROUNDING_TARGET) * CHARGE_ROUNDING_TARGET;
 
-                if (_definition.OnUpdate(this, owner, ref Data, chargePercentage) == false)
+                if (_definition.OnUpdate(this, owner, chargePercentage) == false)
                 {
                     // The action wishes to end. Perform this, then finish the cancel.
                     OnEnd(owner);
@@ -451,7 +451,7 @@ namespace Gameplay.Actions
             }
 
 
-            _definition.OnCancel(this, owner, ref Data);
+            _definition.OnCancel(this, owner);
         }
 
 
@@ -547,7 +547,7 @@ namespace Gameplay.Actions
             this._chargeStartTime = _nextUpdateTime - (_definition.ChargeTime * startingChargePercentage);
             this._isFirstCharge = true;
 
-            return _definition.OnStartClient(this, clientCharacter, ref Data);
+            return _definition.OnStartClient(this, clientCharacter);
         }
 
         public virtual bool OnUpdateClient(ClientCharacter clientCharacter)
@@ -564,7 +564,7 @@ namespace Gameplay.Actions
             {
                 if (justStartedCharging)
                 {
-                    _definition.OnStartChargingClient(this, clientCharacter, ref Data);
+                    _definition.OnStartChargingClient(this, clientCharacter);
                     OnClientStartedCharging?.Invoke(this, new StartedChargingEventArgs(clientCharacter, Data.AttachmentSlotIndex, _chargeStartTime, _definition.ChargeTime));
                 }
                 return ActionConclusion.Continue;
@@ -581,7 +581,7 @@ namespace Gameplay.Actions
             // --- Perform an Update ---
 
             OnUpdateTriggered?.Invoke(this);
-            if (_definition.OnUpdateClient(this, clientCharacter, ref Data) == false)
+            if (_definition.OnUpdateClient(this, clientCharacter) == false)
                 return ActionConclusion.Stop;
 
             // We've updated and are still wishing to continue updating.
@@ -602,7 +602,7 @@ namespace Gameplay.Actions
         /// </summary>
         public virtual void EndClient(ClientCharacter clientCharacter)
         {
-            _definition.OnEndClient(this, clientCharacter, ref Data);
+            _definition.OnEndClient(this, clientCharacter);
 
             CleanupClient(clientCharacter);
         }
@@ -622,7 +622,7 @@ namespace Gameplay.Actions
 
                 if (chargePercentage > _definition.MinChargeActivationPercentage)
                 {
-                    if (_definition.OnUpdateClient(this, clientCharacter, ref Data, chargePercentage) == false)
+                    if (_definition.OnUpdateClient(this, clientCharacter, chargePercentage) == false)
                     {
                         EndClient(clientCharacter);
                         return;
@@ -635,7 +635,7 @@ namespace Gameplay.Actions
                 OnClientStoppedCharging?.Invoke(this, new StoppedChargingEventArgs(clientCharacter, Data.AttachmentSlotIndex, 0.0f, _definition.ChargeDepletionTime));
             }
 
-            _definition.OnCancelClient(this, clientCharacter, ref Data);
+            _definition.OnCancelClient(this, clientCharacter);
 
             CleanupClient(clientCharacter);
         }
@@ -695,7 +695,7 @@ namespace Gameplay.Actions
             AnticipatedClient = true;
             TimeStarted = UnityEngine.Time.time;    // Replace with 'NetworkManager.Singleton.LocalTime.TimeAsFloat' to better match server-time when receiving the triggering Rpc?
 
-            _definition.AnticipateClient(this, clientCharacter, ref data);
+            _definition.AnticipateClient(this, clientCharacter);
 
             /*if (!string.IsNullOrEmpty(Config.AnimAnticipation))
             {

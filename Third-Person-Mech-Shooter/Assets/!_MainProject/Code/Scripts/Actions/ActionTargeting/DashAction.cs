@@ -48,18 +48,18 @@ namespace Gameplay.Actions.Definitions
         [SerializeField] private LayerMask _environmentLayers;
 
 
-        public override bool OnStart(Action action, ServerCharacter owner, ref ActionRequestData data)
+        public override bool OnStart(Action action, ServerCharacter owner)
         {
             if (_dashSpeed == 0.0f)
             {
-                owner.Movement.AddPosition(data.Direction * _dashMaxDistance, true);
+                owner.Movement.AddPosition(action.Data.Direction * _dashMaxDistance, true);
                 return ActionConclusion.Stop;
             }
 
-            owner.Movement.AddContinuousForcedMovement(action, data.Direction, _dashSpeed, _movementPreventionDuration, _movementRotationRate, _transformMovementToGround);
+            owner.Movement.AddContinuousForcedMovement(action, action.Data.Direction, _dashSpeed, _movementPreventionDuration, _movementRotationRate, _transformMovementToGround);
             return ActionConclusion.Continue;
         }
-        protected override bool HandleTrigger(Action action, ServerCharacter owner, Vector3 direction, ref ActionRequestData data, float chargePercentage)
+        protected override bool HandleTrigger(Action action, ServerCharacter owner, Vector3 direction, float chargePercentage)
         {
             if (_useSpeedOverTime)
             {
@@ -85,7 +85,7 @@ namespace Gameplay.Actions.Definitions
             if (!Physics.Raycast(action.Data.Position, action.Data.Direction, out RaycastHit hitInfo, 1.0f, _environmentLayers, QueryTriggerInteraction.Ignore))
                 return false;   // No collision.
 
-            float dot = Vector3.Dot(-hitInfo.normal, GetActionDirection(ref action.Data));
+            float dot = Vector3.Dot(-hitInfo.normal, GetActionDirection(action));
 
 
             const float MIN_COLLISION_DOT_VALUE = 0.6f;

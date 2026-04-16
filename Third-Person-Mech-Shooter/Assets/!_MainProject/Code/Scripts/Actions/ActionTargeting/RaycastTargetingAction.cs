@@ -23,11 +23,11 @@ namespace Gameplay.Actions.Definitions
 
 
 
-        public override bool OnStart(Action action, ServerCharacter owner, ref ActionRequestData data) => ActionConclusion.Continue;
-        protected override bool HandleTrigger(Action action, ServerCharacter owner, Vector3 direction, ref ActionRequestData data, float chargePercentage)
+        public override bool OnStart(Action action, ServerCharacter owner) => ActionConclusion.Continue;
+        protected override bool HandleTrigger(Action action, ServerCharacter owner, Vector3 direction, float chargePercentage)
         {
             // Handle Logic
-            PerformRaycast(action, owner, ref data, chargePercentage, PrepareAndProcessTarget);
+            PerformRaycast(action, owner, chargePercentage, PrepareAndProcessTarget);
 
             return ActionConclusion.Continue;
         }
@@ -36,11 +36,11 @@ namespace Gameplay.Actions.Definitions
         /// <summary>
         ///     Perform a Raycast and trigger the callback for all hit entities.
         /// </summary>
-        private void PerformRaycast(Action action, ServerCharacter owner, ref ActionRequestData data, float chargePercentage, System.Action<Action, ServerCharacter, RaycastHit, Vector3, float> onHitCallback)
+        private void PerformRaycast(Action action, ServerCharacter owner, float chargePercentage, System.Action<Action, ServerCharacter, RaycastHit, Vector3, float> onHitCallback)
         {
             // Cache origin information.
-            Vector3 rayOrigin = GetActionOrigin(ref data);
-            Vector3 rayDirection = GetActionDirection(ref data);
+            Vector3 rayOrigin = GetActionOrigin(action);
+            Vector3 rayDirection = GetActionDirection(action);
 
             if (CanPierce)
             {
@@ -101,14 +101,14 @@ namespace Gameplay.Actions.Definitions
         }
 
 
-        protected override void HandleClientTrigger(Action action, ClientCharacter clientCharacter, Vector3 origin, Vector3 direction, ref ActionRequestData data, float chargePercentage)
+        protected override void HandleClientTrigger(Action action, ClientCharacter clientCharacter, Vector3 origin, Vector3 direction, float chargePercentage)
         {
             // Because HandleClientTrigger is called on all clients, regardless of whether they were the triggering one or not,
             //  we need to check whether we are playing on the the triggering client before playing anticipation-based hit effects.
             if (clientCharacter.OwnerClientId == NetworkManager.Singleton.LocalClientId)
-                PerformRaycast(action, null, ref data, chargePercentage, PrepareHitEffectAndNotify_AnticipatedUpdate);
+                PerformRaycast(action, null, chargePercentage, PrepareHitEffectAndNotify_AnticipatedUpdate);
 
-            base.HandleClientTrigger(action, clientCharacter, origin, direction, ref data, chargePercentage);
+            base.HandleClientTrigger(action, clientCharacter, origin, direction, chargePercentage);
         }
         /// <summary>
         ///     Passes the required data to the <see cref="HitEffectManager"/> for displaying hit effects on the triggering client.<br/>
@@ -122,9 +122,9 @@ namespace Gameplay.Actions.Definitions
         /// <summary>
         ///     Anticipate the initial effects of this action on the triggering client to give immediate feedback.
         /// </summary>
-        public override void AnticipateClient(Action action, ClientCharacter clientCharacter, ref ActionRequestData data)
+        public override void AnticipateClient(Action action, ClientCharacter clientCharacter)
         {
-            PerformRaycast(action, null, ref data, 0.0f, PrepareHitEffectAndNotify_AnticipationStart);
+            PerformRaycast(action, null, 0.0f, PrepareHitEffectAndNotify_AnticipationStart);
         }
         private void PrepareHitEffectAndNotify_AnticipationStart(Action action, ServerCharacter _, RaycastHit hitInfo, Vector3 rayDirection, float chargePercentage)
         {

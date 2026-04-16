@@ -23,12 +23,12 @@ namespace Gameplay.Actions.Definitions
         [SerializeField] private bool _useMaxRangeOnRaycastFailure = false;
 
 
-        public override bool OnStart(Action action, ServerCharacter owner, ref ActionRequestData data) => ActionConclusion.Continue;
-        protected override bool HandleTrigger(Action action, ServerCharacter owner, Vector3 direction, ref ActionRequestData data, float chargePercentage)
+        public override bool OnStart(Action action, ServerCharacter owner) => ActionConclusion.Continue;
+        protected override bool HandleTrigger(Action action, ServerCharacter owner, Vector3 direction, float chargePercentage)
         {
             // Determine our desired origin & direction.
-            Vector3 actionOrigin = base.GetActionOrigin(ref data);
-            Vector3 actionDirection = base.GetActionDirection(ref data);
+            Vector3 actionOrigin = base.GetActionOrigin(action);
+            Vector3 actionDirection = base.GetActionDirection(action);
             DetermineOriginPositionAndDirection(ref actionOrigin, ref actionDirection, _raycastRange);
 
             // Get our targets & process them.

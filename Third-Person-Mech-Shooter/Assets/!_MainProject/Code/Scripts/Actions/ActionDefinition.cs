@@ -276,8 +276,8 @@ namespace Gameplay.Actions.Definitions
 
 
 
-        protected Vector3 GetActionOrigin(ref ActionRequestData data) => data.OriginTransform != null ? data.OriginTransform.position : data.Position;
-        protected Vector3 GetActionDirection(ref ActionRequestData data) => (data.OriginTransform != null ? data.OriginTransform.forward : data.Direction).normalized;
+        protected Vector3 GetActionOrigin(Action action) => action.Data.OriginTransform != null ? action.Data.OriginTransform.position : action.Data.Position;
+        protected Vector3 GetActionDirection(Action action) => (action.Data.OriginTransform != null ? action.Data.OriginTransform.forward : action.Data.Direction).normalized;
 
 
         #region Base Methods - Server
@@ -286,37 +286,37 @@ namespace Gameplay.Actions.Definitions
         ///     Called when the Action starts actually playing (Which may be after it is created, due to queueing).
         /// </summary>
         /// <returns> False if the Action decided it doesn't want to run. True otherwise.</returns>
-        public abstract bool OnStart(Action action, ServerCharacter owner, ref ActionRequestData data);
+        public abstract bool OnStart(Action action, ServerCharacter owner);
 
         /// <summary>
         ///     Called when the Action wishes to Update itself.
         /// </summary>
         /// <returns> True to keep running, false to stop. The Action will stop by default when its duration expires, if it has one set.</returns>
-        public bool OnUpdate(Action action, ServerCharacter owner, ref ActionRequestData data, float chargePercentage = 1.0f)
+        public bool OnUpdate(Action action, ServerCharacter owner, float chargePercentage = 1.0f)
         {
-            Vector3 baseDirection = GetActionDirection(ref data);
+            Vector3 baseDirection = GetActionDirection(action);
 
             for(int i = 0; i < ActivationsPerTrigger; ++i)
             {
                 Vector3 triggerDirection = baseDirection;
-                HandleTrigger(action, owner, triggerDirection, ref data, chargePercentage);
+                HandleTrigger(action, owner, triggerDirection, chargePercentage);
             }
 
             return ShouldContinue(action, owner);
         }
         protected virtual bool ShouldContinue(Action action, ServerCharacter owner) => ActionConclusion.Continue;
-        protected abstract bool HandleTrigger(Action action, ServerCharacter owner, Vector3 direction, ref ActionRequestData data, float chargePercentage);
+        protected abstract bool HandleTrigger(Action action, ServerCharacter owner, Vector3 direction, float chargePercentage);
 
 
         /// <summary>
         ///     Called when the Action ends naturally.
         /// </summary>
-        public virtual void OnEnd(Action action, ServerCharacter owner, ref ActionRequestData data) => Cleanup(action, owner);
+        public virtual void OnEnd(Action action, ServerCharacter owner) => Cleanup(action, owner);
 
         /// <summary>
         ///     Called when the Action gets cancelled.
         /// </summary>
-        public virtual void OnCancel(Action action, ServerCharacter owner, ref ActionRequestData data) => Cleanup(action, owner);
+        public virtual void OnCancel(Action action, ServerCharacter owner) => Cleanup(action, owner);
 
 
         /// <summary>
@@ -344,39 +344,39 @@ namespace Gameplay.Actions.Definitions
         ///     Called on the client when the Action starts actually playing (Which may be after it is created, due to queueing).
         /// </summary>
         /// <returns> False if the Action decided it doesn't want to run. True otherwise.</returns>
-        public virtual bool OnStartClient(Action action, ClientCharacter clientCharacter, ref ActionRequestData data)
+        public virtual bool OnStartClient(Action action, ClientCharacter clientCharacter)
         {
             foreach (ActionVisual visual in TriggeringVisuals)
-                visual.OnClientStart(clientCharacter, GetActionOrigin(ref data), GetActionDirection(ref data));
+                visual.OnClientStart(clientCharacter, GetActionOrigin(action), GetActionDirection(action));
 
             return ActionConclusion.Continue;
         }
         /// <summary>
         ///     Called on the client when this action should start charging.
         /// </summary>
-        public virtual void OnStartChargingClient(Action action, ClientCharacter clientCharacter, ref ActionRequestData data)
+        public virtual void OnStartChargingClient(Action action, ClientCharacter clientCharacter)
         {
             foreach (ActionVisual visual in TriggeringVisuals)
-                visual.OnClientStartCharging(clientCharacter, GetActionOrigin(ref data), GetActionDirection(ref data));
+                visual.OnClientStartCharging(clientCharacter, GetActionOrigin(action), GetActionDirection(action));
         }
         /// <summary>
         ///     Called on the client when the Action wishes to Update itself.
         /// </summary>
         /// <returns> True to keep running, false to stop. The Action will stop by default when its duration expires, if it has one set.</returns>
-        public bool OnUpdateClient(Action action, ClientCharacter clientCharacter, ref ActionRequestData data, float chargePercentage = 1.0f)
+        public bool OnUpdateClient(Action action, ClientCharacter clientCharacter, float chargePercentage = 1.0f)
         {
-            Vector3 origin = GetActionOrigin(ref data);
-            Vector3 baseDirection = GetActionDirection(ref data);
+            Vector3 origin = GetActionOrigin(action);
+            Vector3 baseDirection = GetActionDirection(action);
 
             for (int i = 0; i < ActivationsPerTrigger; ++i)
             {
                 Vector3 triggerDirection = baseDirection;
-                HandleClientTrigger(action, clientCharacter, origin, triggerDirection, ref data, chargePercentage);
+                HandleClientTrigger(action, clientCharacter, origin, triggerDirection, chargePercentage);
             }
 
             return ActionConclusion.Continue;
         }
-        protected virtual void HandleClientTrigger(Action action, ClientCharacter clientCharacter, Vector3 origin, Vector3 direction, ref ActionRequestData data, float chargePercentage)
+        protected virtual void HandleClientTrigger(Action action, ClientCharacter clientCharacter, Vector3 origin, Vector3 direction, float chargePercentage)
         {
             foreach (ActionVisual visual in TriggeringVisuals)
                 visual.OnClientUpdate(clientCharacter, origin, direction);
@@ -384,20 +384,20 @@ namespace Gameplay.Actions.Definitions
         /// <summary>
         ///     Called on the client when the Action ends naturally.
         /// </summary>
-        public virtual void OnEndClient(Action action, ClientCharacter clientCharacter, ref ActionRequestData data)
+        public virtual void OnEndClient(Action action, ClientCharacter clientCharacter)
         {
             foreach (ActionVisual visual in TriggeringVisuals)
-                visual.OnClientEnd(clientCharacter, GetActionOrigin(ref data), GetActionDirection(ref data));
+                visual.OnClientEnd(clientCharacter, GetActionOrigin(action), GetActionDirection(action));
 
             CleanupClient(action, clientCharacter);
         }
         /// <summary>
         ///     Called on the client when the Action gets cancelled.
         /// </summary>
-        public virtual void OnCancelClient(Action action, ClientCharacter clientCharacter, ref ActionRequestData data)
+        public virtual void OnCancelClient(Action action, ClientCharacter clientCharacter)
         {
             foreach (ActionVisual visual in TriggeringVisuals)
-                visual.OnClientCancel(clientCharacter, GetActionOrigin(ref data), GetActionDirection(ref data));
+                visual.OnClientCancel(clientCharacter, GetActionOrigin(action), GetActionDirection(action));
 
             CleanupClient(action, clientCharacter);
         }
@@ -409,7 +409,7 @@ namespace Gameplay.Actions.Definitions
         protected virtual void CleanupClient(Action action, ClientCharacter clientCharacter) { }
 
 
-        public virtual void AnticipateClient(Action action, ClientCharacter clientCharacter, ref ActionRequestData data) => Debug.Log("Anticipate");
+        public virtual void AnticipateClient(Action action, ClientCharacter clientCharacter) => Debug.Log("Anticipate");
 
         #endregion
     }

@@ -20,10 +20,10 @@ namespace Gameplay.Actions.Definitions
         public float MaxRange => _projectileInfo.MaxRange > 0 ? _projectileInfo.MaxRange : _projectileInfo.MaxLifetime * _projectileInfo.Speed;
 
 
-        public override bool OnStart(Action action, ServerCharacter owner, ref ActionRequestData data) => ActionConclusion.Continue;
-        protected override bool HandleTrigger(Action action, ServerCharacter owner, Vector3 direction, ref ActionRequestData data, float chargePercentage)
+        public override bool OnStart(Action action, ServerCharacter owner) => ActionConclusion.Continue;
+        protected override bool HandleTrigger(Action action, ServerCharacter owner, Vector3 direction, float chargePercentage)
         {
-            SpawnProjectile(action, owner, ref data, chargePercentage);
+            SpawnProjectile(action, owner, chargePercentage);
             return ActionConclusion.Continue;
         }
 
@@ -32,23 +32,23 @@ namespace Gameplay.Actions.Definitions
         /// <summary>
         ///     Spawn & Initialise a Projectile instance.
         /// </summary>
-        private void SpawnProjectile(Action action, ServerCharacter owner, ref ActionRequestData data, float chargePercentage)
+        private void SpawnProjectile(Action action, ServerCharacter owner, float chargePercentage)
         {
             // Calculate our spawn position & initial facing direction.
-            Vector3 spawnPosition = GetActionOrigin(ref data);
-            Vector3 spawnDirection = GetActionDirection(ref data);
+            Vector3 spawnPosition = GetActionOrigin(action);
+            Vector3 spawnDirection = GetActionDirection(action);
             spawnPosition += spawnDirection * _projectileInfo.ProjectilePrefab.GetAdditionalSpawnDistance();
 
             // Create and initialise the projectile instance.
             Projectile projectileInstance = GameObject.Instantiate<Projectile>(_projectileInfo.ProjectilePrefab, spawnPosition, Quaternion.LookRotation(spawnDirection));
-            SeekingFunction seekingFunction = _seekingFunction != null ? SetupSeekingFunction(owner, projectileInstance, ref data) : null;  // Create & Setup a SeekingFunction instance ONLY IF we are wanting to use one.
+            SeekingFunction seekingFunction = _seekingFunction != null ? SetupSeekingFunction(action, owner, projectileInstance) : null;  // Create & Setup a SeekingFunction instance ONLY IF we are wanting to use one.
             projectileInstance.Initialise(owner.NetworkObjectId, _projectileInfo, seekingFunction, (ActionHitInformation info) => OnProjectileHit(action, owner, info, chargePercentage));
             projectileInstance.GetComponent<NetworkObject>().Spawn(true);   // Spawn the projectile on clients.
         }
         /// <summary>
         ///     Create, Setup, and Return a SeekingFunction instance based on our set _seekingFunction's type.
         /// </summary>
-        private SeekingFunction SetupSeekingFunction(ServerCharacter owner, Projectile projectileInstance, ref ActionRequestData data)
+        private SeekingFunction SetupSeekingFunction(Action action, ServerCharacter owner, Projectile projectileInstance)
         {
             switch (_seekingFunction)
             {
@@ -57,7 +57,7 @@ namespace Gameplay.Actions.Definitions
                         RaycastSeekingFunction raycastSeekingFunction = new RaycastSeekingFunction(_seekingFunction as RaycastSeekingFunction);
 
                         //Transform seekingOriginTransform = owner.transform;
-                        Transform seekingOriginTransform = data.OriginTransform ?? owner.transform;
+                        Transform seekingOriginTransform = action.Data.OriginTransform ?? owner.transform;
                         Vector3 origin = Vector3.zero, direction = Vector3.forward; // Local offsets.
 
                         return raycastSeekingFunction.Setup(_projectileInfo, seekingOriginTransform, origin, direction);
