@@ -15,6 +15,7 @@ namespace Gameplay.Passives
         public float TimeRunning { get; set; }
 
         private float[] _lastSuccessfulTriggerTimes;
+        private bool[] _passiveActiveStates;
 
 
         public Passive(PassiveDefinition definition)
@@ -27,12 +28,12 @@ namespace Gameplay.Passives
         {
             TimeStarted = Time.time;
             TimeRunning = 0.0f;
-            Definition.StartEffects(character, out _lastSuccessfulTriggerTimes);
+            Definition.StartEffects(character, out _lastSuccessfulTriggerTimes, out _passiveActiveStates);
         }
         public void Update(ServerCharacter character, float deltaTime)
         {
             // Update definition effects.
-            Definition.UpdateEffects(character, TimeRunning, deltaTime, ref _lastSuccessfulTriggerTimes);
+            Definition.UpdateEffects(character, TimeRunning, deltaTime, ref _lastSuccessfulTriggerTimes, ref _passiveActiveStates);
 
             TimeRunning += deltaTime;
         }

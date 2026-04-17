@@ -44,14 +44,7 @@ namespace Gameplay.GameplayObjects.Character.Statistics
                 throw new System.ArgumentException($"{statistic.ToString()} cannot use alteration {alterationType.ToString()}");
 #endif
 
-            StatisticAlteration statisticAlteration = _statisticChanges.GetOrCreateAndReturnValue(statistic);
-            switch (alterationType)
-            {
-                case StatisticAlterationType.Base:          statisticAlteration.AddBaseChange(alterationValue);       break;
-                case StatisticAlterationType.Addition:      statisticAlteration.AddAddition(alterationValue);         break;
-                case StatisticAlterationType.Multiplier:    statisticAlteration.AddMultiplication(alterationValue);   break;
-            }
-
+            _statisticChanges.GetOrCreateAndReturnValue(statistic).AddAlteration(alterationValue, alterationType);
             SyncStatisticServerRpc(statistic);
         }
 
@@ -68,9 +61,8 @@ namespace Gameplay.GameplayObjects.Character.Statistics
                 throw new System.ArgumentException($"{statistic.ToString()} cannot use alteration {alterationType.ToString()}");
 #endif
 
-            _statisticChanges.GetOrCreateAndReturnValue(statistic).AddAlteration(alterationValue, alterationType);
-
-            SyncStatisticServerRpc(statistic);
+            if (_statisticChanges.GetOrCreateAndReturnValue(statistic).RemoveAlteration(alterationValue, alterationType))
+                SyncStatisticServerRpc(statistic);
         }
 
 
@@ -172,6 +164,7 @@ namespace Gameplay.GameplayObjects.Character.Statistics
         [ContextMenu("Log/Health")] private void Editor_LogHealth() => Editor_LogStatisticChange(Statistic.MaxHealth);
         [ContextMenu("Log/Boost Count")] private void Editor_LogBoostCount() => Editor_LogStatisticChange(Statistic.BoostCount);
         [ContextMenu("Log/Boost Recharge Multiplier")] private void Editor_LogBoostRechargeMultiplier() => Editor_LogStatisticChange(Statistic.BoostRechargeMultiplier);
+        [ContextMenu("Log/Damage Multiplier")] private void Editor_LogDamageMultiplier() => Editor_LogStatisticChange(Statistic.DamageMultiplier);
 
         private void Editor_LogStatisticChange(Statistic statistic)
         {
@@ -198,6 +191,9 @@ namespace Gameplay.GameplayObjects.Character.Statistics
                 Statistic.BoostCount => _serverCharacter.BuildDataReference.GetFrameData().BoostCount,
                 Statistic.BoostRechargeMultiplier => 1.0f,
 
+                Statistic.DamageMultiplier => 1.0f,
+                Statistic.HealingMultiplier => 1.0f,
+
                 _ => 0.0f
             };
         }
@@ -220,20 +216,31 @@ namespace Gameplay.GameplayObjects.Character.Statistics
             {
                 switch (alterationType)
                 {
-                    case StatisticAlterationType.Base:          RemoveBaseChange(alterationValue);      break;
-                    case StatisticAlterationType.Addition:      RemoveAddition(alterationValue);        break;
-                    case StatisticAlterationType.Multiplier:    RemoveMultiplication(alterationValue);  break;
+                    case StatisticAlterationType.Base:          AddBaseChange(alterationValue);      break;
+                    case StatisticAlterationType.Addition:      AddAddition(alterationValue);        break;
+                    case StatisticAlterationType.Multiplier:    AddMultiplication(alterationValue);  break;
                 }
             }
-
             public void AddBaseChange(float baseChangeValue) => _baseChanges.Add(baseChangeValue);
-            public void RemoveBaseChange(float baseChangeValue) => _baseChanges.Remove(baseChangeValue);
-
             public void AddAddition(float baseChangeValue) => _additions.Add(baseChangeValue);
-            public void RemoveAddition(float baseChangeValue) => _additions.Remove(baseChangeValue);
-
             public void AddMultiplication(float baseChangeValue) => _multiplications.Add(baseChangeValue);
-            public void RemoveMultiplication(float baseChangeValue) => _multiplications.Remove(baseChangeValue);
+
+
+            public bool RemoveAlteration(float alterationValue, StatisticAlterationType alterationType)
+            {
+                return alterationType switch
+                {
+                    StatisticAlterationType.Base        => RemoveBaseChange(alterationValue),
+                    StatisticAlterationType.Addition    => RemoveAddition(alterationValue),
+                    StatisticAlterationType.Multiplier  => RemoveMultiplication(alterationValue),
+
+                    _ => throw new System.NotImplementedException($"No implementation for: {alterationType.ToString()}")
+                };
+            }
+
+            public bool RemoveBaseChange(float baseChangeValue) => _baseChanges.Remove(baseChangeValue);
+            public bool RemoveAddition(float baseChangeValue) => _additions.Remove(baseChangeValue);
+            public bool RemoveMultiplication(float baseChangeValue) => _multiplications.Remove(baseChangeValue);
 
 
             // Base Change: If multiple bases exist, determine the base value by adding their offsets from the default and applying that.
@@ -479,7 +486,8 @@ namespace Gameplay.GameplayObjects.Character.Statistics
 
         KnockbackForceMultiplier,
 
-        Damage,
+        DamageMultiplier,   // Implemented - DamageEffect reads directly from this when calculating the damage to apply.
+        HealingMultiplier,  // Implemented - HealingEffect reads directly from this when calculating the healing to apply.
     }
     [System.Serializable]
     // (Damage Type | Base, Addition, Multiplier)

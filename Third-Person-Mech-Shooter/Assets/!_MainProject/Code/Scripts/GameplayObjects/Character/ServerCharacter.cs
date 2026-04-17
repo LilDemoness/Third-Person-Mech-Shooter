@@ -120,14 +120,14 @@ namespace Gameplay.GameplayObjects.Character
             m_serverPassiveManager = new ServerPassivePlayer(this);
 
             _movement.OnMovementStatusChanged += MovementScript_OnMovementStatusChanged;
-            _characterStats.OnAnyStatisticChanged += CharacterStats_OnAnyStatisticChanged;
+            _characterStats.OnStatisticChanged += CharacterStats_OnStatisticChanged;
         }
         public override void OnDestroy()
         {
             base.OnDestroy();
 
             _movement.OnMovementStatusChanged -= MovementScript_OnMovementStatusChanged;
-            _characterStats.OnAnyStatisticChanged -= CharacterStats_OnAnyStatisticChanged;
+            _characterStats.OnStatisticChanged -= CharacterStats_OnStatisticChanged;
         }
 
         public override void OnNetworkSpawn()
@@ -160,12 +160,13 @@ namespace Gameplay.GameplayObjects.Character
 
 
         private void MovementScript_OnMovementStatusChanged(MovementStatus newState) => MovementStatus.Value = newState;
-        private void CharacterStats_OnAnyStatisticChanged()
+        private void CharacterStats_OnStatisticChanged(Statistic statistic)
         {
-            if (IsServer)
+            if (IsServer && statistic == Statistic.MaxHealth)
                 NetworkHealthComponent.SetMaxHealth_Server(null, Mathf.CeilToInt(_characterStats.GetStatisticValue(Statistic.MaxHealth)), true, false);
 
-            NotifyOfHeatChange();
+            if (statistic == Statistic.MaxHeat)
+                NotifyOfHeatChange();
         }
 
 

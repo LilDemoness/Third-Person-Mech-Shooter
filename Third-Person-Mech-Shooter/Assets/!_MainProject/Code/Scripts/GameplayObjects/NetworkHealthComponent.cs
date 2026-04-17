@@ -290,6 +290,7 @@ namespace Gameplay.GameplayObjects
 
         public float GetMissingHealth() => MaxHealth - _currentHealth.Value;
         public float GetCurrentHealth() => _currentHealth.Value;
+        public float GetHealthPercentage() => _currentHealth.Value / MaxHealth;
 
 
         public bool CanHaveHealthChanged() => !IsDead;

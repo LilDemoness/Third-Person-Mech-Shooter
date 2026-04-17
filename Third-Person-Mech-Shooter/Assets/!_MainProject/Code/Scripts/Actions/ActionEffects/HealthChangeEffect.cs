@@ -16,10 +16,12 @@ namespace Gameplay.Actions.Effects
 
         public override void ApplyEffect(ServerCharacter owner, in ActionHitInformation hitInfo, float chargePercentage)
         {
-            if (hitInfo.Target.TryGetComponentThroughParents<IDamageable>(out IDamageable damageable))
-            {
-                damageable.ReceiveHealing_Server(owner, _scaleValueWithCharge ? chargePercentage * _healingValue : _healingValue);
-            }
+            if (!hitInfo.Target.TryGetComponentThroughParents<IDamageable>(out IDamageable damageable))
+                return; // Invalid target.
+
+            float healing = _scaleValueWithCharge ? chargePercentage * _healingValue : _healingValue;
+            healing *= owner.CharacterStats.GetStatisticValue(GameplayObjects.Character.Statistics.Statistic.HealingMultiplier);
+            damageable.ReceiveHealing_Server(owner, healing);
         }
     }
 
@@ -36,10 +38,12 @@ namespace Gameplay.Actions.Effects
 
         public override void ApplyEffect(ServerCharacter owner, in ActionHitInformation hitInfo, float chargePercentage)
         {
-            if (hitInfo.Target.TryGetComponentThroughParents<IDamageable>(out IDamageable damageable))
-            {
-                damageable.ReceiveDamage_Server(owner, _scaleValueWithCharge ? chargePercentage * _damageValue : _damageValue, _damageType, -hitInfo.HitNormal);
-            }
+            if (!hitInfo.Target.TryGetComponentThroughParents<IDamageable>(out IDamageable damageable))
+                return; // Invalid target.
+            
+            float damage = _scaleValueWithCharge ? chargePercentage * _damageValue : _damageValue;
+            damage *= owner.CharacterStats.GetStatisticValue(GameplayObjects.Character.Statistics.Statistic.HealingMultiplier);
+            damageable.ReceiveDamage_Server(owner, damage, _damageType, -hitInfo.HitNormal);
         }
     }
 }

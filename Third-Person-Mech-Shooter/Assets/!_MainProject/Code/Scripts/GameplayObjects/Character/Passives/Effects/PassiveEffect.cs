@@ -23,7 +23,7 @@ namespace Gameplay.Passives
 
             Trigger(character, 0.0f, 0.0f);
         }
-        public bool Update(ServerCharacter character, float lifetime, float timeSinceLastUpdateCall, float timeSinceLastTrigger)
+        public bool Update(ServerCharacter character, float lifetime, float timeSinceLastUpdateCall, float timeSinceLastTrigger, ref bool passiveActiveState)
         {
             if (!_updates)
                 return false;
@@ -34,15 +34,26 @@ namespace Gameplay.Passives
             {
                 if (!_passiveConditions[i].TestCondition(character, lifetime, timeSinceLastUpdateCall, timeSinceLastTrigger, out float timeSinceDesiredUpdate))
                 {
-                    OnConditionFailed(character);
+                    if (passiveActiveState)
+                    {
+                        Debug.Log("Condition Failed");
+                        OnConditionFailed(character);
+                    }
+
+                    passiveActiveState = false;
                     return false; // A Condition Failed.
                 }
 
                 if (timeSinceDesiredUpdate < minTimeSinceDesiredUpdate)
                     minTimeSinceDesiredUpdate = timeSinceDesiredUpdate;
             }
-
-            Trigger(character, lifetime, minTimeSinceDesiredUpdate);
+            if (!passiveActiveState)
+            {
+                Debug.Log("Condition Passed");
+                Trigger(character, lifetime, minTimeSinceDesiredUpdate);
+            }
+            
+            passiveActiveState = true;
             return true;
         }
         public virtual void Stop(ServerCharacter character) { }

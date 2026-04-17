@@ -12,7 +12,7 @@ namespace Gameplay.Passives
         [SerializeReference, SubclassSelector] private PassiveEffect[] _effects;
 
 
-        public void StartEffects(ServerCharacter character, out float[] lastSuccessfulTriggerTimes)
+        public void StartEffects(ServerCharacter character, out float[] lastSuccessfulTriggerTimes, out bool[] passiveActiveStates)
         {
             int repeatingEffectsCount = 0;
             for(int i = 0; i < _effects.Length; ++i)
@@ -25,8 +25,9 @@ namespace Gameplay.Passives
 
             // Construct an array of length equal to the number of actions that will trigger multiple times for use in the 'UpdateEffects' function to track successful trigger timings.
             lastSuccessfulTriggerTimes = new float[repeatingEffectsCount];
+            passiveActiveStates = new bool[repeatingEffectsCount];
         }
-        public void UpdateEffects(ServerCharacter character, float lifetime, float deltaTime, ref float[] lastSuccessfulTriggerTimes)
+        public void UpdateEffects(ServerCharacter character, float lifetime, float deltaTime, ref float[] lastSuccessfulTriggerTimes, ref bool[] passiveActiveStates)
         {
             int updatedEffectsIndex = 0;
             for(int i = 0; i < _effects.Length; ++i)
@@ -36,7 +37,7 @@ namespace Gameplay.Passives
 
                 float timeSinceLastTrigger = Time.time - lastSuccessfulTriggerTimes[updatedEffectsIndex];
 
-                if (_effects[i].Update(character, lifetime, deltaTime, timeSinceLastTrigger))
+                if (_effects[i].Update(character, lifetime, deltaTime, timeSinceLastTrigger, ref passiveActiveStates[i]))
                     lastSuccessfulTriggerTimes[updatedEffectsIndex] = Time.time;    // Successfully triggered.
 
                 ++updatedEffectsIndex;

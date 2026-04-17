@@ -16,13 +16,21 @@ namespace Gameplay.Passives
             Heat,
         }
         [SerializeField] private StatisticToCheck _statisticToCheck;
-        [SerializeField, Range(0.0f, 1.0f)] private float _minPercentage;
-        [SerializeField, Range(0.0f, 1.0f)] private float _maxPercentage;
+        [SerializeField, Range(0.0f, 1.0f)] private float _minPercentage;   // Inclusive.
+        [SerializeField, Range(0.0f, 1.0f)] private float _maxPercentage;   // Inclusive.
 
 
         public override bool TestCondition(ServerCharacter character, float lifetime, float timeSinceLastUpdateCall, float timeSinceLastTrigger, out float timeSinceDesiredUpdate)
         {
-            throw new System.NotImplementedException("Check desired ServerCharacter statistic");
+            float percentageValue = _statisticToCheck switch
+            {
+                StatisticToCheck.Health => character.NetworkHealthComponent.GetHealthPercentage(),
+                StatisticToCheck.Heat => character.CurrentHeat.Value / character.MaxHeat,
+                _ => throw new System.NotImplementedException($"Checking '{_statisticToCheck.ToString()}' is not implemented")
+            };
+
+            timeSinceDesiredUpdate = 0.0f;
+            return percentageValue >= _minPercentage && percentageValue <= _maxPercentage;
         }
     }
 }
