@@ -29,7 +29,7 @@ namespace Gameplay.GameplayObjects.Character
         [SerializeField] private CharacterController _characterController;
 
 
-        private float _movementSpeed => _characterStats.GetStatisticValue(Statistic.MovementSpeed);
+        public float MovementSpeed => _characterStats.GetStatisticValue(Statistic.MovementSpeed);
 
 
         [Header("Boost Settings")]
@@ -189,7 +189,7 @@ namespace Gameplay.GameplayObjects.Character
             else if (_movementState == MovementType.DirectInput)
             {
                 // Input-based movement.
-                return GetProjectedMovementVector() * _movementSpeed;
+                return GetProjectedMovementVector() * MovementSpeed;
             }
 
 
@@ -205,7 +205,7 @@ namespace Gameplay.GameplayObjects.Character
                 _desiredVelocity = CalculateForcedMovement();
             }
             else if (_isGrounded)
-                _desiredVelocity = Vector3.MoveTowards(_desiredVelocity, CalculateDesiredMovement(), _movementSpeed * _movementSpeed * Time.deltaTime);  // We are grounded, so handle movement normally.
+                _desiredVelocity = Vector3.MoveTowards(_desiredVelocity, CalculateDesiredMovement(), MovementSpeed * MovementSpeed * Time.deltaTime);  // We are grounded, so handle movement normally.
 
             _desiredVelocity += _currentForces;
             _currentForces = Vector3.Lerp(_currentForces, Vector3.zero, _forceDecreaseRate * Time.fixedDeltaTime);

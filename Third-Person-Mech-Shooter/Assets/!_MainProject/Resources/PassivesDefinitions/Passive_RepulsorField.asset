@@ -13,17 +13,36 @@ MonoBehaviour:
   m_Name: Passive_RepulsorField
   m_EditorClassIdentifier: 
   _effects:
-  - rid: 981910439197933669
+  - rid: 981910458943144058
+  - rid: 981910458943144071
   references:
     version: 2
     RefIds:
-    - rid: 981910439197933669
-      type: {class: AlterStatisticEffect, ns: Gameplay.Passives, asm: Assembly-CSharp}
+    - rid: 981910458943144058
+      type: {class: AlterDamageTakenStatisticEffect, ns: Gameplay.Passives, asm: Assembly-CSharp}
       data:
         _updates: 0
         _triggerAtStart: 1
         _passiveConditions: []
-        _affectedStatistic: 2
-        _alterationType: 1
-        _alterationValue: 20
+        _affectedStatistic: 0
+        _damageTypes: 3
+        _alterationValue: 0.8
         _removeEffectOnConditionFailed: 0
+        _hasDirectionalCondition: 0
+        _directionalCondition:
+          _localDirection: {x: 0, y: 0, z: 0}
+          _angle: 0
+    - rid: 981910458943144071
+      type: {class: AlterDamageTakenStatisticEffect, ns: Gameplay.Passives, asm: Assembly-CSharp}
+      data:
+        _updates: 0
+        _triggerAtStart: 1
+        _passiveConditions: []
+        _affectedStatistic: 1
+        _damageTypes: 3
+        _alterationValue: 0.8
+        _removeEffectOnConditionFailed: 0
+        _hasDirectionalCondition: 0
+        _directionalCondition:
+          _localDirection: {x: 0, y: 0, z: 0}
+          _angle: 0

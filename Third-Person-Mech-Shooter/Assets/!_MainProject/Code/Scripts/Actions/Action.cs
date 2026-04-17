@@ -353,7 +353,14 @@ namespace Gameplay.Actions
         {
             // Check if we should update.
             if (_hasPerformedLastTrigger)
-                return !_definition.CancelOnLastTrigger;    // Performed its last trigger. Cancel if desired, otherwise simply don't progress.
+            {
+                // Performed its last trigger. Cancel if desired, otherwise simply don't progress.
+                if (_definition.CancelOnLastTrigger)
+                    return ActionConclusion.Stop;
+
+                owner.ReceiveHeatChange(owner, _definition.ContinuousHeat * Time.deltaTime);
+                return ActionConclusion.Continue;
+            }
 
             float serverTime = NetworkManager.Singleton.ServerTime.TimeAsFloat;
             if (serverTime < _windupEndTime)
@@ -406,8 +413,9 @@ namespace Gameplay.Actions
         ///     Called when the Action ends naturally.<br/>
         ///     Server Only.
         /// </summary>
+        //public virtual void OnEnd(ServerCharacter owner) => _definition.OnEnd(this, owner);
         public virtual void OnEnd(ServerCharacter owner) => _definition.OnEnd(this, owner);
-        
+
 
         /// <summary>
         ///     Calculates the ServerTime when the action's charge will reach 0%.

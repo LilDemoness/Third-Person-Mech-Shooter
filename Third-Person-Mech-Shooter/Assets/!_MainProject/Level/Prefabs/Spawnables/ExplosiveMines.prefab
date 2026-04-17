@@ -234,15 +234,16 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   _hitEffects:
-  - rid: 441530089288761472
+  - rid: 981910458943144056
   references:
     version: 2
     RefIds:
-    - rid: 441530089288761472
-      type: {class: HealthChangeEffect, ns: Gameplay.Actions.Effects, asm: Assembly-CSharp}
+    - rid: 981910458943144056
+      type: {class: DamageEffect, ns: Gameplay.Actions.Effects, asm: Assembly-CSharp}
       data:
-        _healthChange: -4
-        _scaleValueWithCharge: 0
+        _damageValue: 1
+        _scaleValueWithCharge: 1
+        _damageType: 2
 --- !u!114 &4493027890337612337
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -288,7 +289,7 @@ MonoBehaviour:
   _maxHealth: 3
   _isInvulnerable: 0
   _canBeHealed: 0
-  OnDamageTaken:
+  OnHealthChanged:
     m_PersistentCalls:
       m_Calls: []
   OnDied:

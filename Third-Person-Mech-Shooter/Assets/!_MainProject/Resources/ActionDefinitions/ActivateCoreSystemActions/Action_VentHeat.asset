@@ -9,20 +9,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7d2cae861ac9e7f4eb3e9d954ac1508d, type: 3}
-  m_Name: Action_ToggleStealth
+  m_Script: {fileID: 11500000, guid: 1b0f7afe3ea01da4d9c9345378de4cb2, type: 3}
+  m_Name: Action_VentHeat
   m_EditorClassIdentifier: 
-  <IsHostileAction>k__BackingField: 0
+  <IsHostileAction>k__BackingField: 1
   <ShouldNotifyClient>k__BackingField: 1
-  <ActivationStyle>k__BackingField: 1
+  <ActivationStyle>k__BackingField: 2
   <InterruptableStages>k__BackingField: -1
-  <ImmediateHeat>k__BackingField: 2
+  <ImmediateHeat>k__BackingField: 0
   <ChargingContinuousHeat>k__BackingField: 0
-  <ContinuousHeat>k__BackingField: 1
+  <ContinuousHeat>k__BackingField: 0
   <RetriggerHeat>k__BackingField: 0
   <WindupTime>k__BackingField: 0
   <RecoveryTime>k__BackingField: 0
-  <CooldownTime>k__BackingField: 10
+  <CooldownTime>k__BackingField: 0
   <BlockingMode>k__BackingField: 1
   <MaxActiveDuration>k__BackingField: 0
   <CanCharge>k__BackingField: 0
@@ -33,28 +33,39 @@ MonoBehaviour:
   <ChargeDepletionTime>k__BackingField: 0
   <UIChargeDepletionTime>k__BackingField: 0
   <TriggerType>k__BackingField: 0
-  <CancelOnLastTrigger>k__BackingField: 0
+  <CancelOnLastTrigger>k__BackingField: 1
   <RetriggerDelay>k__BackingField: 0
   <Bursts>k__BackingField: 0
   <BurstDelay>k__BackingField: 0
   <TriggeringVisuals>k__BackingField: []
   <HitVisuals>k__BackingField: []
   <ActionCrosshairPrefab>k__BackingField: {fileID: 0}
-  <HitEffects>k__BackingField:
-  - rid: 981910305249689697
+  <HitEffects>k__BackingField: []
   <ActivationsPerTrigger>k__BackingField: 1
   <ActivationDeviationPattern>k__BackingField: 0
   <TargetingStartDeviation>k__BackingField: 0
   <TargetingInnerDeviation>k__BackingField: 0
-  _overrideOriginToOwnerPosition: 1
-  _overrideDirectionToOwnerUp: 1
+  _targetingMethod:
+    rid: 981910458943144057
+  _startAoEFromRaycast: 0
+  _raycastRange: 0
+  _raycastLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  _useMaxRangeOnRaycastFailure: 0
   references:
     version: 2
     RefIds:
-    - rid: 981910305249689697
-      type: {class: ApplyBuffEffect, ns: Gameplay.Actions.Effects, asm: Assembly-CSharp}
+    - rid: 981910458943144057
+      type: {class: AoETargetingAction/SphereAoETargeting, ns: Gameplay.Actions.Definitions, asm: Assembly-CSharp}
       data:
-        _statusEffectDefinition: {fileID: 11400000, guid: 55076bc978802794eb8db5340349d750, type: 2}
-        _cancelEffectOnEnd: 1
-        _scaleValueWithCharge: 0
-        _scaleDurationWithCharge: 1
+        CanTargetOwner: 0
+        ScaleRadiusWithChargePercentage: 0
+        RequireLineOfSight: 1
+        ObstructionsMask:
+          serializedVersion: 2
+          m_Bits: 65
+        ValidLayers:
+          serializedVersion: 2
+          m_Bits: 9
+        _sphereRadius: 5

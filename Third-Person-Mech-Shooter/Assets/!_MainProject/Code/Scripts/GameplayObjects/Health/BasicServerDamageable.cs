@@ -17,7 +17,7 @@ namespace Gameplay.GameplayObjects.Health
         [SerializeField] private bool _canBeHealed = false;
 
 
-        public UnityEvent<IDamageable> OnDamageTaken;
+        public UnityEvent<IDamageable> OnHealthChanged;
         public UnityEvent<IDamageable> OnDied;
 
 
@@ -42,21 +42,27 @@ namespace Gameplay.GameplayObjects.Health
 
         public float GetMissingHealth() => Mathf.Max(_maxHealth - _currentHealth, 0.0f);
 
-        public void ReceiveHealthChange_Server(ServerCharacter influencer, float hitPointsChange)
+        public void ReceiveDamage_Server(ServerCharacter influencer, float damageValue, DamageTypes damageType, Vector3 damageSourceDirection)
         {
-            if (hitPointsChange > 0.0f && !CanReceiveHealing())
-                return;
-            if (hitPointsChange < 0.0f && !CanTakeDamage())
+            if (!CanTakeDamage())
                 return;
 
-            _currentHealth = Mathf.Clamp(_currentHealth + hitPointsChange, 0.0f, _maxHealth);
+            _currentHealth = Mathf.Max(_currentHealth - damageValue, 0.0f);
 
             if (Mathf.Approximately(_currentHealth, 0.0f))
             {
                 OnDied?.Invoke(this);
             }
             else
-                OnDamageTaken?.Invoke(this);
+                OnHealthChanged?.Invoke(this);
+        }
+        public void ReceiveHealing_Server(ServerCharacter influencer, float healingValue)
+        {
+            if (!CanReceiveHealing())
+                return;
+
+            _currentHealth = Mathf.Min(_currentHealth + healingValue, _maxHealth);
+            OnHealthChanged?.Invoke(this);
         }
     }
 }

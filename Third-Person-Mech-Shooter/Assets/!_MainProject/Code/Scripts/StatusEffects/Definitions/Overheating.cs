@@ -11,7 +11,7 @@ namespace Gameplay.StatusEffects.Definitions
 
         public override void OnTick(ServerCharacter serverCharacter)
         {
-            serverCharacter.NetworkHealthComponent.ReceiveHealthChange_Server(serverCharacter, -_damagePerTick);
+            serverCharacter.NetworkHealthComponent.ReceiveDamage_Server(serverCharacter, _damagePerTick, DamageTypes.Overheating, Vector3.zero);
             //serverCharacter.ReceiveHeatChange(serverCharacter, -_heatChangeOnTick);
         }
     }

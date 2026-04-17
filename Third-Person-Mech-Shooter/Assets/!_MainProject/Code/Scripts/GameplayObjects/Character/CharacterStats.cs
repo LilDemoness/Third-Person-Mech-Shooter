@@ -1,3 +1,4 @@
+using Gameplay.Passives;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
@@ -12,6 +13,8 @@ namespace Gameplay.GameplayObjects.Character.Statistics
         private Dictionary<Statistic, StatisticAlteration> _statisticChanges;   // Server Only.
         private Dictionary<Statistic, float> _statisticTotals;                  // Never accessed on the server.
 
+        private Dictionary<DamageTakenStatistic, DamageTakenAlterations> _damageTakenStatisticChanges;   // Server Only.
+
         public event System.Action OnAnyStatisticChanged;
         public event System.Action<Statistic> OnStatisticChanged;
 
@@ -20,6 +23,7 @@ namespace Gameplay.GameplayObjects.Character.Statistics
         {
             _statisticChanges = new Dictionary<Statistic, StatisticAlteration>();
             _statisticTotals = new Dictionary<Statistic, float>();
+            _damageTakenStatisticChanges = new Dictionary<DamageTakenStatistic, DamageTakenAlterations>();
         }
         public override void OnNetworkSpawn()
         {
@@ -33,14 +37,13 @@ namespace Gameplay.GameplayObjects.Character.Statistics
         {
             AddStatisticChange(statistic, alterationType, alterationValue);
         }
-        private void AddStatisticChange(Statistic statistic, StatisticAlterationType alterationType, float alterationValue)
+        public void AddStatisticChange(Statistic statistic, StatisticAlterationType alterationType, float alterationValue)
         {
 #if UNITY_EDITOR
             if (!Editor_ValidateStatisticAltertion(statistic, alterationType))
                 throw new System.ArgumentException($"{statistic.ToString()} cannot use alteration {alterationType.ToString()}");
 #endif
 
-            
             StatisticAlteration statisticAlteration = _statisticChanges.GetOrCreateAndReturnValue(statistic);
             switch (alterationType)
             {
@@ -52,29 +55,45 @@ namespace Gameplay.GameplayObjects.Character.Statistics
             SyncStatisticServerRpc(statistic);
         }
 
+
         [Rpc(SendTo.Server)]
         public void RemoveStatisticChangeServerRpc(Statistic statistic, StatisticAlterationType alterationType, float alterationValue, RpcParams rpcParams = default)
         {
             RemoveStatisticChange(statistic, alterationType, alterationValue);
         }
-        private void RemoveStatisticChange(Statistic statistic, StatisticAlterationType alterationType, float alterationValue)
+        public void RemoveStatisticChange(Statistic statistic, StatisticAlterationType alterationType, float alterationValue)
         {
 #if UNITY_EDITOR
             if (!Editor_ValidateStatisticAltertion(statistic, alterationType))
                 throw new System.ArgumentException($"{statistic.ToString()} cannot use alteration {alterationType.ToString()}");
 #endif
 
-
-            StatisticAlteration statisticAlteration = _statisticChanges.GetOrCreateAndReturnValue(statistic);
-            switch (alterationType)
-            {
-                case StatisticAlterationType.Base:          statisticAlteration.RemoveBaseChange(alterationValue);        break;
-                case StatisticAlterationType.Addition:      statisticAlteration.RemoveAddition(alterationValue);          break;
-                case StatisticAlterationType.Multiplier:    statisticAlteration.RemoveMultiplication(alterationValue);    break;
-            }
+            _statisticChanges.GetOrCreateAndReturnValue(statistic).AddAlteration(alterationValue, alterationType);
 
             SyncStatisticServerRpc(statistic);
         }
+
+
+        public void AddDamageTakenStatisticChange(ServerCharacter source, DamageTakenStatistic statistic, float value, DamageTypes damageTypes, DirectionalCondition directionalCondition)
+        {
+            if (directionalCondition != null)
+                _damageTakenStatisticChanges.GetOrCreateAndReturnValue(statistic).AddDirectionalDamageTakenAlteration(value, damageTypes, directionalCondition);
+            else
+                _damageTakenStatisticChanges.GetOrCreateAndReturnValue(statistic).AddDamageTakenAlteration(value, damageTypes);
+
+            //SyncStatisticServerRpc(statistic);
+        }
+        public void RemoveDamageTakenStatisticChange(ServerCharacter source, DamageTakenStatistic statistic, float value, DamageTypes damageTypes, DirectionalCondition directionalCondition)
+        {
+            if (directionalCondition != null)
+                _damageTakenStatisticChanges.GetOrCreateAndReturnValue(statistic).RemoveDirectionalDamageTakenAlteration(value, damageTypes, directionalCondition);
+            else
+                _damageTakenStatisticChanges.GetOrCreateAndReturnValue(statistic).RemoveDamageTakenAlteration(value, damageTypes);
+
+            //SyncStatisticServerRpc(statistic);
+        }
+
+
 
 
         [Rpc(SendTo.Server)]
@@ -135,6 +154,8 @@ namespace Gameplay.GameplayObjects.Character.Statistics
             return GetBaseValue(statistic);
         }
 
+        public float GetDamageTakenMultiplier(DamageTakenStatistic damageTakenStatistic, DamageTypes damageType, Vector3 damageSourceLocalDirection) => _damageTakenStatisticChanges.GetOrCreateAndReturnValue(damageTakenStatistic).GetTotal(damageSourceLocalDirection, damageType);
+
 
 #if UNITY_EDITOR
 
@@ -142,8 +163,6 @@ namespace Gameplay.GameplayObjects.Character.Statistics
         {
             return statistic switch
             {
-                Statistic.DamageResistances => true,
-                Statistic.RegeneratingShieldResistances => true,
                 Statistic.BoostCount => (alteration == StatisticAlterationType.Base || alteration == StatisticAlterationType.Addition),
 
                 _ => true
@@ -168,15 +187,12 @@ namespace Gameplay.GameplayObjects.Character.Statistics
             return statistic switch
             {
                 Statistic.MaxHealth => _serverCharacter.BuildDataReference.GetFrameData().MaxHealth,
-                //Statistic.DamageResistances,
 
                 //Statistic.RegeneratingShield,
                 //Statistic.RegeneratingShieldResistances,
-                Statistic.ShieldedExternalHeatGainMultiplier => 1.0f,
 
                 Statistic.MaxHeat => _serverCharacter.BuildDataReference.GetFrameData().HeatCapacity,
                 Statistic.PersonalHeatGainMultiplier => 1.0f,
-                Statistic.ExternalHeatGainMultiplier => 1.0f,
 
                 Statistic.MovementSpeed => _serverCharacter.BuildDataReference.GetFrameData().MovementSpeed,
                 Statistic.BoostCount => _serverCharacter.BuildDataReference.GetFrameData().BoostCount,
@@ -200,6 +216,16 @@ namespace Gameplay.GameplayObjects.Character.Statistics
             }
 
 
+            public void AddAlteration(float alterationValue, StatisticAlterationType alterationType)
+            {
+                switch (alterationType)
+                {
+                    case StatisticAlterationType.Base:          RemoveBaseChange(alterationValue);      break;
+                    case StatisticAlterationType.Addition:      RemoveAddition(alterationValue);        break;
+                    case StatisticAlterationType.Multiplier:    RemoveMultiplication(alterationValue);  break;
+                }
+            }
+
             public void AddBaseChange(float baseChangeValue) => _baseChanges.Add(baseChangeValue);
             public void RemoveBaseChange(float baseChangeValue) => _baseChanges.Remove(baseChangeValue);
 
@@ -210,26 +236,32 @@ namespace Gameplay.GameplayObjects.Character.Statistics
             public void RemoveMultiplication(float baseChangeValue) => _multiplications.Remove(baseChangeValue);
 
 
-            public float GetTotal(float baseValue)
+            // Base Change: If multiple bases exist, determine the base value by adding their offsets from the default and applying that.
+            //  (E.g. Default = 5, Overrides = 3 & 6, New Base = ((3 - 5) + (6 - 5) + 5) = (-2 + 1 + 5) = 4).
+            public float ApplyBaseChanges(float baseValue)
             {
                 float total = baseValue;
-
-                // Base Change: If multiple bases exist, determine the base value by adding their offsets from the default and applying that.
-                //  (E.g. Default = 5, Overrides = 3 & 6, New Base = ((3 - 5) + (6 - 5) + 5) = (-2 + 1 + 5) = 4).
                 foreach (float baseChange in _baseChanges)
                     total += (baseChange - baseValue);
 
-                // Addition: Directly adds to the base value.
-                foreach (float addition in _additions)
-                    total += addition;
-
-                // Multiplies the value after Base + Addition.
-                //  (E.g. Base = 4, Addition = 2, Multiplier = 1.5, Total = (5 + 2) * 1.5 = 9).
-                foreach (float multiplication in _multiplications)
-                    total *= multiplication;
-
                 return total;
             }
+            // Addition: Directly adds to the base value.
+            public float ApplyAdditions(float value)
+            {
+                foreach (float addition in _additions)
+                    value += addition;
+                return value;
+            }
+            // Multiplies the value after Base + Addition.
+            //  (E.g. Base = 4, Addition = 2, Multiplier = 1.5, Total = (5 + 2) * 1.5 = 9).
+            public float ApplyMultiplications(float value)
+            {
+                foreach (float multiplication in _multiplications)
+                    value *= multiplication;
+                return value;
+            }
+            public float GetTotal(float baseValue) => ApplyMultiplications(ApplyAdditions(ApplyBaseChanges(baseValue)));
 
 
             public override string ToString()
@@ -249,6 +281,183 @@ namespace Gameplay.GameplayObjects.Character.Statistics
                 return output;
             }
         }
+        private class DamageTakenAlterations // One instance for each 'DamageTaken' Statistic
+        {
+            private Dictionary<DamageTypes, List<DirectionalDamageTypeAlteration>> _directionalDamageTakenAlterations;
+            private Dictionary<DamageTypes, DamageTypeAlteration> _damageTakenAlterations;
+
+            private Dictionary<DamageTypes, int> _immunities;
+
+            public DamageTakenAlterations()
+            {
+                _directionalDamageTakenAlterations = new();
+                _damageTakenAlterations = new();
+                _immunities = new();
+            }
+
+
+            public void AddDamageTakenAlteration(float alterationValue, DamageTypes damageTypes)
+            {
+                IEnumerable<DamageTypes> individualDamageTypes = System.Enum.GetValues(typeof(DamageTypes))
+                    .Cast<DamageTypes>()
+                    .Where(dmg => dmg != DamageTypes.None && dmg != DamageTypes.AllDamage && damageTypes.HasFlag(dmg));
+
+
+                if (alterationValue <= 0.0f)
+                {
+                    // This is an immunity, so add it to our immunities list for early exiting.
+                    foreach(DamageTypes damageType in individualDamageTypes)
+                    {
+                        if (!_immunities.TryAdd(damageType, 1))
+                            _immunities[damageType] = 1;
+                    }
+                }
+                else
+                {
+                    foreach (DamageTypes damageType in individualDamageTypes)
+                        _damageTakenAlterations.GetOrCreateAndReturnValue(damageType).AddAlteration(alterationValue);
+                }
+            }
+            public void RemoveDamageTakenAlteration(float alterationValue, DamageTypes damageTypes)
+            {
+                IEnumerable<DamageTypes> individualDamageTypes = System.Enum.GetValues(typeof(DamageTypes))
+                    .Cast<DamageTypes>()
+                    .Where(dmg => dmg != DamageTypes.None && dmg != DamageTypes.AllDamage && damageTypes.HasFlag(dmg));
+
+                if (alterationValue <= 0.0f)
+                {
+                    // Immunities are always only added to the '_immunities' dictionary and not the actual values list.
+                    foreach (DamageTypes damageType in individualDamageTypes)
+                        _immunities[damageType] -= 1;
+                }
+                else
+                {
+                    // Remove the alteration.
+                    foreach (DamageTypes damageType in individualDamageTypes)
+                        _damageTakenAlterations.GetOrCreateAndReturnValue(damageType).RemoveAlteration(alterationValue);
+                }
+            }
+
+
+            public void AddDirectionalDamageTakenAlteration(float alterationValue, DamageTypes damageTypes, DirectionalCondition condition)
+            {
+                IEnumerable<DamageTypes> individualDamageTypes = System.Enum.GetValues(typeof(DamageTypes))
+                    .Cast<DamageTypes>()
+                    .Where(dmg => dmg != DamageTypes.None && dmg != DamageTypes.AllDamage && damageTypes.HasFlag(dmg));
+
+
+                // Due to these alterations being conditional, caching a set value for immunities is less effective
+                //  and so we've elected to not do so.
+                foreach (DamageTypes damageType in individualDamageTypes)
+                {
+                    var alterations = _directionalDamageTakenAlterations.GetOrCreateAndReturnValue(damageType);
+
+                    DirectionalDamageTypeAlteration correspondingAlteration = alterations.FirstOrDefault(dmgAlteration => dmgAlteration.ConditionEquals(condition));
+                    if (correspondingAlteration != null)
+                        correspondingAlteration.AddAlteration(alterationValue);
+                    else
+                        alterations.Add(new DirectionalDamageTypeAlteration(alterationValue, condition));
+                }
+            }
+            public void RemoveDirectionalDamageTakenAlteration(float alterationValue, DamageTypes damageTypes, DirectionalCondition condition)
+            {
+                IEnumerable<DamageTypes> individualDamageTypes = System.Enum.GetValues(typeof(DamageTypes))
+                    .Cast<DamageTypes>()
+                    .Where(dmg => dmg != DamageTypes.None && dmg != DamageTypes.AllDamage && damageTypes.HasFlag(dmg));
+
+                // Due to these alterations being conditional, caching a set value for immunities is less effective
+                //  and so we've elected to not do so.
+                foreach (DamageTypes damageType in individualDamageTypes)
+                {
+                    if (!_directionalDamageTakenAlterations.TryGetValue(damageType, out var alterations))
+                        continue;
+
+                    foreach (DirectionalDamageTypeAlteration dirDmgAlteration in alterations)
+                    {
+                        if (!dirDmgAlteration.ConditionEquals(condition))
+                            continue;
+
+                        dirDmgAlteration.RemoveAlteration(alterationValue);
+                    }
+                }
+            }
+
+
+            /// <summary>
+            ///     Calculates and returns the total.
+            /// </summary>
+            /// <returns> A positive float value representing the multiplier to be applied to the damage taken.</returns>
+            public float GetTotal(Vector3 damageSourceLocalDirection, DamageTypes damageType)
+            {
+                if (_immunities.ContainsKey(damageType))
+                    return 0.0f;    // Exit early for immunities to save time.
+
+                float total = _damageTakenAlterations.GetOrCreateAndReturnValue(damageType).GetValue();
+                if (_directionalDamageTakenAlterations.TryGetValue(damageType, out List<DirectionalDamageTypeAlteration> directionalAlterations))
+                {
+                    foreach(DirectionalDamageTypeAlteration alteration in directionalAlterations)
+                    {
+                        if (alteration.Evaluate(damageSourceLocalDirection))
+                            total *= alteration.GetValue();
+                    }
+                }
+
+                return total;
+            }
+
+
+            private class DirectionalDamageTypeAlteration
+            {
+                private readonly DirectionalCondition _condition;
+                private DamageTypeAlteration _alteration;
+
+                public DirectionalDamageTypeAlteration(float alterationValue, DirectionalCondition condition)
+                {
+                    _condition = condition;
+
+                    _alteration = new();
+                    _alteration.AddAlteration(alterationValue);
+                }
+
+                public bool Evaluate(Vector3 damageSourceLocalDirection) => _condition.Evaluate(damageSourceLocalDirection);
+
+                public void AddAlteration(float value) => _alteration.AddAlteration(value);
+                public void RemoveAlteration(float value) => _alteration.RemoveAlteration(value);
+                public float GetValue() => _alteration.GetValue();
+
+                public bool ConditionEquals(DirectionalCondition condition) => _condition.Equals(condition);
+            }
+            private class DamageTypeAlteration
+            {
+                private float _alteration;
+                private List<float> _allAlterations;
+
+                public DamageTypeAlteration()
+                {
+                    _alteration = 1.0f;
+                    _allAlterations = new List<float>();
+                }
+
+                public void AddAlteration(float alteration)
+                {
+                    _allAlterations.Add(alteration);
+                    RecalculateTotal();
+                }
+                public void RemoveAlteration(float alteration)
+                {
+                    _allAlterations.Remove(alteration);
+                    RecalculateTotal();
+                }
+
+                private void RecalculateTotal()
+                {
+                    _alteration = 1.0f;
+                    foreach(float alteration in _allAlterations)
+                        _alteration *= alteration;
+                }
+                public float GetValue() => _alteration;
+            }
+        }
     }
 
 
@@ -257,26 +466,27 @@ namespace Gameplay.GameplayObjects.Character.Statistics
     public enum Statistic
     {
         MaxHealth,      // Implemented - ServerCharacter listens to onChange event and modifies NetworkHealthComponent value.
-        // (Damage Type | Base, Addition, Multiplier)
-        DamageResistances,
 
         RegeneratingShield,
-        // (Damage Type | Base, Addition, Multiplier)
-        RegeneratingShieldResistances,
-        ShieldedExternalHeatGainMultiplier,
 
         MaxHeat,        // Implemented - ServerCharacter's MaxHeat value directly reads from this.
-        PersonalHeatGainMultiplier,
-        ExternalHeatGainMultiplier,
+        PersonalHeatGainMultiplier, // Implemented - ServerCharacter reads from this in 'ReceiveHeatChange'.
 
-        MovementSpeed,  // Implemented - ServerCharacter's MovementSpeed value directly reads from this.
+        MovementSpeed,  // Implemented - ServerCharacterMovement's MovementSpeed value reads directly from this.
         // Base & Addition
-        BoostCount,
-        BoostRechargeMultiplier,
+        BoostCount,     // Implemented - ServerCharacterMovement's _boostCount value reads directly from this | ServerCharacterMovement is also listening to changes.
+        BoostRechargeMultiplier,    // Implemented - ServerCharacterMovement's _boostRechargeMultiplier value reads directly from this.
 
         KnockbackForceMultiplier,
 
         Damage,
+    }
+    [System.Serializable]
+    // (Damage Type | Base, Addition, Multiplier)
+    public enum DamageTakenStatistic
+    {
+        DamageResistances,
+        RegeneratingShieldResistances,
     }
     [System.Serializable]
     public enum StatisticAlterationType

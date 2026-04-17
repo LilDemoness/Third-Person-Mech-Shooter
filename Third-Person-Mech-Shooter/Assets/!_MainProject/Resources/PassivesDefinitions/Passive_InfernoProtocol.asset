@@ -13,22 +13,22 @@ MonoBehaviour:
   m_Name: Passive_InfernoProtocol
   m_EditorClassIdentifier: 
   _effects:
-  - rid: 981910439197933665
+  - rid: 981910458943144069
   references:
     version: 2
     RefIds:
-    - rid: 981910439197933665
+    - rid: 981910458943144069
       type: {class: AlterStatisticEffect, ns: Gameplay.Passives, asm: Assembly-CSharp}
       data:
         _updates: 1
         _triggerAtStart: 0
         _passiveConditions:
-        - rid: 981910439197933666
-        _affectedStatistic: 12
+        - rid: 981910458943144070
+        _affectedStatistic: 8
         _alterationType: 2
-        _alterationValue: 1.5
+        _alterationValue: 2
         _removeEffectOnConditionFailed: 1
-    - rid: 981910439197933666
+    - rid: 981910458943144070
       type: {class: StatisticCondition, ns: Gameplay.Passives, asm: Assembly-CSharp}
       data:
         _statisticToCheck: 1

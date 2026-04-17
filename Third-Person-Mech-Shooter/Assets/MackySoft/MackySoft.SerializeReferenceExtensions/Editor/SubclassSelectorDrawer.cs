@@ -108,11 +108,11 @@ namespace MackySoft.SerializeReferenceExtensions.Editor
 						{
 							// Draw the properties of the child elements.
 							// NOTE: In the following code, since the foldout layout isn't working properly, I'll iterate through the properties of the child elements myself.
-							// EditorGUI.PropertyField(position, property, GUIContent.none, true);
+							//EditorGUI.PropertyField(position, property, GUIContent.none, true);
 
 							Rect childPosition = position;
 							childPosition.y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
-							foreach (SerializedProperty childProperty in property.GetChildProperties())
+                            foreach (SerializedProperty childProperty in property.GetChildProperties())
 							{
 								float height = EditorGUI.GetPropertyHeight(childProperty, new GUIContent(childProperty.displayName, childProperty.tooltip), true);
 								childPosition.height = height;

@@ -74,7 +74,7 @@ namespace Gameplay.GameplayObjects.Character
 
 
         // Movement.
-        public float BaseMoveSpeed => _characterStats.GetStatisticValue(Statistic.MovementSpeed);
+        public float MovementSpeed => Movement.MovementSpeed;
 
 
         // References.
@@ -323,6 +323,9 @@ namespace Gameplay.GameplayObjects.Character
         /// <param name="heatChange"> The heat to be applied (Negative values reduce heat).</param>
         public void ReceiveHeatChange(ServerCharacter inflicter, float heatChange)
         {
+            if (heatChange > 0.0f)
+                heatChange *= CharacterStats.GetStatisticValue(Statistic.PersonalHeatGainMultiplier);
+
             SetCurrentHeat(CurrentHeat.Value + heatChange);
         }
         

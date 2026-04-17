@@ -46,7 +46,7 @@ MonoBehaviour:
   - rid: 981910305249689694
   <ActionCrosshairPrefab>k__BackingField: {fileID: 830966631555543426, guid: 9d14fbeb532b8d64a99f11ce9df584f9, type: 3}
   <HitEffects>k__BackingField:
-  - rid: 981910298840793205
+  - rid: 981910458943144055
   <ActivationsPerTrigger>k__BackingField: 1
   <ActivationDeviationPattern>k__BackingField: 0
   <TargetingStartDeviation>k__BackingField: 0
@@ -59,11 +59,6 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 981910298840793205
-      type: {class: HealthChangeEffect, ns: Gameplay.Actions.Effects, asm: Assembly-CSharp}
-      data:
-        _healthChange: 3
-        _scaleValueWithCharge: 1
     - rid: 981910298840793213
       type: {class: PlayAudioActionVisual, ns: Gameplay.Actions.Visuals, asm: Assembly-CSharp}
       data:
@@ -89,3 +84,9 @@ MonoBehaviour:
       data:
         _triggerTimes: 4
         _specialFXGraphic: {fileID: 7886655476902268161, guid: 20b31fcfaed0cb842a56fbbe2419428f, type: 3}
+    - rid: 981910458943144055
+      type: {class: DamageEffect, ns: Gameplay.Actions.Effects, asm: Assembly-CSharp}
+      data:
+        _damageValue: 1
+        _scaleValueWithCharge: 1
+        _damageType: 1

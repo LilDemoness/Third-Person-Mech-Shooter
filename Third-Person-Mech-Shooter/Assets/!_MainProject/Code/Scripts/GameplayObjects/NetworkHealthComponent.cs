@@ -1,4 +1,5 @@
 using Gameplay.GameplayObjects.Character;
+using Gameplay.GameplayObjects.Character.Statistics;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -172,7 +173,7 @@ namespace Gameplay.GameplayObjects
             NotifyOfInitialisationRpc(maxHealth);
         }
 
-        public void SetMaxHealth_Server(ServerCharacter inflicter, int newMaxHealth, bool increaseHealth = false, bool excessHealthBecomesOverhealth = false)
+        public void SetMaxHealth_Server(ServerCharacter inflicter, float newMaxHealth, bool increaseHealth = false, bool excessHealthBecomesOverhealth = false)
         {
             float delta = newMaxHealth - Mathf.Max(MaxHealth, 0);
 
@@ -205,27 +206,41 @@ namespace Gameplay.GameplayObjects
         }
 
 
-        public void ReceiveHealthChange_Server(ServerCharacter inflicter, float healthChange)
+        public void ReceiveDamage_Server(ServerCharacter inflicter, float damage, DamageTypes damageType, Vector3 damageSourceDirection)
         {
             if (!CanHaveHealthChanged())
                 return; // This object cannot be damaged.
-            if (healthChange == 0.0f)
+            if (damage == 0.0f)
+                return; // The health change was invalid.
+
+            // Apply any resistances, vulnerabilities, or immunities to the damage.
+            if (!CanTakeDamage())
+                damage = 0.0f;
+            else
+            {
+                DamageTakenStatistic damageTakenStatistic = DamageTakenStatistic.DamageResistances; // [Has Shield] ? DamageTakenStatistic.RegeneratingShieldResistances : DamageTakenStatistic.DamageResistances;
+                //Vector3 damageDirection = (sourcePosition - _serverCharacter.transform.position).normalized;
+                Vector3 localDamageDirection = _serverCharacter.transform.InverseTransformDirection(damageSourceDirection);
+
+                damage *= _serverCharacter.CharacterStats.GetDamageTakenMultiplier(damageTakenStatistic, damageType, localDamageDirection);
+            }
+
+            SetCurrentHealth_Server(inflicter, _currentHealth.Value - damage);
+        }
+        public void ReceiveHealing_Server(ServerCharacter inflicter, float healing)
+        {
+            if (!CanHaveHealthChanged())
+                return; // This object cannot be damaged.
+            if (healing == 0.0f)
                 return; // The health change was invalid.
 
             // Apply modifications to the healing/damage as appropriate.
-            bool isHeal = healthChange > 0.0f;
-            if (isHeal)
-            {
-                healthChange = CanReceiveHealing() ? ApplyHealingModifications(healthChange) : 0.0f;
-            }
-            else
-            {
-                healthChange = CanTakeDamage() ? ApplyDamageModifications(healthChange) : 0.0f;
-            }
+            healing = CanReceiveHealing() ? healing : 0.0f;
 
-
-            SetCurrentHealth_Server(inflicter, _currentHealth.Value + healthChange);
+            SetCurrentHealth_Server(inflicter, _currentHealth.Value + healing);
         }
+
+
         public void SetCurrentHealth_Server(ServerCharacter inflicter, float newValue, bool excessBecomesOverhealth = false)
         {
             if (excessBecomesOverhealth)
@@ -248,16 +263,6 @@ namespace Gameplay.GameplayObjects
                 // We've died.
                 SetLifeState_Server(inflicter, LifeState.Dead);
             }
-        }
-
-
-        private float ApplyHealingModifications(float unmodifiedValue)
-        {
-            return unmodifiedValue;
-        }
-        private float ApplyDamageModifications(float unmodifiedValue)
-        {
-            return unmodifiedValue;
         }
 
 
