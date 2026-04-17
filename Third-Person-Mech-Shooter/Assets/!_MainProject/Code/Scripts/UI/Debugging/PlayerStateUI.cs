@@ -17,6 +17,9 @@ namespace UI.Debugging
         [SerializeField] private TMP_Text _healthText;
         private string _healthFormattingString;
 
+        [SerializeField] private TMP_Text _shieldsText;
+        private string _shieldsFormattingString;
+
         [SerializeField] private TMP_Text _heatText;
         private string _heatFormattingString;
 
@@ -43,6 +46,7 @@ namespace UI.Debugging
 
             // Subscribe to change events.
             NetworkHealthComponent.OnAnyHealthChange += OnAnyHealthChanged;
+            NetworkHealthComponent.OnAnyShieldsChange += OnAnyShieldsChanged;
             Player.LocalClientInstance.ServerCharacter.OnHeatChanged += OnHeatChanged;
 
             // Ensure that late joiners receive the initial state.
@@ -56,6 +60,7 @@ namespace UI.Debugging
             if (Player.LocalClientInstance != null)
             {
                 NetworkHealthComponent.OnAnyHealthChange -= OnAnyHealthChanged;
+                NetworkHealthComponent.OnAnyShieldsChange -= OnAnyShieldsChanged;
                 Player.LocalClientInstance.ServerCharacter.OnHeatChanged -= OnHeatChanged;
             }
         }
@@ -73,6 +78,13 @@ namespace UI.Debugging
 
             SetHealthText(e.NewCurrentHealth, e.NewMaxHealth);
         }
+        private void OnAnyShieldsChanged(AnyShieldsChangeEventArgs e)
+        {
+            if (e.ThisCharacter != Player.LocalClientInstance.ServerCharacter)
+                return;
+
+            SetShieldsText(e.NewCurrentShields, e.NewMaxShields);
+        }
         private void OnHeatChanged(float currentValue, float maxValue) => SetHeatText(currentValue, maxValue);
 
 
@@ -80,6 +92,11 @@ namespace UI.Debugging
         {
             _healthFormattingString = GetFormattingString(Player.LocalClientInstance.ServerCharacter.NetworkHealthComponent.MaxHealth); // Call when 'MaxHealth' is changed.
             _healthText.text = string.Concat("Health: ", currentHealth.ToString(_healthFormattingString), "/", maxHealth.ToString(_healthFormattingString));
+        }
+        private void SetShieldsText(float currentShields, float maxShields)
+        {
+            _shieldsFormattingString = GetFormattingString(Player.LocalClientInstance.ServerCharacter.NetworkHealthComponent.MaxShields);
+            _shieldsText.text = string.Concat("Shields: ", currentShields.ToString(_shieldsFormattingString), "/", maxShields.ToString(_shieldsFormattingString));
         }
         private void SetHeatText(float currentHeat, float maxHeat)
         {
@@ -90,6 +107,9 @@ namespace UI.Debugging
 
         private string GetFormattingString(float value)
         {
+            if (value == 0.0f)
+                return "0";
+
             int significantFigureCount = CalculateSignificantFigureCount(value) + 1;
             return new string('0', significantFigureCount);
         }

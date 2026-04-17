@@ -31,7 +31,7 @@ MonoBehaviour:
         _updates: 0
         _triggerAtStart: 1
         _passiveConditions: []
-        _affectedStatistic: 5
+        _affectedStatistic: 7
         _alterationType: 1
         _alterationValue: 1
         _removeEffectOnConditionFailed: 0

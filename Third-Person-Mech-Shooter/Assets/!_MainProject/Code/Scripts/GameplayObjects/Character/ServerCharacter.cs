@@ -163,7 +163,7 @@ namespace Gameplay.GameplayObjects.Character
         private void CharacterStats_OnStatisticChanged(Statistic statistic)
         {
             if (IsServer && statistic == Statistic.MaxHealth)
-                NetworkHealthComponent.SetMaxHealth_Server(null, Mathf.CeilToInt(_characterStats.GetStatisticValue(Statistic.MaxHealth)), true, false);
+                NetworkHealthComponent.SetMaxHealth_Server(null, Mathf.CeilToInt(_characterStats.GetStatisticValue(Statistic.MaxHealth)), true);
 
             if (statistic == Statistic.MaxHeat)
                 NotifyOfHeatChange();
@@ -389,7 +389,7 @@ namespace Gameplay.GameplayObjects.Character
             ServerPassivePlayer.AddPassive(_buildDataReference.GetFrameData().CoreSystem.PassiveFeatureDefinition);
 
             //_networkHealthComponent.InitialiseDamageReceiver_Server(buildData.GetFrameData().MaxHealth);
-            _networkHealthComponent.InitialiseDamageReceiver_Server(_characterStats.GetStatisticValue(Statistic.MaxHealth));
+            _networkHealthComponent.InitialiseDamageReceiver_Server(_characterStats.GetStatisticValue(Statistic.MaxHealth), _characterStats.GetStatisticValue(Statistic.MaxShields));
             InitialiseHeat();
         }
 

@@ -21,6 +21,13 @@ namespace Gameplay.GameplayObjects
         private NetworkVariable<float> _currentHealth { get; } = new NetworkVariable<float>();
         public float MaxHealth { get; set; } = -1.0f;   // Initial value for notifying us that we haven't set the value for some reason.
 
+        private NetworkVariable<float> _currentShields { get; } = new NetworkVariable<float>();
+        public float MaxShields { get; set; } = 0.0f;
+
+        private float _lastDamageTime;  // Server Only.
+        private float _shieldRechargeDelay => _serverCharacter.CharacterStats.GetStatisticValue(Statistic.ShieldRechargeDelay);
+        private float _shieldRechargeRate => _serverCharacter.CharacterStats.GetStatisticValue(Statistic.ShieldRechargeRate);
+
         private NetworkVariable<LifeState> _lifeState { get; } = new NetworkVariable<LifeState>(LifeState.Alive);
 
 
@@ -33,8 +40,7 @@ namespace Gameplay.GameplayObjects
         public bool IsInitialised = false;
 
         public static event System.Action<AnyHealthChangeEventArgs> OnAnyHealthChange;
-        public event System.Action<HealthChangeEventArgs> OnDamageReceived;
-        public event System.Action<HealthChangeEventArgs> OnHealingReceived;
+        public static event System.Action<AnyShieldsChangeEventArgs> OnAnyShieldsChange;
         public event System.Action<float, float> OnHealthChanged;
 
         public event System.Action<BaseDamageReceiverEventArgs> OnDied;
@@ -49,55 +55,45 @@ namespace Gameplay.GameplayObjects
         #region Event RPCs
 
         [Rpc(SendTo.Everyone)]
-        private void NotifyOfInitialisationRpc(float maxHealth)
+        private void NotifyOfInitialisationRpc(float maxHealth, float maxShields)
         {
             if (!IsServer)
                 this.MaxHealth = maxHealth;
 
             IsInitialised = true;
             OnInitialised?.Invoke();
+
             Debug.Log($"Notify Health Change ({_currentHealth.Value}|{maxHealth}) for {this.OwnerClientId}");
             OnAnyHealthChange?.Invoke(new AnyHealthChangeEventArgs(null, _serverCharacter, _currentHealth.Value, maxHealth, 0.0f));
+            OnAnyShieldsChange?.Invoke(new AnyShieldsChangeEventArgs(null, _serverCharacter, _currentShields.Value, maxShields, 0.0f));
         }
 
 
-        private void NotifyOfHealthChange(ServerCharacter inflicter, float newHealth, float newMaxHealth, float healthChange)
+        private void NotifyOfHealthChange(ServerCharacter inflicter, float healthChange)
         {
             if (inflicter == null)
-                NotifyOfHealthChangeRpc(newHealth, newMaxHealth, healthChange);
+                NotifyOfHealthChangeRpc(_currentHealth.Value, MaxHealth, healthChange);
             else
-                NotifyOfHealthChangeRpc(inflicter.NetworkObjectId, newHealth, newMaxHealth, healthChange);
+                NotifyOfHealthChangeRpc(inflicter.NetworkObjectId, _currentHealth.Value, MaxHealth, healthChange);
         }
         [Rpc(SendTo.Everyone)]
         private void NotifyOfHealthChangeRpc(float newHealth, float newMaxHealth, float healthChange) => OnAnyHealthChange?.Invoke(new AnyHealthChangeEventArgs(null, _serverCharacter, newHealth, newMaxHealth, healthChange));
         [Rpc(SendTo.Everyone)]
-        private void NotifyOfHealthChangeRpc(ulong inflicterObjectId, float newHealth, float newMaxHealth, float healthChange) => OnAnyHealthChange?.Invoke(new AnyHealthChangeEventArgs(GetServerCharacterForObjectId(inflicterObjectId), _serverCharacter, newHealth, newMaxHealth, healthChange));
+        private void NotifyOfHealthChangeRpc(ulong inflicterObjectId, float newHealth, float newMaxShields, float healthChange) => OnAnyHealthChange?.Invoke(new AnyHealthChangeEventArgs(GetServerCharacterForObjectId(inflicterObjectId), _serverCharacter, newHealth, newMaxShields, healthChange));
 
 
-        private void NotifyOfDamage(ServerCharacter inflicter, float healthChange)
+        private void NotifyOfShieldsChange(ServerCharacter inflicter, float shieldsChange)
         {
             if (inflicter == null)
-                NotifyOfDamageRpc(healthChange);
+                NotifyOfShieldsChangeRpc(_currentShields.Value, MaxShields, shieldsChange);
             else
-                NotifyOfDamageRpc(inflicter.NetworkObjectId, healthChange);
+                NotifyOfShieldsChangeRpc(inflicter.NetworkObjectId, _currentShields.Value, MaxShields, shieldsChange);
         }
         [Rpc(SendTo.Everyone)]
-        private void NotifyOfDamageRpc(float healthChange) => OnDamageReceived?.Invoke(new HealthChangeEventArgs(null, healthChange));
+        private void NotifyOfShieldsChangeRpc(float newShields, float newMaxShields, float healthChange) => OnAnyShieldsChange?.Invoke(new AnyShieldsChangeEventArgs(null, _serverCharacter, newShields, newMaxShields, healthChange));
         [Rpc(SendTo.Everyone)]
-        private void NotifyOfDamageRpc(ulong inflicterObjectId, float healthChange) => OnDamageReceived?.Invoke(new HealthChangeEventArgs(GetServerCharacterForObjectId(inflicterObjectId), healthChange));
+        private void NotifyOfShieldsChangeRpc(ulong inflicterObjectId, float newShields, float newMaxShields, float healthChange) => OnAnyShieldsChange?.Invoke(new AnyShieldsChangeEventArgs(GetServerCharacterForObjectId(inflicterObjectId), _serverCharacter, newShields, newMaxShields, healthChange));
 
-
-        private void NotifyOfHealing(ServerCharacter inflicter, float healthChange)
-        {
-            if (inflicter == null)
-                NotifyOfHealingRpc(healthChange);
-            else
-                NotifyOfHealingRpc(inflicter.NetworkObjectId, healthChange);
-        }
-        [Rpc(SendTo.Everyone)]
-        private void NotifyOfHealingRpc(float healthChange) => OnHealingReceived?.Invoke(new HealthChangeEventArgs(null, healthChange));
-        [Rpc(SendTo.Everyone)]
-        private void NotifyOfHealingRpc(ulong inflicterObjectId, float healthChange) => OnHealingReceived?.Invoke(new HealthChangeEventArgs(GetServerCharacterForObjectId(inflicterObjectId), healthChange));
 
 
         private void NotifyOfDeath(ServerCharacter inflicter)
@@ -163,19 +159,34 @@ namespace Gameplay.GameplayObjects
         }
 
 
-        public void InitialiseDamageReceiver_Server(float maxHealth)
+        public void InitialiseDamageReceiver_Server(float maxHealth, float maxShields)
         {
             this.MaxHealth = maxHealth;
+            this.MaxShields = maxShields;
             if (this._lifeState.Value == LifeState.Alive)
+            {
                 this._currentHealth.Value = maxHealth;
+                this._currentShields.Value = maxShields;
+            }
             //this._lifeState.Value = LifeState.Alive;
 
-            NotifyOfInitialisationRpc(maxHealth);
+            NotifyOfInitialisationRpc(maxHealth, maxShields);
         }
 
-        public void SetMaxHealth_Server(ServerCharacter inflicter, float newMaxHealth, bool increaseHealth = false, bool excessHealthBecomesOverhealth = false)
+
+        private void Update()
         {
-            float delta = newMaxHealth - Mathf.Max(MaxHealth, 0);
+            // Regenerate Shields.
+            if (Time.time >= _lastDamageTime + _shieldRechargeDelay)
+            {
+                RegenerateShields(_shieldRechargeRate * Time.deltaTime);
+            }
+        }
+
+
+        public void SetMaxHealth_Server(ServerCharacter inflicter, float newMaxHealth, bool increaseHealth = false)
+        {
+            float delta = newMaxHealth - Mathf.Max(MaxHealth, 0.0f);
 
             // Set our MaxHealth.
             MaxHealth = newMaxHealth;
@@ -187,23 +198,66 @@ namespace Gameplay.GameplayObjects
                 // Max Health is being increased.
                 if (increaseHealth)
                     SetCurrentHealth_Server(inflicter, _currentHealth.Value + delta);
-                else
-                    NotifyOfHealthChange(inflicter, _currentHealth.Value, MaxHealth, 0.0f);
+                
+                NotifyOfHealthChange(inflicter, 0.0f);
             }
             else
             {
                 // Max Health is being decreased.
                 if (MaxHealth < _currentHealth.Value)
-                {
-                    if (excessHealthBecomesOverhealth)
-                        throw new System.NotImplementedException("Overhealth");
-                    else
-                        SetCurrentHealth_Server(inflicter, _currentHealth.Value + delta);
-                }
-                else
-                    NotifyOfHealthChange(inflicter, _currentHealth.Value, MaxHealth, 0.0f);
+                    SetCurrentHealth_Server(inflicter, _currentHealth.Value + delta);
+                
+                NotifyOfHealthChange(inflicter, 0.0f);
             }
         }
+        public void SetCurrentHealth_Server(ServerCharacter inflicter, float newValue)
+        {
+            float clampedValue = Mathf.Clamp(newValue, 0, MaxHealth);
+            float healthChange = clampedValue - _currentHealth.Value;
+            _currentHealth.Value = clampedValue;
+
+
+            // Notify whether we received healing or damage
+            NotifyOfHealthChange(inflicter, healthChange);
+
+            if (_currentHealth.Value <= 0.0f)
+            {
+                // We've died.
+                SetLifeState_Server(inflicter, LifeState.Dead);
+            }
+        }
+
+
+        public void SetMaxShields_Server(ServerCharacter inflicter, float newMaxShields, bool automaticallyRefill = false)
+        {
+            float delta = newMaxShields - Mathf.Max(MaxShields, 0.0f);
+
+            MaxShields = newMaxShields;
+
+            if (delta > 0.0f)
+            {
+                if (automaticallyRefill)
+                    SetCurrentShields_Server(inflicter, _currentShields.Value + delta);
+                else
+                    NotifyOfShieldsChange(inflicter, 0.0f);
+            }
+            else
+            {
+                if (MaxShields < _currentShields.Value)
+                    SetCurrentShields_Server(inflicter, MaxShields);
+                else
+                    NotifyOfShieldsChange(inflicter, 0.0f);
+            }
+        }
+        public void SetCurrentShields_Server(ServerCharacter inflicter, float newValue)
+        {
+            float clampedValue = Mathf.Clamp(newValue, 0, MaxShields);
+            float healthChange = clampedValue - _currentShields.Value;
+            _currentShields.Value = clampedValue;
+
+            NotifyOfShieldsChange(inflicter, 0.0f);
+        }
+
 
 
         public void ReceiveDamage_Server(ServerCharacter inflicter, float damage, DamageTypes damageType, Vector3 damageSourceDirection)
@@ -212,18 +266,25 @@ namespace Gameplay.GameplayObjects
                 return; // This object cannot be damaged.
             if (damage == 0.0f)
                 return; // The health change was invalid.
-
-            // Apply any resistances, vulnerabilities, or immunities to the damage.
             if (!CanTakeDamage())
-                damage = 0.0f;
-            else
-            {
-                DamageTakenStatistic damageTakenStatistic = DamageTakenStatistic.DamageResistances; // [Has Shield] ? DamageTakenStatistic.RegeneratingShieldResistances : DamageTakenStatistic.DamageResistances;
-                //Vector3 damageDirection = (sourcePosition - _serverCharacter.transform.position).normalized;
-                Vector3 localDamageDirection = _serverCharacter.transform.InverseTransformDirection(damageSourceDirection);
+                return;
 
-                damage *= _serverCharacter.CharacterStats.GetDamageTakenMultiplier(damageTakenStatistic, damageType, localDamageDirection);
+            _lastDamageTime = Time.time;
+            
+            Vector3 localDamageDirection = _serverCharacter.transform.InverseTransformDirection(damageSourceDirection);
+            if (_currentShields.Value > 0.0f)
+            {
+                float shieldDamageMultiplier = _serverCharacter.CharacterStats.GetDamageTakenMultiplier(DamageTakenStatistic.RegeneratingShieldResistances, damageType, localDamageDirection);
+                float effectiveShieldsHealth = _currentShields.Value / shieldDamageMultiplier;
+
+                SetCurrentShields_Server(inflicter, _currentShields.Value - damage * shieldDamageMultiplier);
+                
+                damage -= effectiveShieldsHealth;
+                if (damage <= 0.0f)
+                    return; // All the damage has been dealt to shields.
             }
+
+            damage *= _serverCharacter.CharacterStats.GetDamageTakenMultiplier(DamageTakenStatistic.DamageResistances, damageType, localDamageDirection);
 
             SetCurrentHealth_Server(inflicter, _currentHealth.Value - damage);
         }
@@ -239,31 +300,7 @@ namespace Gameplay.GameplayObjects
 
             SetCurrentHealth_Server(inflicter, _currentHealth.Value + healing);
         }
-
-
-        public void SetCurrentHealth_Server(ServerCharacter inflicter, float newValue, bool excessBecomesOverhealth = false)
-        {
-            if (excessBecomesOverhealth)
-                throw new System.NotImplementedException();
-
-            float healthChange = newValue - _currentHealth.Value;
-            _currentHealth.Value = Mathf.Clamp(newValue, 0, MaxHealth);
-
-
-            // Notify whether we received healing or damage
-            NotifyOfHealthChange(inflicter, newValue, MaxHealth, healthChange);
-            if (healthChange > 0.0f)
-                NotifyOfHealing(inflicter, healthChange);
-            else
-                NotifyOfDamage(inflicter, healthChange);
-
-
-            if (_currentHealth.Value <= 0.0f)
-            {
-                // We've died.
-                SetLifeState_Server(inflicter, LifeState.Dead);
-            }
-        }
+        private void RegenerateShields(float shieldIncreaseValue) => SetCurrentShields_Server(null, _currentShields.Value + shieldIncreaseValue);
 
 
         public void Revive_Server(ServerCharacter inflicter)
@@ -288,15 +325,24 @@ namespace Gameplay.GameplayObjects
         }
 
 
-        public float GetMissingHealth() => MaxHealth - _currentHealth.Value;
-        public float GetCurrentHealth() => _currentHealth.Value;
-        public float GetHealthPercentage() => _currentHealth.Value / MaxHealth;
+        public float GetCurrentHealth() => Mathf.Min(_currentHealth.Value, MaxHealth);
+        public float GetMissingHealth() => MaxHealth - GetCurrentHealth();
+
+        public float GetCurrentShields() => Mathf.Min(_currentHealth.Value - MaxHealth, 0.0f);
+
+        public float GetHealthPercentage() => GetCurrentHealth() / MaxHealth;
+        public float GetShieldsPercentage() => MaxShields != 0.0f ? GetCurrentShields() / MaxShields : 0.0f;
+
 
 
         public bool CanHaveHealthChanged() => !IsDead;
         public bool CanTakeDamage() => !IsDead;
         public bool CanReceiveHealing() => !IsDead;
 
+
+
+        [ContextMenu("Take Fifteen Damage")]
+        private void TakeFifteenDamage() => ReceiveDamage_Server(null, 15.0f, DamageTypes.Ballistic, Vector3.zero);
 
 
         private ServerCharacter GetServerCharacterForObjectId(ulong objectId)
@@ -346,6 +392,22 @@ namespace Gameplay.GameplayObjects
                 this.NewCurrentHealth = newCurrent;
                 this.NewMaxHealth = newMaxHealth;
                 this.HealthChange = healthChange;
+            }
+        }
+        public class AnyShieldsChangeEventArgs : BaseDamageReceiverEventArgs
+        {
+            public ServerCharacter ThisCharacter { get; }
+
+            public float NewCurrentShields { get; }
+            public float NewMaxShields { get; }
+            public float ShieldsChange { get; }
+
+            public AnyShieldsChangeEventArgs(ServerCharacter inflicter, ServerCharacter thisCharacter, float newCurrent, float newMaxShields, float shieldsChange) : base(inflicter)
+            {
+                this.ThisCharacter = thisCharacter;
+                this.NewCurrentShields = newCurrent;
+                this.NewMaxShields = newMaxShields;
+                this.ShieldsChange = shieldsChange;
             }
         }
         public class HealthChangeEventArgs : BaseDamageReceiverEventArgs

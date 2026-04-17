@@ -181,8 +181,9 @@ namespace Gameplay.GameplayObjects.Character.Statistics
             {
                 Statistic.MaxHealth => _serverCharacter.BuildDataReference.GetFrameData().MaxHealth,
 
-                //Statistic.RegeneratingShield,
-                //Statistic.RegeneratingShieldResistances,
+                Statistic.MaxShields => _serverCharacter.BuildDataReference.GetFrameData().MaxShields,
+                Statistic.ShieldRechargeDelay => 2.0f,
+                Statistic.ShieldRechargeRate => 20.0f,
 
                 Statistic.MaxHeat => _serverCharacter.BuildDataReference.GetFrameData().HeatCapacity,
                 Statistic.PersonalHeatGainMultiplier => 1.0f,
@@ -474,7 +475,9 @@ namespace Gameplay.GameplayObjects.Character.Statistics
     {
         MaxHealth,      // Implemented - ServerCharacter listens to onChange event and modifies NetworkHealthComponent value.
 
-        RegeneratingShield,
+        MaxShields,
+        ShieldRechargeDelay,
+        ShieldRechargeRate,
 
         MaxHeat,        // Implemented - ServerCharacter's MaxHeat value directly reads from this.
         PersonalHeatGainMultiplier, // Implemented - ServerCharacter reads from this in 'ReceiveHeatChange'.
