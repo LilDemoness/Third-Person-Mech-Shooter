@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Action_PhaseShift
   m_EditorClassIdentifier: 
   <IsHostileAction>k__BackingField: 1
+  <IsLoudAction>k__BackingField: 0
   <ShouldNotifyClient>k__BackingField: 1
   <ActivationStyle>k__BackingField: 0
   <InterruptableStages>k__BackingField: -1

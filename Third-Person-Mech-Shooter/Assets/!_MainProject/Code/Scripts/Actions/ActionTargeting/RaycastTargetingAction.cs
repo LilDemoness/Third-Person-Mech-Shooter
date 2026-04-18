@@ -39,8 +39,8 @@ namespace Gameplay.Actions.Definitions
         private void PerformRaycast(Action action, ServerCharacter owner, float chargePercentage, System.Action<Action, ServerCharacter, RaycastHit, Vector3, float> onHitCallback)
         {
             // Cache origin information.
-            Vector3 rayOrigin = GetActionOrigin(action);
-            Vector3 rayDirection = GetActionDirection(action);
+            Vector3 rayOrigin = action.GetActionOrigin();
+            Vector3 rayDirection = action.GetActionDirection();
 
             if (CanPierce)
             {

@@ -17,8 +17,8 @@ namespace Gameplay.Actions.Definitions
         public override bool OnStart(Action action, ServerCharacter owner) => ActionConclusion.Continue;
         protected override bool HandleTrigger(Action action, ServerCharacter owner, Vector3 direction, float chargePercentage)
         {
-            Vector3 origin = _overrideOriginToOwnerPosition ? owner.transform.position : GetActionOrigin(action);
-            direction = _overrideDirectionToOwnerUp ? owner.transform.up : GetActionDirection(action);
+            Vector3 origin = _overrideOriginToOwnerPosition ? owner.transform.position : action.GetActionOrigin();
+            direction = _overrideDirectionToOwnerUp ? owner.transform.up : action.GetActionDirection();
             Vector3 forward = Vector3.Cross(direction, owner.transform.right); // To-do: Fix & Test
 
             ActionHitInformation hitInfo = new ActionHitInformation(owner.transform, origin, direction, forward);

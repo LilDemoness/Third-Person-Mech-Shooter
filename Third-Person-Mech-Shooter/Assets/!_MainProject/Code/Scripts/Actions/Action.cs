@@ -190,6 +190,12 @@ namespace Gameplay.Actions
 
         public event System.Action<Action> OnUpdateTriggered;
 
+        #region Static Actions
+
+        public static event System.Action<Action, ServerCharacter> OnLoudActionTriggered_Client;
+
+        #endregion
+
 
         //public bool IsChaseAction => ActionID == GameDataSource.Instance.GeneralChaseActionDefinition.ActionID;
         //public bool IsStunAction => ActionID == GameDataSource.Instance.StunnedActionDefinition.ActionID;
@@ -232,6 +238,12 @@ namespace Gameplay.Actions
         }
 
 
+        public Vector3 GetActionOrigin() => Data.OriginTransform != null ? Data.OriginTransform.position : Data.Position;
+        public Vector3 GetActionDirection() => (Data.OriginTransform != null ? Data.OriginTransform.forward : Data.Direction).normalized;
+
+
+        #region Server-side Functions
+
         /// <summary>
         ///     Called when the Action starts actually playing (Which may be after it is created, due to queueing).<br/>
         ///     Server Only.
@@ -264,86 +276,6 @@ namespace Gameplay.Actions
             return _definition.OnStart(this, owner);
         }
 
-
-
-
-        private bool CalculateNextUpdateTime()
-        {
-            switch (_definition.TriggerType)
-            {
-                case ActionTriggerType.Burst:
-                    --_burstsRemaining;
-
-                    if (_burstsRemaining <= 0)
-                        return ActionConclusion.Stop;   // The burst has finished. The action has concluded.
-                    else
-                        _nextUpdateTime = NetworkManager.Singleton.ServerTime.TimeAsFloat + _definition.BurstDelay; // We still have shots remaining in this burst.
-
-                    break;
-                case ActionTriggerType.RepeatedBurst:
-                    --_burstsRemaining;
-
-                    if (_burstsRemaining > 0)
-                    {
-                        // There are still shots remaining in this burst.
-                        _nextUpdateTime = NetworkManager.Singleton.ServerTime.TimeAsFloat + _definition.BurstDelay;
-                    }
-                    else
-                    {
-                        // Finished this burst, wait until the next burst.
-                        _burstsRemaining = _definition.Bursts;
-                        _nextUpdateTime = NetworkManager.Singleton.ServerTime.TimeAsFloat + _definition.RetriggerDelay;
-                    }
-                    break;
-                case ActionTriggerType.Repeated:
-                    _nextUpdateTime = NetworkManager.Singleton.ServerTime.TimeAsFloat + _definition.RetriggerDelay;
-                    break;
-                default:
-                    return ActionConclusion.Stop;
-            }
-
-            return ActionConclusion.Continue;
-        }
-        private bool IsStillCharging(float serverTime, out bool justStartedCharging)
-        {
-            justStartedCharging = false;
-            if (!_definition.CanCharge)
-                return false;
-            if (_burstsRemaining != _definition.Bursts)
-                return false;   // We're performing a burst, so can't possibly be charging.
-
-            if (!_isCharging)
-            {
-                // We haven't yet started charging this action since we last fired.
-                justStartedCharging = true;
-                _isCharging = true;
-                if (!_isFirstCharge)
-                    _chargeStartTime = serverTime; // This isn't our first charge, so note our charge start time.
-                _isFirstCharge = false;
-                return true;
-            }
-            
-            if ((serverTime - _chargeStartTime) < _definition.ChargeTime)
-            {
-                // This action is a charging action, and we haven't yet reached full charge.
-                return true;
-            }
-
-            // The action is fully charged.
-            
-            // Handle charge retention.
-            if (!_definition.RetainChargeOnceFull)
-            {
-                // We're not wanting to charge this weapon only once.
-                // Mark ourselves as no longer charging to prevent issues with retaining charge after cancelling while in the middle of a burst.
-                _isCharging = false;
-            }
-
-
-            // We are no longer charging and should trigger if we want to execute immediately upon reaching full charge.
-            // Otherwise, we are still technically charging, and should only trigger when the action ends/is cancelled.
-            return !_definition.ExecuteImmediatelyOnceAtFullCharge;
-        }
         /// <summary>
         ///     Called each frame the Action is running.<br/>
         ///     Server Only.
@@ -480,50 +412,6 @@ namespace Gameplay.Actions
         /// </summary>
         public virtual void CollisionEntered(ServerCharacter owner, Collision collision) => _definition.OnCollisionEntered(this, owner, collision);
 
-
-        #region Buffs
-
-        public enum BuffableValue
-        {
-            PercentHealingReceived, // Unbuffed Value is 1.0f. Reducing to 0 means "no healing", while 2 is "double healing".
-            PercentDamageReceived,  // Unbuffed Value is 1.0f. Reducing to 0 means "no damage", while 2 is "double damage".
-            ChanceToStunTramplers,  // Unbuffed Value is 0. If > 0, is the 0-1 percentage chance that someone trampling this character becomes stunned.
-        }
-
-        /// <summary>
-        ///     A
-        /// </summary>
-        /// <param name="buffType"> A.</param>
-        /// <param name="newBuffedValue"> A.</param>
-        public virtual void BuffValue(BuffableValue buffType, ref float newBuffedValue) { }
-
-        public static float GetUnbuffedValue(BuffableValue buffType) => buffType switch
-            {
-                BuffableValue.PercentHealingReceived => 1.0f,
-                BuffableValue.PercentDamageReceived => 1.0f,
-                BuffableValue.ChanceToStunTramplers => 0.0f,
-                _ => throw new System.Exception($"Unknown buff type {buffType.ToString()}")
-            };
-
-        #endregion
-
-
-        #region Gameplay Activities
-
-        public enum GameplayActivity
-        {
-            AttackedByEnemy,
-            Healed,
-            StoppedChargingUp,
-            UsingHostileAction, // Called immediately before using any hostile actions.
-        }
-
-        /// <summary>
-        ///     Called on active Actions to let them know when a notable gameplay event happens.
-        /// </summary>
-        /// <remarks> When a GameplayActivity of AttackedByEnemy or Healed happens, OnGameplayAction() is called BEFORE BuffValue() is called.</remarks>
-        public virtual void OnGameplayActivity(ServerCharacter owner, GameplayActivity activityType) { }
-
         #endregion
 
 
@@ -554,6 +442,10 @@ namespace Gameplay.Actions
             float startingChargePercentage = _definition.ChargeDepletionTime > 0.0f ? Mathf.Max((chargeDepletedTime - TimeStarted) / _definition.ChargeDepletionTime, 0.0f) : 0.0f;
             this._chargeStartTime = _nextUpdateTime - (_definition.ChargeTime * startingChargePercentage);
             this._isFirstCharge = true;
+
+            // Notify Listeners if the action is loud.
+            if (Definition.IsLoudAction)
+                OnLoudActionTriggered_Client?.Invoke(this, clientCharacter.ServerCharacter);
 
             return _definition.OnStartClient(this, clientCharacter);
         }
@@ -588,9 +480,14 @@ namespace Gameplay.Actions
 
             // --- Perform an Update ---
 
+            // Notify Listeners if the action is loud.
+            if (Definition.IsLoudAction)
+                OnLoudActionTriggered_Client?.Invoke(this, clientCharacter.ServerCharacter);
+
             OnUpdateTriggered?.Invoke(this);
             if (_definition.OnUpdateClient(this, clientCharacter) == false)
                 return ActionConclusion.Stop;
+
 
             // We've updated and are still wishing to continue updating.
             // Determine if and when we should next update.
@@ -710,6 +607,113 @@ namespace Gameplay.Actions
                 clientCharacter.ourAnimator.SetTrigger(Config.AnimAnticipation);
             }*/
         }
+
+        #endregion
+
+
+        /// <summary>
+        ///     Updates values for when the action should update.<br/>
+        ///     Returns false if the action should terminate.
+        /// </summary>
+        private bool CalculateNextUpdateTime()
+        {
+            switch (_definition.TriggerType)
+            {
+                case ActionTriggerType.Burst:
+                    --_burstsRemaining;
+
+                    if (_burstsRemaining <= 0)
+                        return ActionConclusion.Stop;   // The burst has finished. The action has concluded.
+                    else
+                        _nextUpdateTime = NetworkManager.Singleton.ServerTime.TimeAsFloat + _definition.BurstDelay; // We still have shots remaining in this burst.
+
+                    break;
+                case ActionTriggerType.RepeatedBurst:
+                    --_burstsRemaining;
+
+                    if (_burstsRemaining > 0)
+                    {
+                        // There are still shots remaining in this burst.
+                        _nextUpdateTime = NetworkManager.Singleton.ServerTime.TimeAsFloat + _definition.BurstDelay;
+                    }
+                    else
+                    {
+                        // Finished this burst, wait until the next burst.
+                        _burstsRemaining = _definition.Bursts;
+                        _nextUpdateTime = NetworkManager.Singleton.ServerTime.TimeAsFloat + _definition.RetriggerDelay;
+                    }
+                    break;
+                case ActionTriggerType.Repeated:
+                    _nextUpdateTime = NetworkManager.Singleton.ServerTime.TimeAsFloat + _definition.RetriggerDelay;
+                    break;
+                default:
+                    return ActionConclusion.Stop;
+            }
+
+            return ActionConclusion.Continue;
+        }
+        /// <summary>
+        ///     Calculates and returns whether the action is in the process of charging.
+        /// </summary>
+        /// <param name="serverTime"> Time on the server.</param>
+        /// <param name="justStartedCharging"> If true, then this is the first call since the action began a charge.</param>
+        private bool IsStillCharging(float serverTime, out bool justStartedCharging)
+        {
+            justStartedCharging = false;
+            if (!_definition.CanCharge)
+                return false;
+            if (_burstsRemaining != _definition.Bursts)
+                return false;   // We're performing a burst, so can't possibly be charging.
+
+            if (!_isCharging)
+            {
+                // We haven't yet started charging this action since we last fired.
+                justStartedCharging = true;
+                _isCharging = true;
+                if (!_isFirstCharge)
+                    _chargeStartTime = serverTime; // This isn't our first charge, so note our charge start time.
+                _isFirstCharge = false;
+                return true;
+            }
+
+            if ((serverTime - _chargeStartTime) < _definition.ChargeTime)
+            {
+                // This action is a charging action, and we haven't yet reached full charge.
+                return true;
+            }
+
+            // The action is fully charged.
+
+            // Handle charge retention.
+            if (!_definition.RetainChargeOnceFull)
+            {
+                // We're not wanting to charge this weapon only once.
+                // Mark ourselves as no longer charging to prevent issues with retaining charge after cancelling while in the middle of a burst.
+                _isCharging = false;
+            }
+
+
+            // We are no longer charging and should trigger if we want to execute immediately upon reaching full charge.
+            // Otherwise, we are still technically charging, and should only trigger when the action ends/is cancelled.
+            return !_definition.ExecuteImmediatelyOnceAtFullCharge;
+        }
+
+
+        #region Gameplay Activities
+
+        public enum GameplayActivity
+        {
+            AttackedByEnemy,
+            Healed,
+            StoppedChargingUp,
+            UsingHostileAction, // Called immediately before using any hostile actions.
+        }
+
+        /// <summary>
+        ///     Called on active Actions to let them know when a notable gameplay event happens.
+        /// </summary>
+        /// <remarks> When a GameplayActivity of AttackedByEnemy or Healed happens, OnGameplayAction() is called BEFORE BuffValue() is called.</remarks>
+        public virtual void OnGameplayActivity(ServerCharacter owner, GameplayActivity activityType) { }
 
         #endregion
     }

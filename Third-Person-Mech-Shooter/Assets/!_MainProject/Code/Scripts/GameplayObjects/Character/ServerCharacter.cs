@@ -195,7 +195,6 @@ namespace Gameplay.GameplayObjects.Character
         [Rpc(SendTo.Server)]
         public void SendCharacterBoostRequestServerRpc()
         {
-            Debug.Log("Try Boost - Character");
             // Check that we're not dead or currently experiencing forced movement (E.g. Knockback/Charge).
             if (!CanPerformActions)// || _movement.IsPerformingForcedMovement())
                 return;

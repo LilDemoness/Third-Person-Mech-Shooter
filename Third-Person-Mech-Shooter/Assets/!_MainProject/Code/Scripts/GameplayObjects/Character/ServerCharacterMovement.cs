@@ -29,6 +29,7 @@ namespace Gameplay.GameplayObjects.Character
         [SerializeField] private CharacterController _characterController;
 
 
+        public Transform RotationPivot => _rotationPivot;
         public float MovementSpeed => _characterStats.GetStatisticValue(Statistic.MovementSpeed);
 
 

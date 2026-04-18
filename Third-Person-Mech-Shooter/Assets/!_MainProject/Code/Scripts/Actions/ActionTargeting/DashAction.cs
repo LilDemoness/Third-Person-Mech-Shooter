@@ -85,7 +85,7 @@ namespace Gameplay.Actions.Definitions
             if (!Physics.Raycast(action.Data.Position, action.Data.Direction, out RaycastHit hitInfo, 1.0f, _environmentLayers, QueryTriggerInteraction.Ignore))
                 return false;   // No collision.
 
-            float dot = Vector3.Dot(-hitInfo.normal, GetActionDirection(action));
+            float dot = Vector3.Dot(-hitInfo.normal, action.GetActionDirection());
 
 
             const float MIN_COLLISION_DOT_VALUE = 0.6f;

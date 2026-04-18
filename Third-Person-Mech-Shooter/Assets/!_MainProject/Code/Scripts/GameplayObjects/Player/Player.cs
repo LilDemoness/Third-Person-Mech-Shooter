@@ -177,7 +177,7 @@ namespace Gameplay.GameplayObjects.Players
         }
 
 
-        // Server-only.
+        // Server-only. Notify clients of death.
         private void Server_OnDied(NetworkHealthComponent.BaseDamageReceiverEventArgs e)
         {
             NotifyClientsOfDeath(e.Inflicter);
@@ -362,6 +362,10 @@ namespace Gameplay.GameplayObjects.Players
 
         #endregion
 
+
+
+        public Vector3 GetPosition() => transform.position;
+        public Vector3 GetForward() => ServerCharacter.Movement.RotationPivot.forward;
 
 
         public class PlayerDeathEventArgs : CharacterDeadEventArgs

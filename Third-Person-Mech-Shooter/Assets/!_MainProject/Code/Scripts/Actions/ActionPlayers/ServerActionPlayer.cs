@@ -420,30 +420,6 @@ namespace Gameplay.Actions
                 _nonBlockingActions[i].CollisionEntered(_serverCharacter, collision);
             }
         }
-
-        
-        /// <summary>
-        ///     Gives all active Actions a change to alter a gameplay varaible.
-        /// </summary>
-        /// <remarks> Note that this handles both positive alterations ("Buffs") AND negative alterates ("Debuffs"). </remarks>
-        /// <param name="buffType"> Which gameplay variable is being calcuated.</param>
-        /// <returns> The final ("Buffed") value of the variable.</returns>
-        public float GetBuffedValue(Action.BuffableValue buffType)
-        {
-            float buffedValue = Action.GetUnbuffedValue(buffType);
-
-            if (_actionQueue.Count > 0)
-            {
-                _actionQueue[0].BuffValue(buffType, ref buffedValue);
-            }
-
-            foreach(Action action in _nonBlockingActions)
-            {
-                action.BuffValue(buffType, ref buffedValue);
-            }
-
-            return buffedValue;
-        }
         
         
         /// <summary>

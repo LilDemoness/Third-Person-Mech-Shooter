@@ -35,8 +35,8 @@ namespace Gameplay.Actions.Definitions
         private void SpawnProjectile(Action action, ServerCharacter owner, float chargePercentage)
         {
             // Calculate our spawn position & initial facing direction.
-            Vector3 spawnPosition = GetActionOrigin(action);
-            Vector3 spawnDirection = GetActionDirection(action);
+            Vector3 spawnPosition = action.GetActionOrigin();
+            Vector3 spawnDirection = action.GetActionDirection();
             spawnPosition += spawnDirection * _projectileInfo.ProjectilePrefab.GetAdditionalSpawnDistance();
 
             // Create and initialise the projectile instance.

@@ -30,11 +30,18 @@ namespace Gameplay.Actions.Definitions
 
         [field: Header("General Settings")]
         /// <summary>
-        ///     Does this count as a hostile Action?
+        ///     Does this count as a hostile Action?<br/>
         ///     (E.g. Should it: Break Stealth, Drop Shields, etc?).
         /// </summary>
         [field: SerializeField, Tooltip("Does this count as a hostile Action? (Should it: Break Stealth, Dropp Shields, etc?)")]
             public bool IsHostileAction { get; private set; } = true;
+
+
+        /// <summary>
+        ///     Whether this action should cause its user to appear on enemy radars after use.
+        /// </summary>
+        [field: SerializeField, Tooltip("Should this Action cause its user to show up on the enemy's radar?")]
+            public bool IsLoudAction { get; private set; } = true;
 
         /// <summary>
         ///     A.
@@ -275,11 +282,6 @@ namespace Gameplay.Actions.Definitions
         #endregion
 
 
-
-        protected Vector3 GetActionOrigin(Action action) => action.Data.OriginTransform != null ? action.Data.OriginTransform.position : action.Data.Position;
-        protected Vector3 GetActionDirection(Action action) => (action.Data.OriginTransform != null ? action.Data.OriginTransform.forward : action.Data.Direction).normalized;
-
-
         #region Base Methods - Server
 
         /// <summary>
@@ -294,7 +296,7 @@ namespace Gameplay.Actions.Definitions
         /// <returns> True to keep running, false to stop. The Action will stop by default when its duration expires, if it has one set.</returns>
         public bool OnUpdate(Action action, ServerCharacter owner, float chargePercentage = 1.0f)
         {
-            Vector3 baseDirection = GetActionDirection(action);
+            Vector3 baseDirection = action.GetActionDirection();
 
             for(int i = 0; i < ActivationsPerTrigger; ++i)
             {
@@ -346,8 +348,11 @@ namespace Gameplay.Actions.Definitions
         /// <returns> False if the Action decided it doesn't want to run. True otherwise.</returns>
         public virtual bool OnStartClient(Action action, ClientCharacter clientCharacter)
         {
+            Vector3 origin = action.GetActionOrigin();
+            Vector3 baseDirection = action.GetActionDirection();
+
             foreach (ActionVisual visual in TriggeringVisuals)
-                visual.OnClientStart(clientCharacter, GetActionOrigin(action), GetActionDirection(action));
+                visual.OnClientStart(clientCharacter, origin, baseDirection);
 
             return ActionConclusion.Continue;
         }
@@ -356,8 +361,11 @@ namespace Gameplay.Actions.Definitions
         /// </summary>
         public virtual void OnStartChargingClient(Action action, ClientCharacter clientCharacter)
         {
+            Vector3 origin = action.GetActionOrigin();
+            Vector3 baseDirection = action.GetActionDirection();
+
             foreach (ActionVisual visual in TriggeringVisuals)
-                visual.OnClientStartCharging(clientCharacter, GetActionOrigin(action), GetActionDirection(action));
+                visual.OnClientStartCharging(clientCharacter, origin, baseDirection);
         }
         /// <summary>
         ///     Called on the client when the Action wishes to Update itself.
@@ -365,8 +373,8 @@ namespace Gameplay.Actions.Definitions
         /// <returns> True to keep running, false to stop. The Action will stop by default when its duration expires, if it has one set.</returns>
         public bool OnUpdateClient(Action action, ClientCharacter clientCharacter, float chargePercentage = 1.0f)
         {
-            Vector3 origin = GetActionOrigin(action);
-            Vector3 baseDirection = GetActionDirection(action);
+            Vector3 origin = action.GetActionOrigin();
+            Vector3 baseDirection = action.GetActionDirection();
 
             for (int i = 0; i < ActivationsPerTrigger; ++i)
             {
@@ -386,8 +394,11 @@ namespace Gameplay.Actions.Definitions
         /// </summary>
         public virtual void OnEndClient(Action action, ClientCharacter clientCharacter)
         {
+            Vector3 origin = action.GetActionOrigin();
+            Vector3 baseDirection = action.GetActionDirection();
+
             foreach (ActionVisual visual in TriggeringVisuals)
-                visual.OnClientEnd(clientCharacter, GetActionOrigin(action), GetActionDirection(action));
+                visual.OnClientEnd(clientCharacter, origin, baseDirection);
 
             CleanupClient(action, clientCharacter);
         }
@@ -396,8 +407,11 @@ namespace Gameplay.Actions.Definitions
         /// </summary>
         public virtual void OnCancelClient(Action action, ClientCharacter clientCharacter)
         {
+            Vector3 origin = action.GetActionOrigin();
+            Vector3 baseDirection = action.GetActionDirection();
+
             foreach (ActionVisual visual in TriggeringVisuals)
-                visual.OnClientCancel(clientCharacter, GetActionOrigin(action), GetActionDirection(action));
+                visual.OnClientCancel(clientCharacter, origin, baseDirection);
 
             CleanupClient(action, clientCharacter);
         }

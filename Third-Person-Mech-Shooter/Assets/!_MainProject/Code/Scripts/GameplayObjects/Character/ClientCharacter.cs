@@ -11,6 +11,8 @@ namespace Gameplay.GameplayObjects.Character
     public class ClientCharacter : NetworkBehaviour
     {
         [SerializeField] private ServerCharacter _serverCharacter;
+        public ServerCharacter ServerCharacter => _serverCharacter;
+
         private ClientActionPlayer _clientActionPlayer;
 
         [SerializeField] private ClientInputSender _clientInputSender;

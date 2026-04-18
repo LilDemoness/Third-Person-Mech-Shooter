@@ -27,8 +27,8 @@ namespace Gameplay.Actions.Definitions
         protected override bool HandleTrigger(Action action, ServerCharacter owner, Vector3 direction, float chargePercentage)
         {
             // Determine our desired origin & direction.
-            Vector3 actionOrigin = base.GetActionOrigin(action);
-            Vector3 actionDirection = base.GetActionDirection(action);
+            Vector3 actionOrigin = action.GetActionOrigin();
+            Vector3 actionDirection = action.GetActionDirection();
             DetermineOriginPositionAndDirection(ref actionOrigin, ref actionDirection, _raycastRange);
 
             // Get our targets & process them.

@@ -232,6 +232,13 @@ public static class DictionaryExtensions
     }
 
 
+    public static void AddOrSet<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key, TValue value)
+    {
+        if (!dict.TryAdd(key, value))
+            dict[key] = value;
+    }
+
+
     public static void LogPairs<TKey, TValue>(this Dictionary<TKey, TValue> dict, bool logIndividually = false)
     {
         if (logIndividually)
