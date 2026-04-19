@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Gameplay.UI.Minimap
 {
@@ -24,7 +25,11 @@ namespace Gameplay.UI.Minimap
         public static void Deregister(BaseLocatable locatable)
         {
             if (!Locatables.Contains(locatable))
+            {
+                Debug.Log("Locatable failed to remove from Manager: " + locatable);
                 return;
+            }
+            Debug.Log("Locatable removed from Manager: " + locatable);
 
             Locatables.Remove(locatable);
             OnLocatableRemoved?.Invoke(locatable);

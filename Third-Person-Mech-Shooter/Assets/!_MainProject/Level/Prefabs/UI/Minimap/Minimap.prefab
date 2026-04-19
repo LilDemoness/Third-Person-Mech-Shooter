@@ -1950,7 +1950,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4480711216802080709}
-  - component: {fileID: 8507434403496760178}
+  - component: {fileID: 8721634824556040649}
   - component: {fileID: 1383975656974428853}
   - component: {fileID: 5602620282802725587}
   - component: {fileID: 2463423131763288763}
@@ -1986,7 +1986,7 @@ RectTransform:
   m_AnchoredPosition: {x: -50, y: -50}
   m_SizeDelta: {x: 250, y: 250}
   m_Pivot: {x: 1, y: 1}
---- !u!114 &8507434403496760178
+--- !u!114 &8721634824556040649
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1995,7 +1995,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8481453510226057083}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0625245d181bdfd4fa424f29bf9b9458, type: 3}
+  m_Script: {fileID: 11500000, guid: 5ea2718a8d4aba649ab719f3cea4bb37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _iconContainer: {fileID: 117390876688148346}
@@ -2003,9 +2003,7 @@ MonoBehaviour:
   _rotateWithPlayer: 1
   _clampedPingOffset: 10
   _pingIndicator: {fileID: 8068256442680024055}
-  _pingFrequency: 0.5
   _pingDuration: 0.5
-  _shouldPerformPings: 1
   _innerSegment: {fileID: 657898839489284300}
   _middleSegments:
   - {fileID: 6289713210373601712}

@@ -1,16 +1,15 @@
-using Gameplay.GameplayObjects.Players;
+﻿using Gameplay.GameplayObjects.Players;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Gameplay.UI.Minimap
 {
-    public class Radar : MonoBehaviour
+    [DefaultExecutionOrder(10)]    // Ensure this runs after RadarManager instances.
+    public class RadarUI : MonoBehaviour
     {
         private readonly Dictionary<BaseLocatable, BaseLocatableIcon> _locatableIconDict = new();
-        private readonly Dictionary<DesiredOperation, List<BaseLocatable>> _functionToLocatablesDict = new();
         private readonly Dictionary<BaseLocatable, (float TimePinged, float PingEffectStartTime)> _tempPingTimings = new();
-        private readonly Dictionary<Vector2Int, float> _dangerQuadrants = new();
 
 
         [Header("Radar")]
@@ -35,20 +34,10 @@ namespace Gameplay.UI.Minimap
         [Header("Radar Ping")]
         [SerializeField]
         private Image _pingIndicator;
-        
-        [Space(5)]
-
-        [SerializeField]
-        [Tooltip("The number of pings that the radar completes per second.")]
-        private float _pingFrequency = 0.5f;
 
         [SerializeField]
         [Tooltip("How long a ping lasts before fading completely (In seconds).")]
         private float _pingDuration = 0.5f;
-
-        [SerializeField]
-        private bool _shouldPerformPings;
-        private float _currentPingRadius;
 
 
         [Header("Danger Highlighting")]
@@ -81,91 +70,88 @@ namespace Gameplay.UI.Minimap
         const float INDIVIDUAL_SEGMENT_ANGLE = (360.0f / RADAR_DANGER_SEGMENTS) * Mathf.Deg2Rad;
         const float INDIVIDUAL_SEGMENT_HALF_ANGLE = INDIVIDUAL_SEGMENT_ANGLE / 2.0f;
 
-        const float MAP_SEGMENT_SIZE = 2.5f;    // In metres.
 
 
 
         private void OnEnable()
         {
+            RadarManager.OnLocatableUpdated += OnLocatableUpdated;
+            RadarManager.OnPingStopped += RadarManager_OnPingStopped;
+            RadarManager.OnPingReset += RadarManager_OnPingReset;
+
             LocatableManager.OnLocatableAdded += OnLocatableAdded;
             LocatableManager.OnLocatableRemoved += OnLocatableRemoved;
-
-            Actions.Action.OnLoudActionTriggered_Client += OnLoudActionTriggered;
         }
         private void OnDisable()
         {
+            RadarManager.OnLocatableUpdated -= OnLocatableUpdated;
+            RadarManager.OnPingStopped -= RadarManager_OnPingStopped;
+            RadarManager.OnPingReset -= RadarManager_OnPingReset;
+
             LocatableManager.OnLocatableAdded -= OnLocatableAdded;
             LocatableManager.OnLocatableRemoved -= OnLocatableRemoved;
-
-            Actions.Action.OnLoudActionTriggered_Client -= OnLoudActionTriggered;
+        }
+        private void Start()
+        {
+            RadarManager.Instance.SimulatePreviousEventsForListener(OnLocatableAdded, OnLocatableUpdated);
         }
 
         private void OnLocatableAdded(BaseLocatable locatable)
         {
             if (locatable == null || _locatableIconDict.ContainsKey(locatable))
-                return; // We've already added this locatable (Or it's invalid).
+                return;
 
             // Create the corresponding icon for the locatable.
             BaseLocatableIcon icon = locatable.CreateIcon();
             icon.transform.SetParent(_iconContainer, false);
 
-            // Ensure that the icon starts hidden, just in case.
+            // Ensure the icon starts hidden, just in case.
             icon.SetVisible(false);
 
-            locatable.OnLocatableTypeChanged += BaseLocatable_OnLocatableTypeChanged;
-
-            // Cache the locatable and icon.
+            // Cache the locatable and the icon.
             _locatableIconDict.Add(locatable, icon);
-
-            // Cache the locatable with any information required for the desired operation.
-            DesiredOperation desiredOperation = GetDesiredDisplayOperation(locatable.LocatableType);
-            _functionToLocatablesDict.GetOrCreateAndReturnValue(desiredOperation).Add(locatable);
-
-            if (desiredOperation == DesiredOperation.PingLogic)
-                _tempPingTimings.Add(locatable, (-1.0f, -1.0f));
         }
         private void OnLocatableRemoved(BaseLocatable locatable)
         {
             if (locatable == null || !_locatableIconDict.TryGetValue(locatable, out BaseLocatableIcon icon))
-                return; // We've already removed this locatable (Or it's invalid).
-
-            locatable.OnLocatableTypeChanged -= BaseLocatable_OnLocatableTypeChanged;
+                return;
 
             // Remove the locatable.
             _locatableIconDict.Remove(locatable);
-
-            _functionToLocatablesDict.GetOrCreateAndReturnValue(GetDesiredDisplayOperation(locatable.LocatableType)).Remove(locatable);
             _tempPingTimings.Remove(locatable);
 
             // Cleanup the locatable's icon.
             Destroy(icon.gameObject);
         }
-
-        private void BaseLocatable_OnLocatableTypeChanged(BaseLocatable locatable, LocatableType oldValue)
+        private void OnLocatableUpdated(BaseLocatable locatable, RadarManager.DesiredOperation desiredOperation)
         {
-            DesiredOperation desiredOperation = GetDesiredDisplayOperation(locatable.LocatableType);
+            // We received this notification before LocatableManager.OnLocatableAdded was called.
+            // Do required logic for the locatable before progressing.
+            if (!_locatableIconDict.ContainsKey(locatable))
+                OnLocatableAdded(locatable);
 
-            _functionToLocatablesDict[GetDesiredDisplayOperation(oldValue)].Remove(locatable);
-            _functionToLocatablesDict.GetOrCreateAndReturnValue(desiredOperation).Add(locatable);
 
-            if (desiredOperation == DesiredOperation.PingLogic)
+            // Update all required cached values for the change of operation.
+
+            if (desiredOperation == RadarManager.DesiredOperation.PingLogic)
                 _tempPingTimings.Add(locatable, (-1.0f, -1.0f));
             else
                 _tempPingTimings.Remove(locatable);
         }
 
-        private void OnLoudActionTriggered(Actions.Action loudAction, Gameplay.GameplayObjects.Character.ServerCharacter owningCharacter)
+        private void RadarManager_OnPingStopped()
         {
-            if (owningCharacter.TeamID == Player.LocalClientInstance.ServerCharacter.TeamID)
-                return; // Actions from the same team don't count as dangerous.
-
-            Vector2Int quadrantIndicies = PositionToMapQuad(loudAction.GetActionOrigin());
-
-            const float DANGER_TIME = 5.0f;
-            float fadeTime = Time.time + DANGER_TIME;
-
-            // Cache the origin position of the action for a desired duration.
-            _dangerQuadrants.AddOrSet(quadrantIndicies, fadeTime);
+            // Hide the ping indicator.
+            _pingIndicator.CrossFadeAlpha(0.0f, 0.0f, true);
+        }
+        private void RadarManager_OnPingReset()
+        {
+            // Reset our cached ping timings and hide active indicators.
+            List<BaseLocatable> keys = new List<BaseLocatable>(_tempPingTimings.Keys);
+            foreach (BaseLocatable locatable in keys)
+            {
+                _tempPingTimings[locatable] = (-1.0f, _tempPingTimings[locatable].PingEffectStartTime);
+            }
         }
 
 
@@ -174,14 +160,16 @@ namespace Gameplay.UI.Minimap
             if (Player.LocalClientInstance == null)
                 return;
 
+            // Update Icon Positions.
             UpdateLocatableIconPositions();
 
+            // Update Icon Visibility/Alphas.
             UpdateDefaultLocatableIcons();
-            if (_shouldPerformPings)
-                UpdateRadarPing();
-            UpdateDangerIndicators();
+            UpdatePingVisuals();
+            UpdatePingedIcons();
 
-            CleanupOldDangerInformation();
+            // Update indicators for danger/'loud actions'.
+            UpdateDangerIndicators();
         }
 
 
@@ -206,7 +194,7 @@ namespace Gameplay.UI.Minimap
             float radarRadius = GetRadarUIRadius();
             float sqrRadarRadius = radarRadius * radarRadius;
 
-            foreach (BaseLocatable locatable in _functionToLocatablesDict[DesiredOperation.DefaultLogic])
+            foreach (BaseLocatable locatable in RadarManager.Instance.GetLocatablesForOperation(RadarManager.DesiredOperation.DefaultLogic))
             {
                 BaseLocatableIcon icon = _locatableIconDict[locatable];
                 icon.SetVisible(locatable.ClampToRadarBorder || (icon.transform as RectTransform).anchoredPosition.sqrMagnitude < sqrRadarRadius);
@@ -254,59 +242,13 @@ namespace Gameplay.UI.Minimap
         }
 
 
-        /// <summary>
-        ///     Start the radar pinging at the desired frequency.
-        /// </summary>
-        /// <param name="pingFrequency"> The number of pings performed every second.</param>
-        public void StartRadarPings(float pingFrequency)
-        {
-            _currentPingRadius = 0.0f;
-            _pingFrequency = pingFrequency;
-            _shouldPerformPings = true;
 
-            ResetRadarPing();
-        }
-        /// <summary>
-        ///     Cancel the current radar ping and prevent future ones from automatically occuring.
-        /// </summary>
-        public void StopRadarPings()
-        {
-            _shouldPerformPings = false;
-
-            // Hide the ping visuals.
-            _pingIndicator.CrossFadeAlpha(0.0f, 0.0f, true);
-
-            // Hide all current pings.
-            ResetRadarPing();
-        }
-        /// <summary>
-        ///     Performs all logic necessary to update the radar ping.<br/>
-        ///     Includes increasing the radius, updating the targets & the alpha of their indicators, and updating the scale & alpha of the indication ring.
-        /// </summary>
-        private void UpdateRadarPing()
-        {
-            // Cache repeatedly used values.
-            float radarRadius = GetRadarUIRadius();
-            float scale = radarRadius / _detectionRange;
-
-            // Update our ping distance.
-            float previousPingDistance = _currentPingRadius;
-            _currentPingRadius += radarRadius * _pingFrequency * Time.deltaTime;
-
-            UpdatePingVisuals();
-            UpdatePingedIcons(previousPingDistance);
-
-
-            // If we've completed a ping, reset our values for a new ping starting next frame.
-            if (_currentPingRadius > radarRadius)
-                ResetRadarPing();
-        }
         /// <summary>
         ///     Updates the scale and alpha of the ping indicator.
         /// </summary>
         private void UpdatePingVisuals()
         {
-            float pingPercentage = _currentPingRadius / GetRadarUIRadius();
+            float pingPercentage = RadarManager.Instance.CurrentPingPercentage;
             _pingIndicator.transform.localScale = new Vector3(pingPercentage, pingPercentage);
 
             const float PING_FADE_PERCENTAGE = 0.9f;    // Fade the ping past this point.
@@ -318,15 +260,17 @@ namespace Gameplay.UI.Minimap
         /// <summary>
         ///     Updates the visibility of any pingable locatables given the current and previous frames' radar ping values.<br/>
         /// </summary>
-        private void UpdatePingedIcons(float previousPingDistance)
+        private void UpdatePingedIcons()
         {
+            float pingRadius = GetRadarUIRadius();
+
             // Cache sqr values for more performant distance calculation.
-            float sqrPreviousDistance = previousPingDistance * previousPingDistance;
-            float sqrCurrentDistance = _currentPingRadius * _currentPingRadius;
+            float sqrPreviousDistance = Mathf.Pow(RadarManager.Instance.PreviousPingPercentage * pingRadius, 2);
+            float sqrCurrentDistance = Mathf.Pow(RadarManager.Instance.CurrentPingPercentage * pingRadius, 2);
 
 
             // Ping locatables now within our ping radius.
-            foreach (Locatable locatable in _functionToLocatablesDict.GetOrCreateAndReturnValue(DesiredOperation.PingLogic))
+            foreach (BaseLocatable locatable in RadarManager.Instance.GetLocatablesForOperation(RadarManager.DesiredOperation.PingLogic))
             {
                 float sqrDistance = (_locatableIconDict[locatable].transform as RectTransform).anchoredPosition.sqrMagnitude;
 
@@ -360,20 +304,6 @@ namespace Gameplay.UI.Minimap
                     _locatableIconDict[key].SetAlpha(pingDurationPercentage / FADE_IN_PERCENTAGE);
             }
         }
-        /// <summary>
-        ///     Resets all the values for a ping to allow for a new one to start.
-        /// </summary>
-        private void ResetRadarPing()
-        {
-            _currentPingRadius = 0.0f;
-
-            // Reset our cached ping timings and hide active indicators.
-            List<BaseLocatable> keys = new List<BaseLocatable>(_tempPingTimings.Keys);
-            foreach (BaseLocatable locatable in keys)
-            {
-                _tempPingTimings[locatable] = (-1.0f, _tempPingTimings[locatable].PingEffectStartTime);
-            }
-        }
 
 
 
@@ -397,9 +327,9 @@ namespace Gameplay.UI.Minimap
 
 
             // Evaluate each location we wish to highlight.
-            foreach(var quadrantIndicies in _dangerQuadrants.Keys)
+            foreach(var quadrantIndicies in RadarManager.DangerQuadrants.Keys)
             {
-                Vector2 dangerLocalPosition = GetDistanceVectorToPlayer(MapQuadToPosition(quadrantIndicies));
+                Vector2 dangerLocalPosition = GetDistanceVectorToPlayer(RadarManager.MapQuadToPosition(quadrantIndicies));
                 float sqrDistance = dangerLocalPosition.sqrMagnitude;
 
                 if (sqrDistance < sqrInnerSegmentRange)
@@ -438,52 +368,10 @@ namespace Gameplay.UI.Minimap
 
             return Mathf.FloorToInt(adjustedAngle / INDIVIDUAL_SEGMENT_ANGLE);
         }
-        /// <summary>
-        ///     Converts a world position into a quadrant position.<br/>
-        ///     Quadrants are a simplification of the map into index-based squares, used to reduce the amount of data we need to store.
-        /// </summary>
-        private Vector2Int PositionToMapQuad(Vector3 position) => new Vector2Int(Mathf.RoundToInt(position.x / MAP_SEGMENT_SIZE), Mathf.RoundToInt(position.z / MAP_SEGMENT_SIZE));
-        /// <summary>
-        ///     Converts a quadrant index vector into a position vector representing an object's horizontal position (x=x, y=z).
-        /// </summary>
-        private Vector2 MapQuadToPosition(Vector2Int quadrantIndicies) => new Vector2(quadrantIndicies.x * MAP_SEGMENT_SIZE, quadrantIndicies.y * MAP_SEGMENT_SIZE);
-
-        /// <summary>
-        ///     Removes any quadrants within '_dangerQuadrants' that are no longer 'loud'.
-        /// </summary>
-        private void CleanupOldDangerInformation()
-        {
-            // Find the quadrants that are no longer 'loud'.
-            List<Vector2Int> quadrantsToRemove = new List<Vector2Int>();
-            foreach(var kvp in _dangerQuadrants)
-                if (Time.time > kvp.Value)
-                    quadrantsToRemove.Add(kvp.Key);
-
-            // Remove our desired quadrants from the dictionary.
-            for (int i = 0; i < quadrantsToRemove.Count; i++)
-                _dangerQuadrants.Remove(quadrantsToRemove[i]);
-        }
 
 
 
-        /// <summary>
-        ///     Returns an enum corresponding to the desired operation for the locatable.
-        /// </summary>
-        private DesiredOperation GetDesiredDisplayOperation(LocatableType locatableType)
-        {
-            switch (locatableType)
-            {
-                case LocatableType.Objective:
-                case LocatableType.Friendly:
-                    return DesiredOperation.DefaultLogic;
 
-                case LocatableType.Enemy:
-                    return DesiredOperation.PingLogic;
-
-                default: throw new System.NotImplementedException($"No Radar DesiredOperation value set for {locatableType.ToString()}");
-            };
-        }
-        private enum DesiredOperation { DefaultLogic, PingLogic }
 
 
         /// <summary>

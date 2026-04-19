@@ -13,19 +13,15 @@ MonoBehaviour:
   m_Name: Passive_EnhancedScanners
   m_EditorClassIdentifier: 
   _effects:
-  - rid: 981910439197933662
+  - rid: 451070689067139177
   references:
     version: 2
     RefIds:
-    - rid: 981910439197933662
-      type: {class: TriggerActionEffect, ns: Gameplay.Passives, asm: Assembly-CSharp}
+    - rid: 451070689067139177
+      type: {class: EnableRadarPingEffect, ns: Gameplay.Passives, asm: Assembly-CSharp}
       data:
-        _updates: 1
-        _triggerAtStart: 0
-        _passiveConditions:
-        - rid: 981910439197933663
-        _associatedAction: {fileID: 0}
-    - rid: 981910439197933663
-      type: {class: TimedPassiveCondition, ns: Gameplay.Passives, asm: Assembly-CSharp}
-      data:
-        _period: 5
+        _updates: 0
+        _triggerAtStart: 1
+        _passiveConditions: []
+        _radarPingFrequency: 0.5
+        _disableOnConditionFail: 1

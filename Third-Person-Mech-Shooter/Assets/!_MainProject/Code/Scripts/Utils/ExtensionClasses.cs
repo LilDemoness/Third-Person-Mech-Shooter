@@ -237,6 +237,14 @@ public static class DictionaryExtensions
         if (!dict.TryAdd(key, value))
             dict[key] = value;
     }
+    public static void AddRange<TKey, TValue>(this Dictionary<TKey, TValue> dict, ICollection<TKey> keys, TValue value)
+    {
+        foreach(TKey key in keys)
+        {
+            Debug.Log("Add: " + key.ToString());
+            dict.TryAdd(key, value);
+        }
+    }
 
 
     public static void LogPairs<TKey, TValue>(this Dictionary<TKey, TValue> dict, bool logIndividually = false)
