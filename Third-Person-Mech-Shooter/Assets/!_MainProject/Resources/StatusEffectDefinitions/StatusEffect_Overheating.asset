@@ -16,6 +16,6 @@ MonoBehaviour:
   <Lifetime>k__BackingField: -1
   <StackingType>k__BackingField: 0
   <Type>k__BackingField: 2
-  RetriggerDelay: 0.5
-  _damagePerTick: 1
-  _heatChangeOnTick: -1
+  RetriggerDelay: 0.2
+  _damagePerTick: 5
+  _heatDecreasePerTick: 1

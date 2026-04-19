@@ -208,7 +208,7 @@ namespace Gameplay.Actions
             _timestampComparison.SetValues(actionID, slotIndex);
 
             return _actionCooldownCompleteTime.TryGetValue(_timestampComparison, out float cooldownCompleteTime)    // True if we have a cooldown time.
-                && NetworkManager.Singleton.ServerTime.TimeAsFloat <= cooldownCompleteTime;                                                               // True if our cooldown time hasn't yet passed.
+                && NetworkManager.Singleton.ServerTime.TimeAsFloat <= cooldownCompleteTime;                         // True if our cooldown time hasn't yet passed.
         }
         /// <inheritdoc cref=" IsActionOnCooldown(ActionID, AttachmentSlotIndex)"/>
         private bool IsActionOnCooldown(Action action) => IsActionOnCooldown(action.ActionID, action.Data.AttachmentSlotIndex);

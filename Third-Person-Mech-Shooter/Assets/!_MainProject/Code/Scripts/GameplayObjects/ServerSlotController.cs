@@ -56,8 +56,17 @@ namespace Gameplay.GameplayObjects.Character
             // Anticipate the weapon's effect (For audio & hit markers).
             if (_serverCharacter.CanPerformActionInstantly)
                 _serverCharacter.ClientCharacter.AnticipateActionOwnerRpc(CreateRequestData(slotIndex.ToSlotIndex()));
+            
 
             ActivateSlotServerRpc(slotIndex);
+        }
+        public void DeactivateSlot(int slotIndex)
+        {
+            if (slotIndex >= _activationRequests.Length)
+                return; // Outwith our slots count.
+
+            //_serverCharacter.ClientCharacter.CancelRunningActionsBySlotIDClientRpc(slotIndex.ToSlotIndex());
+            DeactivateSlotServerRpc(slotIndex);
         }
         [Rpc(SendTo.Server)]
         private void ActivateSlotServerRpc(int slotIndex, RpcParams rpcParams = default)
@@ -71,7 +80,7 @@ namespace Gameplay.GameplayObjects.Character
             StartUsingSlottable(slotIndex.ToSlotIndex());
         }
         [Rpc(SendTo.Server)]
-        public void DeactivateSlotServerRpc(int slotIndex, RpcParams rpcParams = default)
+        private void DeactivateSlotServerRpc(int slotIndex, RpcParams rpcParams = default)
         {
             if (rpcParams.Receive.SenderClientId != this.OwnerClientId)
                 return; // Not sent by the correct client.

@@ -146,5 +146,15 @@ namespace UI
         #endregion
 
         #endregion
+
+
+#if UNITY_EDITOR
+
+        private void OnValidate()
+        {
+            _fill.color = _fillColour.Evaluate(1.0f);
+        }
+
+#endif
     }
 }

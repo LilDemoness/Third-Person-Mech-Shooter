@@ -40,6 +40,7 @@ namespace Gameplay.GameplayObjects.Character
             _clientActionPlayer.PlayAction(ref data1, serverTimeStarted);
         }
 
+        [Rpc(SendTo.Owner, DeferLocal = false)]
         public void AnticipateActionOwnerRpc(ActionRequestData data)
         {
             _clientActionPlayer.AnticipateAction(ref data);
@@ -115,6 +116,10 @@ namespace Gameplay.GameplayObjects.Character
         {
 
         }
+
+
+        public bool HasActionsWithId(ActionID actionID, AttachmentSlotIndex attachmentSlotIndex = AttachmentSlotIndex.Unset)
+            => _clientActionPlayer.HasActionsWithId(actionID, attachmentSlotIndex);
 
 
         // Called by the Unity Animation System (Change for custom events?)

@@ -208,5 +208,15 @@ namespace Gameplay.Actions
                 _slotIndexToChargeDepletedTimeDict[actionToCancel.Data.AttachmentSlotIndex] = chargeDepletedTime;
             }
         }
+
+
+        public bool HasActionsWithId(ActionID actionID, AttachmentSlotIndex attachmentSlotIndex = AttachmentSlotIndex.Unset)
+        {
+            foreach(Action playingAction in _playingActions)
+                if (playingAction.ActionID == actionID && (attachmentSlotIndex == AttachmentSlotIndex.Unset || playingAction.Data.AttachmentSlotIndex == attachmentSlotIndex))
+                    return true;
+            
+            return false;
+        }
     }
 }

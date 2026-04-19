@@ -94,7 +94,7 @@ namespace Gameplay.Actions.Definitions
 
         public override void OnCollisionEntered(Action action, ServerCharacter owner, Collision collision)
         {
-            if (!collision.transform.TryGetComponentThroughParents<IDamageable>(out IDamageable damageScript, checkSelf: true))
+            if (!collision.transform.TryGetComponentThroughParents<IDamageable>(out IDamageable damageScript))
                 return; // Not an object we can target.
 
             // Apply hit effects.

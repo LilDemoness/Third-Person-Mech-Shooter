@@ -122,9 +122,10 @@ namespace Gameplay.Actions.Definitions
         /// <summary>
         ///     Anticipate the initial effects of this action on the triggering client to give immediate feedback.
         /// </summary>
-        public override void AnticipateClient(Action action, ClientCharacter clientCharacter)
+        public override bool AnticipateClient(Action action, ClientCharacter clientCharacter)
         {
             PerformRaycast(action, null, 0.0f, PrepareHitEffectAndNotify_AnticipationStart);
+            return TriggerType == ActionTriggerType.Single ? ActionConclusion.Stop : base.AnticipateClient(action, clientCharacter);
         }
         private void PrepareHitEffectAndNotify_AnticipationStart(Action action, ServerCharacter _, RaycastHit hitInfo, Vector3 rayDirection, float chargePercentage)
         {

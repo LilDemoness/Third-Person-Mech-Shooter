@@ -2,7 +2,6 @@ using Gameplay.GameplayObjects.Character;
 using Gameplay.GameplayObjects.Players;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace UI.Players
 {
@@ -73,7 +72,7 @@ namespace UI.Players
             
             // Disable diviers we don't need.
             for(int i = boostCount - 1; i < currentBoostDiviers; ++i)
-                _boostDivierContainer.GetChild(i).gameObject.SetActive(false);
+                _boostDivierContainer.GetChild(i + 1).gameObject.SetActive(false);
             if (boostCount == 1)
                 return; // No dividers are shown for 0 or 1 boosts.
 

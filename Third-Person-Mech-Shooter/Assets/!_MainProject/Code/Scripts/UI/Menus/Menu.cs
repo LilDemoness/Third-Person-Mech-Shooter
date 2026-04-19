@@ -84,7 +84,7 @@ namespace Gameplay.UI.Menus
 
         private void OnValidate()
         {
-            if (this.TryGetComponentThroughParents<Menu>(out Menu parentMenu, checkSelf: false) && parentMenu.GetType().IsAssignableFrom(typeof(ContainerMenu)))
+            if (this.TryGetComponentThroughParentsExclusive<Menu>(out Menu parentMenu) && parentMenu.GetType().IsAssignableFrom(typeof(ContainerMenu)))
             {
                 Debug.LogWarning($"The Menu '{this.name}' has a non-Container parent: '{parentMenu.name}'", this);
             }

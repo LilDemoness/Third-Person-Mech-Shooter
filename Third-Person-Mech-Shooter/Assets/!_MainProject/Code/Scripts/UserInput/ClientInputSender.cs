@@ -110,7 +110,7 @@ namespace UserInput
         }
         private void ClientInput_OnBoostPerformed() => _hasBoostRequest = true;
         private void ClientInput_OnActivateSlotStarted(int slotIndex) => _serverSlotController.ActivateSlot(slotIndex);//_serverWeaponController.ActivateSlotServerRpc(slotIndex);
-        private void ClientInput_OnActivateSlotCancelled(int slotIndex) => _serverSlotController.DeactivateSlotServerRpc(slotIndex);
+        private void ClientInput_OnActivateSlotCancelled(int slotIndex) => _serverSlotController.DeactivateSlot(slotIndex);
 
         private void ClientInput_OnActivateCoreSystemStarted() => _serverSlotController.ActivateCoreSystem();
         private void ClientInput_OnActivateCoreSystemCancelled() => _serverSlotController.DeactivateCoreSystem();

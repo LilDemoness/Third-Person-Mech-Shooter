@@ -270,6 +270,7 @@ namespace Gameplay.GameplayObjects
                 return;
 
             _lastDamageTime = Time.time;
+            IDamageable.InvokeOnAnyHealthChange(inflicter, -damage);
             
             Vector3 localDamageDirection = _serverCharacter.transform.InverseTransformDirection(damageSourceDirection);
             if (_currentShields.Value > 0.0f)
@@ -277,6 +278,7 @@ namespace Gameplay.GameplayObjects
                 float shieldDamageMultiplier = _serverCharacter.CharacterStats.GetDamageTakenMultiplier(DamageTakenStatistic.RegeneratingShieldResistances, damageType, localDamageDirection);
                 float effectiveShieldsHealth = _currentShields.Value / shieldDamageMultiplier;
 
+                Debug.Log($"Shields Took '{Mathf.Min(damage * shieldDamageMultiplier, _currentShields.Value)}' damage (Actual: {Mathf.Min(damage, effectiveShieldsHealth)})");
                 SetCurrentShields_Server(inflicter, _currentShields.Value - damage * shieldDamageMultiplier);
                 
                 damage -= effectiveShieldsHealth;
@@ -285,8 +287,8 @@ namespace Gameplay.GameplayObjects
             }
 
             damage *= _serverCharacter.CharacterStats.GetDamageTakenMultiplier(DamageTakenStatistic.DamageResistances, damageType, localDamageDirection);
+            Debug.Log($"Health Took '{damage}' damage");
 
-            IDamageable.InvokeOnAnyHealthChange(inflicter, -damage);
             SetCurrentHealth_Server(inflicter, _currentHealth.Value - damage);
         }
         public void ReceiveHealing_Server(ServerCharacter inflicter, float healing)
@@ -302,7 +304,13 @@ namespace Gameplay.GameplayObjects
             IDamageable.InvokeOnAnyHealthChange(inflicter, healing);
             SetCurrentHealth_Server(inflicter, _currentHealth.Value + healing);
         }
-        private void RegenerateShields(float shieldIncreaseValue) => SetCurrentShields_Server(null, _currentShields.Value + shieldIncreaseValue);
+        private void RegenerateShields(float shieldIncreaseValue)
+        {
+            if (_currentShields.Value >= MaxShields)
+                return;
+
+            SetCurrentShields_Server(null, _currentShields.Value + shieldIncreaseValue);
+        }
 
 
         public void Revive_Server(ServerCharacter inflicter)
@@ -330,7 +338,7 @@ namespace Gameplay.GameplayObjects
         public float GetCurrentHealth() => Mathf.Min(_currentHealth.Value, MaxHealth);
         public float GetMissingHealth() => MaxHealth - GetCurrentHealth();
 
-        public float GetCurrentShields() => Mathf.Min(_currentHealth.Value - MaxHealth, 0.0f);
+        public float GetCurrentShields() => Mathf.Min(_currentShields.Value, 0.0f);
 
         public float GetHealthPercentage() => GetCurrentHealth() / MaxHealth;
         public float GetShieldsPercentage() => MaxShields != 0.0f ? GetCurrentShields() / MaxShields : 0.0f;

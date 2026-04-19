@@ -6,20 +6,35 @@ using UnityEngine.UI;
 public static class ComponentExtensions
 {
     /// <summary>
-    ///     Attempt to retrieve the first component of the desired type,
-    ///     searching this component's parent's until there are none left or it finds an instance of the desired component type.
+    ///     Attempt to retrieve the first component of the desired type, searching this component's
+    ///     parent's until there are none left or it finds an instance of the desired component type.<br/>
+    ///     Also searches the origin transform.
     /// </summary>
-    public static bool TryGetComponentThroughParents<T>(this Component activeComponent, out T component, bool checkSelf = false)
+    public static bool TryGetComponentThroughParents<T>(this Component activeComponent, out T component)
     {
         component = default(T);
 
-        if (checkSelf && activeComponent.TryGetComponent(out component))
+        if (activeComponent.TryGetComponent(out component))
             return true;
 
         if (activeComponent.transform.parent == null)
             return false;
 
-        return activeComponent.transform.parent.TryGetComponentThroughParents<T>(out component, checkSelf: true);
+        return activeComponent.transform.parent.TryGetComponentThroughParents<T>(out component);
+    }
+    /// <summary>
+    ///     Attempt to retrieve the first component of the desired type, searching this component's
+    ///     parent's until there are none left or it finds an instance of the desired component type.<br/>
+    ///     Doesn't search the origin transform.
+    /// </summary>
+    public static bool TryGetComponentThroughParentsExclusive<T>(this Component activeComponent, out T component)
+    {
+        component = default(T);
+
+        if (activeComponent.transform.parent == null)
+            return false;
+
+        return activeComponent.transform.parent.TryGetComponentThroughParents<T>(out component);
     }
     public static bool TryGetComponentInChildren<T>(this Component activeComponent, out T component)
     {

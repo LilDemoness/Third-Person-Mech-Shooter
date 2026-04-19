@@ -132,6 +132,12 @@ namespace Gameplay.Actions
         #endregion
 
 
+        #region Events
+
+        public event System.Action<Action> OnUpdateTriggered;
+        public event System.Action<Action> OnActionComplete;
+
+
         #region Charging Events
 
         public static event System.EventHandler<StartedChargingEventArgs> OnClientStartedCharging;
@@ -188,8 +194,8 @@ namespace Gameplay.Actions
 
         #endregion
 
-        public event System.Action<Action> OnUpdateTriggered;
-        public event System.Action<Action> OnActionComplete;
+        #endregion
+
 
         #region Static Actions
 
@@ -353,6 +359,7 @@ namespace Gameplay.Actions
         {
             _definition.OnEnd(this, owner);
             OnActionComplete?.Invoke(this);
+            CleanupServer(owner);
         }
 
 
@@ -385,6 +392,7 @@ namespace Gameplay.Actions
             chargeDepletedTime = CalculateChargeDepletedTime(out float chargePercentage);
 
             // If the action should trigger a final time, do so.
+            bool performedEnd = false;
             if (chargePercentage > _definition.MinChargeActivationPercentage)
             {
                 const float CHARGE_ROUNDING_TARGET = 0.05f;
@@ -394,12 +402,24 @@ namespace Gameplay.Actions
                 {
                     // The action wishes to end. Perform this, then finish the cancel.
                     OnEnd(owner);
+                    performedEnd = true;
                 }
             }
 
 
             _definition.OnCancel(this, owner);
-            OnActionComplete?.Invoke(this);
+
+            if (!performedEnd)
+            {
+                OnActionComplete?.Invoke(this);
+                CleanupServer(owner);
+            }
+        }
+
+
+        private void CleanupServer(ServerCharacter owner)
+        {
+            owner.ClientCharacter.CancelRunningActionsBySlotIDClientRpc(Data.AttachmentSlotIndex, ActionID);
         }
 
 
@@ -606,9 +626,13 @@ namespace Gameplay.Actions
         public virtual void AnticipateActionClient(ClientCharacter clientCharacter, ref ActionRequestData data)
         {
             AnticipatedClient = true;
-            TimeStarted = UnityEngine.Time.time;    // Replace with 'NetworkManager.Singleton.LocalTime.TimeAsFloat' to better match server-time when receiving the triggering Rpc?
+            TimeStarted = NetworkManager.Singleton.ServerTime.TimeAsFloat;
 
-            _definition.AnticipateClient(this, clientCharacter);
+            if (!_definition.AnticipateClient(this, clientCharacter))
+            {
+                //if (Definition.CooldownTime > 0.0f)
+                //    OnClientCooldownStarted?.Invoke(new CooldownStartedEventArgs(clientCharacter, Data.AttachmentSlotIndex, TimeStarted + TimeRunning, Definition.CooldownTime));
+            }
 
             /*if (!string.IsNullOrEmpty(Config.AnimAnticipation))
             {

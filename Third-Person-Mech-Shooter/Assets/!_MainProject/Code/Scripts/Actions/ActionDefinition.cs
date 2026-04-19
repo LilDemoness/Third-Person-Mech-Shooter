@@ -423,7 +423,10 @@ namespace Gameplay.Actions.Definitions
         protected virtual void CleanupClient(Action action, ClientCharacter clientCharacter) { }
 
 
-        public virtual void AnticipateClient(Action action, ClientCharacter clientCharacter) => Debug.Log("Anticipate");
+        public virtual bool AnticipateClient(Action action, ClientCharacter clientCharacter)
+        {
+            return ActivationStyle == ActionActivationStyle.Toggle ? !clientCharacter.HasActionsWithId(action.ActionID, action.Data.AttachmentSlotIndex) : ActionConclusion.Continue;
+        }
 
         #endregion
     }
