@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Action_Fire-MachineGun
   m_EditorClassIdentifier: 
   <IsHostileAction>k__BackingField: 1
+  <IsLoudAction>k__BackingField: 1
   <ShouldNotifyClient>k__BackingField: 1
   <ActivationStyle>k__BackingField: 0
   <InterruptableStages>k__BackingField: -1
@@ -75,6 +76,7 @@ MonoBehaviour:
     - rid: 981910458943144053
       type: {class: DamageEffect, ns: Gameplay.Actions.Effects, asm: Assembly-CSharp}
       data:
-        _damageValue: 1
+        _actionEffectScaling: []
+        _damageValue: 10
         _scaleValueWithCharge: 1
         _damageType: 1

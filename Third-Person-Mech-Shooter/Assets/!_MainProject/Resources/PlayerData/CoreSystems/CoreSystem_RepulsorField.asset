@@ -18,3 +18,7 @@ MonoBehaviour:
     Activate System to reflect incoming damage for a short time.
   <PassiveFeatureDefinition>k__BackingField: {fileID: 11400000, guid: 4aef249358b09e54eb036dbf169192dc, type: 2}
   <ActiveActionDefinition>k__BackingField: {fileID: 0}
+  <CoreSystemCost>k__BackingField: 100
+  <MinActivationPercentage>k__BackingField: 1
+  <FullyDrainOnEnd>k__BackingField: 1
+  <PowerPercentageDrainRate>k__BackingField: 0

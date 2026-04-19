@@ -19,3 +19,7 @@ MonoBehaviour:
     walls for a short duration.
   <PassiveFeatureDefinition>k__BackingField: {fileID: 11400000, guid: be9865bd37cb1084ea004fd574d6bafa, type: 2}
   <ActiveActionDefinition>k__BackingField: {fileID: 0}
+  <CoreSystemCost>k__BackingField: 100
+  <MinActivationPercentage>k__BackingField: 1
+  <FullyDrainOnEnd>k__BackingField: 1
+  <PowerPercentageDrainRate>k__BackingField: 0

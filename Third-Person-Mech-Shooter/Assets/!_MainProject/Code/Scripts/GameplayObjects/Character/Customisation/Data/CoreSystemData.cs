@@ -17,12 +17,12 @@ namespace Gameplay.GameplayObjects.Character.Customisation.Data
 
         [field: Space(5)]
         [field: SerializeField]
-        [field: Tooltip("1 second = 1 point. 1 dmg = 2 points.")]
-        public float CoreSystemCost { get; private set; } = 1000.0f;
+        [field: Tooltip("1 second = 1 point. 10 dmg = 1 points.")]
+        public float CoreSystemCost { get; private set; } = 100.0f;
 
         public const float TIME_TO_CHARGE_MULTIPLIER = 1.0f;
-        public const float DAMAGE_TO_CHARGE_MULTIPLIER = 2.0f;
-        public const float HEALING_TO_CHARGE_MULTIPLIER = 2.0f;
+        public const float DAMAGE_TO_CHARGE_MULTIPLIER = 0.1f;
+        public const float HEALING_TO_CHARGE_MULTIPLIER = 0.3f;
 
 
         [field: Space(5)]

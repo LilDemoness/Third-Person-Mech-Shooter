@@ -241,7 +241,8 @@ MonoBehaviour:
     - rid: 981910458943144056
       type: {class: DamageEffect, ns: Gameplay.Actions.Effects, asm: Assembly-CSharp}
       data:
-        _damageValue: 1
+        _actionEffectScaling: []
+        _damageValue: 75
         _scaleValueWithCharge: 1
         _damageType: 2
 --- !u!114 &4493027890337612337
