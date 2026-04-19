@@ -286,6 +286,7 @@ namespace Gameplay.GameplayObjects
 
             damage *= _serverCharacter.CharacterStats.GetDamageTakenMultiplier(DamageTakenStatistic.DamageResistances, damageType, localDamageDirection);
 
+            IDamageable.InvokeOnAnyHealthChange(inflicter, -damage);
             SetCurrentHealth_Server(inflicter, _currentHealth.Value - damage);
         }
         public void ReceiveHealing_Server(ServerCharacter inflicter, float healing)
@@ -298,6 +299,7 @@ namespace Gameplay.GameplayObjects
             // Apply modifications to the healing/damage as appropriate.
             healing = CanReceiveHealing() ? healing : 0.0f;
 
+            IDamageable.InvokeOnAnyHealthChange(inflicter, healing);
             SetCurrentHealth_Server(inflicter, _currentHealth.Value + healing);
         }
         private void RegenerateShields(float shieldIncreaseValue) => SetCurrentShields_Server(null, _currentShields.Value + shieldIncreaseValue);

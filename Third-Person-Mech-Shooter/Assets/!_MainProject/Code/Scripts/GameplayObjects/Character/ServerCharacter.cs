@@ -78,6 +78,15 @@ namespace Gameplay.GameplayObjects.Character
         public float MovementSpeed => Movement.MovementSpeed;
 
 
+        // Core System Power.
+        public float MaxCoreSystemCharge => BuildDataReference.GetCoreSystemData().CoreSystemCost;
+        [SerializeField, ReadOnly] private float _coreSystemCharge;
+        private bool _coreSystemInUse = false;
+
+        public float CoreSystemCharge => _coreSystemCharge;
+        public float CoreSystemChargePercentage => _coreSystemCharge / MaxCoreSystemCharge;
+
+
         // References.
 
         /// <summary>
@@ -137,6 +146,9 @@ namespace Gameplay.GameplayObjects.Character
 
             _movement.OnMovementStatusChanged += MovementScript_OnMovementStatusChanged;
             _characterStats.OnStatisticChanged += CharacterStats_OnStatisticChanged;
+
+
+            IDamageable.OnAnyHealthChange += IDamageable_OnAnyHealthChange;
         }
         public override void OnDestroy()
         {
@@ -144,6 +156,9 @@ namespace Gameplay.GameplayObjects.Character
 
             _movement.OnMovementStatusChanged -= MovementScript_OnMovementStatusChanged;
             _characterStats.OnStatisticChanged -= CharacterStats_OnStatisticChanged;
+
+
+            IDamageable.OnAnyHealthChange -= IDamageable_OnAnyHealthChange;
         }
 
         public override void OnNetworkSpawn()
@@ -172,6 +187,19 @@ namespace Gameplay.GameplayObjects.Character
             NetworkHealthComponent.CollisionEntered -= CollisionEntered;
             ActionPlayer.OnActionQueueFilled -= ServerActionPlayer_OnActionQueueFilled;
             ActionPlayer.OnActionQueueEmptied -= ServerActionPlayer_OnActionQueueEmptied;
+        }
+
+
+        private void IDamageable_OnAnyHealthChange(ServerCharacter inflicter, float healthChange)
+        {
+            if (inflicter != this)
+                return; // Not this character.
+
+            // Increase our core system charge proportional to the health change.
+            if (healthChange > 0.0f)
+                _coreSystemCharge = Mathf.Min(_coreSystemCharge + healthChange * CoreSystemData.HEALING_TO_CHARGE_MULTIPLIER, MaxCoreSystemCharge);
+            else
+                _coreSystemCharge = Mathf.Min(_coreSystemCharge + (-healthChange) * CoreSystemData.DAMAGE_TO_CHARGE_MULTIPLIER, MaxCoreSystemCharge);
         }
 
 
@@ -249,7 +277,7 @@ namespace Gameplay.GameplayObjects.Character
         /// <summary>
         ///     Play a desired action from the given <see cref="ActionRequestData"/> '<paramref name="data"/>'.
         /// </summary>
-        public void PlayAction_Server(ref ActionRequestData data)
+        public void PlayAction_Server(ref ActionRequestData data, System.Action<Action> onActionCompleteCallback = null)
         {
             if (!CanPerformActions)
                 return;
@@ -266,38 +294,38 @@ namespace Gameplay.GameplayObjects.Character
             if (data.PreventMovement)
                 _movement.CancelMove();
 
-            ActionPlayer.PlayAction(ref data);
+            ActionPlayer.PlayAction(ref data, onActionCompleteCallback);
         }
         /// <summary>
         ///     Cancel the actions with the given ActionID.
         /// </summary>
         /// <remarks> Called on the Server.</remarks>
-        public void CancelAction_Server(ActionID actionID, bool cancelNonBlocking = true, Action exceptThis = null, bool forceCancel = false)
+        public bool CancelAction_Server(ActionID actionID, bool cancelNonBlocking = true, Action exceptThis = null, bool forceCancel = false)
         {
             if (GameDataSource.Instance.GetActionDefinitionByID(actionID).ShouldNotifyClient)
                 m_clientCharacter.CancelRunningActionsByIDClientRpc(actionID);
 
-            ActionPlayer.CancelRunningActionsByID(actionID, cancelNonBlocking, exceptThis, forceCancel);
+            return ActionPlayer.CancelRunningActionsByID(actionID, cancelNonBlocking, exceptThis, forceCancel);
         }
         /// <summary>
         ///     Cancel all actions in a given Attachment Slot.
         /// </summary>
         /// <remarks> Called on the Server.</remarks>
-        public void CancelAction_Server(AttachmentSlotIndex slotIndex, bool cancelNonBlocking = true, bool forceCancel = false)
+        public bool CancelAction_Server(AttachmentSlotIndex slotIndex, bool cancelNonBlocking = true, bool forceCancel = false)
         {
             m_clientCharacter.CancelRunningActionsBySlotIDClientRpc(slotIndex);
-            ActionPlayer.CancelRunningActionsBySlotID(slotIndex, cancelNonBlocking, forceCancel);
+            return ActionPlayer.CancelRunningActionsBySlotID(slotIndex, cancelNonBlocking, forceCancel);
         }
         /// <summary>
         ///     Cancel all actions in a given Attachment Slot.
         /// </summary>
         /// <remarks> Called on the Server.</remarks>
-        public void CancelAction_Server(AttachmentSlotIndex slotIndex, ActionID actionID, bool cancelNonBlocking = true, bool forceCancel = false)
+        public bool CancelAction_Server(AttachmentSlotIndex slotIndex, ActionID actionID, bool cancelNonBlocking = true, bool forceCancel = false)
         {
             if (GameDataSource.Instance.GetActionDefinitionByID(actionID).ShouldNotifyClient)
                 m_clientCharacter.CancelRunningActionsBySlotIDClientRpc(slotIndex, actionID);
 
-            ActionPlayer.CancelRunningActionsBySlotID(slotIndex, actionID, cancelNonBlocking, forceCancel);
+            return ActionPlayer.CancelRunningActionsBySlotID(slotIndex, actionID, cancelNonBlocking, forceCancel);
         }
 
         private void ServerActionPlayer_OnActionQueueFilled() => UpdateInstantActionAvailabilityOwnerRpc(false);
@@ -319,6 +347,8 @@ namespace Gameplay.GameplayObjects.Character
             {
                 ReceiveHeatChange(this, -heatDecreaseRate * Time.deltaTime);
             }
+
+            HandleCoreSystemCharge();
         }
 
 
@@ -572,6 +602,49 @@ namespace Gameplay.GameplayObjects.Character
             if (ActionPlayer != null)
                 ActionPlayer.CollisionEntered(collision);
         }
+
+
+        #region Core System
+
+        public void StartCoreSystemUse(ref ActionRequestData data)
+        {
+            _coreSystemInUse = true;
+            PlayAction_Server(ref data, OnCoreSystemEnded);
+        }
+        public void CancelCoreSystemUse()
+        {
+            if (!_coreSystemInUse)
+                return;
+
+            CancelAction_Server(BuildDataReference.GetCoreSystemData().ActiveActionDefinition.ActionID);
+            OnCoreSystemEnded();
+        }
+        private void OnCoreSystemEnded(Action _) => OnCoreSystemEnded();
+        private void OnCoreSystemEnded()
+        {
+            _coreSystemInUse = false;
+
+            if (BuildDataReference.GetCoreSystemData().FullyDrainOnEnd)
+                _coreSystemCharge = 0.0f;
+        }
+
+        private void HandleCoreSystemCharge()
+        {
+            if (!_coreSystemInUse)
+                _coreSystemCharge = Mathf.Min(_coreSystemCharge + CoreSystemData.TIME_TO_CHARGE_MULTIPLIER * Time.deltaTime, MaxCoreSystemCharge);
+            else
+            {
+                _coreSystemCharge -= BuildDataReference.GetCoreSystemData().PowerPercentageDrainRate * Time.deltaTime;
+
+                if (_coreSystemCharge <= 0.0f)
+                {
+                    _coreSystemCharge = 0.0f;
+                    CancelCoreSystemUse();
+                }
+            }
+        }
+
+#endregion
 
 
         #region Editor Testing Functions

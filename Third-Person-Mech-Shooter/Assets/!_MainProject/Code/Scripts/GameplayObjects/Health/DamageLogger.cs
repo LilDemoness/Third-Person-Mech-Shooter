@@ -14,6 +14,7 @@ namespace Gameplay.GameplayObjects.Health
                 return;
             }
 
+            IDamageable.InvokeOnAnyHealthChange(inflicter, -damageValue);
             Debug.Log($"{this.name} received {damageValue} damage from {inflicter.name}");
         }
         public void ReceiveHealing_Server(ServerCharacter inflicter, float healingValue)
@@ -24,6 +25,7 @@ namespace Gameplay.GameplayObjects.Health
                 return;
             }
 
+            IDamageable.InvokeOnAnyHealthChange(inflicter, healingValue);
             Debug.Log($"{this.name} received {healingValue} healing from {inflicter.name}");
         }
         public float GetMissingHealth() => 0;

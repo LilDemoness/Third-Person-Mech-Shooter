@@ -189,6 +189,7 @@ namespace Gameplay.Actions
         #endregion
 
         public event System.Action<Action> OnUpdateTriggered;
+        public event System.Action<Action> OnActionComplete;
 
         #region Static Actions
 
@@ -235,6 +236,8 @@ namespace Gameplay.Actions
             this._isCharging = false;
             this._isFirstCharge = false;
             this._chargeStartTime = 0.0f;
+
+            OnActionComplete = null;
         }
 
 
@@ -346,7 +349,11 @@ namespace Gameplay.Actions
         ///     Server Only.
         /// </summary>
         //public virtual void OnEnd(ServerCharacter owner) => _definition.OnEnd(this, owner);
-        public virtual void OnEnd(ServerCharacter owner) => _definition.OnEnd(this, owner);
+        public virtual void OnEnd(ServerCharacter owner)
+        {
+            _definition.OnEnd(this, owner);
+            OnActionComplete?.Invoke(this);
+        }
 
 
         /// <summary>
@@ -392,6 +399,7 @@ namespace Gameplay.Actions
 
 
             _definition.OnCancel(this, owner);
+            OnActionComplete?.Invoke(this);
         }
 
 

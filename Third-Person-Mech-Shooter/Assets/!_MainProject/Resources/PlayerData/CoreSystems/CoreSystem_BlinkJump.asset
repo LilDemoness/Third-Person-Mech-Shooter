@@ -19,3 +19,7 @@ MonoBehaviour:
     for a short duration.
   <PassiveFeatureDefinition>k__BackingField: {fileID: 11400000, guid: 211dcba9dbe244b4f8f78ac7ef320b40, type: 2}
   <ActiveActionDefinition>k__BackingField: {fileID: 11400000, guid: 61b2feb0218ed6546964cafca82ea51c, type: 2}
+  <CoreSystemCost>k__BackingField: 100
+  <MinActivationPercentage>k__BackingField: 0.5
+  <FullyDrainOnEnd>k__BackingField: 0
+  <PowerPercentageDrainRate>k__BackingField: 20

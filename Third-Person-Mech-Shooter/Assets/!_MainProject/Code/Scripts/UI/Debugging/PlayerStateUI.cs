@@ -25,6 +25,8 @@ namespace UI.Debugging
 
         [SerializeField] private TMP_Text _currentSpeedText;
 
+        [SerializeField] private ProgressBar _chargeProgressBar;
+
 
         private void Awake()
         {
@@ -68,6 +70,14 @@ namespace UI.Debugging
         {
             base.OnDestroy();
             Player.OnLocalPlayerSet -= Player_OnLocalPlayerSet;
+        }
+
+        private void Update()
+        {
+            if (Player.LocalClientInstance == null)
+                return;
+
+            _chargeProgressBar.SetValues(Player.LocalClientInstance.ServerCharacter.CoreSystemCharge, 0.0f, Player.LocalClientInstance.ServerCharacter.MaxCoreSystemCharge);
         }
 
 

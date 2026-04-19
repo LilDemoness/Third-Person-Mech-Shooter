@@ -13,6 +13,8 @@ namespace Gameplay.Actions.Effects
             Heat,
         }
         [SerializeField] private StatisticToCheck _statisticToCheck;
+        [SerializeField] private float _minMultiplier = 0.0f;
+        [SerializeField] private float _maxMultiplier = 1.0f;
 
         public override float GetPercentageValue(ServerCharacter character)
         {
@@ -23,7 +25,7 @@ namespace Gameplay.Actions.Effects
                 _ => throw new System.NotImplementedException($"Checking '{_statisticToCheck.ToString()}' is not implemented")
             };
 
-            return percentageValue;
+            return Mathf.Lerp(_minMultiplier, _maxMultiplier, percentageValue);
         }
     }
 }

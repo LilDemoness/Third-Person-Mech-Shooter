@@ -60,7 +60,7 @@ namespace Gameplay.Actions
         ///     Perform a sequence of actions.
         /// </summary>
         /// <returns> True if a new action was queued.</returns>
-        public bool PlayAction(ref ActionRequestData action)
+        public bool PlayAction(ref ActionRequestData action, System.Action<Action> onActionCompleteCallback = null)
         {
             // Check if we should interrupt the active action.
             if (!action.ShouldQueue && _actionQueue.Count > 0 && (/*_actionQueue[0].ActionInterruptible || */_actionQueue[0].CanBeInterrupted()))
@@ -72,6 +72,8 @@ namespace Gameplay.Actions
             // Create our action.
             var newAction = ActionFactory.CreateActionFromData(ref action);
             newAction.OnUpdateTriggered += Action_OnUpdateTriggered;
+            if (onActionCompleteCallback != null)
+                newAction.OnActionComplete += onActionCompleteCallback;
             
             if (CancelExistingActionsForToggle(newAction))
             {
@@ -447,28 +449,28 @@ namespace Gameplay.Actions
         /// <param name="actionID"> The <see cref="ActionID"/> of the action to cancel.</param>
         /// <param name="cancelNonBlocking"> Should we also cancel non-blocking actions?</param>
         /// <param name="exceptThis"> The action you don't wish to cancel.</param>
-        public void CancelRunningActionsByID(ActionID actionID, bool cancelNonBlocking = true, Action exceptThis = null, bool forceCancel = false)
+        public bool CancelRunningActionsByID(ActionID actionID, bool cancelNonBlocking = true, Action exceptThis = null, bool forceCancel = false)
         {
             bool ShouldCancelFunc(Action action) => action.ActionID == actionID && action != exceptThis;
-            CancelActions(ShouldCancelFunc, false, cancelNonBlocking, forceCancel);
+            return CancelActions(ShouldCancelFunc, false, cancelNonBlocking, forceCancel);
         }
         /// <summary>
         ///     Cancel all actions for the given <see cref="AttachmentSlotIndex"/>.
         /// </summary>
         /// <param name="cancelNonBlocking"> Should we also cancel non-blocking actions?</param>
-        public void CancelRunningActionsBySlotID(AttachmentSlotIndex slotIndex, bool cancelNonBlocking, bool forceCancel = false)
+        public bool CancelRunningActionsBySlotID(AttachmentSlotIndex slotIndex, bool cancelNonBlocking, bool forceCancel = false)
         {
             bool ShouldCancelFunc(Action action) => action.Data.AttachmentSlotIndex == slotIndex;
-            CancelActions(ShouldCancelFunc, false, cancelNonBlocking, forceCancel);
+            return CancelActions(ShouldCancelFunc, false, cancelNonBlocking, forceCancel);
         }
         /// <summary>
         ///     Cancel all actions with ID matching <paramref name="actionID"/> for the <see cref="AttachmentSlotIndex"/> <paramref name="slotIndex"/>.
         /// </summary>
         /// <param name="cancelNonBlocking"> Should we also cancel non-blocking actions?</param>
-        public void CancelRunningActionsBySlotID(AttachmentSlotIndex slotIndex, ActionID actionID, bool cancelNonBlocking, bool forceCancel = false)
+        public bool CancelRunningActionsBySlotID(AttachmentSlotIndex slotIndex, ActionID actionID, bool cancelNonBlocking, bool forceCancel = false)
         {
             bool ShouldCancelFunc(Action action) => (action.Data.AttachmentSlotIndex == slotIndex && action.ActionID == actionID);
-            CancelActions(ShouldCancelFunc, false, cancelNonBlocking, forceCancel);
+            return CancelActions(ShouldCancelFunc, false, cancelNonBlocking, forceCancel);
         }
 
         /// <summary>
@@ -495,6 +497,7 @@ namespace Gameplay.Actions
                         if (!forceCancel && !action.CanBeCancelled())
                         {
                             action.IsGhost = true;  // Cancel the action the next tick after it can be cancelled again.
+                            hasRemovedAction = true;
                             continue;
                         }
                         if (!cancelCondition(action))
@@ -513,6 +516,7 @@ namespace Gameplay.Actions
                 if (!forceCancel && !action.CanBeCancelled())
                 {
                     action.IsGhost = true;  // Cancel the action the next tick after it can be cancelled again.
+                    hasRemovedAction = true;
                 }
                 else if (cancelCondition(action))
                 {
@@ -559,6 +563,8 @@ namespace Gameplay.Actions
         private void CancelAction(Action actionToCancel)
         {
             bool tryStartNextAction = _actionQueue.Count > 0 && actionToCancel == _actionQueue[0];  // If this is the blocking action, cache our desire to start the next action in the queue.
+
+            Debug.Log("Cancel Action: " + actionToCancel.Definition.name);
 
             // Cancel the action.
             actionToCancel.OnCancel(_serverCharacter, out float chargeDepletedTime);

@@ -34,7 +34,7 @@ MonoBehaviour:
   <ChargeDepletionTime>k__BackingField: 0
   <UIChargeDepletionTime>k__BackingField: 0
   <TriggerType>k__BackingField: 0
-  <CancelOnLastTrigger>k__BackingField: 1
+  <CancelOnLastTrigger>k__BackingField: 0
   <RetriggerDelay>k__BackingField: 0
   <Bursts>k__BackingField: 0
   <BurstDelay>k__BackingField: 0

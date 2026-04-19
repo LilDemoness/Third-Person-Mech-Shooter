@@ -123,6 +123,9 @@ namespace Gameplay.GameplayObjects.Character
 
         public void ActivateCoreSystem()
         {
+            if (_serverCharacter.CoreSystemChargePercentage < _serverCharacter.GetCoreSystemData().MinActivationPercentage)
+                return;
+
             // Anticipate the weapon's effect (For audio & hit markers).
             if (_serverCharacter.CanPerformActionInstantly)
                 _serverCharacter.ClientCharacter.AnticipateActionOwnerRpc(CreateCoreSystemRequestData());
@@ -138,6 +141,8 @@ namespace Gameplay.GameplayObjects.Character
         {
             if (rpcParams.Receive.SenderClientId != this.OwnerClientId)
                 return; // Not sent by the correct client.
+            if (_serverCharacter.CoreSystemChargePercentage < _serverCharacter.GetCoreSystemData().MinActivationPercentage)
+                return;
 
             // Valid activation input.
             StartUsingCoreSystem();
@@ -165,7 +170,7 @@ namespace Gameplay.GameplayObjects.Character
             {
                 // Request to play our action.
                 _coreSystemActivationRequest = false;
-                _serverCharacter.PlayAction_Server(ref actionRequestData);
+                _serverCharacter.StartCoreSystemUse(ref actionRequestData);
             }
         }
         private ActionRequestData CreateCoreSystemRequestData()
@@ -182,7 +187,7 @@ namespace Gameplay.GameplayObjects.Character
                 return; // Don't cancel this action on release.
 
             // Cancel the action triggered from this slot.
-            _serverCharacter.CancelActionByIDServerRpc(_serverCharacter.GetCoreSystemData().ActiveActionDefinition.ActionID);
+            _serverCharacter.CancelCoreSystemUse();
         }
 
 
