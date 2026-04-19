@@ -41,7 +41,8 @@ MonoBehaviour:
   <TriggeringVisuals>k__BackingField: []
   <HitVisuals>k__BackingField: []
   <ActionCrosshairPrefab>k__BackingField: {fileID: 0}
-  <HitEffects>k__BackingField: []
+  <HitEffects>k__BackingField:
+  - rid: 451070689067139180
   <ActivationsPerTrigger>k__BackingField: 1
   <ActivationDeviationPattern>k__BackingField: 0
   <TargetingStartDeviation>k__BackingField: 0
@@ -57,6 +58,18 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: 451070689067139180
+      type: {class: DamageEffect, ns: Gameplay.Actions.Effects, asm: Assembly-CSharp}
+      data:
+        _actionEffectScaling:
+        - rid: 451070689067139182
+        _damageValue: 10
+        _scaleValueWithCharge: 1
+        _damageType: 8
+    - rid: 451070689067139182
+      type: {class: StatisticScaling, ns: Gameplay.Actions.Effects, asm: Assembly-CSharp}
+      data:
+        _statisticToCheck: 1
     - rid: 981910458943144057
       type: {class: AoETargetingAction/SphereAoETargeting, ns: Gameplay.Actions.Definitions, asm: Assembly-CSharp}
       data:

@@ -1,4 +1,5 @@
 using Gameplay.GameplayObjects.Character;
+using UnityEngine;
 
 namespace Gameplay.Actions.Effects
 {
@@ -8,6 +9,9 @@ namespace Gameplay.Actions.Effects
     [System.Serializable]
     public abstract class ActionEffect
     {
+        [SerializeReference, SubclassSelector] private ActionEffectScaling[] _actionEffectScaling;
+        
+
         public void ApplyEffect(ServerCharacter owner, in ActionHitInformation[] hitInfoArray, float chargePercentage)
         {
             for(int i = 0; i < hitInfoArray.Length; ++i)
@@ -22,5 +26,15 @@ namespace Gameplay.Actions.Effects
         ///     Cleanup the ActionEffect to be used the next time the Action is created.
         /// </summary>
         public virtual void Cleanup(ServerCharacter owner) { }
+
+
+        protected float GetScalingValue(ServerCharacter owner)
+        {
+            float total = 1.0f;
+            foreach (ActionEffectScaling scaling in _actionEffectScaling)
+                total *= scaling.GetPercentageValue(owner);
+
+            return total;
+        }
     }
 }

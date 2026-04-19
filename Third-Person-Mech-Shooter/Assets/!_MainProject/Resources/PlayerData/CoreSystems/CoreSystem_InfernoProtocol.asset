@@ -18,4 +18,4 @@ MonoBehaviour:
     System to explosively vent heat, damaging nearby enemies proportional to current
     heat and reducing heat to 0.
   <PassiveFeatureDefinition>k__BackingField: {fileID: 11400000, guid: 366dad60c96d9834a834b484f51fe7bc, type: 2}
-  <ActiveActionDefinition>k__BackingField: {fileID: 0}
+  <ActiveActionDefinition>k__BackingField: {fileID: 11400000, guid: 1c7cc51952780d5488036f0fff00d39c, type: 2}
