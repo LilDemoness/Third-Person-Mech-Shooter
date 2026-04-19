@@ -7,7 +7,7 @@ using UserInput;
 
 public class PlayerSlotDisplayUI : MonoBehaviour
 {
-    [SerializeField] private AttachmentSlotIndex _slotIndex = AttachmentSlotIndex.Unset;
+    [SerializeField] private AttachmentSlotIndex _slotIndex = AttachmentSlotIndex.Primary;
     [SerializeField] private TextMeshProUGUI _slotNameLabel;
     [SerializeField] private TextMeshProUGUI _activationIconText;
 
@@ -16,7 +16,7 @@ public class PlayerSlotDisplayUI : MonoBehaviour
     {
         if (_slotIndex == AttachmentSlotIndex.Unset)
         {
-            Debug.LogError($"Error: {this.name} has an unset Slot Index", this);
+            Debug.LogError($"Error: {this.name} has an invalid Slot Index", this);
             return;
         }
 

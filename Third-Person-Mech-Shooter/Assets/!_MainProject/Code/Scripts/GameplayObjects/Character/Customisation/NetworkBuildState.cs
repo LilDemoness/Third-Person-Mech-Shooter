@@ -182,12 +182,12 @@ namespace Gameplay.GameplayObjects
             OnBuildChanged?.Invoke(_buildDataReference);
         }
         [Rpc(SendTo.Server)]
-        public void SetSlottableServerRpc(AttachmentSlotIndex slotIndex, int slottableIndex) => ActiveSlottableIndicies[slotIndex.GetSlotInteger()] = slottableIndex;
+        public void SetSlottableServerRpc(AttachmentSlotIndex slotIndex, int slottableIndex) => ActiveSlottableIndicies[slotIndex.GetSlotIndex()] = slottableIndex;
 
 
 
         public int GetFrameIndex() => ActiveFrameIndex.Value;
-        public int GetSlottableIndex(AttachmentSlotIndex slotIndex) => ActiveSlottableIndicies[slotIndex.GetSlotInteger()];
+        public int GetSlottableIndex(AttachmentSlotIndex slotIndex) => ActiveSlottableIndicies[slotIndex.GetSlotIndex()];
         public int[] GetSlottableIndicies()
         {
             int[] activeSlottableIndiciesArray = new int[ActiveSlottableIndicies.Count];

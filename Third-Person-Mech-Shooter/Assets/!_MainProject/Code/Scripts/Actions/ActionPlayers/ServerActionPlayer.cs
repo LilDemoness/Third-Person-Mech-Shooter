@@ -445,12 +445,11 @@ namespace Gameplay.Actions
         ///     Cancel all playing actions that match the given parameters.
         /// </summary>
         /// <param name="actionID"> The <see cref="ActionID"/> of the action to cancel.</param>
-        /// <param name="slotIndex"> The <see cref="AttachmentSlotIndex"/> of the action to cancel.</param>
         /// <param name="cancelNonBlocking"> Should we also cancel non-blocking actions?</param>
         /// <param name="exceptThis"> The action you don't wish to cancel.</param>
-        public void CancelRunningActionsByID(ActionID actionID, AttachmentSlotIndex slotIndex = AttachmentSlotIndex.Unset, bool cancelNonBlocking = true, Action exceptThis = null, bool forceCancel = false)
+        public void CancelRunningActionsByID(ActionID actionID, bool cancelNonBlocking = true, Action exceptThis = null, bool forceCancel = false)
         {
-            bool ShouldCancelFunc(Action action) => action.ActionID == actionID && action != exceptThis && (slotIndex == AttachmentSlotIndex.Unset || action.Data.AttachmentSlotIndex == slotIndex);
+            bool ShouldCancelFunc(Action action) => action.ActionID == actionID && action != exceptThis;
             CancelActions(ShouldCancelFunc, false, cancelNonBlocking, forceCancel);
         }
         /// <summary>
@@ -460,6 +459,15 @@ namespace Gameplay.Actions
         public void CancelRunningActionsBySlotID(AttachmentSlotIndex slotIndex, bool cancelNonBlocking, bool forceCancel = false)
         {
             bool ShouldCancelFunc(Action action) => action.Data.AttachmentSlotIndex == slotIndex;
+            CancelActions(ShouldCancelFunc, false, cancelNonBlocking, forceCancel);
+        }
+        /// <summary>
+        ///     Cancel all actions with ID matching <paramref name="actionID"/> for the <see cref="AttachmentSlotIndex"/> <paramref name="slotIndex"/>.
+        /// </summary>
+        /// <param name="cancelNonBlocking"> Should we also cancel non-blocking actions?</param>
+        public void CancelRunningActionsBySlotID(AttachmentSlotIndex slotIndex, ActionID actionID, bool cancelNonBlocking, bool forceCancel = false)
+        {
+            bool ShouldCancelFunc(Action action) => (action.Data.AttachmentSlotIndex == slotIndex && action.ActionID == actionID);
             CancelActions(ShouldCancelFunc, false, cancelNonBlocking, forceCancel);
         }
 

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Gameplay.GameplayObjects.Character.Customisation.Data;
+using System;
 
 namespace Gameplay.GameplayObjects.Character.Customisation.Sections
 {
@@ -15,6 +16,8 @@ namespace Gameplay.GameplayObjects.Character.Customisation.Sections
 
         [SerializeField] private AttachmentSlot[] m_slottableDataSlotArray;
         private Dictionary<AttachmentSlotIndex, AttachmentSlot> _slottableDataSlots = new Dictionary<AttachmentSlotIndex, AttachmentSlot>();
+
+        [SerializeField] private CoreSystemSlot _coreSystemSlot;
         
 
         [Header("Rotation")]
@@ -33,7 +36,7 @@ namespace Gameplay.GameplayObjects.Character.Customisation.Sections
         public bool UsesXRotationForVertical => _usesXRotationForVertical;
 
 
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
 
         [ContextMenu(itemName: "Setup/Auto Setup Container References")]
         private void Editor_AutoSetupContainerReferences()
@@ -52,7 +55,7 @@ namespace Gameplay.GameplayObjects.Character.Customisation.Sections
 
         private void Awake()
         {
-            _slottableDataSlots = new Dictionary<AttachmentSlotIndex, AttachmentSlot>(AttachmentSlotIndexExtensions.GetMaxPossibleSlots());
+            _slottableDataSlots = new Dictionary<AttachmentSlotIndex, AttachmentSlot>();
             foreach(AttachmentSlot attachmentSlot in m_slottableDataSlotArray)
             {
                 if (!_slottableDataSlots.TryAdd(attachmentSlot.AttachmentSlotIndex, attachmentSlot))
@@ -70,6 +73,18 @@ namespace Gameplay.GameplayObjects.Character.Customisation.Sections
             this.gameObject.SetActive(newActive);
             return newActive;
         }
+        public bool TryGetAttachmentSlotForIndex(AttachmentSlotIndex index, out AttachmentSlot slotSection)
+        {
+            if (index.GetSlotIndex() >= m_slottableDataSlotArray.Length)
+            {
+                slotSection = null;
+                return false;
+            }
+
+            slotSection = m_slottableDataSlotArray[index.GetSlotIndex()];
+            return true;
+        }
+        public CoreSystemSlot GetCoreSystemSlot() => _coreSystemSlot;
 
 
         public FrameGFX OnSelectedFrameChanged(FrameData activeData)
@@ -86,9 +101,26 @@ namespace Gameplay.GameplayObjects.Character.Customisation.Sections
             }
             return this;
         }
+        public FrameGFX OnSelectedCoreSystemChanged(CoreSystemData coreSystemData)
+        {
+            _coreSystemSlot.Toggle(coreSystemData);
+            return this;
+        }
 
 
         public FrameData GetAssociatedData() => _associatedFrameData;
-        public AttachmentSlot[] GetSlottableDataSlotArray() => m_slottableDataSlotArray;
+
+
+        // Note: May return null.
+        public SlotGFXSection GetSlotGFXForIndex(AttachmentSlotIndex index) => m_slottableDataSlotArray[index.GetSlotIndex()].GetActiveGFXSection();
+        // Note: May return null.
+        public ModuleData GetModuleDataForSlotIndex(AttachmentSlotIndex index) => m_slottableDataSlotArray[index.GetSlotIndex()].GetAssociatedData();
+        public ulong GetObjectIDForSlotIndex(AttachmentSlotIndex index) => m_slottableDataSlotArray[index.GetSlotIndex()].GetActionSourceObjectId();
+        public int GetSlotGFXCount() => m_slottableDataSlotArray.Length;
+
+
+        // Note: May return null.
+        public CoreSystemData GetActiveCoreSystemData() => _coreSystemSlot.GetAssociatedData();
+        public ulong GetActiveCoreSystemObjectID() => _coreSystemSlot.GetActionSourceObjectId();
     }
 }

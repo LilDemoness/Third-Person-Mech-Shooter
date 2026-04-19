@@ -2,6 +2,6 @@
 
 namespace Gameplay.GameplayObjects.Character.Customisation.Sections
 {
-    public class SlotGFXSection : GFXSection<ModuleData>
+    public class CoreSystemGFXSection : GFXSection<CoreSystemData>
     { }
 }

@@ -383,7 +383,7 @@ namespace Gameplay.GameplayObjects.Character
                 IActionSourceObjectID = _serverCharacter.NetworkObjectId,
                 Direction = _movementInput != Vector2.zero ? GetProjectedMovementVector() : GetProjectedVector(_rotationPivot.forward),
             };
-            _serverCharacter.ActionPlayer.PlayAction(ref actionRequestData);
+            _serverCharacter.PlayAction_Server(ref actionRequestData);
         }
         [Rpc(SendTo.Server)]
         private void NotifyListenersOfBoostRechargeValuesChangedServerRpc()

@@ -143,11 +143,10 @@ namespace Gameplay.Actions
         ///     Cancel all playing actions that match the given parameters.
         /// </summary>
         /// <param name="actionID"> The <see cref="ActionID"/> of the action to cancel.</param>
-        /// <param name="slotIndex"> The <see cref="SlotIndex"/> of the action to cancel.</param>
         /// <param name="exceptThis"> The action you don't wish to cancel.</param>
-        public void CancelRunningActionsByID(ActionID actionID, AttachmentSlotIndex slotIndex = AttachmentSlotIndex.Unset, Action exceptThis = null, bool forceCancel = false)
+        public void CancelRunningActionsByID(ActionID actionID, Action exceptThis = null, bool forceCancel = false)
         {
-            bool ShouldCancelFunc(Action action) => action.ActionID == actionID && action != exceptThis && (slotIndex == AttachmentSlotIndex.Unset || action.Data.AttachmentSlotIndex == slotIndex);
+            bool ShouldCancelFunc(Action action) => action.ActionID == actionID && action != exceptThis;
             CancelActiveActions(ShouldCancelFunc, forceCancel);
         }
         /// <summary>
@@ -158,6 +157,17 @@ namespace Gameplay.Actions
             bool ShouldCancelFunc(Action action) => action.Data.AttachmentSlotIndex == slotIndex;
             CancelActiveActions(ShouldCancelFunc, forceCancel);
         }
+        /// <summary>
+        ///     Cancel all actions with ID matching <paramref name="actionID"/> for the <see cref="AttachmentSlotIndex"/> <paramref name="slotIndex"/>.
+        /// </summary>
+        /// <param name="actionID"> The <see cref="ActionID"/> of the action to cancel.</param>
+        /// <param name="slotIndex"> The <see cref="AttachmentSlotIndex"/> of the action to cancel.</param>
+        public void CancelRunningActionsBySlotID(AttachmentSlotIndex slotIndex, ActionID actionID, bool forceCancel = false)
+        {
+            bool ShouldCancelFunc(Action action) => action.ActionID == actionID && (slotIndex == AttachmentSlotIndex.Unset || action.Data.AttachmentSlotIndex == slotIndex);
+            CancelActiveActions(ShouldCancelFunc, forceCancel);
+        }
+
 
         /// <summary>
         ///     Cancel all actions based on the passed condition function.

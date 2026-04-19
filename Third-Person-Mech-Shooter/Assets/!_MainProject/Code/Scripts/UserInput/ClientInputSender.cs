@@ -85,6 +85,9 @@ namespace UserInput
 
             ClientInput.OnActivateSlotStarted += ClientInput_OnActivateSlotStarted;
             ClientInput.OnActivateSlotCancelled += ClientInput_OnActivateSlotCancelled;
+
+            ClientInput.OnActivateCoreSystemStarted += ClientInput_OnActivateCoreSystemStarted;
+            ClientInput.OnActivateCoreSystemCancelled += ClientInput_OnActivateCoreSystemCancelled;
         }
         private void UnsubscribeFromClientInput()
         {
@@ -93,6 +96,9 @@ namespace UserInput
 
             ClientInput.OnActivateSlotStarted -= ClientInput_OnActivateSlotStarted;
             ClientInput.OnActivateSlotCancelled -= ClientInput_OnActivateSlotCancelled;
+
+            ClientInput.OnActivateCoreSystemStarted -= ClientInput_OnActivateCoreSystemStarted;
+            ClientInput.OnActivateCoreSystemCancelled -= ClientInput_OnActivateCoreSystemCancelled;
         }
 
         private void ClientInput_OnMovementInputChanged()
@@ -105,7 +111,10 @@ namespace UserInput
         private void ClientInput_OnBoostPerformed() => _hasBoostRequest = true;
         private void ClientInput_OnActivateSlotStarted(int slotIndex) => _serverSlotController.ActivateSlot(slotIndex);//_serverWeaponController.ActivateSlotServerRpc(slotIndex);
         private void ClientInput_OnActivateSlotCancelled(int slotIndex) => _serverSlotController.DeactivateSlotServerRpc(slotIndex);
-        
+
+        private void ClientInput_OnActivateCoreSystemStarted() => _serverSlotController.ActivateCoreSystem();
+        private void ClientInput_OnActivateCoreSystemCancelled() => _serverSlotController.DeactivateCoreSystem();
+
 
 
         private void FixedUpdate()
@@ -154,26 +163,5 @@ namespace UserInput
                 _hasBoostRequest = false;
             }
         }
-
-        /// <summary>
-        ///     Send the ActionRequestData to the server to be processed.
-        /// </summary>
-        private void SendInput(ActionRequestData action) => _serverCharacter.PlayActionServerRpc(action);
-        
-
-
-        /*private void RequestAction(ActionType actionType, ActionDefinition actionState, Vector3 origin = default, Vector3 direction = default, int slotIdentifier = -1)
-        {
-            if (_actionRequestCount < _actionRequests.Length)
-            {
-                _actionRequests[_actionRequestCount].RequestedActionID = actionState.ActionID;
-                _actionRequests[_actionRequestCount].ActionType = actionType;
-
-                _actionRequests[_actionRequestCount].Origin = origin;
-                _actionRequests[_actionRequestCount].Direction = direction;
-                _actionRequests[_actionRequestCount].SlotIdentifier = slotIdentifier;
-                ++_actionRequestCount;
-            }
-        }*/
     }
 }

@@ -548,10 +548,21 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""1bf53862-ae9e-4e65-a51f-11426586271d"",
-                    ""path"": """",
+                    ""path"": ""<Keyboard>/f"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": "";MnK"",
+                    ""action"": ""ActivateCoreSystem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""940cc0ce-6051-49e1-bde7-7fdcb6faafb8"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
                     ""action"": ""ActivateCoreSystem"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false

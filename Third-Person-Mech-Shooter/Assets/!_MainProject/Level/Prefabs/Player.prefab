@@ -119,6 +119,38 @@ PrefabInstance:
       propertyPath: m_networkNameState
       value: 
       objectReference: {fileID: 995224596338858405}
+    - target: {fileID: 781988145697744951, guid: 19e12c250a369b843b0be12527b88951, type: 3}
+      propertyPath: m_playerFrames.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 781988145697744951, guid: 19e12c250a369b843b0be12527b88951, type: 3}
+      propertyPath: _characterFrames.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 781988145697744951, guid: 19e12c250a369b843b0be12527b88951, type: 3}
+      propertyPath: 'm_playerFrames.Array.data[0]'
+      value: 
+      objectReference: {fileID: 868078918896750938}
+    - target: {fileID: 781988145697744951, guid: 19e12c250a369b843b0be12527b88951, type: 3}
+      propertyPath: 'm_playerFrames.Array.data[1]'
+      value: 
+      objectReference: {fileID: 6289419891847289747}
+    - target: {fileID: 781988145697744951, guid: 19e12c250a369b843b0be12527b88951, type: 3}
+      propertyPath: 'm_playerFrames.Array.data[2]'
+      value: 
+      objectReference: {fileID: 2198752177721054158}
+    - target: {fileID: 781988145697744951, guid: 19e12c250a369b843b0be12527b88951, type: 3}
+      propertyPath: '_characterFrames.Array.data[0]'
+      value: 
+      objectReference: {fileID: 868078918896750938}
+    - target: {fileID: 781988145697744951, guid: 19e12c250a369b843b0be12527b88951, type: 3}
+      propertyPath: '_characterFrames.Array.data[1]'
+      value: 
+      objectReference: {fileID: 6289419891847289747}
+    - target: {fileID: 781988145697744951, guid: 19e12c250a369b843b0be12527b88951, type: 3}
+      propertyPath: '_characterFrames.Array.data[2]'
+      value: 
+      objectReference: {fileID: 2198752177721054158}
     - target: {fileID: 2257280709253185089, guid: 19e12c250a369b843b0be12527b88951, type: 3}
       propertyPath: _rotationPivot
       value: 
@@ -236,10 +268,6 @@ MonoBehaviour:
   _runtimeCollection: {fileID: 11400000, guid: 9596a55ab7773b941bfe4be909d1f13d, type: 2}
   <ServerCharacter>k__BackingField: {fileID: 2735484025869481409}
   <NetworkTransform>k__BackingField: {fileID: 4214977152437163335}
-  m_playerFrames:
-  - {fileID: 868078918896750938}
-  - {fileID: 6289419891847289747}
-  - {fileID: 2198752177721054158}
 --- !u!114 &995224596338858405
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -377,6 +405,10 @@ PrefabInstance:
     - target: {fileID: 668098765873208274, guid: 5e478b20e6846d146bf518b9f2f4354e, type: 3}
       propertyPath: m_Layer
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 808741636319657736, guid: 5e478b20e6846d146bf518b9f2f4354e, type: 3}
+      propertyPath: _slotGFXs.Array.size
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 922324875724041198, guid: 5e478b20e6846d146bf518b9f2f4354e, type: 3}
       propertyPath: m_Layer

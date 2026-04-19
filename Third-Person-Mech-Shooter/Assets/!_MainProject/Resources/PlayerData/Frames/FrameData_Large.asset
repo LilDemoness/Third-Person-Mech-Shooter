@@ -26,7 +26,7 @@ MonoBehaviour:
   - <MaxModuleSize>k__BackingField: 0
   - <MaxModuleSize>k__BackingField: 0
   - <MaxModuleSize>k__BackingField: 0
-  <CoreSystem>k__BackingField: {fileID: 11400000, guid: b53bd14a5825a4d4f83c5643836acbb2, type: 2}
+  <CoreSystem>k__BackingField: {fileID: 11400000, guid: e401936eee9d07f438070d5e288dd06f, type: 2}
   <ThirdPersonCameraOffset>k__BackingField: {x: 3.75, y: 5.5, z: 0}
   <CameraVerticalArmLength>k__BackingField: -0.4
   <CameraDistance>k__BackingField: 12

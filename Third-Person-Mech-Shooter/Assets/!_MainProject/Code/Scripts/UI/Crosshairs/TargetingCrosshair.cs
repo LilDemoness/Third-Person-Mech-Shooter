@@ -54,14 +54,16 @@ namespace UI.Crosshairs
         private void DisableCrosshair() => this.gameObject.SetActive(false);
         private void EnableCrosshair()
         {
+            // Cache a reference to our slot section.
+            _slotGFXSection = Player.LocalClientInstance.ServerCharacter.GetSlotGFXForIndex(_attachmentSlotIndex);
+            if (_slotGFXSection == null)
+                return; // Invalid slot selection.
+
             // Enable the crosshair root (Currently always this GO).
             this.gameObject.SetActive(true);
 
-            // Cache a reference to our slot section.
-            _slotGFXSection = Player.LocalClientInstance.GetSlotGFXForIndex(_attachmentSlotIndex);
-
             // Update our Crosshair Settings (Reticule Type, Seeking Radius, Charging Bar, etc).
-            SetCrosshairFromPrefab(_slotGFXSection.SlottableData.AssociatedAction.ActionCrosshairPrefab);
+            SetCrosshairFromPrefab(_slotGFXSection.AssociatedData.AssociatedAction.ActionCrosshairPrefab);
         }
 
 

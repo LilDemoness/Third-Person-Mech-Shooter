@@ -27,8 +27,10 @@ namespace Gameplay.Actions
 
         /// <summary> NetworkObjectIds of the targets (E.g. A homing attack), or null if it is untargeted (E.g. A standard projectile).</summary>
         public ulong[] TargetIDs; 
-        /// <summary> If non-zero, represents the identifier of the attachment slot that this action was triggered from.</summary>
+        /// <summary> If not 'Unset', represents the identifier of the attachment slot that this action was triggered from.</summary>
         public AttachmentSlotIndex AttachmentSlotIndex;
+        /// <summary> If not 'Unset', represents an identifier to retrieve the origin transform from a IActionSource.
+        public TransformRelation TransformRelation;
         /// <summary> If true, movement is cancelled before playing this action, and isn't allowed during it's runtime.</summary>
         public bool PreventMovement;
         /// <summary> If true, the action should queue. If false, it clears all other actions and plays immediately.</summary>
@@ -50,12 +52,12 @@ namespace Gameplay.Actions
         {
             get
             {
-                if (_originTransform == null)
+                if (_originTransform == null && IActionSourceObjectID != 0)
                 {
                     NetworkObject networkObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[IActionSourceObjectID];
 
                     if (networkObject.TryGetComponent<IActionSource>(out IActionSource actionSource))
-                        _originTransform = actionSource.GetOriginTransform(AttachmentSlotIndex);
+                        _originTransform = actionSource.GetOriginTransform(TransformRelation);
                     else
                         _originTransform = networkObject.transform;
                 }
@@ -67,10 +69,16 @@ namespace Gameplay.Actions
 
 
         public static ActionRequestData Default => Create(actionID: default);
-        public static ActionRequestData Create(ActionDefinition definition) => Create(actionID: definition.ActionID);
-        private static ActionRequestData Create(ActionID actionID) => new ActionRequestData()
-        {
-                ActionID = actionID
+        public static ActionRequestData Create(ActionDefinition definition, ulong sourceObjectId = 0, Vector3 originPosition = new Vector3(), Vector3 originDirection = new Vector3())
+            => Create(actionID: definition.ActionID, sourceObjectId: sourceObjectId, originPosition: originPosition, originDirection: originDirection);
+        public static ActionRequestData Create(ActionID actionID, ulong sourceObjectId = 0, Vector3 originPosition = new Vector3(), Vector3 originDirection = new Vector3())
+            => new ActionRequestData()
+            {
+                ActionID = actionID,
+
+                IActionSourceObjectID = sourceObjectId,
+                Position = originPosition,
+                Direction = originDirection == Vector3.zero ? Vector3.forward : originDirection
             };
 
 

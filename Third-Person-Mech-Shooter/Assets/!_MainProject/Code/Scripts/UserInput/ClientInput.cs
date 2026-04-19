@@ -36,6 +36,9 @@ namespace UserInput
         public static event System.Action<int> OnActivateSlotStarted;
         public static event System.Action<int> OnActivateSlotCancelled;
 
+        public static event System.Action OnActivateCoreSystemStarted;
+        public static event System.Action OnActivateCoreSystemCancelled;
+
         #endregion
 
         #region UI Events
@@ -163,6 +166,9 @@ namespace UserInput
             s_inputActions.Combat.ActivateSlot3.started  += ActivateSlot3_started;
             s_inputActions.Combat.ActivateSlot3.canceled += ActivateSlot3_cancelled;
 
+            s_inputActions.Combat.ActivateCoreSystem.started += ActivateCoreSystem_started;
+            s_inputActions.Combat.ActivateCoreSystem.canceled += ActivateCoreSystem_cancelled;
+
             #endregion
 
             #region UI Events
@@ -226,6 +232,9 @@ namespace UserInput
 
             s_inputActions.Combat.ActivateSlot3.started  -= ActivateSlot3_started;
             s_inputActions.Combat.ActivateSlot3.canceled -= ActivateSlot3_cancelled;
+
+            s_inputActions.Combat.ActivateCoreSystem.started -= ActivateCoreSystem_started;
+            s_inputActions.Combat.ActivateCoreSystem.canceled -= ActivateCoreSystem_cancelled;
 
             #endregion
 
@@ -311,6 +320,9 @@ namespace UserInput
 
         private void ActivateSlot3_started(InputAction.CallbackContext obj)     => OnActivateSlotStarted?.Invoke(3);
         private void ActivateSlot3_cancelled(InputAction.CallbackContext obj)   => OnActivateSlotCancelled?.Invoke(3);
+
+        private void ActivateCoreSystem_started(InputAction.CallbackContext obj) => OnActivateCoreSystemStarted?.Invoke();
+        private void ActivateCoreSystem_cancelled(InputAction.CallbackContext obj) => OnActivateCoreSystemCancelled?.Invoke();
 
         #endregion
 

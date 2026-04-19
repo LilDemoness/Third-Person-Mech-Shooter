@@ -34,7 +34,7 @@ public static class AttachmentSlotIndexExtensions
 
         return s_maxPossibleAttachmentSlots;
     }
-    public static int GetSlotInteger(this AttachmentSlotIndex slotIndex) => (int)slotIndex - 1;
+    public static int GetSlotIndex(this AttachmentSlotIndex slotIndex) => (int)slotIndex - 1;
     public static AttachmentSlotIndex ToSlotIndex(this int integer) => (AttachmentSlotIndex)(integer + 1);
 
 

@@ -16,12 +16,12 @@ namespace Gameplay.Passives
 
         public override void Stop(ServerCharacter character)
         {
-            character.ActionPlayer.CancelRunningActionsByID(_associatedAction.ActionID, cancelNonBlocking: true, forceCancel: true);
+            character.CancelAction_Server(_associatedAction.ActionID, cancelNonBlocking: true, forceCancel: true);
         }
         protected override void Trigger(ServerCharacter character, float lifetime, float timeSinceDesiredUpdate)
         {
             ActionRequestData actionRequestData = ActionRequestData.Create(_associatedAction);
-            character.ActionPlayer.PlayAction(ref actionRequestData);
+            character.PlayAction_Server(ref actionRequestData);
             //character.PlayActionServerRpc(actionRequestData);
         }
     }

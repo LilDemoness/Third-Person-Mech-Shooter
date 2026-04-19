@@ -168,7 +168,7 @@ public class CameraControllerTest : NetworkBehaviour
     }
 
 
-    private void Player_OnLocalPlayerBuildUpdated() => OnFrameChanged(_playerManager.GetActiveFrame());
+    private void Player_OnLocalPlayerBuildUpdated() => OnFrameChanged(_playerManager.ServerCharacter.GetActiveFrame());
     private void OnFrameChanged(FrameGFX newFrame)
     {
         // Our frame has changed.

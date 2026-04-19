@@ -7,6 +7,7 @@ using Utils;
 using System.Collections.Generic;
 using Gameplay.GameplayObjects.Character.Statistics;
 using Gameplay.Passives;
+using Gameplay.GameplayObjects.Character.Customisation.Sections;
 
 namespace Gameplay.GameplayObjects.Character
 {
@@ -14,7 +15,7 @@ namespace Gameplay.GameplayObjects.Character
     ///     Contains all NetworkVariables, RPCs, and Server-Side Logic of a Character.
     ///     Separated from the Client Logic so that it is always known whether a section of code is running on the server or the client.
     /// </summary>
-    public class ServerCharacter : NetworkBehaviour
+    public class ServerCharacter : NetworkBehaviour, IActionSource
     {
         public static Dictionary<ulong, ServerCharacter> s_AllServerCharacters = new Dictionary<ulong, ServerCharacter>();
 
@@ -113,11 +114,26 @@ namespace Gameplay.GameplayObjects.Character
         [SerializeField] private VisualEffects.SpecialFXGraphic _deathExplosionEffectPrefab;
 
 
+        [Header("GFX References")]
+        [SerializeField] private FrameGFX[] _characterFrames;
+        private FrameGFXWrapper[] _frameGFXWrappers;
+        private FrameGFX _activeFrame;
+
+
         private void Awake()
         {
             m_serverActionPlayer = new ServerActionPlayer(this);
             m_statusEffectPlayer = new ServerStatusEffectPlayer(this);
             m_serverPassiveManager = new ServerPassivePlayer(this);
+
+
+            // Setup our FrameGFX Wrappers for simpler retrieving later.
+            _frameGFXWrappers = new FrameGFXWrapper[_characterFrames.Length];
+            for (int i = 0; i < _characterFrames.Length; ++i)
+            {
+                _frameGFXWrappers[i] = new FrameGFXWrapper(_characterFrames[i]);
+            }
+
 
             _movement.OnMovementStatusChanged += MovementScript_OnMovementStatusChanged;
             _characterStats.OnStatisticChanged += CharacterStats_OnStatisticChanged;
@@ -210,78 +226,78 @@ namespace Gameplay.GameplayObjects.Character
             _movement.PerformBoost();
         }
 
-
-        /// <summary>
-        ///     Client->Server RPC that sends a request to play an action.
-        /// </summary>
-        /// <param name="data"> The Data about which action to play and its associated details.</param>
-        [Rpc(SendTo.Server)]
-        public void PlayActionServerRpc(ActionRequestData data)
-        {
-            if (!CanPerformActions)
-                return;
-
-            ActionRequestData data1 = data;
-            if (GameDataSource.Instance.GetActionDefinitionByID(data1.ActionID).IsHostileAction)
-            {
-                // Notify our running actions that we're using a new hostile action.
-                // Called so that things like Stealth can end themselves.
-                ActionPlayer.OnGameplayActivity(Action.GameplayActivity.UsingHostileAction);
-            }
-
-            //if (GameDataSource.Instance.GetActionDefinitionByID(data1.ActionID).ShouldNotifyClient)
-            //    m_clientCharacter.PlayActionClientRpc(data, NetworkManager.Singleton.ServerTime.TimeAsFloat);
-
-            PlayAction(ref data1);
-        }
-
         /// <summary>
         ///     ServerRPC to cancel the actions with the given ActionID.
         /// </summary>
         /// <param name="actionID"> The ActionID of the actions we wish to cancel.</param>
         /// <param name="slotIndex"> The AttachmentSlot that the cancelled actions should be in.</param>
         [Rpc(SendTo.Server)]
-        public void CancelActionByIDServerRpc(ActionID actionID, AttachmentSlotIndex slotIndex = AttachmentSlotIndex.Unset) => CancelAction(actionID, slotIndex);
+        public void CancelActionByIDServerRpc(ActionID actionID) => CancelAction_Server(actionID);
 
         /// <summary>
-        ///     ServerRPC to cancel all actions in a given Attachment Slot.
+        ///     ServerRPC to cancel all actions in the Attachment Slot <paramref name="slotIndex"/>.
         /// </summary>
         [Rpc(SendTo.Server)]
-        public void CancelActionBySlotServerRpc(AttachmentSlotIndex slotIndex) => CancelAction(slotIndex);
+        public void CancelActionBySlotServerRpc(AttachmentSlotIndex slotIndex) => CancelAction_Server(slotIndex);
+        /// <summary>
+        ///     ServerRPC to cancel all actions with the given <paramref name="actionID"/> in the Attachment Slot <paramref name="slotIndex"/>.
+        /// </summary>
+        [Rpc(SendTo.Server)]
+        public void CancelActionBySlotServerRpc(AttachmentSlotIndex slotIndex, ActionID actionID) => CancelAction_Server(slotIndex, actionID);
 
 
         /// <summary>
-        ///     Play a sequence of actions.
+        ///     Play a desired action from the given <see cref="ActionRequestData"/> '<paramref name="data"/>'.
         /// </summary>
-        /// <param name="action"></param>
-        private void PlayAction(ref ActionRequestData action)
+        public void PlayAction_Server(ref ActionRequestData data)
         {
-            if (action.PreventMovement)
+            if (!CanPerformActions)
+                return;
+
+            if (GameDataSource.Instance.GetActionDefinitionByID(data.ActionID).IsHostileAction)
             {
-                _movement.CancelMove();
+                // Notify our running actions that we're using a new hostile action.
+                // Called so that things like Stealth can end themselves.
+                ActionPlayer.OnGameplayActivity(Action.GameplayActivity.UsingHostileAction);
             }
 
-            ActionPlayer.PlayAction(ref action);
+            // Perform the action.
+
+            if (data.PreventMovement)
+                _movement.CancelMove();
+
+            ActionPlayer.PlayAction(ref data);
         }
         /// <summary>
         ///     Cancel the actions with the given ActionID.
         /// </summary>
         /// <remarks> Called on the Server.</remarks>
-        private void CancelAction(ActionID actionID, AttachmentSlotIndex slotIndex = AttachmentSlotIndex.Unset)
+        public void CancelAction_Server(ActionID actionID, bool cancelNonBlocking = true, Action exceptThis = null, bool forceCancel = false)
         {
             if (GameDataSource.Instance.GetActionDefinitionByID(actionID).ShouldNotifyClient)
-                m_clientCharacter.CancelRunningActionsByIDClientRpc(actionID, slotIndex);
+                m_clientCharacter.CancelRunningActionsByIDClientRpc(actionID);
 
-            ActionPlayer.CancelRunningActionsByID(actionID, slotIndex, true);
+            ActionPlayer.CancelRunningActionsByID(actionID, cancelNonBlocking, exceptThis, forceCancel);
         }
         /// <summary>
         ///     Cancel all actions in a given Attachment Slot.
         /// </summary>
         /// <remarks> Called on the Server.</remarks>
-        private void CancelAction(AttachmentSlotIndex slotIndex)
+        public void CancelAction_Server(AttachmentSlotIndex slotIndex, bool cancelNonBlocking = true, bool forceCancel = false)
         {
             m_clientCharacter.CancelRunningActionsBySlotIDClientRpc(slotIndex);
-            ActionPlayer.CancelRunningActionsBySlotID(slotIndex, true);
+            ActionPlayer.CancelRunningActionsBySlotID(slotIndex, cancelNonBlocking, forceCancel);
+        }
+        /// <summary>
+        ///     Cancel all actions in a given Attachment Slot.
+        /// </summary>
+        /// <remarks> Called on the Server.</remarks>
+        public void CancelAction_Server(AttachmentSlotIndex slotIndex, ActionID actionID, bool cancelNonBlocking = true, bool forceCancel = false)
+        {
+            if (GameDataSource.Instance.GetActionDefinitionByID(actionID).ShouldNotifyClient)
+                m_clientCharacter.CancelRunningActionsBySlotIDClientRpc(slotIndex, actionID);
+
+            ActionPlayer.CancelRunningActionsBySlotID(slotIndex, actionID, cancelNonBlocking, forceCancel);
         }
 
         private void ServerActionPlayer_OnActionQueueFilled() => UpdateInstantActionAvailabilityOwnerRpc(false);
@@ -390,10 +406,116 @@ namespace Gameplay.GameplayObjects.Character
             //_networkHealthComponent.InitialiseDamageReceiver_Server(buildData.GetFrameData().MaxHealth);
             _networkHealthComponent.InitialiseDamageReceiver_Server(_characterStats.GetStatisticValue(Statistic.MaxHealth), _characterStats.GetStatisticValue(Statistic.MaxShields));
             InitialiseHeat();
+
+
+            // Toggle GFX.
+            bool hasFoundActiveFrame = false;
+            for (int i = 0; i < _frameGFXWrappers.Length; ++i)
+            {
+                if (!hasFoundActiveFrame)
+                {
+                    // We haven't yet found our active frame. Perform a full check toggle (Also sets our ActiveGFX references if we find our active frame).
+                    if (_frameGFXWrappers[i].Toggle(buildData, ref _activeFrame))
+                    {
+                        // This is our active frame.
+                        hasFoundActiveFrame = true; // All other frames should be disabled without a toggle check.
+                    }
+                }
+                else
+                {
+                    // We will only ever have 1 active frame, and we have already found it. Disable all other frames.
+                    _frameGFXWrappers[i].Disable();
+                }
+            }
+        }
+
+
+
+        public ModuleData GetModuleDataForSlotIndex(AttachmentSlotIndex slotIndex) => BuildDataReference.GetSlottableData(slotIndex);
+        public ulong GetSourceObjectIDForSlotIndex(AttachmentSlotIndex slotIndex)
+        {
+            ulong id = _activeFrame.GetObjectIDForSlotIndex(slotIndex);
+            return id != 0 ? id : this.NetworkObjectId;
+        }
+
+        public CoreSystemData GetCoreSystemData() => BuildDataReference.GetCoreSystemData();
+        public ulong GetSourceObjectIDForCoreSystem()
+        {
+            CoreSystemGFXSection coreSystemGFX = _activeFrame.GetCoreSystemSlot().GetActiveGFXSection();
+
+            return coreSystemGFX != null ? coreSystemGFX.GetAbilitySourceObjectId() : this.NetworkObjectId;
         }
 
         #endregion
 
+
+        #region GFX
+
+        /// <summary>
+        ///     Returns the currently active FrameGFX instance.
+        /// </summary>
+        public FrameGFX GetActiveFrame() => _activeFrame;
+
+
+        // Note: May return null.
+        public SlotGFXSection GetSlotGFXForIndex(AttachmentSlotIndex index) => _activeFrame.GetSlotGFXForIndex(index);
+
+        public Transform GetOriginTransform(TransformRelation transformRelation)
+        {
+            return transformRelation switch
+            {
+                TransformRelation.PrimaryModuleSlot     => _activeFrame.GetSlotGFXForIndex(AttachmentSlotIndex.Primary)?.GetAbilityOriginTransform(),
+                TransformRelation.SecondaryModuleSlot   => _activeFrame.GetSlotGFXForIndex(AttachmentSlotIndex.Secondary)?.GetAbilityOriginTransform(),
+                TransformRelation.TertiaryModuleSlot    => _activeFrame.GetSlotGFXForIndex(AttachmentSlotIndex.Tertiary)?.GetAbilityOriginTransform(),
+                TransformRelation.QuaternaryModuleSlot  => _activeFrame.GetSlotGFXForIndex(AttachmentSlotIndex.Quaternary)?.GetAbilityOriginTransform(),
+
+                TransformRelation.CoreSystem => _activeFrame.GetCoreSystemSlot().GetActiveGFXSection()?.GetAbilityOriginTransform(),
+
+                _ => null
+            } ?? Movement.RotationPivot;    // Default to the rotation pivot.
+        }
+
+
+        struct FrameGFXWrapper
+        {
+            FrameGFX _frameGFX;
+
+            public FrameGFXWrapper(FrameGFX frameGFX)
+            {
+                this._frameGFX = frameGFX;
+            }
+
+
+            public bool Toggle(BuildData buildData, ref FrameGFX activeFrameGFX)
+            {
+                Debug.Log("Test: " + _frameGFX.name);
+                if (_frameGFX.Toggle(buildData.GetFrameData()) == false)
+                {
+                    // This wrapper's frame isn't the correct frame for this build.
+                    return false;
+                }
+
+                activeFrameGFX = this._frameGFX;
+
+                // This wrapper's frame is the desired one.
+                // Update slottables gfx.
+                for (int i = 0; i < buildData.ActiveSlottableIndicies.Length; ++i)
+                {
+                    if (_frameGFX.TryGetAttachmentSlotForIndex(i.ToSlotIndex(), out AttachmentSlot attachmentSlot) == false)
+                        break;   // No AttachmentSlot for this index, and we'll subsequently not have any of a higher index.
+
+                    if (!attachmentSlot.Toggle(buildData.GetSlottableData(i.ToSlotIndex())))
+                        throw new System.Exception($"No valid Slottable GFX Instances within '{attachmentSlot.name}' for '{buildData.GetSlottableData(i.ToSlotIndex()).name}'");
+                }
+
+                _frameGFX.GetCoreSystemSlot().Toggle(buildData.GetCoreSystemData());
+
+                return true;
+            }
+            public void Disable() => _frameGFX.Toggle(null);
+        }
+
+        #endregion
 
 
         #region Death & Respawning

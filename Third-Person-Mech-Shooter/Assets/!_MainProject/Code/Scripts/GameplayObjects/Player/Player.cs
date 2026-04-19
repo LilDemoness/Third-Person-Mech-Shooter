@@ -10,10 +10,11 @@ using Unity.Netcode.Components;
 using Netcode.ConnectionManagement;
 using System.Collections;
 using System.Linq;
+using System;
 
 namespace Gameplay.GameplayObjects.Players
 {
-    public class Player : NetworkBehaviour, IActionSource
+    public class Player : NetworkBehaviour
     {
         public static Player LocalClientInstance { get; private set; }
         [SerializeField] private PersistentPlayerRuntimeCollection _runtimeCollection;
@@ -27,11 +28,8 @@ namespace Gameplay.GameplayObjects.Players
 
 
 
-        [Header("GFX References")]
-        [SerializeField] private FrameGFX[] m_playerFrames;
-        private PlayerGFXWrapper[] _playerGFXWrappers;
-        private FrameGFX _activeFrame;
-        private Dictionary<AttachmentSlotIndex, SlotGFXSection> _slotIndexToActiveGFXDict = new Dictionary<AttachmentSlotIndex, SlotGFXSection>();
+
+        //private Dictionary<AttachmentSlotIndex, SlotGFXSection> _slotIndexToActiveGFXDict = new Dictionary<AttachmentSlotIndex, SlotGFXSection>();
 
 
         public static event System.Action OnLocalPlayerSet;
@@ -68,17 +66,6 @@ namespace Gameplay.GameplayObjects.Players
         public static event System.EventHandler OnLocalPlayerRevived;
 
 
-        private void Awake()
-        {
-            // Setup our PlayerGFX Wrappers for simpler retrieving later.
-            _playerGFXWrappers = new PlayerGFXWrapper[m_playerFrames.Length];
-            for(int i = 0; i < m_playerFrames.Length; ++i)
-            {
-                _playerGFXWrappers[i] = new PlayerGFXWrapper(m_playerFrames[i]);
-            }
-            Debug.Log("Player Wrapper Count: " + _playerGFXWrappers.Length);
-
-        }
         public override void OnNetworkSpawn()
         {
             if (IsOwner)
@@ -151,25 +138,6 @@ namespace Gameplay.GameplayObjects.Players
         {
             Debug.Log("Build Changed");
             ServerCharacter.BuildDataReference = buildData;
-
-            bool hasFoundActiveFrame = false;
-            for (int i = 0; i < _playerGFXWrappers.Length; ++i)
-            {
-                if (!hasFoundActiveFrame)
-                {
-                    // We haven't yet found our active frame. Perform a full check toggle (Also sets our ActiveGFX references if we find our active frame).
-                    if (_playerGFXWrappers[i].Toggle(buildData, ref _activeFrame, ref _slotIndexToActiveGFXDict))
-                    {
-                        // This is our active frame.
-                        hasFoundActiveFrame = true; // All other frames should be disabled without a toggle check.
-                    }
-                }
-                else
-                {
-                    // We will only ever have 1 active frame, and we have already found it. Disable all other frames.
-                    _playerGFXWrappers[i].Disable();
-                }
-            }
 
             OnThisPlayerBuildUpdated?.Invoke();
             if (IsOwner)
@@ -280,87 +248,6 @@ namespace Gameplay.GameplayObjects.Players
             ClientInput.RemoveActionPrevention(typeof(Player), ClientInput.ActionTypes.Respawning);
             OnLocalPlayerRevived?.Invoke(this, System.EventArgs.Empty);
         }
-
-
-        #region GFX
-
-        /// <summary>
-        ///     Returns the currently active FrameGFX instance.
-        /// </summary>
-        public FrameGFX GetActiveFrame() => _activeFrame;
-
-
-        // Doesn't account for multiple GFXSlotSections for a single SlotIndex.
-        public SlotGFXSection[] GetActivationSlots()
-        {
-            SlotGFXSection[] slotGFXSections = new SlotGFXSection[_slotIndexToActiveGFXDict.Count];
-            foreach (var kvp in _slotIndexToActiveGFXDict)
-                slotGFXSections[kvp.Key.GetSlotInteger()] = kvp.Value;
-            return slotGFXSections;
-        }
-        public SlotGFXSection GetSlotGFXForIndex(AttachmentSlotIndex index) => _slotIndexToActiveGFXDict[index];
-        public bool TryGetSlotGFXForIndex(AttachmentSlotIndex index, out SlotGFXSection slotGFXSections) => _slotIndexToActiveGFXDict.TryGetValue(index, out slotGFXSections);
-        public int GetActivationSlotCount() => _slotIndexToActiveGFXDict.Count;
-
-
-        public Transform GetOriginTransform(AttachmentSlotIndex attachmentSlotIndex) => attachmentSlotIndex == AttachmentSlotIndex.Unset ? this.transform : _slotIndexToActiveGFXDict[attachmentSlotIndex].GetAbilityOriginTransform();
-
-
-        struct PlayerGFXWrapper
-        {
-            FrameGFX _frameGFX;
-            Dictionary<AttachmentSlotIndex, AttachmentSlot> _attachmentSlots;
-
-
-            public PlayerGFXWrapper(FrameGFX frameGFX)
-            {
-                this._frameGFX = frameGFX;
-        
-                this._attachmentSlots = new Dictionary<AttachmentSlotIndex, AttachmentSlot>(AttachmentSlotIndexExtensions.GetMaxPossibleSlots());
-                foreach (AttachmentSlot attachmentSlot in frameGFX.GetSlottableDataSlotArray())
-                {
-                    if (!_attachmentSlots.TryAdd(attachmentSlot.AttachmentSlotIndex, attachmentSlot))
-                    {
-                        // We should only have 1 attachment slot for each AttachmentSlotIndex, however reaching here means that we don't. Throw an exception so we know about this.
-                        throw new System.Exception($"We have multiple Attachment Slots with the same Slot Index ({attachmentSlot.AttachmentSlotIndex}).\n" +
-                            $"Duplicates: '{_attachmentSlots[attachmentSlot.AttachmentSlotIndex].name}' & '{attachmentSlot.name}'");
-                    }
-                }
-            }
-
-
-            public bool Toggle(BuildData buildData, ref FrameGFX activeFrameGFX, ref Dictionary<AttachmentSlotIndex, SlotGFXSection> slottables)
-            {
-                if (_frameGFX.Toggle(buildData.GetFrameData()) == false)
-                {
-                    // This wrapper's frame isn't the correct frame for this build.
-                    return false;
-                }
-
-                activeFrameGFX = this._frameGFX;
-
-                // This wrapper's frame is the desired one.
-                // Update slottables.
-                slottables.Clear();
-                for (int i = 0; i < buildData.ActiveSlottableIndicies.Length; ++i)
-                {
-                    if (_attachmentSlots.TryGetValue(i.ToSlotIndex(), out AttachmentSlot attachmentSlot) == false)
-                        continue;   // No AttachmentSlot for this index.
-
-                    if (attachmentSlot.Toggle(buildData.GetSlottableData(i.ToSlotIndex())))
-                    {
-                        slottables.Add(i.ToSlotIndex(), attachmentSlot.GetActiveGFXSlot());
-                    }
-                    else
-                        throw new System.Exception($"No valid Slottable GFX Instances within '{attachmentSlot.name}' for '{buildData.GetSlottableData(i.ToSlotIndex()).name}'");
-                }
-
-                return true;
-            }
-            public void Disable() => _frameGFX.Toggle(null);
-        }
-
-        #endregion
 
 
 

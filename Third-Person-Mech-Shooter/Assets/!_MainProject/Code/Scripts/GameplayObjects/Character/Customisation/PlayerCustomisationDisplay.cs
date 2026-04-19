@@ -27,7 +27,9 @@ namespace Gameplay.GameplayObjects.Character.Customisation
         {
             for (int i = 0; i < _gfxElements.Length; ++i)
             {
-                _gfxElements[i].OnSelectedFrameChanged(CustomisationOptionsDatabase.AllOptionsDatabase.GetFrame(buildData.ActiveFrameIndex));
+                _gfxElements[i].OnSelectedFrameChanged(buildData.GetFrameData());
+                _gfxElements[i].OnSelectedCoreSystemChanged(buildData.GetFrameData().CoreSystem);
+
                 AttachmentSlotIndexExtensions.PerformForAllValidSlots(
                     (slotIndex) => _gfxElements[i].OnSelectedSlottableDataChanged(slotIndex, buildData.GetSlottableData(slotIndex)));
             }
