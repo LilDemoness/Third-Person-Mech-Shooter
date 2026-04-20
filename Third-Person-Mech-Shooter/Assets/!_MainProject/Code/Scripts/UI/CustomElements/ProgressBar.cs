@@ -50,14 +50,17 @@ namespace UI
         private float _currentValue = 0.0f;
 
 
-        private float GetCurrentFillPercentage() => (_maximumValue - _minimumValue) > 0 ? Mathf.Clamp01((_currentValue - _minimumValue) / (_maximumValue - _minimumValue)) : 1.0f;
+        private float GetCurrentFillPercentage()
+        {
+            float fillPercentage = (_maximumValue - _minimumValue) > 0 ? Mathf.Clamp01((_currentValue - _minimumValue) / (_maximumValue - _minimumValue)) : 1.0f;
+            return float.IsNaN(fillPercentage) == false ? fillPercentage : 1.0f;
+        }
         private void UpdateCurrentFill()
         {
             float fillPercentage = GetCurrentFillPercentage();
             _mask.fillAmount = fillPercentage;
 
             _fill.color = _fillColour.Evaluate(fillPercentage);
-
             UpdateFillText();
         }
         private void UpdateFillText()

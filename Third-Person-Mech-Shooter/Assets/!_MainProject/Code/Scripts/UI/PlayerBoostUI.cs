@@ -83,13 +83,13 @@ namespace UI.Players
             // Enable and position required dividers.
             float spacingPercent = 1.0f / (float)boostCount;
             float spacingValue = _boostDivierContainer.rect.width * spacingPercent;
-            Vector2 startWorldPos = new Vector2(_boostDivierContainer.position.x - _boostDivierContainer.rect.width / 2.0f, _boostDivierContainer.position.y);
+            Vector2 startLocalPos = new Vector2(-_boostDivierContainer.rect.width / 2.0f, 0.0f);
             for (int i = 1; i < boostCount; ++i)
             {
                 RectTransform child = _boostDivierContainer.GetChild(i) as RectTransform;
 
                 // Position the child.
-                child.position = startWorldPos + new Vector2(spacingValue * i, 0.0f);
+                child.localPosition = startLocalPos + new Vector2(spacingValue * i, 0.0f);
                 Debug.Log("X Offset: " + spacingValue);
 
                 // Show the child.
