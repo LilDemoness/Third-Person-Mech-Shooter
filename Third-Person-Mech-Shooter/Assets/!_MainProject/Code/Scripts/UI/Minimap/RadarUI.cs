@@ -134,7 +134,7 @@ namespace Gameplay.UI.Minimap
             // Update all required cached values for the change of operation.
 
             if (desiredOperation == RadarManager.DesiredOperation.PingLogic)
-                _tempPingTimings.Add(locatable, (-1.0f, -1.0f));
+                _tempPingTimings.AddOrSet(locatable, (-1.0f, -1.0f));
             else
                 _tempPingTimings.Remove(locatable);
         }

@@ -1,4 +1,4 @@
-using Gameplay.GameplayObjects.Character;
+using Gameplay.GameplayObjects.Players;
 using Gameplay.GameState;
 using UnityEngine;
 using UnityEngine.UI;
@@ -41,7 +41,7 @@ namespace Gameplay.UI.Menus.Pause
         }
         private void OnRespawnPressed()
         {
-            ServerCharacter.ForceRespawn();
+            Player.ForceRespawn();
             _pauseMenu.ResumeGame();
         }
     }

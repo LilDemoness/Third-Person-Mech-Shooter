@@ -127,6 +127,11 @@ namespace Gameplay.GameplayObjects.Players
                     ServerCharacter.NetworkHealthComponent.OnRevived -= NotifyOwnerOfRespawn;
                 }
             }
+
+            if (IsClient)
+            {
+
+            }
         }
 
 
@@ -247,6 +252,18 @@ namespace Gameplay.GameplayObjects.Players
             Debug.Log("Is Owner: " + IsOwner);
             ClientInput.RemoveActionPrevention(typeof(Player), ClientInput.ActionTypes.Respawning);
             OnLocalPlayerRevived?.Invoke(this, System.EventArgs.Empty);
+        }
+
+
+
+        /// <summary>
+        ///     Forces a respawn of the local player's ServerCharacter.
+        /// </summary>
+        public static void ForceRespawn() => LocalClientInstance.ForceRespawnServerRpc();
+        [Rpc(SendTo.Server)]
+        private void ForceRespawnServerRpc(RpcParams rpcParams = default)
+        {
+            ServerCharacter.NetworkHealthComponent.SetLifeState_Server(ServerCharacter, LifeState.Dead);
         }
 
 

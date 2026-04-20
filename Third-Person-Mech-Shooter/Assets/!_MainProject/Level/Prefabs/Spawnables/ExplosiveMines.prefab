@@ -205,7 +205,7 @@ MonoBehaviour:
   _detectionRadius: 3
   _validLayers:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 264
   _armingTime: 1
   _detonationDelay: 0.6
   _detonationEffects: []

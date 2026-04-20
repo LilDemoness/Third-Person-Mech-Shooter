@@ -61,7 +61,7 @@ namespace Gameplay.Actions.Effects
             }
 
             this.ClientScript.SpawnRpc(transform.position, transform.forward, transform.up, specialFXIndex);
-            FinishSetup();
+            FinishSetup(owner);
         }
         /// <inheritdoc cref="Setup(ServerCharacter, int, float)"/>
         /// <param name="parentObject"> The NetworkObject this SpawnableObject is to be "parented" to.</param>
@@ -80,12 +80,12 @@ namespace Gameplay.Actions.Effects
             AttachToTransform(parentObject, specialFXIndex);
 
             // Run any child-specific logic.
-            FinishSetup();
+            FinishSetup(owner);
         }
         /// <summary>
         ///     Override to perform any child-specific logic during setup.
         /// </summary>
-        protected virtual void FinishSetup() { }
+        protected virtual void FinishSetup(ServerCharacter owner) { }
 
         /// <summary>
         ///     Called when the SpawnableObject is returned to its ObjectPool.</br>

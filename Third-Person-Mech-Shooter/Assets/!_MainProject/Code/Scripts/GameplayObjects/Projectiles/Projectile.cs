@@ -2,6 +2,7 @@ using UnityEngine;
 using Unity.Netcode;
 using Gameplay.Actions.Effects;
 using Gameplay.GameplayObjects.Projectiles.Seeking;
+using Utils;
 
 namespace Gameplay.GameplayObjects.Projectiles
 {
@@ -20,6 +21,10 @@ namespace Gameplay.GameplayObjects.Projectiles
         // Data & Callbacks.
         [SerializeField] private ProjectileInfo _projectileInfo;
         private System.Action<ActionHitInformation> _onHitCallback;
+
+        // Collision Detection.
+        private BufferedRaycast _bufferedRaycast;
+        private bool _isIntangible;
 
 
         [Header("Projectile Movement")]
@@ -47,8 +52,11 @@ namespace Gameplay.GameplayObjects.Projectiles
             this._projectileInfo = projectileInfo;
             this._seekingFunction = seekingFunction;
             this._onHitCallback = onHitCallback;
+            this._isIntangible = false; // Change to read from the sender's current intangibility state.
 
             _targetMovementDirection = transform.forward;
+
+            _bufferedRaycast = new BufferedRaycast();
         }
 
         public override void OnNetworkSpawn()
@@ -113,18 +121,14 @@ namespace Gameplay.GameplayObjects.Projectiles
             }
             
             // Perform Movement
-            Vector3 displacement = transform.forward * _projectileInfo.Speed * Time.fixedDeltaTime;
+            Vector3 displacement = transform.forward * (_projectileInfo.Speed * Time.fixedDeltaTime);
             Vector3 previousPosition = transform.position;
             transform.position += displacement;
 
 
             // Check for Collision.
-            if (Physics.Linecast(previousPosition, transform.position, out RaycastHit hitInfo, _projectileInfo.TargetableLayers))
+            foreach(RaycastHit hitInfo in _bufferedRaycast.ConditionalLinecast(previousPosition, transform.position, ValidCollisionCallback, 1, _projectileInfo.TargetableLayers))
             {
-                if (hitInfo.transform.TryGetComponentThroughParents<NetworkObject>(out NetworkObject networkObject))
-                    if (networkObject.NetworkObjectId == _ownerNetworkID)
-                        return; // Don't hit the entity that spawned us.
-
                 HandleTargetHit(hitInfo);
 
                 _remainingHits -= 1;
@@ -185,6 +189,15 @@ namespace Gameplay.GameplayObjects.Projectiles
         {
             ActionHitInformation hitInfo = new ActionHitInformation(target.transform, hitPosition, hitNormal, Vector3.zero);
             _onHitCallback?.Invoke(hitInfo);
+        }
+
+
+        private bool ValidCollisionCallback(RaycastHit hitInfo)
+        {
+            if (!hitInfo.transform.TryGetComponentThroughParents<Character.ServerCharacter>(out var serverCharacter))
+                return true;    // Non-ServerCharacters are always valid.
+
+            return serverCharacter.NetworkObjectId != _ownerNetworkID && serverCharacter.IsIntangible.Value == _isIntangible;
         }
     }
 }

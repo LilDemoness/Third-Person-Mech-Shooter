@@ -26,6 +26,8 @@ namespace Gameplay.GameplayObjects.Character
 
 
         [SerializeField] private GameObject _graphicsRoot;  // Temp.
+        private int _defaultLayer;
+        private const int INTANGIBLE_LAYER = 8;
 
 
         #region Action Client RPCs
@@ -90,15 +92,23 @@ namespace Gameplay.GameplayObjects.Character
                 return;
             
             this.enabled = true;
+            _defaultLayer = ServerCharacter.gameObject.layer;
 
             _clientActionPlayer = new ClientActionPlayer(this);
 
             _serverCharacter.IsInStealth.OnValueChanged += OnIsInStealthChanged;
+            _serverCharacter.IsIntangible.OnValueChanged += OnIsIntangibleChanged;
             _serverCharacter.MovementStatus.OnValueChanged += OnMovementStatusChanged;
             OnMovementStatusChanged(MovementStatus.Normal, _serverCharacter.MovementStatus.Value);
 
 
             // Subscribe to ActionInputEvent for Anticipation Animations.
+        }
+        public override void OnNetworkDespawn()
+        {
+            _serverCharacter.IsInStealth.OnValueChanged -= OnIsInStealthChanged;
+            _serverCharacter.IsIntangible.OnValueChanged -= OnIsIntangibleChanged;
+            _serverCharacter.MovementStatus.OnValueChanged -= OnMovementStatusChanged;
         }
 
         private void Update()
@@ -112,6 +122,24 @@ namespace Gameplay.GameplayObjects.Character
             Debug.LogWarning("Visuals Require Actual Implementation");
             _graphicsRoot.SetActive(!newStealthState);
         }
+        private void OnIsIntangibleChanged(bool oldIntangibilityState, bool newIntangibilityState)
+        {
+            Debug.LogWarning("Visuals Require Actual Implementation");
+            //_graphicsRoot.SetActive(!newIntangibilityState);
+
+            // Swap camera values.
+            Camera.main.cullingMask &= ~(1 << LayerMask.NameToLayer(newIntangibilityState ? "Player" : "Intangible"));  // Hide other layer.
+            Camera.main.cullingMask |= (1 << LayerMask.NameToLayer(newIntangibilityState ? "Intangible" : "Player"));  // Show this layer.
+
+            SetLayersThroughChildren(ServerCharacter.transform, newIntangibilityState ? INTANGIBLE_LAYER : _defaultLayer);
+        }
+        private void SetLayersThroughChildren(Transform root, int layer)
+        {
+            root.gameObject.layer = layer;
+            foreach(Transform child in root)
+                SetLayersThroughChildren(child, layer);
+        }
+
         private void OnMovementStatusChanged(MovementStatus oldMovementStatus, MovementStatus newMovementStatus)
         {
 

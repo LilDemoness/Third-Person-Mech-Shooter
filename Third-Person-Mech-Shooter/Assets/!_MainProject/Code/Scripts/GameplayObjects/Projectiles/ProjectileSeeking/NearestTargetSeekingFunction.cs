@@ -10,6 +10,7 @@ namespace Gameplay.GameplayObjects.Projectiles.Seeking
         [SerializeField] private LayerMask _targetableLayers;
         private Transform m_targetCheckOriginTransform;
         private Transform m_owner;
+        private bool m_targetIntangibleCharacters;
 
 
         // Target Caching.
@@ -30,6 +31,7 @@ namespace Gameplay.GameplayObjects.Projectiles.Seeking
             this.m_owner = owner;
             this.m_nextUpdateTargetTime = 0.0f;
             this.m_currentTarget = null;
+            this.m_targetIntangibleCharacters = owner.TryGetComponent<Character.ServerCharacter>(out var serverCharacter) && serverCharacter.IsIntangible.Value;
 
             return this;
         }
@@ -78,6 +80,8 @@ namespace Gameplay.GameplayObjects.Projectiles.Seeking
                     continue;   // This target is the origin target.
                 if (potentialTargets[i].IsChildOf(m_owner))
                     continue;   // This target is the owner.
+                if (potentialTargets[i].TryGetComponent<Character.ServerCharacter>(out var serverCharacter) && serverCharacter.IsIntangible.Value != m_targetIntangibleCharacters)
+                    continue;   // The target is a ServerCharacter with an invalid intangibility.
 
 
                 // The target is valid

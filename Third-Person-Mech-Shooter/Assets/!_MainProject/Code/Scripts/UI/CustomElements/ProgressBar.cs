@@ -50,7 +50,7 @@ namespace UI
         private float _currentValue = 0.0f;
 
 
-        private float GetCurrentFillPercentage() => Mathf.Clamp01((_currentValue - _minimumValue) / (_maximumValue - _minimumValue));
+        private float GetCurrentFillPercentage() => (_maximumValue - _minimumValue) > 0 ? Mathf.Clamp01((_currentValue - _minimumValue) / (_maximumValue - _minimumValue)) : 1.0f;
         private void UpdateCurrentFill()
         {
             float fillPercentage = GetCurrentFillPercentage();

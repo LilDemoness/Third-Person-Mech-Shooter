@@ -83,6 +83,9 @@ MonoBehaviour:
   _clientInputSender: {fileID: 1671740713501693123}
   m_animator: {fileID: 0}
   _graphicsRoot: {fileID: 7221482373417598275}
+  _intangibleLayer:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!1001 &3399173359657147894
 PrefabInstance:
   m_ObjectHideFlags: 0

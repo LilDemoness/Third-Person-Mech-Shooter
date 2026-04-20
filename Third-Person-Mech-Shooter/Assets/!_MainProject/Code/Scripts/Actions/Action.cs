@@ -4,6 +4,7 @@ using Gameplay.GameplayObjects;
 using Gameplay.GameplayObjects.Character;
 using Gameplay.Actions.Definitions;
 using Unity.Mathematics;
+using Utils;
 
 namespace Gameplay.Actions
 {
@@ -31,7 +32,7 @@ namespace Gameplay.Actions
         /// <summary>
         ///     The ServerTime when this Action was started.
         /// </summary>
-        public float TimeStarted { get; set; }
+        public float TimeStarted { get; private set; }
 
         /// <summary>
         ///     How long the Action has been running (Since it's Start was called). Measured in seconds via ServerTime.
@@ -50,6 +51,8 @@ namespace Gameplay.Actions
         [SerializeField] private readonly ActionDefinition _definition;
         /// <inheritdoc cref="Action._definition"/>
         public ActionDefinition Definition => _definition;
+
+        public BufferedRaycast BufferedRaycast { get; private set; }
 
 
         private float _windupEndTime;
@@ -212,6 +215,7 @@ namespace Gameplay.Actions
         public Action(ActionDefinition definition)
         {
             this._definition = definition;
+            BufferedRaycast = new BufferedRaycast();
         }
         /// <summary>
         ///     Used as a Constructor.

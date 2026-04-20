@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Utils;
 
 namespace Gameplay.GameplayObjects.Projectiles.Seeking
 {
@@ -14,6 +15,9 @@ namespace Gameplay.GameplayObjects.Projectiles.Seeking
         private float m_maxDistance;
         private const float DEFAULT_MAX_DISTANCE = 150.0f;
         [SerializeField] private LayerMask _targetableLayers;
+
+        private BufferedRaycast _bufferedRaycast = new BufferedRaycast(1);
+        private bool m_targetIntangibleCharacters;
 
 
         public RaycastSeekingFunction(RaycastSeekingFunction other)
@@ -36,6 +40,8 @@ namespace Gameplay.GameplayObjects.Projectiles.Seeking
                     ? projectile.MaxLifetime * projectile.Speed
                     : DEFAULT_MAX_DISTANCE;
 
+            this.m_targetIntangibleCharacters = originTransform.TryGetComponent<Character.ServerCharacter>(out var serverCharacter) && serverCharacter.IsIntangible.Value;
+
             return this;
         }
         /// <summary>
@@ -49,7 +55,7 @@ namespace Gameplay.GameplayObjects.Projectiles.Seeking
             Debug.DrawRay(rayOrigin, rayDirection, Color.red, 0.1f);
 
             // Determine our target position.
-            if (Physics.Raycast(rayOrigin, rayDirection, out RaycastHit hitInfo, m_maxDistance, _targetableLayers, QueryTriggerInteraction.Ignore))
+            if (_bufferedRaycast.ConditionalRaycast(rayOrigin, rayDirection, TargetFilterCondition, out RaycastHit hitInfo, m_maxDistance, _targetableLayers))
                 seekingDirection = (hitInfo.point - currentPosition).normalized;    // We hit an object, so our target position is the object's position. Calc the desired direction to reach this position.
             else
             {
@@ -61,6 +67,15 @@ namespace Gameplay.GameplayObjects.Projectiles.Seeking
 
             // We will always have a target position, even if we don't get a hit on our raycast.
             return true;
+        }
+
+
+        private bool TargetFilterCondition(RaycastHit hitInfo)
+        {
+            if (!hitInfo.transform.TryGetComponent<Character.ServerCharacter>(out var serverCharacter))
+                return true;    // Non-ServerCharacter targets are always valid.
+            
+            return serverCharacter.IsIntangible.Value != m_targetIntangibleCharacters;  // ServerCharacter targets are only valid if their intangibility is valid.
         }
     }
 }

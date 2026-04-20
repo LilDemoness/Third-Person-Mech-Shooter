@@ -17,7 +17,6 @@ namespace Gameplay.GameplayObjects.Character
     /// </summary>
     public class ServerCharacter : NetworkBehaviour, IActionSource
     {
-        public static Dictionary<ulong, ServerCharacter> s_AllServerCharacters = new Dictionary<ulong, ServerCharacter>();
 
 
         [SerializeField] private ClientCharacter m_clientCharacter;
@@ -43,8 +42,13 @@ namespace Gameplay.GameplayObjects.Character
                 _buildDataReference = value;
 
                 if (IsServer)
-                    ServerCharacter_OnBuildDataChanged(_buildDataReference);
+                    ServerCharacter_OnBuildDataChanged_Server(_buildDataReference);
+                ServerCharacter_OnBuildDataChanged(_buildDataReference);
             }
+        }
+        public void SetBuildDataReference(BuildData buildData)
+        {
+
         }
 
 
@@ -57,6 +61,10 @@ namespace Gameplay.GameplayObjects.Character
         ///     Indicates whether this character is in "stealth" (Invisible to AI agents and other players).
         /// </summary>
         public NetworkVariable<bool> IsInStealth { get; } = new NetworkVariable<bool>();
+        /// <summary>
+        ///     Indicates whether this character is "intangible" (Cannot be affected by AI agents and other players that are not also intangible).
+        /// </summary>
+        public NetworkVariable<bool> IsIntangible { get; } = new NetworkVariable<bool>();
 
 
         [SerializeField] private NetworkHealthComponent _networkHealthComponent;
@@ -163,8 +171,6 @@ namespace Gameplay.GameplayObjects.Character
 
         public override void OnNetworkSpawn()
         {
-            s_AllServerCharacters.Add(this.OwnerClientId, this);
-
             if (!IsServer)
             {
                 this.enabled = false;
@@ -179,8 +185,6 @@ namespace Gameplay.GameplayObjects.Character
         }
         public override void OnNetworkDespawn()
         {
-            s_AllServerCharacters.Remove(this.OwnerClientId);
-
             // Unsubscribe from NetworkVariable Events.
             CurrentHeat.OnValueChanged -= OnCurrentHeatChanged;
             NetworkHealthComponent.OnDied -= OnCharacterDied;
@@ -428,7 +432,11 @@ namespace Gameplay.GameplayObjects.Character
             this.BuildDataReference = new BuildData(activeFrame, activeSlottables);
         }
 
-        private void ServerCharacter_OnBuildDataChanged(BuildData buildData)
+        /// <summary>
+        ///     Server-only Logic to be performed when a ServerCharacter's build changes.
+        /// </summary>
+        /// <param name="buildData"></param>
+        private void ServerCharacter_OnBuildDataChanged_Server(BuildData buildData)
         {
             ServerPassivePlayer.ClearAllPassives();
             ServerPassivePlayer.AddPassive(_buildDataReference.GetFrameData().CoreSystem.PassiveFeatureDefinition);
@@ -436,8 +444,13 @@ namespace Gameplay.GameplayObjects.Character
             //_networkHealthComponent.InitialiseDamageReceiver_Server(buildData.GetFrameData().MaxHealth);
             _networkHealthComponent.InitialiseDamageReceiver_Server(_characterStats.GetStatisticValue(Statistic.MaxHealth), _characterStats.GetStatisticValue(Statistic.MaxShields));
             InitialiseHeat();
-
-
+        }
+        /// <summary>
+        ///     Logic to be performed on all instances when a ServerCharacter's build changes.
+        /// </summary>
+        /// <param name="buildData"></param>
+        private void ServerCharacter_OnBuildDataChanged(BuildData buildData)
+        {
             // Toggle GFX.
             bool hasFoundActiveFrame = false;
             for (int i = 0; i < _frameGFXWrappers.Length; ++i)
@@ -658,17 +671,6 @@ namespace Gameplay.GameplayObjects.Character
 
 #endif
         #endregion
-
-
-        /// <summary>
-        ///     Forces a respawn of the local ServerCharacter.
-        /// </summary>
-        public static void ForceRespawn() => s_AllServerCharacters[NetworkManager.Singleton.LocalClientId].ForceRespawnServerRpc();
-        [Rpc(SendTo.Server)]
-        private void ForceRespawnServerRpc(RpcParams rpcParams = default)
-        {
-            _networkHealthComponent.SetLifeState_Server(this, LifeState.Dead);
-        }
     }
 
 

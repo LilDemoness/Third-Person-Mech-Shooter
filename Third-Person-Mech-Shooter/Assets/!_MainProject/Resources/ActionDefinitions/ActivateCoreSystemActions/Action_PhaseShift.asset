@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d2cae861ac9e7f4eb3e9d954ac1508d, type: 3}
   m_Name: Action_PhaseShift
   m_EditorClassIdentifier: 
-  <IsHostileAction>k__BackingField: 1
+  <IsHostileAction>k__BackingField: 0
   <IsLoudAction>k__BackingField: 0
   <ShouldNotifyClient>k__BackingField: 1
-  <ActivationStyle>k__BackingField: 0
+  <ActivationStyle>k__BackingField: 1
   <InterruptableStages>k__BackingField: -1
   <ImmediateHeat>k__BackingField: 0
   <ChargingContinuousHeat>k__BackingField: 0
@@ -41,7 +41,8 @@ MonoBehaviour:
   <TriggeringVisuals>k__BackingField: []
   <HitVisuals>k__BackingField: []
   <ActionCrosshairPrefab>k__BackingField: {fileID: 0}
-  <HitEffects>k__BackingField: []
+  <HitEffects>k__BackingField:
+  - rid: 451070710356377700
   <ActivationsPerTrigger>k__BackingField: 1
   <ActivationDeviationPattern>k__BackingField: 0
   <TargetingStartDeviation>k__BackingField: 0
@@ -50,4 +51,12 @@ MonoBehaviour:
   _overrideDirectionToOwnerUp: 1
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 451070710356377700
+      type: {class: ApplyBuffEffect, ns: Gameplay.Actions.Effects, asm: Assembly-CSharp}
+      data:
+        _actionEffectScaling: []
+        _statusEffectDefinition: {fileID: 11400000, guid: cad9c7c50002f0941a3294b323d9caea, type: 2}
+        _cancelEffectOnEnd: 1
+        _actionEffectScalingTypes: 2
+        _chargeScalingTypes: 0

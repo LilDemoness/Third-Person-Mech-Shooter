@@ -1,4 +1,5 @@
 using Gameplay.GameplayObjects;
+using Gameplay.GameplayObjects.Character;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -32,6 +33,7 @@ namespace Gameplay.Actions.Effects
         [Space(5)]
         [SerializeField] private float _detectionRadius = 3.0f;
         [SerializeField] private LayerMask _validLayers;
+        private bool _targetIntangibleCharacters;
 
 
         [Header("Arming")]
@@ -54,11 +56,12 @@ namespace Gameplay.Actions.Effects
 
 
 
-        protected override void FinishSetup()
+        protected override void FinishSetup(ServerCharacter owner)
         {
             ResetAllInstanceVariables();
             _armingTimeRemaining = _armingTime;
             _isArming = true;
+            _targetIntangibleCharacters = owner.IsIntangible.Value;
         }
         public override void ReturnedToPool()
         {
@@ -115,6 +118,8 @@ namespace Gameplay.Actions.Effects
                 if (IsColliderObstructed(hitCollider))
                     continue;   // The collider is obstructed.
                 if (!ValidColliderForDetonation(hitCollider))
+                    continue;
+                if (hitCollider.TryGetComponentThroughParents<ServerCharacter>(out ServerCharacter serverCharacter) && serverCharacter.IsIntangible.Value != _targetIntangibleCharacters)
                     continue;
 
                 return true;

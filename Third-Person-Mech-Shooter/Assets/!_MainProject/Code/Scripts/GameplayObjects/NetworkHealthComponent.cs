@@ -338,7 +338,7 @@ namespace Gameplay.GameplayObjects
         public float GetCurrentHealth() => Mathf.Min(_currentHealth.Value, MaxHealth);
         public float GetMissingHealth() => MaxHealth - GetCurrentHealth();
 
-        public float GetCurrentShields() => Mathf.Min(_currentShields.Value, 0.0f);
+        public float GetCurrentShields() => Mathf.Min(_currentShields.Value, MaxShields);
 
         public float GetHealthPercentage() => GetCurrentHealth() / MaxHealth;
         public float GetShieldsPercentage() => MaxShields != 0.0f ? GetCurrentShields() / MaxShields : 0.0f;

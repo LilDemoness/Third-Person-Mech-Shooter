@@ -42,29 +42,24 @@ namespace Gameplay.Actions.Definitions
             Vector3 rayOrigin = action.GetActionOrigin();
             Vector3 rayDirection = action.GetActionDirection();
 
-            if (CanPierce)
+            // Get all valid targets.
+            IEnumerable<RaycastHit> potentialTargets = action.BufferedRaycast.ConditionalRaycast(rayOrigin, rayDirection, IsValidTarget, MaxRange, CanPierce ? Pierces : 1, ValidLayers);
+
+            // Loop through and process all valid targets. (Add a check for non-pierceable surfaces?).
+            IEnumerator<RaycastHit> enumerator = potentialTargets.GetEnumerator();
+            while (enumerator.MoveNext())
             {
-                // Get all valid targets.
-                RaycastHit[] colliders = Physics.RaycastAll(rayOrigin, rayDirection, MaxRange, ValidLayers, QueryTriggerInteraction.Ignore);
-
-                // Order our targets by distance (Closest Target First), and then only store the number we wish to pierce.
-                IEnumerable<RaycastHit> orderedValidTargets = colliders.OrderBy(t => (t.point - rayOrigin).sqrMagnitude).Take(Pierces + 1);
-
-                // Loop through and process all valid targets.
-                IEnumerator<RaycastHit> enumerator = orderedValidTargets.GetEnumerator();
-                while(enumerator.MoveNext())
-                {
-                    onHitCallback?.Invoke(action, owner, enumerator.Current, rayDirection, chargePercentage);
-                }
+                onHitCallback?.Invoke(action, owner, enumerator.Current, rayDirection, chargePercentage);
             }
-            else
+
+
+            bool IsValidTarget(RaycastHit hitInfo)
             {
-                // The action cannot pierce, so find and process only the first hit object.
-                // We don't need to retrieve multiple targets, so just use a Raycast for efficiency.
-                if (Physics.Raycast(rayOrigin, rayDirection, out RaycastHit hitInfo, MaxRange, ValidLayers, QueryTriggerInteraction.Ignore))
-                {
-                    onHitCallback?.Invoke(action, owner, hitInfo, rayDirection, chargePercentage);
-                }
+                if (!hitInfo.transform.TryGetComponentThroughParents<ServerCharacter>(out ServerCharacter serverCharacter))
+                    return true; // Not a ServerCharacter, so always a valid hit.
+
+                // Is a ServerCharacter, so only valid if its intangibility matches the owner's.
+                return serverCharacter.IsIntangible.Value != owner.IsIntangible.Value;
             }
         }
 
