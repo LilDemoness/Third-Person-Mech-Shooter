@@ -24,6 +24,6 @@ MonoBehaviour:
   <AttachmentPoints>k__BackingField:
   - <MaxModuleSize>k__BackingField: 0
   <CoreSystem>k__BackingField: {fileID: 11400000, guid: de5f1b7cca83fee428350f6e784b9740, type: 2}
-  <ThirdPersonCameraOffset>k__BackingField: {x: 1.5, y: 3, z: 0}
+  <ThirdPersonCameraOffset>k__BackingField: {x: 1.5, y: 2, z: 0}
   <CameraVerticalArmLength>k__BackingField: -0.4
   <CameraDistance>k__BackingField: 8

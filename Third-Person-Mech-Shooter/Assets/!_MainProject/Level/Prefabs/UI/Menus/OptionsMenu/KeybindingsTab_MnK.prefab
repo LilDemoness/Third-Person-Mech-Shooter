@@ -3095,7 +3095,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7563279525863254160, guid: 9b8ca5148853e074f9526bece9c77e98, type: 3}
       propertyPath: m_text
-      value: Jump
+      value: Boost
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
