@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 5374579146937217303}
   - component: {fileID: 4308262964034644391}
   - component: {fileID: 5983944511295467908}
+  - component: {fileID: 495910428881606791}
   m_Layer: 0
   m_Name: CharacterBase
   m_TagString: Untagged
@@ -53,7 +54,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 4132376802
+  GlobalObjectIdHash: 1314757462
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -133,11 +134,14 @@ MonoBehaviour:
     <ActiveSlottableIndicies>k__BackingField: 
   _networkHealthComponent: {fileID: 3256541695494498627}
   _overheatingEffectDefinition: {fileID: 11400000, guid: 1b22461243af62a4b8eb5c6e9254a8a1, type: 2}
+  _coreSystemCharge: 0
   CanPerformActionInstantly: 1
   _movement: {fileID: 2257280709253185089}
   _characterStats: {fileID: 4145569306345955613}
   _gfxRoot: {fileID: 0}
   _deathExplosionEffectPrefab: {fileID: 5773077417751078236, guid: 6ecf76dc4f268d340b2666896a954bcc, type: 3}
+  _outline: {fileID: 495910428881606791}
+  _characterFrames: []
 --- !u!114 &3256541695494498627
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -270,3 +274,21 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
+--- !u!114 &495910428881606791
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 702022887536766587}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMode: 4
+  outlineColor: {r: 1, g: 0, b: 0, a: 1}
+  outlineWidth: 2
+  precomputeOutline: 0
+  bakeKeys: []
+  bakeValues: []

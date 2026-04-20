@@ -18,8 +18,8 @@ MonoBehaviour:
     Activating Systems sends out a ping that lets you see enemy silhouettes through
     walls for a short duration.
   <PassiveFeatureDefinition>k__BackingField: {fileID: 11400000, guid: be9865bd37cb1084ea004fd574d6bafa, type: 2}
-  <ActiveActionDefinition>k__BackingField: {fileID: 0}
+  <ActiveActionDefinition>k__BackingField: {fileID: 11400000, guid: 3267d606c5be51746bcfb0369959e10c, type: 2}
   <CoreSystemCost>k__BackingField: 100
   <MinActivationPercentage>k__BackingField: 1
-  <FullyDrainOnEnd>k__BackingField: 1
-  <PowerPercentageDrainRate>k__BackingField: 0
+  <FullyDrainOnEnd>k__BackingField: 0
+  <PowerPercentageDrainRate>k__BackingField: 12.5

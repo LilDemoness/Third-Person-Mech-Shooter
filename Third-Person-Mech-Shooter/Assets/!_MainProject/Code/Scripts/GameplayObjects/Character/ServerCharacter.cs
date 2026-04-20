@@ -17,8 +17,6 @@ namespace Gameplay.GameplayObjects.Character
     /// </summary>
     public class ServerCharacter : NetworkBehaviour, IActionSource
     {
-
-
         [SerializeField] private ClientCharacter m_clientCharacter;
         public ClientCharacter ClientCharacter => m_clientCharacter;
 
@@ -129,12 +127,19 @@ namespace Gameplay.GameplayObjects.Character
 
         [SerializeField] private GameObject _gfxRoot;
         [SerializeField] private VisualEffects.SpecialFXGraphic _deathExplosionEffectPrefab;
+        [SerializeField] private Outline _outline;
 
 
         [Header("GFX References")]
         [SerializeField] private FrameGFX[] _characterFrames;
         private FrameGFXWrapper[] _frameGFXWrappers;
         private FrameGFX _activeFrame;
+
+
+        public static void EnableOutlinesForEnemyTeam(ServerCharacter owner) => OnEnableOutlinesCalled?.Invoke(owner);
+        public static void DisableOutlinesForEnemyTeam() => OnDisableOutlinesCalled?.Invoke();
+        private static event System.Action<ServerCharacter> OnEnableOutlinesCalled;
+        private static event System.Action OnDisableOutlinesCalled;
 
 
         private void Awake()
@@ -155,6 +160,10 @@ namespace Gameplay.GameplayObjects.Character
             _movement.OnMovementStatusChanged += MovementScript_OnMovementStatusChanged;
             _characterStats.OnStatisticChanged += CharacterStats_OnStatisticChanged;
 
+            OnEnableOutlinesCalled += ServerCharacter_EnableOutlinesForEnemyTeam;
+            OnDisableOutlinesCalled += ServerCharacter_OnDisableOutlinesForEnemyTeam;
+            ServerCharacter_OnDisableOutlinesForEnemyTeam();
+
 
             IDamageable.OnAnyHealthChange += IDamageable_OnAnyHealthChange;
         }
@@ -165,6 +174,8 @@ namespace Gameplay.GameplayObjects.Character
             _movement.OnMovementStatusChanged -= MovementScript_OnMovementStatusChanged;
             _characterStats.OnStatisticChanged -= CharacterStats_OnStatisticChanged;
 
+            OnEnableOutlinesCalled -= ServerCharacter_EnableOutlinesForEnemyTeam;
+            OnDisableOutlinesCalled -= ServerCharacter_OnDisableOutlinesForEnemyTeam;
 
             IDamageable.OnAnyHealthChange -= IDamageable_OnAnyHealthChange;
         }
@@ -216,6 +227,20 @@ namespace Gameplay.GameplayObjects.Character
             if (statistic == Statistic.MaxHeat)
                 NotifyOfHeatChange();
         }
+
+        private void ServerCharacter_EnableOutlinesForEnemyTeam(ServerCharacter callingCharacter)
+        {
+            if (this == callingCharacter)
+                return; // Calling character.
+            
+            int teamID = callingCharacter.TeamID.Value;
+            if (teamID != -1 && TeamID.Value == teamID)
+                return; // Same team.
+
+            // Enemy team.
+            _outline.enabled = true;
+        }
+        private void ServerCharacter_OnDisableOutlinesForEnemyTeam() => _outline.enabled = false;
 
 
         /// <summary>
