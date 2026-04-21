@@ -25,7 +25,7 @@ MonoBehaviour:
   <RecoveryTime>k__BackingField: 0
   <CooldownTime>k__BackingField: 0
   <BlockingMode>k__BackingField: 1
-  <MaxActiveDuration>k__BackingField: 0.3
+  <MaxActiveDuration>k__BackingField: 0.125
   <CanCharge>k__BackingField: 0
   <ChargeTime>k__BackingField: 0
   <MinChargeActivationPercentage>k__BackingField: 1
@@ -47,7 +47,7 @@ MonoBehaviour:
   <TargetingStartDeviation>k__BackingField: 0
   <TargetingInnerDeviation>k__BackingField: 0
   _dashMaxDistance: 4
-  _dashSpeed: 30
+  _dashSpeed: 45
   _movementPreventionDuration: 0
   _chargeScalingOptions: 0
   _movementRotationRate: 180

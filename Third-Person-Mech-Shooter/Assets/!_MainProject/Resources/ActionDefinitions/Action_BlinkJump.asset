@@ -46,7 +46,7 @@ MonoBehaviour:
   <ActivationDeviationPattern>k__BackingField: 0
   <TargetingStartDeviation>k__BackingField: 0
   <TargetingInnerDeviation>k__BackingField: 0
-  _dashMaxDistance: 10
+  _dashMaxDistance: 12.5
   _dashSpeed: 0
   _movementPreventionDuration: 0
   _chargeScalingOptions: 0
