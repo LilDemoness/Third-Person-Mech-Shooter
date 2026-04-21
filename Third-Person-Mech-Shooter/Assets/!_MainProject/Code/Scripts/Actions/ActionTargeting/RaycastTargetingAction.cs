@@ -59,7 +59,7 @@ namespace Gameplay.Actions.Definitions
                     return true; // Not a ServerCharacter, so always a valid hit.
 
                 // Is a ServerCharacter, so only valid if its intangibility matches the owner's.
-                return serverCharacter.IsIntangible.Value != owner.IsIntangible.Value;
+                return serverCharacter.IsIntangible.Value == owner.IsIntangible.Value;
             }
         }
 
@@ -101,7 +101,7 @@ namespace Gameplay.Actions.Definitions
             // Because HandleClientTrigger is called on all clients, regardless of whether they were the triggering one or not,
             //  we need to check whether we are playing on the the triggering client before playing anticipation-based hit effects.
             if (clientCharacter.OwnerClientId == NetworkManager.Singleton.LocalClientId)
-                PerformRaycast(action, null, chargePercentage, PrepareHitEffectAndNotify_AnticipatedUpdate);
+                PerformRaycast(action, clientCharacter.ServerCharacter, chargePercentage, PrepareHitEffectAndNotify_AnticipatedUpdate);
 
             base.HandleClientTrigger(action, clientCharacter, origin, direction, chargePercentage);
         }

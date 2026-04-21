@@ -13,6 +13,8 @@ namespace Utils
     public class BufferedRaycast
     {
         private const int DEFAULT_BUFFER_SIZE = 20;
+        private const float RAYCAST_EPSILON_DISTANCE = 0.01f;
+
 
         private RaycastHit[] _raycastBuffer;
         private int _allowedSize;
@@ -290,10 +292,7 @@ namespace Utils
             maxHitsOverride = GetMaxHits(maxHitsOverride);
 
             // Preventing infinite loops.
-            int identicalHits = 0;
-            const float IDENTICAL_HIT_DST = 0.05f;
-            const float IDENTICAL_HIT_SQR_DST = IDENTICAL_HIT_DST * IDENTICAL_HIT_DST;
-            const int MAX_IDENTICAL_HITS_BEFORE_CANCEL = 3;
+            Vector3 epsilonVector = ray.direction * RAYCAST_EPSILON_DISTANCE;
 
             do
             {
@@ -307,16 +306,10 @@ namespace Utils
                 _raycastBuffer[_hitSize] = hitInfo;
                 ++_hitSize;
 
-                // Ensure that we don't enter an infinite loop.
-                identicalHits = (hitInfo.point - ray.origin).sqrMagnitude < IDENTICAL_HIT_SQR_DST ? identicalHits + 1 : 0;
 
                 // Prepare for the next raycast.
-                ray.origin = hitInfo.point;
-            } while (HasntExceededMaxHits(maxHitsOverride) || identicalHits > MAX_IDENTICAL_HITS_BEFORE_CANCEL); // If we've performed all hits, we should exit.
-
-            // Log if we exited from an infinite loop.
-            if (identicalHits > MAX_IDENTICAL_HITS_BEFORE_CANCEL)
-                Debug.LogWarning("Exited Conditional Raycast due to repeated identical hits");
+                ray.origin = hitInfo.point + epsilonVector;
+            } while (HasntExceededMaxHits(maxHitsOverride)); // If we've performed all hits, we should exit.
         }
         private void DoRaycastInfiniteRange(Ray ray, int maxHitsOverride, int layerMask)
         {
@@ -326,10 +319,7 @@ namespace Utils
             maxHitsOverride = GetMaxHits(maxHitsOverride);
 
             // Preventing infinite loops.
-            int identicalHits = 0;
-            const float IDENTICAL_HIT_DST = 0.05f;
-            const float IDENTICAL_HIT_SQR_DST = IDENTICAL_HIT_DST * IDENTICAL_HIT_DST;
-            const int MAX_IDENTICAL_HITS_BEFORE_CANCEL = 3;
+            Vector3 epsilonVector = ray.direction * RAYCAST_EPSILON_DISTANCE;
 
             do
             {
@@ -341,16 +331,9 @@ namespace Utils
                 _raycastBuffer[_hitSize] = hitInfo;
                 ++_hitSize;
 
-                // Ensure that we don't enter an infinite loop.
-                identicalHits = (hitInfo.point - ray.origin).sqrMagnitude < IDENTICAL_HIT_SQR_DST ? identicalHits + 1 : 0;
-
                 // Prepare for the next raycast.
-                ray.origin = hitInfo.point;
-            } while (HasntExceededMaxHits(maxHitsOverride) || identicalHits > MAX_IDENTICAL_HITS_BEFORE_CANCEL); // If we've performed all hits, we should exit.
-
-            // Log if we exited from an infinite loop.
-            if (identicalHits > MAX_IDENTICAL_HITS_BEFORE_CANCEL)
-                Debug.LogWarning("Exited Conditional Raycast due to repeated identical hits");
+                ray.origin = hitInfo.point + epsilonVector;
+            } while (HasntExceededMaxHits(maxHitsOverride)); // If we've performed all hits, we should exit.
         }
 
 
@@ -378,10 +361,7 @@ namespace Utils
             maxHitsOverride = GetMaxHits(maxHitsOverride);
 
             // Preventing infinite loops.
-            int identicalHits = 0;
-            const float IDENTICAL_HIT_DST = 0.05f;
-            const float IDENTICAL_HIT_SQR_DST = IDENTICAL_HIT_DST * IDENTICAL_HIT_DST;
-            const int MAX_IDENTICAL_HITS_BEFORE_CANCEL = 3;
+            Vector3 epsilonVector = ray.direction * RAYCAST_EPSILON_DISTANCE;
 
             // Perform the raycasts.
             do
@@ -392,23 +372,23 @@ namespace Utils
                     break; // We've exceeded our max range with this check. Don't return the value as its our of our max range.
                 // The hit was within our max range.
 
-                if (condition(hitInfo)) // If the condition passes, record the hit.
+                try
                 {
-                    // Cache the hit.
-                    _raycastBuffer[_hitSize] = hitInfo;
-                    ++_hitSize;
+                    if (condition(hitInfo)) // If the condition passes, record the hit.
+                    {
+                        // Cache the hit.
+                        _raycastBuffer[_hitSize] = hitInfo;
+                        ++_hitSize;
+                    }
+                }
+                catch (System.Exception e)  // If an error occurs within the condition it will crash the game. Catch it here and log it rather than crashing the game.
+                {
+                    Debug.LogException(e);
                 }
 
-                // Ensure that we don't enter an infinite loop.
-                identicalHits = (hitInfo.point - ray.origin).sqrMagnitude < IDENTICAL_HIT_SQR_DST ? identicalHits + 1 : 0;
-
                 // Prepare for the next raycast.
-                ray.origin = hitInfo.point;
-            } while (HasntExceededMaxHits(maxHitsOverride) || identicalHits > MAX_IDENTICAL_HITS_BEFORE_CANCEL); // If we've performed all hits, we should exit.
-
-            // Log if we exited from an infinite loop.
-            if (identicalHits > MAX_IDENTICAL_HITS_BEFORE_CANCEL)
-                Debug.LogWarning("Exited Conditional Raycast due to repeated identical hits");
+                ray.origin = hitInfo.point + epsilonVector;
+            } while (HasntExceededMaxHits(maxHitsOverride)); // If we've performed all hits, we should exit.
         }
         private void DoConditionalRaycastInfiniteRange(Ray ray, System.Func<RaycastHit, bool> condition, int maxHitsOverride, int layerMask)
         {
@@ -418,10 +398,7 @@ namespace Utils
             maxHitsOverride = GetMaxHits(maxHitsOverride);
 
             // Preventing infinite loops.
-            int identicalHits = 0;
-            const float IDENTICAL_HIT_DST = 0.05f;
-            const float IDENTICAL_HIT_SQR_DST = IDENTICAL_HIT_DST * IDENTICAL_HIT_DST;
-            const int MAX_IDENTICAL_HITS_BEFORE_CANCEL = 3;
+            Vector3 epsilonVector = ray.direction * RAYCAST_EPSILON_DISTANCE;
 
             // Perform the raycasts.
             do
@@ -429,23 +406,23 @@ namespace Utils
                 if (!Physics.Raycast(ray, out RaycastHit hitInfo, Mathf.Infinity, layerMask))
                     break; // Nothing was hit, so we've reached the end of our ray.
 
-                if (condition(hitInfo)) // If the condition passes, record the hit.
+                try
                 {
-                    // Cache the hit.
-                    _raycastBuffer[_hitSize] = hitInfo;
-                    ++_hitSize;
+                    if (condition(hitInfo)) // If the condition passes, record the hit.
+                    {
+                        // Cache the hit.
+                        _raycastBuffer[_hitSize] = hitInfo;
+                        ++_hitSize;
+                    }
+                }
+                catch (System.Exception e)  // If an error occurs within the condition it will crash the game. Catch it here and log it rather than crashing the game.
+                {
+                    Debug.LogException(e);
                 }
 
-                // Ensure that we don't enter an infinite loop.
-                identicalHits = (hitInfo.point - ray.origin).sqrMagnitude < IDENTICAL_HIT_SQR_DST ? identicalHits + 1 : 0;
-
                 // Prepare for the next raycast.
-                ray.origin = hitInfo.point;
-            } while (HasntExceededMaxHits(maxHitsOverride) || identicalHits > MAX_IDENTICAL_HITS_BEFORE_CANCEL); // If we've performed all hits, we should exit.
-
-            // Log if we exited from an infinite loop.
-            if (identicalHits > MAX_IDENTICAL_HITS_BEFORE_CANCEL)
-                Debug.LogWarning("Exited Conditional Raycast due to repeated identical hits");
+                ray.origin = hitInfo.point + epsilonVector;
+            } while (HasntExceededMaxHits(maxHitsOverride)); // If we've performed all hits, we should exit.
         }
 
         #endregion

@@ -55,7 +55,7 @@ namespace Gameplay.GameplayObjects.Projectiles.Seeking
             Debug.DrawRay(rayOrigin, rayDirection, Color.red, 0.1f);
 
             // Determine our target position.
-            if (_bufferedRaycast.ConditionalRaycast(rayOrigin, rayDirection, TargetFilterCondition, out RaycastHit hitInfo, m_maxDistance, _targetableLayers))
+            if (_bufferedRaycast.ConditionalRaycast(rayOrigin, rayDirection, IsValidHitCheck, out RaycastHit hitInfo, m_maxDistance, _targetableLayers))
                 seekingDirection = (hitInfo.point - currentPosition).normalized;    // We hit an object, so our target position is the object's position. Calc the desired direction to reach this position.
             else
             {
@@ -70,12 +70,12 @@ namespace Gameplay.GameplayObjects.Projectiles.Seeking
         }
 
 
-        private bool TargetFilterCondition(RaycastHit hitInfo)
+        private bool IsValidHitCheck(RaycastHit hitInfo)
         {
             if (!hitInfo.transform.TryGetComponent<Character.ServerCharacter>(out var serverCharacter))
                 return true;    // Non-ServerCharacter targets are always valid.
             
-            return serverCharacter.IsIntangible.Value != m_targetIntangibleCharacters;  // ServerCharacter targets are only valid if their intangibility is valid.
+            return serverCharacter.IsIntangible.Value == m_targetIntangibleCharacters;  // ServerCharacter targets are only valid if their intangibility matches our own.
         }
     }
 }
