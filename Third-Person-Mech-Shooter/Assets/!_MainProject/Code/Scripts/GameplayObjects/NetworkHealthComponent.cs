@@ -15,6 +15,7 @@ namespace Gameplay.GameplayObjects
     /// </remarks>
     public class NetworkHealthComponent : NetworkBehaviour, IDamageable
     {
+        public Transform Transform => transform;
         private ServerCharacter _serverCharacter;
 
 
@@ -270,7 +271,7 @@ namespace Gameplay.GameplayObjects
                 return;
 
             _lastDamageTime = Time.time;
-            IDamageable.InvokeOnAnyHealthChange(inflicter, -damage);
+            IDamageable.InvokeOnAnyHealthChange(this, inflicter, -damage);
             
             Vector3 localDamageDirection = _serverCharacter.transform.InverseTransformDirection(damageSourceDirection);
             if (_currentShields.Value > 0.0f)
@@ -301,7 +302,7 @@ namespace Gameplay.GameplayObjects
             // Apply modifications to the healing/damage as appropriate.
             healing = CanReceiveHealing() ? healing : 0.0f;
 
-            IDamageable.InvokeOnAnyHealthChange(inflicter, healing);
+            IDamageable.InvokeOnAnyHealthChange(this, inflicter, healing);
             SetCurrentHealth_Server(inflicter, _currentHealth.Value + healing);
         }
         private void RegenerateShields(float shieldIncreaseValue)

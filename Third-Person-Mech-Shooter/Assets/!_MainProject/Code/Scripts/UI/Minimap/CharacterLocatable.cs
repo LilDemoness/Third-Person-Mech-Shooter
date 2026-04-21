@@ -75,7 +75,7 @@ namespace Gameplay.UI.Minimap
 
         public override bool ClampToRadarBorder { get => false; }
         public override LocatableType LocatableType { get => _locatableType; }
-        private LocatableType GetLocatableType() => (Player.LocalClientInstance != null && _serverCharacter.TeamID == Player.LocalClientInstance.ServerCharacter.TeamID) ? LocatableType.Friendly : LocatableType.Enemy;
+        private LocatableType GetLocatableType() => (Player.LocalClientInstance != null && _serverCharacter.IsSameTeam(Player.LocalClientInstance.ServerCharacter)) ? LocatableType.Friendly : LocatableType.Enemy;
 
         public override BaseLocatableIcon CreateIcon()
         {

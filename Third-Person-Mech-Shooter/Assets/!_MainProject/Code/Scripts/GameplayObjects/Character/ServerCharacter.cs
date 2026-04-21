@@ -86,11 +86,11 @@ namespace Gameplay.GameplayObjects.Character
 
         // Core System Power.
         public float MaxCoreSystemCharge => BuildDataReference.GetCoreSystemData().CoreSystemCost;
-        [SerializeField, ReadOnly] private float _coreSystemCharge;
+        [SerializeField, ReadOnly] private NetworkVariable<float> _coreSystemCharge = new NetworkVariable<float>();
         private bool _coreSystemInUse = false;
 
-        public float CoreSystemCharge => _coreSystemCharge;
-        public float CoreSystemChargePercentage => _coreSystemCharge / MaxCoreSystemCharge;
+        public float CoreSystemCharge => _coreSystemCharge.Value;
+        public float CoreSystemChargePercentage => _coreSystemCharge.Value / MaxCoreSystemCharge;
 
 
         // References.
@@ -205,16 +205,26 @@ namespace Gameplay.GameplayObjects.Character
         }
 
 
-        private void IDamageable_OnAnyHealthChange(ServerCharacter inflicter, float healthChange)
+        private void IDamageable_OnAnyHealthChange(IDamageable hitDamageable, ServerCharacter inflicter, float healthChange)
         {
             if (inflicter != this)
                 return; // Not this character.
+            if (!hitDamageable.Transform.TryGetComponentThroughParents<ServerCharacter>(out ServerCharacter otherCharacter))
+                return; // Only count hits against characters? (If we remove this, make sure to add a null-check before the 'IsSameTeam' check.
 
             // Increase our core system charge proportional to the health change.
             if (healthChange > 0.0f)
-                _coreSystemCharge = Mathf.Min(_coreSystemCharge + healthChange * CoreSystemData.HEALING_TO_CHARGE_MULTIPLIER, MaxCoreSystemCharge);
+            {
+                // Healing.
+                if (this.IsSameTeam(otherCharacter)) // Only count healing towards allies.
+                    _coreSystemCharge.Value = Mathf.Min(_coreSystemCharge.Value + healthChange * CoreSystemData.HEALING_TO_CHARGE_MULTIPLIER, MaxCoreSystemCharge);
+            }
             else
-                _coreSystemCharge = Mathf.Min(_coreSystemCharge + (-healthChange) * CoreSystemData.DAMAGE_TO_CHARGE_MULTIPLIER, MaxCoreSystemCharge);
+            {
+                // Damage.
+                if (!this.IsSameTeam(otherCharacter)) // Only count damage against enemies.
+                    _coreSystemCharge.Value = Mathf.Min(_coreSystemCharge.Value + (-healthChange) * CoreSystemData.DAMAGE_TO_CHARGE_MULTIPLIER, MaxCoreSystemCharge);
+            }
         }
 
 
@@ -233,8 +243,7 @@ namespace Gameplay.GameplayObjects.Character
             if (this == callingCharacter)
                 return; // Calling character.
             
-            int teamID = callingCharacter.TeamID.Value;
-            if (teamID != -1 && TeamID.Value == teamID)
+            if (this.IsSameTeam(callingCharacter))
                 return; // Same team.
 
             // Enemy team.
@@ -663,27 +672,26 @@ namespace Gameplay.GameplayObjects.Character
             _coreSystemInUse = false;
 
             if (BuildDataReference.GetCoreSystemData().FullyDrainOnEnd)
-                _coreSystemCharge = 0.0f;
+                _coreSystemCharge.Value = 0.0f;
         }
 
         private void HandleCoreSystemCharge()
         {
             if (!_coreSystemInUse)
-                _coreSystemCharge = Mathf.Min(_coreSystemCharge + CoreSystemData.TIME_TO_CHARGE_MULTIPLIER * Time.deltaTime, MaxCoreSystemCharge);
+                _coreSystemCharge.Value = Mathf.Min(_coreSystemCharge.Value + CoreSystemData.TIME_TO_CHARGE_MULTIPLIER * Time.deltaTime, MaxCoreSystemCharge);
             else
             {
-                _coreSystemCharge -= BuildDataReference.GetCoreSystemData().PowerPercentageDrainRate * Time.deltaTime;
+                _coreSystemCharge.Value -= BuildDataReference.GetCoreSystemData().PowerPercentageDrainRate * Time.deltaTime;
 
-                if (_coreSystemCharge <= 0.0f)
+                if (_coreSystemCharge.Value <= 0.0f)
                 {
-                    _coreSystemCharge = 0.0f;
+                    _coreSystemCharge.Value = 0.0f;
                     CancelCoreSystemUse();
                 }
             }
         }
 
 #endregion
-
 
         #region Editor Testing Functions
 #if UNITY_EDITOR
@@ -696,6 +704,21 @@ namespace Gameplay.GameplayObjects.Character
 
 #endif
         #endregion
+    }
+    public static class ServerCharacterExtensions
+    {
+        /// <summary>
+        ///     Returns true if the two ServerCharacters are on the same team, or false if they are opposing.
+        /// </summary>
+        public static bool IsSameTeam(this ServerCharacter thisCharacter, ServerCharacter other)
+        {
+            int thisID = thisCharacter.TeamID.Value;
+            int otherID = other.TeamID.Value;
+            if (thisID == -1 || otherID == -1)
+                return false;   // Team '-1' is enemies with everyone, even other members of team '-1'.
+
+            return thisID == otherID;
+        }
     }
 
 

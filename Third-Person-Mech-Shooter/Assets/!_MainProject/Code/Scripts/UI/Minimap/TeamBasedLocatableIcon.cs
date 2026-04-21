@@ -50,11 +50,7 @@ namespace Gameplay.UI.Minimap
                 return;
             UpdateIconColor();
         }
-        private void UpdateIconColor()
-        {
-            bool isFriendly = _owningCharacter.TeamID == Player.LocalClientInstance.ServerCharacter.TeamID;
-            _icon.color = isFriendly ? _friendlyColour : _enemyColour;
-        }
+        private void UpdateIconColor() => _icon.color = _owningCharacter.IsSameTeam(Player.LocalClientInstance.ServerCharacter) ? _friendlyColour : _enemyColour;
 
 
         public override void SetVisible(bool isVisible) => _icon.CrossFadeAlpha(isVisible ? 1.0f : 0.0f, 0.0f, false);

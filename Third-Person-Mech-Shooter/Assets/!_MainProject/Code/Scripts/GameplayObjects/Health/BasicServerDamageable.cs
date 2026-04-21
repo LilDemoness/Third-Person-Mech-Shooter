@@ -10,6 +10,9 @@ namespace Gameplay.GameplayObjects.Health
     /// </summary>
     public class BasicServerDamageable : MonoBehaviour, IDamageable
     {
+        public Transform Transform => transform;
+
+
         [SerializeField] private float _maxHealth;
         private float _currentHealth;
 
@@ -48,7 +51,7 @@ namespace Gameplay.GameplayObjects.Health
                 return;
 
             _currentHealth = Mathf.Max(_currentHealth - damageValue, 0.0f);
-            IDamageable.InvokeOnAnyHealthChange(inflicter, -damageValue);
+            IDamageable.InvokeOnAnyHealthChange(this, inflicter, -damageValue);
 
             if (Mathf.Approximately(_currentHealth, 0.0f))
             {
@@ -62,7 +65,7 @@ namespace Gameplay.GameplayObjects.Health
             if (!CanReceiveHealing())
                 return;
 
-            IDamageable.InvokeOnAnyHealthChange(inflicter, healingValue);
+            IDamageable.InvokeOnAnyHealthChange(this, inflicter, healingValue);
             _currentHealth = Mathf.Min(_currentHealth + healingValue, _maxHealth);
             OnHealthChanged?.Invoke(this);
         }

@@ -1,3 +1,4 @@
+using Gameplay.GameplayObjects.Character;
 using Gameplay.GameplayObjects.Players;
 using System.Collections.Generic;
 using System.Linq;
@@ -116,9 +117,9 @@ namespace Gameplay.UI.Minimap
             OnLocatableUpdated.Invoke(locatable, desiredOperation);
         }
 
-        private void OnLoudActionTriggered(Actions.Action loudAction, Gameplay.GameplayObjects.Character.ServerCharacter owningCharacter)
+        private void OnLoudActionTriggered(Actions.Action loudAction, ServerCharacter owningCharacter)
         {
-            if (owningCharacter.TeamID == Player.LocalClientInstance.ServerCharacter.TeamID)
+            if (owningCharacter.IsSameTeam(Player.LocalClientInstance.ServerCharacter))
                 return; // Actions from the same team don't count as dangerous.
 
             Vector2Int quadrantIndicies = PositionToMapQuad(loudAction.GetActionOrigin());

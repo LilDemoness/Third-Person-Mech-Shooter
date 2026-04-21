@@ -58,6 +58,9 @@ namespace Gameplay.Actions.Definitions
                 if (!hitInfo.transform.TryGetComponentThroughParents<ServerCharacter>(out ServerCharacter serverCharacter))
                     return true; // Not a ServerCharacter, so always a valid hit.
 
+                Debug.Log("Owning Character is null?: " + (owner == null));
+                Debug.Log("Hit Character is null?: " + (serverCharacter == null));
+
                 // Is a ServerCharacter, so only valid if its intangibility matches the owner's.
                 return serverCharacter.IsIntangible.Value == owner.IsIntangible.Value;
             }
@@ -119,7 +122,7 @@ namespace Gameplay.Actions.Definitions
         /// </summary>
         public override bool AnticipateClient(Action action, ClientCharacter clientCharacter)
         {
-            PerformRaycast(action, null, 0.0f, PrepareHitEffectAndNotify_AnticipationStart);
+            PerformRaycast(action, clientCharacter.ServerCharacter, 0.0f, PrepareHitEffectAndNotify_AnticipationStart);
             return TriggerType == ActionTriggerType.Single ? ActionConclusion.Stop : base.AnticipateClient(action, clientCharacter);
         }
         private void PrepareHitEffectAndNotify_AnticipationStart(Action action, ServerCharacter _, RaycastHit hitInfo, Vector3 rayDirection, float chargePercentage)
