@@ -75,7 +75,8 @@ namespace Gameplay.GameplayObjects.Character
         public float MaxHeat => _characterStats.GetStatisticValue(Statistic.MaxHeat);
         private float _lastHeatIncreaseTime = 0.0f;
 
-        public event System.Action<float, float> OnHeatChanged; // Current, Max.
+        // <Current Heat, Max Heat>
+        public event System.Action<float, float> OnHeatChanged;
 
         [SerializeField] private Gameplay.StatusEffects.Definitions.Overheating _overheatingEffectDefinition;
 
@@ -188,7 +189,7 @@ namespace Gameplay.GameplayObjects.Character
                 return;
             }
             
-            CurrentHeat.OnValueChanged += OnCurrentHeatChanged;
+            CurrentHeat.OnValueChanged += OnCurrentHeatChanged_Server;
             NetworkHealthComponent.OnDied += OnCharacterDied;
             NetworkHealthComponent.CollisionEntered += CollisionEntered;
             ActionPlayer.OnActionQueueFilled += ServerActionPlayer_OnActionQueueFilled;
@@ -197,7 +198,7 @@ namespace Gameplay.GameplayObjects.Character
         public override void OnNetworkDespawn()
         {
             // Unsubscribe from NetworkVariable Events.
-            CurrentHeat.OnValueChanged -= OnCurrentHeatChanged;
+            CurrentHeat.OnValueChanged -= OnCurrentHeatChanged_Server;
             NetworkHealthComponent.OnDied -= OnCharacterDied;
             NetworkHealthComponent.CollisionEntered -= CollisionEntered;
             ActionPlayer.OnActionQueueFilled -= ServerActionPlayer_OnActionQueueFilled;
@@ -229,7 +230,7 @@ namespace Gameplay.GameplayObjects.Character
 
 
         private void MovementScript_OnMovementStatusChanged(MovementStatus newState) => MovementStatus.Value = newState;
-        private void CharacterStats_OnStatisticChanged(Statistic statistic)
+        private void CharacterStats_OnStatisticChanged(Statistic statistic) // Server or Client.
         {
             if (IsServer && statistic == Statistic.MaxHealth)
                 NetworkHealthComponent.SetMaxHealth_Server(null, Mathf.CeilToInt(_characterStats.GetStatisticValue(Statistic.MaxHealth)), true);
@@ -429,11 +430,13 @@ namespace Gameplay.GameplayObjects.Character
         }
 
 
-        private void OnCurrentHeatChanged(float previousHeat, float newHeat)
+        private void OnCurrentHeatChanged_Server(float previousHeat, float newHeat)
         {
             CheckIfExceededHeatCap(previousHeat, newHeat);
-            NotifyOfHeatChange();
+            NotifyOfHeatChangeOwnerRpc();
         }
+        [Rpc(SendTo.Owner)]
+        private void NotifyOfHeatChangeOwnerRpc() => NotifyOfHeatChange();
         private void NotifyOfHeatChange() => OnHeatChanged?.Invoke(CurrentHeat.Value, MaxHeat);
 
 
@@ -473,7 +476,7 @@ namespace Gameplay.GameplayObjects.Character
         private void ServerCharacter_OnBuildDataChanged_Server(BuildData buildData)
         {
             ServerPassivePlayer.ClearAllPassives();
-            ServerPassivePlayer.AddPassive(_buildDataReference.GetFrameData().CoreSystem.PassiveFeatureDefinition);
+            ServerPassivePlayer.AddPassive(buildData.GetFrameData().CoreSystem.PassiveFeatureDefinition);
 
             //_networkHealthComponent.InitialiseDamageReceiver_Server(buildData.GetFrameData().MaxHealth);
             _networkHealthComponent.InitialiseDamageReceiver_Server(_characterStats.GetStatisticValue(Statistic.MaxHealth), _characterStats.GetStatisticValue(Statistic.MaxShields));
@@ -712,10 +715,13 @@ namespace Gameplay.GameplayObjects.Character
         /// </summary>
         public static bool IsSameTeam(this ServerCharacter thisCharacter, ServerCharacter other)
         {
+            if (thisCharacter == other)
+                return true; // We are on the same team as ourself.
+
             int thisID = thisCharacter.TeamID.Value;
             int otherID = other.TeamID.Value;
             if (thisID == -1 || otherID == -1)
-                return false;   // Team '-1' is enemies with everyone, even other members of team '-1'.
+                return false; // Team '-1' is enemies with everyone, even other members of team '-1'.
 
             return thisID == otherID;
         }

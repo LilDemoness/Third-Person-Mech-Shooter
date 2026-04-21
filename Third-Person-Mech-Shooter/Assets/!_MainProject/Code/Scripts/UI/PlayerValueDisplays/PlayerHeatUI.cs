@@ -34,12 +34,12 @@ namespace UI.Debugging
         private void Player_OnLocalPlayerSet()
         {
             Debug.Log("Initialise UI");
+            var serverCharacter = Player.LocalClientInstance.ServerCharacter;
 
             // Subscribe to change events.
-            Player.LocalClientInstance.ServerCharacter.OnHeatChanged += OnHeatChanged;
+            serverCharacter.OnHeatChanged += OnHeatChanged;
 
             // Ensure that late joiners receive the initial state.
-            var serverCharacter = Player.LocalClientInstance.ServerCharacter;
             OnHeatChanged(serverCharacter.CurrentHeat.Value, serverCharacter.MaxHeat);
         }
         public override void OnNetworkDespawn()
