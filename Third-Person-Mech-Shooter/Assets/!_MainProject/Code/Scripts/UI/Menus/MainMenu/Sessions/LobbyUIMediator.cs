@@ -18,6 +18,7 @@ namespace Gameplay.UI.Menus
     public class LobbyUIMediator : ContainerMenu
     {
         [SerializeField] private CanvasGroup _canvasGroup;
+        [SerializeField] private CanvasGroup _rootCanvasGroup;
         [SerializeField] private GameObject _loadingSpinner;
 
 
@@ -138,7 +139,7 @@ namespace Gameplay.UI.Menus
             HandleSessionJoinResult(result);
         }
 
-        public async void QuickJoinRequest(bool ignoreFilters = false)
+        public async UniTask QuickJoinRequest(bool ignoreFilters = false)
         {
             BlockUIWhileLoadingIsInProgress();
 
@@ -258,7 +259,7 @@ namespace Gameplay.UI.Menus
 
         private void BlockUIWhileLoadingIsInProgress()
         {
-            _canvasGroup.interactable = false;
+            _rootCanvasGroup.interactable = false;
             _loadingSpinner.SetActive(true);
 
             foreach (NonNavigableButton btn in GetComponentsInChildren<NonNavigableButton>())
@@ -270,7 +271,7 @@ namespace Gameplay.UI.Menus
             //  so we should check in case the canvas group is null.
             if (_canvasGroup != null)
             {
-                _canvasGroup.interactable = true;
+                _rootCanvasGroup.interactable = true;
                 _loadingSpinner.SetActive(false);
 
                 foreach(NonNavigableButton btn in GetComponentsInChildren<NonNavigableButton>())

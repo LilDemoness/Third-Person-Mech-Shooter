@@ -25,7 +25,7 @@ namespace Netcode.ConnectionManagement
 
         public override void Enter()
         {
-            SceneLoader.Instance.LoadNonGameplayScene(SceneLoader.NonGameplayScene.Lobby, true);
+            SceneLoader.Instance.LoadNonGameplayScene(SceneLoader.NonGameplayScene.Lobby, true, false);
 
             if (_multiplayerServicesFacade.CurrentUnitySession != null)
             {

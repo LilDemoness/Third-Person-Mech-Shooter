@@ -475,6 +475,7 @@ GameObject:
   - component: {fileID: 8675525284832320666}
   - component: {fileID: 2785511136316507776}
   - component: {fileID: 8147348778337462896}
+  - component: {fileID: 872370893275632689}
   m_Layer: 0
   m_Name: Footer
   m_TagString: Untagged
@@ -561,8 +562,8 @@ MonoBehaviour:
   m_Spacing: 10
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 1
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
@@ -583,6 +584,26 @@ MonoBehaviour:
     overrideAlpha: 0
     alpha: 1
   target: {fileID: 8675525284832320666}
+--- !u!114 &872370893275632689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1407622949263244848}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: 60
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &2206018629112665364
 GameObject:
   m_ObjectHideFlags: 0
@@ -1544,11 +1565,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8111203138290047534, guid: 206e6e8771b31ce46b9d3554b39d2198, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 50
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8111203138290047534, guid: 206e6e8771b31ce46b9d3554b39d2198, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 50
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8111203138290047534, guid: 206e6e8771b31ce46b9d3554b39d2198, type: 3}
       propertyPath: m_LocalPosition.x

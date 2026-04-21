@@ -27,7 +27,7 @@ namespace Netcode.ConnectionManagement
             _multiplayerServicesFacade.EndTracking();
             ConnectionManager.NetworkManager.Shutdown();
 
-            SceneLoader.Instance.LoadNonGameplayScene(SceneLoader.NonGameplayScene.MainMenu, false);
+            SceneLoader.Instance.LoadNonGameplayScene(SceneLoader.NonGameplayScene.MainMenu, false, true);
         }
 
         public override void Exit() { }

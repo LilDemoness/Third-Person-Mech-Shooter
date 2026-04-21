@@ -121,7 +121,7 @@ namespace Gameplay.GameState
         }
         private void ReturnToLobby()
         {
-            SceneLoader.Instance.LoadNonGameplayScene(SceneLoader.NonGameplayScene.Lobby, true);
+            SceneLoader.Instance.LoadNonGameplayScene(SceneLoader.NonGameplayScene.Lobby, true, false);
         }
         public void ReturnToMainMenu()
         {

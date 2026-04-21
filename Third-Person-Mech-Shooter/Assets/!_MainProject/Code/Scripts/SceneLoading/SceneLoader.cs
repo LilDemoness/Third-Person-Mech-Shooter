@@ -229,10 +229,12 @@ namespace SceneLoading
 
         #region Scene Loading Functions
 
-        public void LoadNonGameplayScene(NonGameplayScene nonGameplayScene, bool useNetworkSceneManager)
+        public void LoadNonGameplayScene(NonGameplayScene nonGameplayScene, bool useNetworkSceneManager, bool cancelIfActive)
         {
             string sceneName = GetNonGameplaySceneName(nonGameplayScene);
-
+            if (cancelIfActive && SceneManager.GetActiveScene().name == sceneName)
+                return;
+            
             if (useNetworkSceneManager)
             {
                 LoadNetworkScene(sceneName, LoadSceneMode.Single);

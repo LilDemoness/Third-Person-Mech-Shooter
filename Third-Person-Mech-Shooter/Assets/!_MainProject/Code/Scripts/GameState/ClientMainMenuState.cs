@@ -14,6 +14,7 @@ using Gameplay.UI.Tooltips;
 using UI;
 using ApplicationLifecycle.Messages;
 using Infrastructure;
+using Cysharp.Threading.Tasks;
 
 namespace Gameplay.GameState
 {
@@ -33,9 +34,12 @@ namespace Gameplay.GameState
 
         [SerializeField] private NameGenerationData _nameGenerationData;
         [SerializeField] private Button _sessionButton;
-        [SerializeField] private GameObject _signInSpinner;
+        [SerializeField] private GameObject _loadingSpinner;
         [SerializeField] private UIProfileSelector _uiProfileSelector;
         [SerializeField] private UITooltipDetector _ugsSetupTooltipDetector;
+
+        [Space(5)]
+        [SerializeField] private CanvasGroup _rootCanvasGroup;
 
 
         [Header("Menu References")]
@@ -117,7 +121,7 @@ namespace Gameplay.GameState
         {
             _sessionButton.interactable = true;
             _ugsSetupTooltipDetector.enabled = false;
-            _signInSpinner.SetActive(false);
+            _loadingSpinner.SetActive(false);
 
             Debug.Log($"Signed in. ID: {AuthenticationService.Instance.PlayerId}\nName: {_profileManager.Profile}");
 
@@ -136,21 +140,19 @@ namespace Gameplay.GameState
                 _ugsSetupTooltipDetector.enabled = true;
             }
 
-            if (_signInSpinner)
-            {
-                _signInSpinner.SetActive(false);
-            }
+            if (_loadingSpinner)
+                _loadingSpinner.SetActive(false);
         }
 
 
         private async void OnProfileChanged()
         {
             _sessionButton.interactable = false;
-            _signInSpinner.SetActive(true);
+            _loadingSpinner.SetActive(true);
             await _authServiceFacade.SwitchProfileAndReSignInAsync(_profileManager.Profile);
 
             _sessionButton.interactable = true;
-            _signInSpinner.SetActive(false);
+            _loadingSpinner.SetActive(false);
 
             Debug.Log($"Signed in. ID: {AuthenticationService.Instance.PlayerId}\nName: {_profileManager.Profile}");
 
@@ -165,7 +167,7 @@ namespace Gameplay.GameState
 
         #region UI Button Functions
 
-        public void OnQuickJoinPressed() => _lobbyUIMediator.QuickJoinRequest(ignoreFilters: true);
+        public void OnQuickJoinPressed() => TryQuickJoin().Forget();
         public void OnPlayGamePressed(Button sender)
         {
             ChangeSelectedMenuIndicator(sender.GetComponent<ButtonSelectionIndicator>());
@@ -190,6 +192,18 @@ namespace Gameplay.GameState
         public void OnQuitGamePressed() => _quitApplicationPub.Publish(new QuitApplicationMessage());
 
         #endregion
+
+        private async UniTaskVoid TryQuickJoin()
+        {
+            _rootCanvasGroup.interactable = false;
+            _loadingSpinner.SetActive(true);
+
+            await _lobbyUIMediator.QuickJoinRequest(ignoreFilters: true);
+
+            _loadingSpinner.SetActive(false);
+            _rootCanvasGroup.interactable = true;
+        }
+
 
         private void ChangeSelectedMenuIndicator(ButtonSelectionIndicator selectionIndicator)
         {

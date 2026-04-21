@@ -96,7 +96,7 @@ namespace ApplicationLifecycle
             DontDestroyOnLoad(_updateRunner.gameObject);
             Application.targetFrameRate = 120;
 
-            SceneLoader.Instance.LoadNonGameplayScene(SceneLoader.NonGameplayScene.MainMenu, false);
+            SceneLoader.Instance.LoadNonGameplayScene(SceneLoader.NonGameplayScene.MainMenu, false, false);
         }
 
         protected override void OnDestroy()

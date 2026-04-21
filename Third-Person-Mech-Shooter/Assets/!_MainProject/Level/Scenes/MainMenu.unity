@@ -14834,6 +14834,7 @@ MonoBehaviour:
   _firstSelectedElement: {fileID: 0}
   _childClosedFallback: 1
   _canvasGroup: {fileID: 1069460216}
+  _rootCanvasGroup: {fileID: 1184896268}
   _loadingSpinner: {fileID: 1122977560}
 --- !u!114 &1069460220
 MonoBehaviour:
@@ -16368,6 +16369,7 @@ GameObject:
   - component: {fileID: 1184896267}
   - component: {fileID: 1184896266}
   - component: {fileID: 1184896265}
+  - component: {fileID: 1184896268}
   m_Layer: 0
   m_Name: MainMenuCanvas
   m_TagString: Untagged
@@ -16463,6 +16465,18 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: -4
   m_TargetDisplay: 0
+--- !u!225 &1184896268
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1184896263}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1001 &1192890158
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19489,7 +19503,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1427348609}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 29766206}
+        m_TargetAssemblyTypeName: Gameplay.UI.Menus.DirectIPUI, Assembly-CSharp
+        m_MethodName: CancelConnectingWindow
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1427348609
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27918,9 +27944,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 296547994}
     - target: {fileID: 6208511596972497417, guid: 8eba5c4b2aaf56447b79e6e95c8c4939, type: 3}
+      propertyPath: _loadingSpinner
+      value: 
+      objectReference: {fileID: 296547994}
+    - target: {fileID: 6208511596972497417, guid: 8eba5c4b2aaf56447b79e6e95c8c4939, type: 3}
       propertyPath: _lobbyUIMediator
       value: 
       objectReference: {fileID: 1069460219}
+    - target: {fileID: 6208511596972497417, guid: 8eba5c4b2aaf56447b79e6e95c8c4939, type: 3}
+      propertyPath: _rootCanvasGroup
+      value: 
+      objectReference: {fileID: 1184896268}
     - target: {fileID: 6208511596972497417, guid: 8eba5c4b2aaf56447b79e6e95c8c4939, type: 3}
       propertyPath: _sessionUIMediator
       value: 

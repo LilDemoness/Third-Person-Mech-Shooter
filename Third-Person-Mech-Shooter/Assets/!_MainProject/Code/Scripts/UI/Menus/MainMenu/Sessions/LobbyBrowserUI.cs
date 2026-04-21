@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Unity.Services.Multiplayer;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using Cysharp.Threading.Tasks;
 
 namespace Gameplay.UI.Menus
 {
@@ -171,7 +172,7 @@ namespace Gameplay.UI.Menus
         }
 
 
-        public void OnQuickJoinPressed() => _lobbyUIMediator.QuickJoinRequest();
+        public void OnQuickJoinPressed() => _lobbyUIMediator.QuickJoinRequest().Forget();
 
 
 
