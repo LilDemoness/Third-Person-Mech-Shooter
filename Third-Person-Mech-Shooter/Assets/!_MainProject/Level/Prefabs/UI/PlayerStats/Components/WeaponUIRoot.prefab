@@ -1994,7 +1994,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ad58b636e90b04489e1ebebe55589a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _slotIndex: 1
+  _slotIndex: 2
   _chargeRadialImage: {fileID: 3061351234387569817}
 --- !u!1 &5790380262600606687
 GameObject:
@@ -2082,7 +2082,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ad58b636e90b04489e1ebebe55589a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _slotIndex: 1
+  _slotIndex: 3
   _chargeRadialImage: {fileID: 209473095476395700}
 --- !u!1 &5862937148951141397
 GameObject:
@@ -2721,7 +2721,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ad58b636e90b04489e1ebebe55589a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _slotIndex: 1
+  _slotIndex: 4
   _chargeRadialImage: {fileID: 5950773947153312181}
 --- !u!1 &7576606319163655827
 GameObject:
