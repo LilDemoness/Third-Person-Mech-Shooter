@@ -98,9 +98,13 @@ namespace Gameplay.Actions
         {
             if (action.Definition.ActivationStyle != ActionActivationStyle.Toggle)
                 return false; // The action is not a toggleable action, so we shouldn't cancel existing ones.
-            
+
+            return CancelExistingActionsForToggle(action.ActionID, action.Data.AttachmentSlotIndex);
+        }
+        public bool CancelExistingActionsForToggle(ActionID actionID, AttachmentSlotIndex slotIndex = AttachmentSlotIndex.Unset)
+        {
             // Cancel all actions that match our action's ID and Slot ID.
-            bool ShouldCancelFunc(Action action) => action.ActionID == action.ActionID && (action.Data.AttachmentSlotIndex == 0 || action.Data.AttachmentSlotIndex == action.Data.AttachmentSlotIndex);
+            bool ShouldCancelFunc(Action action) => actionID == action.ActionID && (slotIndex == AttachmentSlotIndex.Unset || slotIndex == action.Data.AttachmentSlotIndex);
             return CancelActions(ShouldCancelFunc, true, true, true);
         }
 

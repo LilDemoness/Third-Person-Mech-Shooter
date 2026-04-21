@@ -137,8 +137,10 @@ namespace Gameplay.GameplayObjects.Character
         private FrameGFX _activeFrame;
 
 
-        public static void EnableOutlinesForEnemyTeam(ServerCharacter owner) => OnEnableOutlinesCalled?.Invoke(owner);
-        public static void DisableOutlinesForEnemyTeam() => OnDisableOutlinesCalled?.Invoke();
+        [Rpc(SendTo.SpecifiedInParams)]
+        public void EnableOutlinesForEnemyTeamRpc(RpcParams rpcParams = default) => OnEnableOutlinesCalled?.Invoke(this);
+        [Rpc(SendTo.SpecifiedInParams)]
+        public void DisableOutlinesForEnemyTeamRpc(RpcParams rpcParams = default) => OnDisableOutlinesCalled?.Invoke();
         private static event System.Action<ServerCharacter> OnEnableOutlinesCalled;
         private static event System.Action OnDisableOutlinesCalled;
 
@@ -669,6 +671,14 @@ namespace Gameplay.GameplayObjects.Character
             CancelAction_Server(BuildDataReference.GetCoreSystemData().ActiveActionDefinition.ActionID);
             OnCoreSystemEnded();
         }
+        public void TryCancelCoreSystem()
+        {
+            if (!_coreSystemInUse)
+                return;
+
+            ActionPlayer.CancelExistingActionsForToggle(BuildDataReference.GetCoreSystemData().ActiveActionDefinition.ActionID);
+        }
+
         private void OnCoreSystemEnded(Action _) => OnCoreSystemEnded();
         private void OnCoreSystemEnded()
         {
@@ -693,6 +703,12 @@ namespace Gameplay.GameplayObjects.Character
                 }
             }
         }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+
+        public void DeveloperMode_SetCoreSystemChargePercentage(float newPercentageValue) => _coreSystemCharge.Value = MaxCoreSystemCharge * newPercentageValue;
+
+#endif
 
 #endregion
 

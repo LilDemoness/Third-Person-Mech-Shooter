@@ -29,6 +29,7 @@ namespace Gameplay.DebugCheats
             { "ToggleMouse", new ToggleMouseLockCommand() },
             { "Kill", new KillPlayerCommand() },
             { "SetGameTimeRemaining", new SetGameTimeRemainingCommand() },
+            { "SetCharge", new SetCorePowerChargeCommand() },
         };
 
 
@@ -353,6 +354,33 @@ namespace Gameplay.DebugCheats
             // Log the Cheat.
             Gameplay.GameplayObjects.Character.ServerCharacter inflicter = GameObject.FindObjectsByType<Gameplay.GameplayObjects.Players.Player>(FindObjectsInactive.Include, FindObjectsSortMode.None).First(t => t.OwnerClientId == triggeringClientId).ServerCharacter;
             ChatManager.Instance.SendChatMessage(null, $"{inflicter.CharacterName} set the remaining game time to {desiredTime}");
+        }
+    }
+    /// <summary>
+    ///     <see cref="ConsoleCommand"/> which sets the triggering player's ServerCharacter's Core System Charge Power to the passed value.
+    /// </summary>
+    public class SetCorePowerChargeCommand : ConsoleCommand
+    {
+        public override bool CheckParameterCount(int count) => count == 0 || count == 1;
+        public override bool TestParameter(int paramIndex, string parameterAsString) => float.TryParse(parameterAsString, out float _);
+        public override string GetParameterName(int paramIndex) => paramIndex == 1 ? "Power Percentage Value" : "Invalid";
+
+
+        public override void Process(ulong triggeringClientId, string[] parameters)
+        {
+            // Get the local character.
+            var localCharacter = GameObject.FindObjectsByType<Gameplay.GameplayObjects.Players.Player>(FindObjectsInactive.Include, FindObjectsSortMode.None).First(t => t.OwnerClientId == triggeringClientId).ServerCharacter;
+
+            if (parameters.Length == 0)
+            {
+                localCharacter.DeveloperMode_SetCoreSystemChargePercentage(1.0f);
+                ChatManager.Instance.SendChatMessage(null, $"{localCharacter.CharacterName} set their Core System Charge to {100}%");
+            }
+            else if (float.TryParse(parameters[0], out float chargePercentageInHundreds))
+            {
+                localCharacter.DeveloperMode_SetCoreSystemChargePercentage(chargePercentageInHundreds / 100.0f);
+                ChatManager.Instance.SendChatMessage(null, $"{localCharacter.CharacterName} set their Core System Charge to {chargePercentageInHundreds}%");
+            }
         }
     }
 

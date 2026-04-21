@@ -1,4 +1,5 @@
 using Gameplay.GameplayObjects.Character;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace Gameplay.Actions.Effects
@@ -8,12 +9,12 @@ namespace Gameplay.Actions.Effects
     {
         public override void ApplyEffect(ServerCharacter owner, in ActionHitInformation hitInfo, float chargePercentage)
         {
-            ServerCharacter.EnableOutlinesForEnemyTeam(owner);
+            owner.EnableOutlinesForEnemyTeamRpc(owner.RpcTarget.Single(owner.OwnerClientId, RpcTargetUse.Temp));
         }
 
         public override void Cleanup(ServerCharacter owner)
         {
-            ServerCharacter.DisableOutlinesForEnemyTeam();
+            owner.DisableOutlinesForEnemyTeamRpc(owner.RpcTarget.Single(owner.OwnerClientId, RpcTargetUse.Temp));
         }
     }
 }

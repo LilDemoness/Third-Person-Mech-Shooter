@@ -133,7 +133,14 @@ namespace Gameplay.GameplayObjects.Character
         public void ActivateCoreSystem()
         {
             if (_serverCharacter.CoreSystemChargePercentage < _serverCharacter.GetCoreSystemData().MinActivationPercentage)
+            {
+                if (_serverCharacter.GetCoreSystemData().ActiveActionDefinition.ActivationStyle == ActionActivationStyle.Toggle)
+                {
+                    TryDisableTogglableCoreSystemServerRpc();
+                }
+
                 return;
+            }
 
             // Anticipate the weapon's effect (For audio & hit markers).
             if (_serverCharacter.CanPerformActionInstantly)
@@ -164,6 +171,18 @@ namespace Gameplay.GameplayObjects.Character
 
             // Valid deactivation input.
             StopUsingCoreSystem();
+        }
+        [Rpc(SendTo.Server)]
+        private void TryDisableTogglableCoreSystemServerRpc(RpcParams rpcParams = default)
+        {
+            if (rpcParams.Receive.SenderClientId != this.OwnerClientId)
+                return; // Not sent by the correct client.
+            if (_serverCharacter.GetCoreSystemData().ActiveActionDefinition.ActivationStyle != ActionActivationStyle.Toggle)
+                return; // Not a togglable action.
+
+            // Valid Input.
+            // Try to cancel the core action.
+            _serverCharacter.TryCancelCoreSystem();
         }
 
         private void StartUsingCoreSystem()
