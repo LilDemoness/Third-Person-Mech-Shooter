@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5286030069743683798}
   - component: {fileID: 6516441926911305191}
   - component: {fileID: 8238517680571838192}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -123,7 +123,7 @@ GameObject:
   - component: {fileID: 8622379022101875524}
   - component: {fileID: 6598006002055017003}
   - component: {fileID: 7342928605495917017}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: ExplosiveMines
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -200,14 +200,22 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  _damageableScript: {fileID: 8622379022101875524}
   _detonationType: 5
   _canDetectFriendlies: 0
   _detectionRadius: 3
-  _validLayers:
+  _detectionLayers:
     serializedVersion: 2
     m_Bits: 264
+  _obstructionLayers:
+    serializedVersion: 2
+    m_Bits: 65
   _armingTime: 1
   _detonationDelay: 0.6
+  _explosionRadius: 5
+  _explosionLayers:
+    serializedVersion: 2
+    m_Bits: 329
   _detonationEffects: []
   _distanceEffectScaleCurve:
     serializedVersion: 2
@@ -242,7 +250,7 @@ MonoBehaviour:
       type: {class: DamageEffect, ns: Gameplay.Actions.Effects, asm: Assembly-CSharp}
       data:
         _actionEffectScaling: []
-        _damageValue: 75
+        _damageValue: 40
         _scaleValueWithCharge: 1
         _damageType: 2
 --- !u!114 &4493027890337612337

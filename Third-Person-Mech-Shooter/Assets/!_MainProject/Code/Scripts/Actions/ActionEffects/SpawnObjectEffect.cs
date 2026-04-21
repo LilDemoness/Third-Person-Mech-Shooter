@@ -92,8 +92,8 @@ namespace Gameplay.Actions.Effects
             }
 
             // (Testing) Display the spawn positions and normals of our objects.
-            Vector3[] spawnPositions = _spawnType.GetSpawnPositions(hitInfo.HitPoint, hitInfo.HitNormal, hitInfo.HitForward);
-            for(int i = 0; i < spawnPositions.Length; ++i)
+            List<Vector3> spawnPositions = _spawnType.GetSpawnPositions(hitInfo.HitPoint, hitInfo.HitNormal, hitInfo.HitForward);
+            for(int i = 0; i < spawnPositions.Count; ++i)
             {
                 Debug.DrawRay(spawnPositions[i], hitInfo.HitNormal, Color.green, 1.0f);
             }
@@ -132,7 +132,7 @@ namespace Gameplay.Actions.Effects
 
     public abstract class ObjectSpawnType
     {
-        public abstract Vector3[] GetSpawnPositions(Vector3 spawnCentre, Vector3 spawnNormal, Vector3 spawnForward);
+        public abstract List<Vector3> GetSpawnPositions(Vector3 spawnCentre, Vector3 spawnNormal, Vector3 spawnForward);
         public abstract SpawnableObject_Server[] SpawnObject(IObjectPool<SpawnableObject_Server> prefabPool, Vector3 spawnCentre, Vector3 spawnNormal, Vector3 spawnForward);
 
         protected SpawnableObject_Server SpawnObjectAtPosition(IObjectPool<SpawnableObject_Server> objectPrefabPool, in Vector3 spawnPosition, in Quaternion spawnRotation)
@@ -164,10 +164,12 @@ namespace Gameplay.Actions.Effects
         [SerializeField] private bool _forceToGround = true;
         [SerializeField] private float _forceToGroundDistance = 0.0f;
         [SerializeField] private LayerMask _groundLayers;
+        private const float GROUND_CHECK_RAISED_VALUE = 0.25f;
 
-        public override Vector3[] GetSpawnPositions(Vector3 spawnCentre, Vector3 spawnNormal, Vector3 spawnForward)
+
+        public override List<Vector3> GetSpawnPositions(Vector3 spawnCentre, Vector3 spawnNormal, Vector3 spawnForward)
         {
-            Vector3[] spawnPositions = new Vector3[_spawnCount];
+            List<Vector3> spawnPositions = new List<Vector3>(_spawnCount);
             float degreesBetweenSpawns = 360.0f / (float)_spawnCount;
 
             Vector3 firstSpawnDirection = _randomiseOnlyDefaultVector ? Quaternion.AngleAxis(Random.Range(-_randomisationAngle / 2.0f, _randomisationAngle / 2.0f), spawnNormal) * spawnForward : spawnForward;
@@ -176,12 +178,17 @@ namespace Gameplay.Actions.Effects
                 Vector3 spawnDirection = _randomiseOnlyDefaultVector
                     ? (Quaternion.AngleAxis(degreesBetweenSpawns * i, spawnNormal) * firstSpawnDirection).normalized
                     : (Quaternion.AngleAxis(degreesBetweenSpawns * i + (Random.Range(-_randomisationAngle / 2.0f, _randomisationAngle / 2.0f)), spawnNormal) * firstSpawnDirection).normalized;
-                spawnPositions[i] = spawnCentre + (spawnDirection * _spawnRadius);
+                Vector3 spawnPosition = spawnCentre + (spawnDirection * _spawnRadius);
 
-                if (_forceToGround && Physics.Raycast(spawnPositions[i], -spawnNormal, out RaycastHit hitInfo, _forceToGroundDistance, _groundLayers))
-                    spawnPositions[i] = hitInfo.point;
-                else
-                    throw new System.NotImplementedException("Remove the object");
+                if (_forceToGround)
+                {
+                    if (!Physics.Raycast(spawnPosition + spawnNormal * GROUND_CHECK_RAISED_VALUE, -spawnNormal, out RaycastHit hitInfo, _forceToGroundDistance + GROUND_CHECK_RAISED_VALUE, _groundLayers))
+                        break;  // Failed to hit the ground, so don't spawn this element.
+
+                    spawnPosition = hitInfo.point;
+                }
+
+                spawnPositions.Add(spawnPosition);
             }
 
             return spawnPositions;
@@ -189,9 +196,11 @@ namespace Gameplay.Actions.Effects
 
         public override SpawnableObject_Server[] SpawnObject(IObjectPool<SpawnableObject_Server> prefabPool, Vector3 spawnCentre, Vector3 spawnNormal, Vector3 spawnForward)
         {
-            Vector3[] spawnPositions = GetSpawnPositions(spawnCentre, spawnNormal, spawnForward);
-            SpawnableObject_Server[] spawnedObjects = new SpawnableObject_Server[_spawnCount];
-            for (int i = 0; i < spawnPositions.Length; ++i)
+            List<Vector3> spawnPositions = GetSpawnPositions(spawnCentre, spawnNormal, spawnForward);
+            int successfulSpawns = spawnPositions.Count;
+
+            SpawnableObject_Server[] spawnedObjects = new SpawnableObject_Server[successfulSpawns];
+            for (int i = 0; i < successfulSpawns; ++i)
             {
                 spawnedObjects[i] = SpawnObjectAtPosition(prefabPool, spawnPositions[i], Quaternion.LookRotation(spawnForward, spawnNormal));
             }
@@ -222,21 +231,27 @@ namespace Gameplay.Actions.Effects
         [SerializeField] private bool _forceToGround = true;
         [SerializeField] private float _forceToGroundDistance = 0.0f;
         [SerializeField] private LayerMask _groundLayers;
+        private const float GROUND_CHECK_RAISED_VALUE = 0.25f;
 
 
-        public override Vector3[] GetSpawnPositions(Vector3 spawnCentre, Vector3 spawnNormal, Vector3 spawnForward)
+        public override List<Vector3> GetSpawnPositions(Vector3 spawnCentre, Vector3 spawnNormal, Vector3 spawnForward)
         {
-            Vector3[] spawnPositions = new Vector3[_spawnCount];
+            List<Vector3> spawnPositions = new List<Vector3>(_spawnCount);
 
             for (int i = 0; i < _spawnCount; ++i)
             {
                 Vector3 spawnDirection = (Quaternion.AngleAxis(Random.Range(-_spawnAngle / 2.0f, _spawnAngle / 2.0f), spawnNormal) * spawnForward).normalized;
-                spawnPositions[i] = spawnCentre + (spawnDirection * Random.Range(_minSpawnRadius, _maxSpawnRadius));
+                Vector3 spawnPosition = spawnCentre + (spawnDirection * Random.Range(_minSpawnRadius, _maxSpawnRadius));
 
-                if (_forceToGround && Physics.Raycast(spawnPositions[i], -spawnNormal, out RaycastHit hitInfo, _forceToGroundDistance, _groundLayers))
-                    spawnPositions[i] = hitInfo.point;
-                else
-                    throw new System.NotImplementedException("Remove the object");
+                if (_forceToGround)
+                {
+                    if (!Physics.Raycast(spawnPosition + spawnNormal * GROUND_CHECK_RAISED_VALUE, -spawnNormal, out RaycastHit hitInfo, _forceToGroundDistance + GROUND_CHECK_RAISED_VALUE, _groundLayers))
+                        break;  // Failed to hit the ground, so don't spawn this element.
+
+                    spawnPosition = hitInfo.point;
+                }
+
+                spawnPositions.Add(spawnPosition);
             }
 
             return spawnPositions;
@@ -244,9 +259,11 @@ namespace Gameplay.Actions.Effects
 
         public override SpawnableObject_Server[] SpawnObject(IObjectPool<SpawnableObject_Server> prefabPool, Vector3 spawnCentre, Vector3 spawnNormal, Vector3 spawnForward)
         {
-            Vector3[] spawnPositions = GetSpawnPositions(spawnCentre, spawnNormal, spawnForward);
-            SpawnableObject_Server[] spawnedObjects = new SpawnableObject_Server[_spawnCount];
-            for (int i = 0; i < spawnPositions.Length; ++i)
+            List<Vector3> spawnPositions = GetSpawnPositions(spawnCentre, spawnNormal, spawnForward);
+            int successfulSpawns = spawnPositions.Count;
+
+            SpawnableObject_Server[] spawnedObjects = new SpawnableObject_Server[successfulSpawns];
+            for (int i = 0; i < successfulSpawns; ++i)
             {
                 spawnedObjects[i] = SpawnObjectAtPosition(prefabPool, spawnPositions[i], Quaternion.LookRotation(spawnForward, spawnNormal));
             }
@@ -262,7 +279,7 @@ namespace Gameplay.Actions.Effects
     [System.Serializable]
     public class Placed : ObjectSpawnType
     {
-        public override Vector3[] GetSpawnPositions(Vector3 spawnCentre, Vector3 spawnNormal, Vector3 spawnForward) => new Vector3[1] { spawnCentre };
+        public override List<Vector3> GetSpawnPositions(Vector3 spawnCentre, Vector3 spawnNormal, Vector3 spawnForward) => new List<Vector3> { spawnCentre };
         public override SpawnableObject_Server[] SpawnObject(IObjectPool<SpawnableObject_Server> prefabPool, Vector3 spawnCentre, Vector3 spawnNormal, Vector3 spawnForward)
             => new SpawnableObject_Server[1] { SpawnObjectAtPosition(prefabPool, spawnCentre, Quaternion.LookRotation(Vector3.forward, spawnNormal)) };
     }
@@ -274,7 +291,7 @@ namespace Gameplay.Actions.Effects
         // For the spawned object's up, raycast to find the ground that the thrown object hits? (Or if using a Projectile, use it's returned hit position).
 
 
-        public override Vector3[] GetSpawnPositions(Vector3 spawnCentre, Vector3 spawnNormal, Vector3 spawnForward)
+        public override List<Vector3> GetSpawnPositions(Vector3 spawnCentre, Vector3 spawnNormal, Vector3 spawnForward)
         {
             throw new System.NotImplementedException();
         }

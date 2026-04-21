@@ -55,6 +55,7 @@ MonoBehaviour:
     - rid: 981910305249689695
       type: {class: SpawnObjectEffect, ns: Gameplay.Actions.Effects, asm: Assembly-CSharp}
       data:
+        _actionEffectScaling: []
         _spawnType:
           rid: 981910305249689696
         _parentToHitTransform: 0
@@ -73,4 +74,4 @@ MonoBehaviour:
         _forceToGroundDistance: 2
         _groundLayers:
           serializedVersion: 2
-          m_Bits: 64
+          m_Bits: 65

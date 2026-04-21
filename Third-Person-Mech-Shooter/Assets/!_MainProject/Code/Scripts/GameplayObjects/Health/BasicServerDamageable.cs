@@ -18,6 +18,7 @@ namespace Gameplay.GameplayObjects.Health
 
         [SerializeField] private bool _isInvulnerable = false;
         [SerializeField] private bool _canBeHealed = false;
+        private bool _isDead;
 
 
         public UnityEvent<IDamageable> OnHealthChanged;
@@ -36,12 +37,16 @@ namespace Gameplay.GameplayObjects.Health
             ResetHealthToMaximum();
         }
 
-        public void ResetHealthToMaximum() => _currentHealth = _maxHealth;
+        public void ResetHealthToMaximum()
+        {
+            _isDead = false;
+            _currentHealth = _maxHealth;
+        }
 
 
         public bool CanHaveHealthChanged() => !_isInvulnerable;
-        public bool CanReceiveHealing() => _canBeHealed;
-        public bool CanTakeDamage() => !_isInvulnerable;
+        public bool CanReceiveHealing() => _canBeHealed && !_isDead;
+        public bool CanTakeDamage() => !_isInvulnerable && !_isDead;
 
         public float GetMissingHealth() => Mathf.Max(_maxHealth - _currentHealth, 0.0f);
 
@@ -55,6 +60,7 @@ namespace Gameplay.GameplayObjects.Health
 
             if (Mathf.Approximately(_currentHealth, 0.0f))
             {
+                _isDead = true;
                 OnDied?.Invoke(this);
             }
             else

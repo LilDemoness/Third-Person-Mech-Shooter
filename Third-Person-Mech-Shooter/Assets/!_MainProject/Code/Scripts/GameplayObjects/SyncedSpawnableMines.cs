@@ -1,8 +1,10 @@
 using Gameplay.GameplayObjects;
 using Gameplay.GameplayObjects.Character;
+using Gameplay.GameplayObjects.Health;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Utils;
 
 namespace Gameplay.Actions.Effects
 {
@@ -26,14 +28,20 @@ namespace Gameplay.Actions.Effects
         private SyncedSpawnableMines_Client _clientMinesScript => (ClientScript as SyncedSpawnableMines_Client);
 
 
+        [SerializeField] private BasicServerDamageable _damageableScript;
+
+
         [Header("Detection")]
         [SerializeField] private DetonationTypes _detonationType = DetonationTypes.Lifetime | DetonationTypes.Radius;
         [SerializeField] private bool _canDetectFriendlies = false;
 
         [Space(5)]
         [SerializeField] private float _detectionRadius = 3.0f;
-        [SerializeField] private LayerMask _validLayers;
+        [SerializeField] private LayerMask _detectionLayers;
+        [SerializeField] private LayerMask _obstructionLayers;
         private bool _targetIntangibleCharacters;
+
+        private BufferedRaycast _bufferedRaycast = new BufferedRaycast(1);
 
 
         [Header("Arming")]
@@ -47,6 +55,9 @@ namespace Gameplay.Actions.Effects
         private float _detonationDelayRemaining;
         private bool _isDetonating;
 
+        [Space(5)]
+        [SerializeField] private float _explosionRadius = 5.0f;
+        [SerializeField] private LayerMask _explosionLayers;
         [SerializeReference][SubclassSelector] private ActionEffect[] _detonationEffects;
 
 
@@ -74,6 +85,7 @@ namespace Gameplay.Actions.Effects
             _armingTimeRemaining = 0.0f;
             _isDetonating = false;
             _detonationDelayRemaining = 0.0f;
+            _damageableScript.ResetHealthToMaximum();
         }
 
 
@@ -113,7 +125,7 @@ namespace Gameplay.Actions.Effects
             if (!_detonationType.HasFlag(DetonationTypes.Radius))
                 return false;
 
-            foreach (Collider hitCollider in Physics.OverlapSphere(transform.position, _detectionRadius, _validLayers, QueryTriggerInteraction.Ignore))
+            foreach (Collider hitCollider in Physics.OverlapSphere(transform.position, _detectionRadius, _detectionLayers, QueryTriggerInteraction.Ignore))
             {
                 if (IsColliderObstructed(hitCollider))
                     continue;   // The collider is obstructed.
@@ -122,6 +134,7 @@ namespace Gameplay.Actions.Effects
                 if (hitCollider.TryGetComponentThroughParents<ServerCharacter>(out ServerCharacter serverCharacter) && serverCharacter.IsIntangible.Value != _targetIntangibleCharacters)
                     continue;
 
+                Debug.Log("Valid Collider: " + hitCollider.transform.name);
                 return true;
             }
 
@@ -154,7 +167,7 @@ namespace Gameplay.Actions.Effects
         /// </remarks>
         private bool IsColliderObstructed(Collider collider)
         {
-            if (Physics.Linecast(transform.position, collider.transform.position, out RaycastHit hitInfo, _validLayers, QueryTriggerInteraction.Ignore))
+            if (_bufferedRaycast.ConditionalLinecast(transform.position, collider.transform.position, IsValidCollider, out RaycastHit hitInfo, _obstructionLayers))
             {
                 // Potentially Obstructed.
                 if (!collider.IsParentOrChildOf(hitInfo.transform))
@@ -163,11 +176,18 @@ namespace Gameplay.Actions.Effects
 
             // Target is unobstructed.
             return false;
+
+            bool IsValidCollider(RaycastHit hitInfo)    // Colliders are valid if they aren't from this object
+            {
+                return !hitInfo.transform.IsParentOrChildOf(this.transform);
+            }
         }
         private bool IsFriendlyEntity(Collider collider)
         {
-            // Temp.
-            return collider.IsParentOrChildOf(Owner.transform);
+            if (!collider.TryGetComponentThroughParents<ServerCharacter>(out ServerCharacter serverCharacter))
+                return false; // Non-ServerCharacters won't be friendly.
+
+            return serverCharacter.IsSameTeam(Owner);
         }
 
 
@@ -203,15 +223,16 @@ namespace Gameplay.Actions.Effects
 
         private void Detonate()
         {
-            // Play any detonation effects.
+            // Play any detonation effects (Visuals, Audio, etc).
             ActionHitInformation detonationEffectHitInfo = new ActionHitInformation(transform, transform.position, transform.up, transform.forward);
             for (int i = 0; i < _detonationEffects.Length; ++i)
                 _detonationEffects[i].ApplyEffect(Owner, detonationEffectHitInfo, 1.0f);
             _clientMinesScript.TriggerDetonationVisualsClientRpc();
 
+
             // Determine Hit Entities.
             HashSet<HitInformationContainer> hitEntities = new(comparer: new HitInformationContainerEqualityComparer());
-            foreach (Collider hitCollider in Physics.OverlapSphere(transform.position, _detectionRadius, _validLayers, QueryTriggerInteraction.Ignore))
+            foreach (Collider hitCollider in Physics.OverlapSphere(transform.position, _explosionRadius, _explosionLayers, QueryTriggerInteraction.Ignore))
             {
                 if (IsColliderObstructed(hitCollider))
                     continue;   // Obstructed.
@@ -221,6 +242,7 @@ namespace Gameplay.Actions.Effects
                 hitEntities.Add(new HitInformationContainer(damageableScript, hitCollider));
             }
 
+            // Process hit entities.
             foreach(HitInformationContainer hitEntity in hitEntities)
             {
                 Debug.Log("Hit: " + hitEntity.Collider.transform.name, hitEntity.Collider);
@@ -271,7 +293,7 @@ namespace Gameplay.Actions.Effects
         private void PrepareAndProcessTarget(Transform hitTransform, Vector3 hitPoint, Vector3 hitNormal)
         {
             // Calculate required information.
-            float scalePercentage = _distanceEffectScaleCurve.Evaluate(Vector3.Distance(hitTransform.position, hitPoint));
+            float scalePercentage = _distanceEffectScaleCurve.Evaluate(Vector3.Distance(transform.position, hitPoint) / _explosionRadius);
 
             // Create the actionHitInfo & process it.
             ActionHitInformation actionHitInfo = new ActionHitInformation(hitTransform, hitPoint, hitNormal, GetHitForward(hitNormal));
@@ -297,7 +319,7 @@ namespace Gameplay.Actions.Effects
             // Perform this action's effects (Damage, Applying Statuses, etc) on the server (Changes are perpetuated to clients).
             for (int i = 0; i < _hitEffects.Length; ++i)
             {
-                Debug.Log("Target: " + hitInfo.Target);
+                Debug.Log("Target: " + hitInfo.Target + " | " + chargePercentage);
                 _hitEffects[i].ApplyEffect(Owner, hitInfo, chargePercentage);
             }
         }
