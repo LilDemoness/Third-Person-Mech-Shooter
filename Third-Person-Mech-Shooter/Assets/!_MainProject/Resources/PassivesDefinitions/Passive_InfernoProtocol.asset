@@ -14,9 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _effects:
   - rid: 981910458943144069
+  - rid: 451070733699776658
   references:
     version: 2
     RefIds:
+    - rid: 451070733699776658
+      type: {class: AlterStatisticEffect, ns: Gameplay.Passives, asm: Assembly-CSharp}
+      data:
+        _updates: 0
+        _triggerAtStart: 1
+        _passiveConditions: []
+        _affectedStatistic: 5
+        _alterationType: 0
+        _alterationValue: 0.5
+        _removeEffectOnConditionFailed: 0
     - rid: 981910458943144069
       type: {class: AlterStatisticEffect, ns: Gameplay.Passives, asm: Assembly-CSharp}
       data:
@@ -24,7 +35,7 @@ MonoBehaviour:
         _triggerAtStart: 0
         _passiveConditions:
         - rid: 981910458943144070
-        _affectedStatistic: 10
+        _affectedStatistic: 11
         _alterationType: 2
         _alterationValue: 2
         _removeEffectOnConditionFailed: 1

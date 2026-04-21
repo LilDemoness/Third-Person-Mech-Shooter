@@ -19,7 +19,7 @@ MonoBehaviour:
     heat and reducing heat to 0.
   <PassiveFeatureDefinition>k__BackingField: {fileID: 11400000, guid: 366dad60c96d9834a834b484f51fe7bc, type: 2}
   <ActiveActionDefinition>k__BackingField: {fileID: 11400000, guid: 1c7cc51952780d5488036f0fff00d39c, type: 2}
-  <CoreSystemCost>k__BackingField: 100
+  <CoreSystemCost>k__BackingField: 10
   <MinActivationPercentage>k__BackingField: 1
   <FullyDrainOnEnd>k__BackingField: 1
   <PowerPercentageDrainRate>k__BackingField: 0

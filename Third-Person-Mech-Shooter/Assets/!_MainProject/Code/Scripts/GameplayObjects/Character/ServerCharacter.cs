@@ -411,7 +411,16 @@ namespace Gameplay.GameplayObjects.Character
         public void ReceiveHeatChange(ServerCharacter inflicter, float heatChange)
         {
             if (heatChange > 0.0f)
-                heatChange *= CharacterStats.GetStatisticValue(Statistic.PersonalHeatGainMultiplier);
+            {
+                if (inflicter == this)
+                {
+                    heatChange *= CharacterStats.GetStatisticValue(Statistic.PersonalHeatGainMultiplier);
+                }
+            }
+            else
+            {
+                heatChange *= CharacterStats.GetStatisticValue(Statistic.HeatDecreaseRateMultiplier);
+            }
 
             SetCurrentHeat(CurrentHeat.Value + heatChange);
         }

@@ -186,6 +186,7 @@ namespace Gameplay.GameplayObjects.Character.Statistics
                 Statistic.ShieldRechargeRate => 20.0f,
 
                 Statistic.MaxHeat => _serverCharacter.BuildDataReference.GetFrameData().HeatCapacity,
+                Statistic.HeatDecreaseRateMultiplier => 1.0f,
                 Statistic.PersonalHeatGainMultiplier => 1.0f,
 
                 Statistic.MovementSpeed => _serverCharacter.BuildDataReference.GetFrameData().MovementSpeed,
@@ -473,24 +474,25 @@ namespace Gameplay.GameplayObjects.Character.Statistics
     // (Unless otherwise specified: Addition, Multiplier)
     public enum Statistic
     {
-        MaxHealth,      // Implemented - ServerCharacter listens to onChange event and modifies NetworkHealthComponent value.
+        MaxHealth,
 
         MaxShields,
         ShieldRechargeDelay,
         ShieldRechargeRate,
 
-        MaxHeat,        // Implemented - ServerCharacter's MaxHeat value directly reads from this.
-        PersonalHeatGainMultiplier, // Implemented - ServerCharacter reads from this in 'ReceiveHeatChange'.
+        MaxHeat,
+        HeatDecreaseRateMultiplier,
+        PersonalHeatGainMultiplier,
 
-        MovementSpeed,  // Implemented - ServerCharacterMovement's MovementSpeed value reads directly from this.
+        MovementSpeed,  
         // Base & Addition
-        BoostCount,     // Implemented - ServerCharacterMovement's _boostCount value reads directly from this | ServerCharacterMovement is also listening to changes.
-        BoostRechargeMultiplier,    // Implemented - ServerCharacterMovement's _boostRechargeMultiplier value reads directly from this.
+        BoostCount,
+        BoostRechargeMultiplier,
 
-        KnockbackForceMultiplier,
+        KnockbackForceMultiplier,   // Not Implemented
 
-        DamageMultiplier,   // Implemented - DamageEffect reads directly from this when calculating the damage to apply.
-        HealingMultiplier,  // Implemented - HealingEffect reads directly from this when calculating the healing to apply.
+        DamageMultiplier,
+        HealingMultiplier,
     }
     [System.Serializable]
     // (Damage Type | Base, Addition, Multiplier)
