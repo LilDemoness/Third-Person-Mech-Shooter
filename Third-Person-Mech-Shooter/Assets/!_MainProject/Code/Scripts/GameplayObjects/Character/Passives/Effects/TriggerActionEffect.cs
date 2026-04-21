@@ -14,11 +14,11 @@ namespace Gameplay.Passives
         [SerializeField] private ActionDefinition _associatedAction;
 
 
-        public override void Stop(ServerCharacter character)
+        public override void Stop_Server(ServerCharacter character)
         {
             character.CancelAction_Server(_associatedAction.ActionID, cancelNonBlocking: true, forceCancel: true);
         }
-        protected override void Trigger(ServerCharacter character, float lifetime, float timeSinceDesiredUpdate)
+        protected override void Trigger_Server(ServerCharacter character, float lifetime, float timeSinceDesiredUpdate)
         {
             ActionRequestData actionRequestData = ActionRequestData.Create(_associatedAction);
             character.PlayAction_Server(ref actionRequestData);

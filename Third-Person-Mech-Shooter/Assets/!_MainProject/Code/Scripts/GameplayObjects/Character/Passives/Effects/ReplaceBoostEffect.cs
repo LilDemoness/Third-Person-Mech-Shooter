@@ -13,14 +13,13 @@ namespace Gameplay.Passives
         // How do we handle having multiple of these effects active at the same time?
         [SerializeField] private ActionDefinition _boostReplacementAction;
 
-        public override void Stop(ServerCharacter character)
-        {
-            character.Movement.ClearBoostActionOverrideServerRpc();
-        }
-
-        protected override void Trigger(ServerCharacter character, float lifetime, float timeSinceDesiredUpdate)
+        protected override void Trigger_Server(ServerCharacter character, float lifetime, float timeSinceDesiredUpdate)
         {
             character.Movement.SetBoostActionServerRpc(_boostReplacementAction.ActionID);
+        }
+        public override void Stop_Server(ServerCharacter character)
+        {
+            character.Movement.ClearBoostActionOverrideServerRpc();
         }
     }
 }

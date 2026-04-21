@@ -1,4 +1,6 @@
-﻿using Gameplay.GameplayObjects.Character;
+﻿using Gameplay.Actions;
+using Gameplay.GameplayObjects.Character;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace Gameplay.Passives
@@ -9,7 +11,18 @@ namespace Gameplay.Passives
     /// </summary>
     public class Passive
     {
-        public PassiveDefinition Definition { get; set; }
+        /// <summary>
+        ///     The passive instance's corresponding definition.
+        /// </summary>
+        private readonly PassiveDefinition _definition;
+        /// <inheritdoc cref="Passive._definition"/>
+        public PassiveDefinition Definition => _definition;
+
+
+        /// <inheritdoc cref="PassiveDefinition.PassiveID"/>
+        public PassiveID PassiveID { get => Definition.PassiveID; }
+
+
 
         public float TimeStarted { get; set; }
         public float TimeRunning { get; set; }
@@ -20,26 +33,55 @@ namespace Gameplay.Passives
 
         public Passive(PassiveDefinition definition)
         {
-            this.Definition = definition;
+            this._definition = definition;
         }
 
 
-        public void Start(ServerCharacter character)
+        #region Server-side
+
+        public void Start_Server(ServerCharacter character)
         {
-            TimeStarted = Time.time;
+            TimeStarted = NetworkManager.Singleton.ServerTime.TimeAsFloat;
             TimeRunning = 0.0f;
-            Definition.StartEffects(character, out _lastSuccessfulTriggerTimes, out _passiveActiveStates);
+            Definition.StartEffects_Server(character, out _lastSuccessfulTriggerTimes, out _passiveActiveStates);
+
+            character.ClientCharacter.AddPassiveClientRpc(PassiveID, TimeStarted);
         }
-        public void Update(ServerCharacter character, float deltaTime)
+        public void Update_Server(ServerCharacter character, float deltaTime)
         {
             // Update definition effects.
-            Definition.UpdateEffects(character, TimeRunning, deltaTime, ref _lastSuccessfulTriggerTimes, ref _passiveActiveStates);
+            Definition.UpdateEffects_Server(character, TimeRunning, deltaTime, ref _lastSuccessfulTriggerTimes, ref _passiveActiveStates);
 
             TimeRunning += deltaTime;
         }
-        public void Stop(ServerCharacter character)
+        public void Stop_Server(ServerCharacter character)
         {
-            Definition.Stop(character);
+            Definition.Stop_Server(character);
         }
+
+        #endregion
+
+
+        #region Client-side
+
+        public void Start_Client(ClientCharacter character, float serverStartTime)
+        {
+            TimeStarted = serverStartTime;
+            TimeRunning = 0.0f;
+            Definition.StartEffects_Client(character, out _lastSuccessfulTriggerTimes, out _passiveActiveStates);
+        }
+        public void Update_Client(ClientCharacter character, float deltaTime)
+        {
+            // Update definition effects.
+            Definition.UpdateEffects_Client(character, TimeRunning, deltaTime, ref _lastSuccessfulTriggerTimes, ref _passiveActiveStates);
+
+            TimeRunning += deltaTime;
+        }
+        public void Stop_Client(ClientCharacter character)
+        {
+            Definition.Stop_Client(character);
+        }
+
+        #endregion
     }
 }

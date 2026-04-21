@@ -22,13 +22,13 @@ namespace Gameplay.Passives
         [SerializeField] private DirectionalCondition _directionalCondition;
 
 
-        protected override void Trigger(ServerCharacter character, float lifetime, float timeSinceDesiredUpdate) => ApplyEffect(character);
-        protected override void OnConditionFailed(ServerCharacter character)
+        protected override void Trigger_Server(ServerCharacter character, float lifetime, float timeSinceDesiredUpdate) => ApplyEffect(character);
+        protected override void OnConditionFailed_Server(ServerCharacter character)
         {
             if (_removeEffectOnConditionFailed)
                 SuspendEffect(character);
         }
-        public override void Stop(ServerCharacter character) => RemoveEffect(character);
+        public override void Stop_Server(ServerCharacter character) => RemoveEffect(character);
 
 
         protected virtual void ApplyEffect(ServerCharacter owner) => owner.CharacterStats.AddDamageTakenStatisticChange(owner, _affectedStatistic, _alterationValue, _damageTypes, _hasDirectionalCondition ? _directionalCondition : null);

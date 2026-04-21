@@ -11,14 +11,36 @@ namespace Gameplay.Passives
         [SerializeField] private bool _disableOnConditionFail = true;
 
 
-        protected override void Trigger(ServerCharacter character, float lifetime, float timeSinceDesiredUpdate) => RadarManager.Instance.StartRadarPings(_radarPingFrequency);
+        #region Empty Server Functions
 
-        protected override void OnConditionFailed(ServerCharacter character)
+        protected override void Trigger_Server(ServerCharacter character, float lifetime, float timeSinceDesiredUpdate) { }
+
+        #endregion
+
+
+        protected override void Trigger_Client(ClientCharacter character, float lifetime, float timeSinceDesiredUpdate)
         {
+            if (!character.IsLocalPlayer())
+                return; // Only trigger on local player.
+
+            RadarManager.Instance.StartRadarPings(_radarPingFrequency);
+        }
+
+        protected override void OnConditionFailed_Client(ClientCharacter character)
+        {
+            if (!character.IsLocalPlayer())
+                return; // Only trigger on local player.
+
             if (_disableOnConditionFail)
                  StopPings();
         }
-        public override void Stop(ServerCharacter character) => StopPings();
+        public override void Stop_Client(ClientCharacter character)
+        {
+            if (!character.IsLocalPlayer())
+                return; // Only trigger on local player.
+
+            StopPings();
+        }
 
         private void StopPings() => RadarManager.Instance.StopRadarPings();
     }

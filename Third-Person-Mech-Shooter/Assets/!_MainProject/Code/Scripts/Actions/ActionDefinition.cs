@@ -1,5 +1,4 @@
 using UnityEngine;
-using Unity.Netcode;
 using Gameplay.GameplayObjects.Character;
 using Gameplay.Actions.Effects;
 using Gameplay.Actions.Visuals;
@@ -17,10 +16,11 @@ namespace Gameplay.Actions.Definitions
     public abstract class ActionDefinition : ScriptableObject
     {
         /// <summary>
-        ///     An index into the GameDataSource array of action prototypes.
-        ///     Set at runtime by GameDataSource class.
-        ///     If the action is not itself a prototype, it will contain the ActionID of the prototype reference.
-        ///     <br/>This field is used to identify actions in a way that can be sent over the network.
+        ///     An index into the <see cref="Gameplay.GameplayObjects.GameDataSource"/> array of action prototypes.<br/>
+        ///     Set at runtime by <see cref="Gameplay.GameplayObjects.GameDataSource"/>.<br/>
+        ///     If the action is not itself a prototype, it will contain the ActionID of the prototype reference.<br/>
+        ///     
+        ///     This field is used to identify actions in a way that can be sent over the network.
         /// </summary>
         /// <remarks> Non-serialized, so it doesn't get saved between editor sessions.</remarks>
         [field: System.NonSerialized] public ActionID ActionID { get; set; }

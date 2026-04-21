@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Gameplay.Actions.Definitions;
 using Gameplay.Actions;
+using Gameplay.Passives;
 
 namespace Gameplay.GameplayObjects
 {
@@ -24,6 +25,7 @@ namespace Gameplay.GameplayObjects
         //public ActionDefinition StunnedActionDefinition => m_stunnedActionDefinition;
 
         private List<ActionDefinition> _allActionDefinitions;
+        private List<PassiveDefinition> _allPassiveDefinitions;
 
 
         private void Awake()
@@ -34,6 +36,7 @@ namespace Gameplay.GameplayObjects
             }
 
             BuildActionIDs();
+            BuildPassiveIDs();
 
             DontDestroyOnLoad(this.gameObject);
             Instance = this;
@@ -47,11 +50,11 @@ namespace Gameplay.GameplayObjects
             //uniqueDefinitions.Add(m_generalTargetActionDefinition);
             //uniqueDefinitions.Add(m_stunnedActionDefinition);
 
-            _allActionDefinitions = new List<ActionDefinition>(uniqueDefinitions.Count);
 
 
             // Add all our unique actions to '_allActions' and set their IDs to match.
             int i = 0;
+            _allActionDefinitions = new List<ActionDefinition>(uniqueDefinitions.Count);
             foreach(ActionDefinition uniqueDefinition in uniqueDefinitions)
             {
                 uniqueDefinition.ActionID = new ActionID(i);
@@ -59,12 +62,23 @@ namespace Gameplay.GameplayObjects
                 ++i;
             }
         }
-
-
-        public ActionDefinition GetActionDefinitionByID(ActionID index)
+        private void BuildPassiveIDs()
         {
-            return _allActionDefinitions[index.ID];
+            HashSet<PassiveDefinition> uniqueDefinitions = new HashSet<PassiveDefinition>(Resources.LoadAll<PassiveDefinition>(""));
+
+            // Add all our unique actions to '_allActions' and set their IDs to match.
+            int i = 0;
+            _allPassiveDefinitions = new List<PassiveDefinition>(uniqueDefinitions.Count);
+            foreach (PassiveDefinition uniqueDefinition in uniqueDefinitions)
+            {
+                uniqueDefinition.PassiveID = new PassiveID(i);
+                _allPassiveDefinitions.Add(uniqueDefinition);
+                ++i;
+            }
         }
+
+
+        public ActionDefinition GetActionDefinitionByID(ActionID index) => _allActionDefinitions[index.ID];
         public bool TryGetActionDefinitionById(ActionID index, out ActionDefinition definition)
         {
             for(int i = 0; i < _allActionDefinitions.Count; ++i)
@@ -72,6 +86,23 @@ namespace Gameplay.GameplayObjects
                 if (_allActionDefinitions[i].ActionID == index)
                 {
                     definition = _allActionDefinitions[i];
+                    return true;
+                }
+            }
+
+            definition = null;
+            return false;
+        }
+
+
+        public PassiveDefinition GetPassiveDefinitionByID(PassiveID index) => _allPassiveDefinitions[index.ID];
+        public bool TryGetPassiveDefinitionById(PassiveID index, out PassiveDefinition definition)
+        {
+            for (int i = 0; i < _allPassiveDefinitions.Count; ++i)
+            {
+                if (_allPassiveDefinitions[i].PassiveID == index)
+                {
+                    definition = _allPassiveDefinitions[i];
                     return true;
                 }
             }

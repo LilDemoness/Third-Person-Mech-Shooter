@@ -2,6 +2,7 @@ using UnityEngine;
 using Unity.Netcode;
 using Gameplay.Actions;
 using UserInput;
+using Gameplay.Passives;
 
 namespace Gameplay.GameplayObjects.Character
 {
@@ -14,6 +15,7 @@ namespace Gameplay.GameplayObjects.Character
         public ServerCharacter ServerCharacter => _serverCharacter;
 
         private ClientActionPlayer _clientActionPlayer;
+        private ClientPassivePlayer _clientPassivePlayer;
 
         [SerializeField] private ClientInputSender _clientInputSender;
 
@@ -84,6 +86,28 @@ namespace Gameplay.GameplayObjects.Character
 
         #endregion
 
+        #region Passive Client RPCs
+
+        [Rpc(SendTo.ClientsAndHost)]
+        public void AddPassiveClientRpc(PassiveID passiveID, float serverTimeStarted)
+        {
+            _clientPassivePlayer.AddPassive(GameDataSource.Instance.GetPassiveDefinitionByID(passiveID), serverTimeStarted);
+        }
+
+        [Rpc(SendTo.ClientsAndHost)]
+        public void ClearPassiveClientRpc(PassiveID passiveID)
+        {
+            _clientPassivePlayer.RemovePassive(passiveID);
+        }
+
+        [Rpc(SendTo.ClientsAndHost)]
+        public void ClearAllPassivesClientRpc()
+        {
+            _clientPassivePlayer.ClearAllPassives();
+        }
+
+        #endregion
+
 
         private void Awake() => this.enabled = false;
         public override void OnNetworkSpawn()
@@ -95,6 +119,7 @@ namespace Gameplay.GameplayObjects.Character
             _defaultLayer = ServerCharacter.gameObject.layer;
 
             _clientActionPlayer = new ClientActionPlayer(this);
+            _clientPassivePlayer = new ClientPassivePlayer(this);
 
             _serverCharacter.IsInStealth.OnValueChanged += OnIsInStealthChanged;
             _serverCharacter.IsIntangible.OnValueChanged += OnIsIntangibleChanged;
@@ -114,6 +139,7 @@ namespace Gameplay.GameplayObjects.Character
         private void Update()
         {
             _clientActionPlayer.OnUpdate();
+            _clientPassivePlayer.OnUpdate(Time.deltaTime);
         }
 
 
@@ -124,12 +150,14 @@ namespace Gameplay.GameplayObjects.Character
         }
         private void OnIsIntangibleChanged(bool oldIntangibilityState, bool newIntangibilityState)
         {
-            Debug.LogWarning("Visuals Require Actual Implementation");
-            //_graphicsRoot.SetActive(!newIntangibilityState);
+            if (IsLocalPlayer())
+            {
+                // (If originated from local client) Swap camera values.
+                Camera.main.cullingMask &= ~(1 << LayerMask.NameToLayer(newIntangibilityState ? "Player" : "Intangible"));  // Hide other layer.
+                Camera.main.cullingMask |= (1 << LayerMask.NameToLayer(newIntangibilityState ? "Intangible" : "Player"));  // Show this layer.
 
-            // Swap camera values.
-            Camera.main.cullingMask &= ~(1 << LayerMask.NameToLayer(newIntangibilityState ? "Player" : "Intangible"));  // Hide other layer.
-            Camera.main.cullingMask |= (1 << LayerMask.NameToLayer(newIntangibilityState ? "Intangible" : "Player"));  // Show this layer.
+                // Apply screen effect.
+            }
 
             SetLayersThroughChildren(ServerCharacter.transform, newIntangibilityState ? INTANGIBLE_LAYER : _defaultLayer);
         }
@@ -176,5 +204,8 @@ namespace Gameplay.GameplayObjects.Character
             // We are not animating this client.
             return false;
         }
+
+
+        public bool IsLocalPlayer() => this.OwnerClientId == NetworkManager.Singleton.LocalClientId;
     }
 }
