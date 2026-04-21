@@ -4,6 +4,7 @@ using Gameplay.GameplayObjects.Character.Statistics;
 using Gameplay.Actions.Definitions;
 using Gameplay.Actions;
 using System.Collections.Generic;
+using Unity.Netcode.Components;
 
 namespace Gameplay.GameplayObjects.Character
 {
@@ -27,6 +28,7 @@ namespace Gameplay.GameplayObjects.Character
         [SerializeField] private CharacterStats _characterStats;
         [SerializeField] private Transform _rotationPivot;
         [SerializeField] private CharacterController _characterController;
+        [SerializeField] private NetworkTransform _networkTransform;
 
 
         public Transform RotationPivot => _rotationPivot;
@@ -134,12 +136,8 @@ namespace Gameplay.GameplayObjects.Character
             if (statistic != Statistic.BoostCount)
                 return;
 
-            Debug.Log("Boost Count Changed: " + _boostCount);
-
             _boostCountRemaining = _boostCount;
-            _onBoostStatsChanged?.Invoke(_boostCount);
-
-            NotifyListenersOfBoostRechargeValuesChangedServerRpc();
+            NotifyListenersOfBoostCountChanged();
         }
 
 
@@ -151,7 +149,7 @@ namespace Gameplay.GameplayObjects.Character
             transform.position = newPosition;
             if (IsSpawned) // Check facilitates initial position setting for spawning players.
             {
-                this.GetComponent<Unity.Netcode.Components.NetworkTransform>().Teleport(newPosition, transform.rotation, this.transform.lossyScale);   // Teleport for instant movement in clients.
+                _networkTransform.Teleport(newPosition, transform.rotation, this.transform.lossyScale);   // Teleport for instant movement in clients.
             
                 if (this.TryGetComponent<CameraControllerTest>(out CameraControllerTest cameraController))  // Temporary fix to ensure that player rotation isn't messed up by the forced change in rotation.
                     cameraController.SetRotationOwnerRpc(newRotation.eulerAngles.y, newRotation.eulerAngles.x);
@@ -314,6 +312,8 @@ namespace Gameplay.GameplayObjects.Character
             {
                 _characterController.Move(positionOffset);
             }
+
+            _networkTransform.Teleport(transform.position, transform.rotation, this.transform.lossyScale);   // Teleport for instant movement on clients.
         }
 
         /// <summary>
@@ -375,7 +375,7 @@ namespace Gameplay.GameplayObjects.Character
             }
             --_boostCountRemaining;
 
-            NotifyListenersOfBoostRechargeValuesChangedServerRpc();
+            NotifyListenersOfBoostRechargeValuesChanged();
             
             ActionRequestData actionRequestData = new ActionRequestData()
             {
@@ -385,8 +385,13 @@ namespace Gameplay.GameplayObjects.Character
             };
             _serverCharacter.PlayAction_Server(ref actionRequestData);
         }
-        [Rpc(SendTo.Server)]
-        private void NotifyListenersOfBoostRechargeValuesChangedServerRpc()
+
+        private void NotifyListenersOfBoostCountChanged()
+        {
+            NotifyListenersOfBoostCountChangedOwnerRpc(_boostCount);
+            NotifyListenersOfBoostRechargeValuesChanged();
+        }
+        private void NotifyListenersOfBoostRechargeValuesChanged()
         {
             // Calculate Values.
             float rechargeStartTime = NetworkManager.Singleton.ServerTime.TimeAsFloat;
@@ -403,6 +408,8 @@ namespace Gameplay.GameplayObjects.Character
         }
         [Rpc(SendTo.Owner)]
         private void NotifyListenersOfBoostRechargeValuesChangedOwnerRpc(float rechargeStartTime, float currentTotalBoostPercentage, float rechargeEndTime) => OnBoostRechargeValuesChanged?.Invoke(this, new OnBoostChargeValuesChangedEventArgs(rechargeStartTime, currentTotalBoostPercentage, rechargeEndTime));
+        [Rpc(SendTo.Owner)]
+        private void NotifyListenersOfBoostCountChangedOwnerRpc(int newBoostCount) => _onBoostStatsChanged?.Invoke(newBoostCount);
 
 
         private void SetBoostAction(ActionDefinition newBoostAction) => _boostActionOverride = newBoostAction;

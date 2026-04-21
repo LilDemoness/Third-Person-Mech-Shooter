@@ -102,7 +102,7 @@ namespace Gameplay.GameplayObjects.Character.Statistics
             //SyncAllStatsToClientRpc(statistics, statisticTotals, RpcTarget.Single(rpcParams.Receive.SenderClientId, RpcTargetUse.Temp));
             SyncAllStatsToClientRpc(statistics, statisticTotals);
         }
-        [Rpc(SendTo.Owner)]
+        [Rpc(SendTo.ClientsAndHost)]
         public void SyncAllStatsToClientRpc(Statistic[] keys, float[] values, RpcParams rpcParams = default)
         {
             _statisticTotals = new Dictionary<Statistic, float>(keys.Length);
@@ -121,7 +121,7 @@ namespace Gameplay.GameplayObjects.Character.Statistics
             //SyncStatisticClientRpc(statistic, GetOrCreateStatisticAlteration(statistic).Total, RpcTarget.Single(rpcParams.Receive.SenderClientId, RpcTargetUse.Temp));
             SyncStatisticClientRpc(statistic, GetStatisticValue_Server(statistic));
         }
-        [Rpc(SendTo.Owner)]
+        [Rpc(SendTo.ClientsAndHost)]
         public void SyncStatisticClientRpc(Statistic statistic, float newTotal, RpcParams rpcParams = default)
         {
             if (!_statisticTotals.TryAdd(statistic, newTotal))
