@@ -38,7 +38,8 @@ MonoBehaviour:
   <RetriggerDelay>k__BackingField: 0
   <Bursts>k__BackingField: 0
   <BurstDelay>k__BackingField: 0
-  <TriggeringVisuals>k__BackingField: []
+  <TriggeringVisuals>k__BackingField:
+  - rid: 451070733699776662
   <HitVisuals>k__BackingField: []
   <ActionCrosshairPrefab>k__BackingField: {fileID: 0}
   <HitEffects>k__BackingField:
@@ -72,6 +73,14 @@ MonoBehaviour:
         _statisticToCheck: 1
         _minMultiplier: 0
         _maxMultiplier: 1
+    - rid: 451070733699776662
+      type: {class: SpecialFXActionVisual, ns: Gameplay.Actions.Visuals, asm: Assembly-CSharp}
+      data:
+        _triggerTimes: 1
+        _specialFXGraphic: {fileID: 1567703788018572248, guid: f9310b609b42dba4d93e08dc0325195d, type: 3}
+        _parentToOriginator: 1
+        _originOffset: {x: 0, y: 3.5, z: 0}
+        _localOffset: 0
     - rid: 981910458943144057
       type: {class: AoETargetingAction/SphereAoETargeting, ns: Gameplay.Actions.Definitions, asm: Assembly-CSharp}
       data:
