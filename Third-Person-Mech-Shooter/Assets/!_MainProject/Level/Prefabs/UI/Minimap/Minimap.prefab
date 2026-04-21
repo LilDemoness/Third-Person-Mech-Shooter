@@ -1999,7 +1999,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _iconContainer: {fileID: 117390876688148346}
-  _detectionRange: 30
+  _detectionRange: 60
   _rotateWithPlayer: 1
   _clampedPingOffset: 10
   _pingIndicator: {fileID: 8068256442680024055}
@@ -2023,9 +2023,9 @@ MonoBehaviour:
   - {fileID: 3699853075451238031}
   - {fileID: 1488595168783674546}
   - {fileID: 4485444371236952706}
-  _innerSegmentRange: 10
-  _middleSegmentRange: 27.5
-  _outerSegmentRange: 40
+  _innerSegmentRange: 15
+  _middleSegmentRange: 50
+  _outerSegmentRange: 80
 --- !u!222 &1383975656974428853
 CanvasRenderer:
   m_ObjectHideFlags: 0
