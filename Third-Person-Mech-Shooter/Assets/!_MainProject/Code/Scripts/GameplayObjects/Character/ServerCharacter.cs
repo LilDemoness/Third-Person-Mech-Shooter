@@ -192,7 +192,7 @@ namespace Gameplay.GameplayObjects.Character
             }
             
             CurrentHeat.OnValueChanged += OnCurrentHeatChanged_Server;
-            NetworkHealthComponent.OnDied += OnCharacterDied;
+            NetworkHealthComponent.OnDied += OnCharacterDied_Server;
             NetworkHealthComponent.CollisionEntered += CollisionEntered;
             ActionPlayer.OnActionQueueFilled += ServerActionPlayer_OnActionQueueFilled;
             ActionPlayer.OnActionQueueEmptied += ServerActionPlayer_OnActionQueueEmptied;
@@ -201,7 +201,7 @@ namespace Gameplay.GameplayObjects.Character
         {
             // Unsubscribe from NetworkVariable Events.
             CurrentHeat.OnValueChanged -= OnCurrentHeatChanged_Server;
-            NetworkHealthComponent.OnDied -= OnCharacterDied;
+            NetworkHealthComponent.OnDied -= OnCharacterDied_Server;
             NetworkHealthComponent.CollisionEntered -= CollisionEntered;
             ActionPlayer.OnActionQueueFilled -= ServerActionPlayer_OnActionQueueFilled;
             ActionPlayer.OnActionQueueEmptied -= ServerActionPlayer_OnActionQueueEmptied;
@@ -602,13 +602,17 @@ namespace Gameplay.GameplayObjects.Character
 
         #region Death & Respawning
 
-        public void OnCharacterDied(NetworkHealthComponent.BaseDamageReceiverEventArgs _) => OnCharacterDied();
-        public void OnCharacterDied()
+        public void OnCharacterDied_Server(NetworkHealthComponent.BaseDamageReceiverEventArgs _) => OnCharacterDied_Server();
+        public void OnCharacterDied_Server()
         {
             // Spawn Death Model.
 
             // Play Death Effects.
             PlayDeathEffectsClientRpc();
+
+            // Cancel all active actions & status effects.
+            ActionPlayer.ClearActions(true);
+            StatusEffectPlayer.ClearAllStatusEffects();
         }
 
         // Server-only.
