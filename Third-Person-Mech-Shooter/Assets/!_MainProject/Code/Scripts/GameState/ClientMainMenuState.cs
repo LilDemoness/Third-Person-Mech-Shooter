@@ -200,8 +200,10 @@ namespace Gameplay.GameState
 
             await _lobbyUIMediator.QuickJoinRequest(ignoreFilters: true);
 
-            _loadingSpinner.SetActive(false);
-            _rootCanvasGroup.interactable = true;
+            if (_loadingSpinner != null)
+                _loadingSpinner.SetActive(false);
+            if (_rootCanvasGroup != null)
+                _rootCanvasGroup.interactable = true;
         }
 
 

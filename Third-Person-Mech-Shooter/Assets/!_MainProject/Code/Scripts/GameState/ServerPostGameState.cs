@@ -107,7 +107,8 @@ namespace Gameplay.GameState
                 return gameTypes[Random.Range(0, gameTypes.Length)];
             }
 
-            return votesInDuplicate > 0 ? gameTypes[Random.Range(0, votesInDuplicate + 1)] : gameTypes[0];    // Randomly select one of the top voted game types (Or the highest voted GameType if it wasn't a tie).
+            return GameMode.FreeForAll; // Debug: Always default to FFA to prevent an error.
+            //return votesInDuplicate > 0 ? gameTypes[Random.Range(0, votesInDuplicate + 1)] : gameTypes[0];    // Randomly select one of the top voted game types (Or the highest voted GameType if it wasn't a tie).
         }
 
 

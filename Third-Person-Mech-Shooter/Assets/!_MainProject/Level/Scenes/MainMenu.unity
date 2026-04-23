@@ -14516,7 +14516,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Game Title
+  m_text: Mech Shooter
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -14544,8 +14544,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 72
-  m_fontSizeBase: 72
+  m_fontSize: 68
+  m_fontSizeBase: 68
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -14582,7 +14582,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 5, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -18269,7 +18269,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 1341212559}
   m_OnClick:
     m_PersistentCalls:
@@ -24076,7 +24076,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1815424986}
   m_Enabled: 1
-  m_Alpha: 0
+  m_Alpha: 1
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -26754,7 +26754,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7245292150828920828, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: m_text
-      value: <sprite name="Right_Stick"> Sort Order
+      value: <sprite name="Right_Stick"> Invert Sort Order
       objectReference: {fileID: 0}
     - target: {fileID: 7291867236555703977, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: m_Enabled
@@ -26872,7 +26872,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8910391542554074866, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 185
+      value: 270
       objectReference: {fileID: 0}
     - target: {fileID: 8910391542554074866, guid: 6de9de91be1f251498cfa9c8b13e50af, type: 3}
       propertyPath: m_SizeDelta.y

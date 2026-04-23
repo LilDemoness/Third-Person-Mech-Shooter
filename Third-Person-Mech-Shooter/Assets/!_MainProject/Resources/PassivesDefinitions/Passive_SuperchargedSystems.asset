@@ -23,7 +23,7 @@ MonoBehaviour:
         _updates: 0
         _triggerAtStart: 1
         _passiveConditions: []
-        _affectedStatistic: 5
+        _affectedStatistic: 6
         _alterationType: 2
         _alterationValue: 0.7
         _removeEffectOnConditionFailed: 0

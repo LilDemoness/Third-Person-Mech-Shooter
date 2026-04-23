@@ -137,7 +137,7 @@ namespace Gameplay.UI.Menus
                 _noLobbiesLabel.enabled = message.LocalSessions.Count == 0;
                 EventSystem.current?.SetSelectedGameObject(null);
             }
-            else
+            else if (_lobbyListItems.Count > 0 && _lobbyListItems[0] != null)
                 EventSystem.current.SetSelectedGameObject(_lobbyListItems[0].gameObject);
         }
 
