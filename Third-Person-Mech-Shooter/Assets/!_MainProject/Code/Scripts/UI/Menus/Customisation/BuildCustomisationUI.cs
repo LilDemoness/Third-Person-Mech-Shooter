@@ -139,7 +139,8 @@ namespace Gameplay.UI.Menus.Customisation
                     // Setup the button's navigation.
                     _moduleButtonInstances[i].Selectable.AddNavigation(
                         onUp: (i == 0 ? _coreSystemButton.Selectable : _moduleButtonInstances[i - 1].Selectable),
-                        onDown: (i == desiredButtonsCount - 1 ? _customisePrimaryColourButton.Selectable : _moduleButtonInstances[i + 1].Selectable));
+                        //onDown: (i == desiredButtonsCount - 1 ? _customisePrimaryColourButton.Selectable : _moduleButtonInstances[i + 1].Selectable)); // Re-enable once customisation is implemented.
+                        onDown: (i == desiredButtonsCount - 1 ? _frameButton.Selectable : _moduleButtonInstances[i + 1].Selectable));
 
                     // Show the button.
                     _moduleButtonInstances[i].gameObject.SetActive(true);
@@ -151,8 +152,12 @@ namespace Gameplay.UI.Menus.Customisation
 
 
             // Setup Variable Navigation of other buttons.
-            _coreSystemButton.Selectable.AddNavigation(onDown: (desiredButtonsCount > 0 ? _moduleButtonInstances[0].Selectable : _customisePrimaryColourButton.Selectable));
-            _customisePrimaryColourButton.Selectable.AddNavigation(onUp: (desiredButtonsCount > 0 ? _moduleButtonInstances[desiredButtonsCount - 1].Selectable : _coreSystemButton.Selectable));
+            //_frameButton.Selectable.AddNavigation(onUp: _customiseGlowColourButton.Selectable); // Re-enable once customisation is implemented.
+            //_coreSystemButton.Selectable.AddNavigation(onDown: (desiredButtonsCount > 0 ? _moduleButtonInstances[0].Selectable : _customisePrimaryColourButton.Selectable));  // Re-enable once customisation is implemented.
+            //_customisePrimaryColourButton.Selectable.AddNavigation(onUp: (desiredButtonsCount > 0 ? _moduleButtonInstances[desiredButtonsCount - 1].Selectable : _coreSystemButton.Selectable));  // Re-enable once customisation is implemented.
+            //_customiseGlowColourButton.Selectable.AddNavigation(onDown: _frameButton.Selectable);  // Re-enable once customisation is implemented.
+            _frameButton.Selectable.AddNavigation(onUp: _moduleButtonInstances[desiredButtonsCount - 1].Selectable);
+            _coreSystemButton.Selectable.AddNavigation(onDown: _moduleButtonInstances[0].Selectable);
 
 
 
