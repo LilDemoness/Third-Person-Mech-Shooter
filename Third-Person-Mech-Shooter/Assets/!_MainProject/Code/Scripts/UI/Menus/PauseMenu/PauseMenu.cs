@@ -58,9 +58,6 @@ namespace Gameplay.UI.Menus.Pause
 
         public override void Open(bool selectFirstElement = true)
         {
-            if (_isOpen || _isPerformingOpenCloseOperation)
-                return;
-
             // Properly pause the game after a frame to prevent immediately re-opening cause we receive the input for PauseGame after we were just opened.
             DelayFinishOpenForFrame(selectFirstElement).Forget();
         }
@@ -89,8 +86,9 @@ namespace Gameplay.UI.Menus.Pause
 
         public override async UniTask<bool> Close()
         {
-            if (!_isOpen || _isPerformingOpenCloseOperation)
-                return false;   // Failed to close as we are either already closed, in the process of closing, or in the process of opening.
+            //if (!_isOpen || _isPerformingOpenCloseOperation)
+            //    return false;   // Failed to close as we are either already closed, in the process of closing, or in the process of opening.
+            Debug.Log("Close Pause Menu");
 
             // Properly resume the game after a frame to prevent immediately re-opening cause we receive the input for PauseGame after we were closed.
             _isPerformingOpenCloseOperation = true;
@@ -119,6 +117,8 @@ namespace Gameplay.UI.Menus.Pause
         public void OnPauseGamePerformed()
         {
             if (!_subscribedToPauseGameEvent)
+                return;
+            if (_isPerformingOpenCloseOperation)
                 return;
 
             if (!_isOpen)

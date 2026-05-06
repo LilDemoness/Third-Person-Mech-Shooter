@@ -315,7 +315,7 @@ namespace Gameplay.UI.Menus
                 bool success = await CloseMenusToReachUniTask(parentMenu, MenuOperation.None);
                 if (!success)
                 {
-                    Debug.LogWarning("Failed to open parent");
+                    Debug.LogWarning("Failed to open parent menu: " + parentMenu.name);
                     RevertOperation();
                     return false;
                 }
@@ -412,6 +412,7 @@ namespace Gameplay.UI.Menus
             while(s_openMenusCount - 1 > menuIndex)
             {
                 // Close the menu.
+                Debug.Log("Closing Menu: " + s_openMenuData[s_openMenusCount - 1].Menu.name);
                 success = await CloseActiveMenuUniTask(reopenParentMenu: false, preventClosingOfChildlessContainer: true);
                 if (!success)
                 {
@@ -479,7 +480,7 @@ namespace Gameplay.UI.Menus
             //    + "\n Active is Container: " + (ActiveMenuData != null && ActiveMenuData.Menu is ContainerMenu)
             //    + "\n Active has Fallback for Closed Children: " + (ActiveMenuData != null && ActiveMenuData.Menu is ContainerMenu && (ActiveMenuData.Menu as ContainerMenu).OnChildClosedFallback != ContainerMenu.ChildClosedFallback.None)
             //    );
-            if (!preventClosingOfChildlessContainer && activeMenu.TryGetComponentThroughParents<MenuContainer>(out MenuContainer parentMenuContainer))
+            if (!preventClosingOfChildlessContainer && activeMenu.TryGetComponentThroughParentsExclusive<MenuContainer>(out MenuContainer parentMenuContainer))
             {
                 if (ActiveMenuData != null && ActiveMenuData.Menu is ContainerMenu)
                 {
