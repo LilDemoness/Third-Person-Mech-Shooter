@@ -191,7 +191,7 @@ namespace Gameplay.UI.Menus
 
         public void SetSelectedLobbyHeader(int headerIndex)
         {
-            if (_selectedHeader == headerIndex)
+            if (headerIndex != -1 && _selectedHeader == headerIndex)
                 IncrementSortOrder();
             else
             {
