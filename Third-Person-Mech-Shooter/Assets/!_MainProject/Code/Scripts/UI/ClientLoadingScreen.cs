@@ -1,49 +1,23 @@
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace UI
 {
     public class ClientLoadingScreen : MonoBehaviour
     {
-        [SerializeField] private Canvas _canvas;
+        [SerializeField] private CanvasGroup _canvasGroup;
 
 
-        private void Awake()
-        {
-            DontDestroyOnLoad(this);
-        }
-        private void Start()
-        {
-            SetCanvasVisibility(false);
-        }
-        private void OnDestroy()
-        {
-            
-        }
-        private void Update()
-        {
-            
-        }
+        private void Start() => _canvasGroup.Hide();
 
 
         public void StartLoadingScreen(string sceneName)
         {
-            SetCanvasVisibility(true);
+            _canvasGroup.Show();
         }
         public void UpdateLoadingScreen(string sceneName)
         {
 
         }
-        public void StopLoadingScreen()
-        {
-            SetCanvasVisibility(false);
-        }
-
-
-        private void SetCanvasVisibility(bool visibility)
-        {
-            _canvas.enabled = visibility;
-        }
+        public void StopLoadingScreen() => _canvasGroup.Hide();
     }
 }

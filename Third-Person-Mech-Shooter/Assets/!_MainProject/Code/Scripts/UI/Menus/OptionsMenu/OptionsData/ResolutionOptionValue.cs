@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -21,7 +22,9 @@ public class ResolutionOptionValue : OptionsValue<Resolution>, IDropdownSupporti
             return;
 
         base.Init();
-        Resolutions = Screen.resolutions;
+
+        // Find the screen resolutions, filtering out the refresh rate information (As we never use it anyway) to remove duplicates.
+        Resolutions = Screen.resolutions.Select(resolution => new Resolution { width = resolution.width, height = resolution.height }).Distinct().ToArray();
     }
 
 
@@ -83,6 +86,8 @@ public class ResolutionOptionValue : OptionsValue<Resolution>, IDropdownSupporti
 
     public override void SaveToPrefs()
     {
+        if (PrefsIdentifier == string.Empty)
+            return; // We're not wanting to save this information.
         // Protect against saving default or invalid values.
         if (Value.width <= 0 || Value.height <= 0)
             return;
@@ -94,14 +99,19 @@ public class ResolutionOptionValue : OptionsValue<Resolution>, IDropdownSupporti
     public override void LoadFromPrefs()
     {
         Resolution resolution = new Resolution();
-        resolution.width = PlayerPrefs.GetInt(PrefsIdentifier + WIDTH_PREFS_SUFFIX, -1);
-        resolution.height = PlayerPrefs.GetInt(PrefsIdentifier + HEIGHT_PREFS_SUFFIX, -1);
-
-        // Check for unset values. If any are unset, default to the screen's current resolution.
-        if (resolution.width <= 0 || resolution.height <= 0)
+        if (PrefsIdentifier != string.Empty)
         {
-            resolution = Screen.currentResolution;
+            resolution.width = PlayerPrefs.GetInt(PrefsIdentifier + WIDTH_PREFS_SUFFIX, -1);
+            resolution.height = PlayerPrefs.GetInt(PrefsIdentifier + HEIGHT_PREFS_SUFFIX, -1);
+
+            // Check for unset values. If any are unset, default to the screen's current resolution.
+            if (resolution.width <= 0 || resolution.height <= 0)
+            {
+                resolution = Screen.currentResolution;
+            }
         }
+        else
+            resolution = Screen.currentResolution;
 
         SetValueNoNotifyNoChecks(resolution);
         InvokeOnValueChanged();

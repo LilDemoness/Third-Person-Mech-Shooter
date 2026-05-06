@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6ab1901462e9c04cbe1342d20ff4ca6, type: 3}
   m_Name: Gamepad_LookSensitivityX
   m_EditorClassIdentifier: 
-  <Title>k__BackingField: Gamepad Horizontal Look Sensitivity
+  <Title>k__BackingField: Gamepad X Sensitivity
   <Description>k__BackingField: Adjust the horizontal sensitivity of the camera when
     using a gamepad.
   <PrefsIdentifier>k__BackingField: Gamepad_LookSensitivityX
