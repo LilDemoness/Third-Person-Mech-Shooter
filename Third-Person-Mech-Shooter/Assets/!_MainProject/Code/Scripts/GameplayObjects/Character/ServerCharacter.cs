@@ -622,6 +622,8 @@ namespace Gameplay.GameplayObjects.Character
             // Cancel all active actions & status effects.
             ActionPlayer.ClearActions(true);
             StatusEffectPlayer.ClearAllStatusEffects();
+            Movement.SetMovementInput(Vector2.zero);
+            CancelCoreSystemUse();
         }
 
         // Server-only.
