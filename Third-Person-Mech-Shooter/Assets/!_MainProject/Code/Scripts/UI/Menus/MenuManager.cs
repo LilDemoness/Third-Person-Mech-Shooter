@@ -73,8 +73,6 @@ namespace Gameplay.UI.Menus
             string outputString = "";
             for (int i = 0; i < s_openMenuData.Count; ++i)
                 outputString += s_openMenuData[i].Menu.name + (i == s_openMenuData.Count - 1 ? "" : ",");
-
-            Debug.Log($"Active Menus ({s_openMenusCount}): " + outputString);
         }
 
 
@@ -290,7 +288,6 @@ namespace Gameplay.UI.Menus
         /// <inheritdoc cref="OpenChildMenu(Menu, Selectable, Menu)"/>
         public static async UniTask<bool> OpenChildMenuUniTask(Menu child, Selectable sourceSelectable, MenuContainer parent)
         {
-            Debug.Log(s_openMenusCount);
             CacheCurrentData();
 
             Menu parentMenu = null;
@@ -303,7 +300,6 @@ namespace Gameplay.UI.Menus
                 bool success = await CloseAllMenusUniTask();
                 if (!success)
                 {
-                    Debug.LogWarning("Failed to return to root menu");
                     RevertOperation();
                     return false;
                 }
@@ -315,7 +311,6 @@ namespace Gameplay.UI.Menus
                 bool success = await CloseMenusToReachUniTask(parentMenu, MenuOperation.None);
                 if (!success)
                 {
-                    Debug.LogWarning("Failed to open parent menu: " + parentMenu.name);
                     RevertOperation();
                     return false;
                 }
@@ -335,10 +330,7 @@ namespace Gameplay.UI.Menus
         private static void ReopenActiveMenu()
         {
             if (ActiveMenuData != null)
-            {
-                Debug.Log("Selectable Target: " + ActiveMenuData.SelectableTargetForReopen?.name);
                 ActiveMenuData.Menu.Reopen(ActiveMenuData.SelectableTargetForReopen);
-            }
             else
                 EventSystem.current.SetSelectedGameObject(s_baseSelectable?.gameObject);
         }
@@ -368,7 +360,6 @@ namespace Gameplay.UI.Menus
         /// </summary>
         private static void RevertOperation()
         {
-            Debug.Log("Revert Operation");
             if (s_cachedMenuData == null)
                 return;
 
@@ -376,13 +367,10 @@ namespace Gameplay.UI.Menus
             if (ActiveMenuData != null)
                 ActiveMenuData.Menu.Hide();
 
-            // Revert the menu order, opening where required.
+            // Reopen our closed menus to restore the previous menu order.
             int cachedMenusCount = s_cachedMenuData.Count;
-            Debug.Log(cachedMenusCount + " | " + s_openMenusCount);
             for(int i = s_openMenusCount; i < cachedMenusCount; ++i)
-            {
                 OpenMenu(s_cachedMenuData[i].Menu, false, i == 0 ? s_baseSelectable : s_cachedMenuData[i - 1].SelectableTargetForReopen, hideCurrent: false);
-            }
 
             // Repen the new current menu.
             ReopenActiveMenu();
@@ -412,7 +400,6 @@ namespace Gameplay.UI.Menus
             while(s_openMenusCount - 1 > menuIndex)
             {
                 // Close the menu.
-                Debug.Log("Closing Menu: " + s_openMenuData[s_openMenusCount - 1].Menu.name);
                 success = await CloseActiveMenuUniTask(reopenParentMenu: false, preventClosingOfChildlessContainer: true);
                 if (!success)
                 {
@@ -455,10 +442,8 @@ namespace Gameplay.UI.Menus
         private static async UniTask<bool> CloseActiveMenuUniTask(bool reopenParentMenu = true, bool preventClosingOfChildlessContainer = false)
         {
             if (s_openMenusCount == 0)
-            {
-                Debug.Log("No menu to close");
                 return true; // No menus are active for us to close.
-            }
+
             bool isPrimaryCacher = CacheCurrentData();
 
             // Close the menu.

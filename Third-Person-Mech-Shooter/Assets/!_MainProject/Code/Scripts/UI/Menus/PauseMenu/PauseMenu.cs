@@ -86,10 +86,6 @@ namespace Gameplay.UI.Menus.Pause
 
         public override async UniTask<bool> Close()
         {
-            //if (!_isOpen || _isPerformingOpenCloseOperation)
-            //    return false;   // Failed to close as we are either already closed, in the process of closing, or in the process of opening.
-            Debug.Log("Close Pause Menu");
-
             // Properly resume the game after a frame to prevent immediately re-opening cause we receive the input for PauseGame after we were closed.
             _isPerformingOpenCloseOperation = true;
             await UniTask.Yield();

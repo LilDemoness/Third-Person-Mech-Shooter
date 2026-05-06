@@ -102,7 +102,6 @@ namespace Gameplay.UI.Menus
         public virtual void EnterChild(int childIndex, Selectable selectableOverride = null)
         {
             _previouslySelectedChildIndex = childIndex;
-            Debug.Log("Open Child " + childIndex);
             MenuManager.OpenChildMenu(Children[childIndex].Menu, selectableOverride ?? Children[childIndex].Button?.GetComponent<Button>(), this);
         }
 

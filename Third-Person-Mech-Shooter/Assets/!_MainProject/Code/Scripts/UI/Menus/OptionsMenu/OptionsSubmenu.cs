@@ -32,7 +32,6 @@ namespace Gameplay.UI.Menus.Options
         }
         public override async UniTask<bool> Close()
         {
-            Debug.Log("Try Close: " + _hasChanges);
             if (_hasChanges)
             {
                 bool? success = null;
