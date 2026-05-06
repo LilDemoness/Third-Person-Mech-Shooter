@@ -1,20 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using UnityEngine;
 using System.Linq;
-
-/*#if UNITY_EDITOR
-using System.Security.Cryptography;
-using System.Text;
-#endif*/
 
 namespace Utils
 {
     /// <summary>
     ///     Manages the various Profiles of a client
     /// </summary>
-    public class ProfileManager
+    public static class ProfileManager
     {
         public const string AUTH_PROFILE_COMMAND_LINE_ARGUMENT = "-AuthProfile";
         private const string EDITOR_PROFILE_NAME = "EDITOR";
@@ -24,28 +18,13 @@ namespace Utils
         };
 
 
-        private string _profile;
-        public string Profile
-        {
-            get
-            {
-                if (_profile == null)
-                    _profile = GetDefaultProfile();
-
-                return _profile;
-            }
-            private set
-            {
-                _profile = value;
-                OnProfileChanged?.Invoke();
-            }
-        }
+        private static int _selectedProfileIndex = -1;
 
 
-        public event System.Action OnProfileChanged;
+        public static event System.Action OnProfileChanged;
 
-        private List<string> _availableProfiles;
-        public ReadOnlyCollection<string> AvailableProfiles
+        private static List<string> _availableProfiles;
+        public static ReadOnlyCollection<string> AvailableProfiles
         {
             get
             {
@@ -57,16 +36,63 @@ namespace Utils
         }
 
 
-        public bool TryCreateProfile(string profile)
+        public static bool HasActiveProfile() => _selectedProfileIndex >= 0 && _selectedProfileIndex < _availableProfiles.Count;
+        public static string GetActiveProfile() => HasActiveProfile() ? _availableProfiles[_selectedProfileIndex] : string.Empty;
+        public static bool TrySetActiveProfile(string profileName, bool createIfDoesntExist = false)
+        {
+#if !UNITY_EDITOR
+            // Prevent swapping to invalid profile names.
+            if (profileName == EDITOR_PROFILE_NAME)
+                return false;
+#endif
+
+            for (int i = 0; i < _availableProfiles.Count; ++i)
+            {
+                if (_availableProfiles[i] == profileName)
+                {
+                    // The desired profile exists.
+                    // Swap to the desired profile.
+                    SetActiveProfile(i);
+                    return true;
+                }
+            }
+
+            // Desired profile doesn't exist.
+            if (createIfDoesntExist && TryCreateProfile(profileName, out int profileIndex))
+            {
+                // We've created the desired profile.
+                // Swap to it.
+                SetActiveProfile(profileIndex);
+                return true;
+            }
+
+            // Desired profile doesn't exist, and we either didn't want to or couldn't create a new one.
+            return false;
+        }
+        private static void SetActiveProfile(int profileIndex)
+        {
+            _selectedProfileIndex = profileIndex;
+            ClientPrefs.SetActiveProfileIndex(profileIndex);
+            OnProfileChanged?.Invoke();
+        }
+
+
+        public static bool TryCreateProfile(string profile) => TryCreateProfile(profile, out _);
+        public static bool TryCreateProfile(string profile, out int profileIndex)
         {
             if (!IsValidNewProfileName(profile))
+            {
+                profileIndex = -1;
                 return false;
+            }
 
             _availableProfiles.Add(profile);
+            profileIndex = _availableProfiles.Count - 1;
+
             SaveProfiles();
             return true;
         }
-        public void DeleteProfile(string profile)
+        public static void DeleteProfile(string profile)
         {
             if (PROTECTED_PROFILES.Contains(profile))
                 return;
@@ -74,7 +100,7 @@ namespace Utils
             _availableProfiles.Remove(profile);
             SaveProfiles();
         }
-        public bool IsValidNewProfileName(string profileName) => !PROTECTED_PROFILES.Contains(profileName);
+        public static bool IsValidNewProfileName(string profileName) => !PROTECTED_PROFILES.Contains(profileName);
 
 
         private static string GetDefaultProfile()
@@ -114,7 +140,7 @@ namespace Utils
         /// <summary>
         ///     Save the available user profiles using the <see cref="ClientPrefs"/> wrapper.
         /// </summary>
-        private void LoadProfiles()
+        private static void LoadProfiles()
         {
             _availableProfiles = new List<string>();
 
@@ -136,7 +162,7 @@ namespace Utils
         /// <summary>
         ///     Save the available user profiles using the <see cref="ClientPrefs"/> wrapper.
         /// </summary>
-        private void SaveProfiles()
+        private static void SaveProfiles()
         {
             string profilesToSave = "";
             foreach(string profile in _availableProfiles)
@@ -151,15 +177,25 @@ namespace Utils
         }
 
 
-        public bool TrySetProfile(string profileName)
+        /// <summary>
+        ///     Attempts to load the previously active saved profile.
+        ///     Returns false if no profiles were saved, or the saved active profile index is unset or invalid.
+        /// </summary>
+        public static bool TryLoadActiveProfile()
         {
-            #if UNITY_EDITOR
-            #else
-            if (profileName == EDITOR_PROFILE_NAME)
-                return false;
-            #endif
+            if (_availableProfiles == null || _availableProfiles.Count == 0)
+                LoadProfiles();
 
-            Profile = profileName;
+            int profilesCount = _availableProfiles.Count;
+            if (profilesCount == 0)
+                return false;   // No available profiles.
+
+            int desiredActiveProfileIndex = ClientPrefs.GetActiveProfileIndex();
+            if (desiredActiveProfileIndex == -1 || desiredActiveProfileIndex >= profilesCount)
+                return false;   // Unset or invalid desired index.
+
+            // Successfully loaded the previously active profile.
+            SetActiveProfile(desiredActiveProfileIndex);
             return true;
         }
     }

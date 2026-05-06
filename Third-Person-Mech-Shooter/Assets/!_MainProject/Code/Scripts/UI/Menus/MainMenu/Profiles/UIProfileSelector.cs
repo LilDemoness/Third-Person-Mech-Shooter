@@ -1,3 +1,5 @@
+using Cysharp.Threading.Tasks;
+using Gameplay.UI.Menus.Profile;
 using Gameplay.UI.Popups;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,16 +15,11 @@ namespace Gameplay.UI.Menus
         [SerializeField] private ProfileListItemUI _profileListItemPrototype;
         [SerializeField] private Graphic _emptyProfileListLabel;
 
-        [Space(5)]
-        [SerializeField] private Menu _createProfileMenu;
-
 
         private List<ProfileListItemUI> _profileListItems = new List<ProfileListItemUI>();
 
         [Inject]
         private IObjectResolver _resolver;
-        [Inject]
-        private ProfileManager _profileManager;
 
 
 
@@ -37,22 +34,32 @@ namespace Gameplay.UI.Menus
             base.Show();
             UpdateUI();
         }
+        public override async UniTask<bool> Close()
+        {
+            if (!ProfileManager.HasActiveProfile())
+            {
+                PopupManager.ShowDefaultPopup(titleText: "Select a Profile", contentText: "You must select a profile in order to close this menu");
+                return false;
+            }
+
+            return await base.Close();
+        }
 
 
         public void UpdateUI()
         {
             // Create & Setup UI Slots, instantiating & enabling/disabling as necessary.
-            EnsureNumberOfActiveUISlots(_profileManager.AvailableProfiles.Count);
-            for(int i = 0; i < _profileManager.AvailableProfiles.Count; ++i)
+            EnsureNumberOfActiveUISlots(ProfileManager.AvailableProfiles.Count);
+            for(int i = 0; i < ProfileManager.AvailableProfiles.Count; ++i)
             {
-                string profileName = _profileManager.AvailableProfiles[i];
+                string profileName = ProfileManager.AvailableProfiles[i];
                 _profileListItems[i].SetProfileName(profileName);
             }
 
             HighlightSelectedProfile();
 
             // Toggle empty list label as required.
-            _emptyProfileListLabel.enabled = _profileManager.AvailableProfiles.Count == 0;
+            _emptyProfileListLabel.enabled = ProfileManager.AvailableProfiles.Count == 0;
         }
 
         /// <summary>
@@ -92,7 +99,7 @@ namespace Gameplay.UI.Menus
         {
             for(int i = 0; i < _profileListItems.Count; ++i)
             {
-                if (_profileListItems[i].ProfileName == _profileManager.Profile)
+                if (_profileListItems[i].ProfileName == ProfileManager.GetActiveProfile())
                 {
                     _profileListItems[i].MarkSelected();
                 }
@@ -105,7 +112,7 @@ namespace Gameplay.UI.Menus
 
         public void SelectProfile(string profileName)
         {
-            if (_profileManager.TrySetProfile(profileName))
+            if (ProfileManager.TrySetActiveProfile(profileName))
             {
                 HighlightSelectedProfile();
                 Hide();
@@ -123,11 +130,16 @@ namespace Gameplay.UI.Menus
 
             void OnDelete()
             {
-                _profileManager.DeleteProfile(profileName);
+                ProfileManager.DeleteProfile(profileName);
                 UpdateUI();
             }
         }
 
-        public void OpenCreateProfileUI() => MenuManager.OpenMenu(_createProfileMenu, true, null, hideCurrent: false);
+        public void OpenCreateProfileUI() => OpenCreateProfileUIUniTask().Forget();
+        public async UniTaskVoid OpenCreateProfileUIUniTask()
+        {
+            await CreateProfileUI.ShowCreatePromptUniTask();
+            UpdateUI();
+        }
     }
 }

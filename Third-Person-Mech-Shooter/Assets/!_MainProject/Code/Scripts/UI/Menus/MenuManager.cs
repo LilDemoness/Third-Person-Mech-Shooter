@@ -116,7 +116,8 @@ namespace Gameplay.UI.Menus
                     return false;   // An object without a menu parent will never be in focus when there is an obstructing popup open.
 
                 // Check to see if the object is under the blocking popup.
-                return parentMenu == s_blockingPopups[s_blockingPopups.Count - 1];
+                //return parentMenu == s_blockingPopups[s_blockingPopups.Count - 1];
+                return false; // Children under popups is currently not implemented.
             }
 
             // No obstructing popups are open.
@@ -171,7 +172,7 @@ namespace Gameplay.UI.Menus
         ///     Returns true if this popup is the active popup.<br/>
         ///     Defaults to true if no popups are active.
         /// </summary>
-        public static bool IsActivePopup(this ModalPopup popup) => s_blockingPopups.Count > 0 ? s_blockingPopups[s_blockingPopups.Count - 1] == popup : true;
+        public static bool IsActivePopup(this IModalPopup popup) => s_blockingPopups.Count > 0 ? s_blockingPopups[s_blockingPopups.Count - 1] == popup : true;
 
         #endregion
 
@@ -635,13 +636,13 @@ namespace Gameplay.UI.Menus
     
 
         // Handle popups per menu? (Allows popups to appear behind menus?)
-        public static List<ModalPopup> s_blockingPopups; // List so that we can remove popups even if they aren't the open one.
-        public static void LinkPopup(ModalPopup popup)
+        public static List<IModalPopup> s_blockingPopups; // List so that we can remove popups even if they aren't the open one.
+        public static void LinkPopup(IModalPopup popup)
         {
             s_blockingPopups.Add(popup);
             popup.OnClose += UnlinkPopup;
         }
-        private static void UnlinkPopup(ModalPopup popup)
+        private static void UnlinkPopup(IModalPopup popup)
         {
             s_blockingPopups.Remove(popup);
             popup.OnClose -= UnlinkPopup;
@@ -665,7 +666,7 @@ namespace Gameplay.UI.Menus
                 s_blockingPopups.Clear();
             }
             else
-                s_blockingPopups = new List<ModalPopup>();
+                s_blockingPopups = new List<IModalPopup>();
         }
     }
 }

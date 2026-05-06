@@ -46,8 +46,6 @@ namespace ApplicationLifecycle
             builder.Register<LocalSessionUser>(Lifetime.Singleton);
             builder.Register<LocalSession>(Lifetime.Singleton);
 
-            builder.Register<ProfileManager>(Lifetime.Singleton);
-
             builder.Register<PersistentGameState>(Lifetime.Singleton);
 
 

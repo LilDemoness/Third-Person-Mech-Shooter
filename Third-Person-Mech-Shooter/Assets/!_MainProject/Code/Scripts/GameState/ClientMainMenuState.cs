@@ -15,6 +15,7 @@ using UI;
 using ApplicationLifecycle.Messages;
 using Infrastructure;
 using Cysharp.Threading.Tasks;
+using Gameplay.UI.Menus.Profile;
 
 namespace Gameplay.GameState
 {
@@ -63,8 +64,6 @@ namespace Gameplay.GameState
         [Inject]
         private LocalSession _localSession;
         [Inject]
-        private ProfileManager _profileManager;
-        [Inject]
         IPublisher<QuitApplicationMessage> _quitApplicationPub;
 
 
@@ -87,8 +86,7 @@ namespace Gameplay.GameState
         }
         protected override void OnDestroy()
         {
-            if (_profileManager != null)
-                _profileManager.OnProfileChanged -= OnProfileChanged;
+            ProfileManager.OnProfileChanged -= OnProfileChanged;
             base.OnDestroy();
         }
 
@@ -104,11 +102,11 @@ namespace Gameplay.GameState
         private async void TrySignIn()
         {
             try{
-                InitializationOptions unityAuthenticationInitOptions = _authServiceFacade.GenerateAuthenticationOptions(_profileManager.Profile);
+                InitializationOptions unityAuthenticationInitOptions = _authServiceFacade.GenerateAuthenticationOptions(ProfileManager.GetActiveProfile());
 
                 await _authServiceFacade.InitialiseAndSignInAsync(unityAuthenticationInitOptions);
                 OnAuthSignIn();
-                _profileManager.OnProfileChanged += OnProfileChanged;
+                ProfileManager.OnProfileChanged += OnProfileChanged;
             }
             catch (System.Exception)
             {
@@ -123,10 +121,10 @@ namespace Gameplay.GameState
             _ugsSetupTooltipDetector.enabled = false;
             _loadingSpinner.SetActive(false);
 
-            Debug.Log($"Signed in. ID: {AuthenticationService.Instance.PlayerId}\nName: {_profileManager.Profile}");
+            Debug.Log($"Signed in. ID: {AuthenticationService.Instance.PlayerId}\nName: {ProfileManager.GetActiveProfile()}");
 
             _localUser.ID = AuthenticationService.Instance.PlayerId;
-            _localUser.DisplayName = _profileManager.Profile;
+            _localUser.DisplayName = ProfileManager.GetActiveProfile();
 
             // The local SessionUser object will be hooked into the UI before the LocalSession is population
             //  during session join, so the LocalSession must know about it already when that happens.
@@ -145,21 +143,42 @@ namespace Gameplay.GameState
         }
 
 
+        [ContextMenu("Test/Load Active Profile")]
+        public void TestLoadActiveProfile() => LoadActiveProfile();
+        //private async UniTask LoadActiveProfile()
+        private void LoadActiveProfile()
+        {
+            throw new System.NotImplementedException("Change to instead utilise the Profile Menu to allow players to select an already created profile if any exist.");
+
+            /*// Try to load the active profile.
+            if (ProfileManager.TryLoadActiveProfile())
+                return; // Successfully loaded active profile.
+
+            // Failed to load the active profile.
+            // Force the user to create a new profile.
+            bool success = false;
+            while (!success)
+                success = await CreateProfileUI.ShowCreatePromptUniTask();
+
+            // Successfully created a valid profile.
+            return;
+            */
+        }
         private async void OnProfileChanged()
         {
             _sessionButton.interactable = false;
             _loadingSpinner.SetActive(true);
-            await _authServiceFacade.SwitchProfileAndReSignInAsync(_profileManager.Profile);
+            await _authServiceFacade.SwitchProfileAndReSignInAsync(ProfileManager.GetActiveProfile());
 
             _sessionButton.interactable = true;
             _loadingSpinner.SetActive(false);
 
-            Debug.Log($"Signed in. ID: {AuthenticationService.Instance.PlayerId}\nName: {_profileManager.Profile}");
+            Debug.Log($"Signed in. ID: {AuthenticationService.Instance.PlayerId}\nName: {ProfileManager.GetActiveProfile()}");
 
             // Update the LocalUser and LocalSession.
             _localSession.RemoveUser(_localUser);
             _localUser.ID = AuthenticationService.Instance.PlayerId;
-            _localUser.DisplayName = _profileManager.Profile;
+            _localUser.DisplayName = ProfileManager.GetActiveProfile();
             _localSession.AddUser(_localUser);
         }
 

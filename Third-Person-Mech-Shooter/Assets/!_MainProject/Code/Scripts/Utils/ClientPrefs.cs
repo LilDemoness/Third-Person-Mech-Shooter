@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Utils
 {
     /// <summary>
-    ///     Singleton class which saves & lods local-client settings.
+    ///     Singleton class which saves & loads local-client settings.
     /// </summary>
     /// <remarks> This is just a wrapper around the PlayerPrefs system so that all the calls are in the same place.</remarks>
     public static class ClientPrefs
@@ -22,6 +22,7 @@ namespace Utils
 
         private const string CLIENT_GUID_KEY = "client_guid";
         private const string AVAILABLE_PROFILES_KEY = "AvailableProfiles";
+        private const string ACTIVE_PROFILE_INDEX_KEY = "ActiveProfileIndex";
 
 
         private const float DEFAULT_MASTER_VOLUME = 0.75f;
@@ -78,5 +79,12 @@ namespace Utils
 
         public static string GetAvailableProfiles() => PlayerPrefs.GetString(AVAILABLE_PROFILES_KEY, "");
         public static void SetAvailableProfiles(string availableProfiles) => PlayerPrefs.SetString(AVAILABLE_PROFILES_KEY, availableProfiles);
+
+        /// <summary>
+        ///     Retrieves the value of ActiveProfileIndex from PlayerPrefs.</br>
+        ///     Returns -1 if unset.
+        /// </summary>
+        public static int GetActiveProfileIndex() => PlayerPrefs.GetInt(AVAILABLE_PROFILES_KEY, -1);
+        public static void SetActiveProfileIndex(int activeProfileIndex) => PlayerPrefs.SetInt(AVAILABLE_PROFILES_KEY, activeProfileIndex);
     }
 }

@@ -17,8 +17,6 @@ namespace Netcode.ConnectionManagement
         [Inject]
         private MultiplayerServicesFacade _multiplayerServicesFacade;
         [Inject]
-        private ProfileManager _profileManager;
-        [Inject]
         private LocalSession _localSesson;
 
 
@@ -35,25 +33,25 @@ namespace Netcode.ConnectionManagement
 
         public override void StartClientIP(string playerName, string ipAddress, int port)
         {
-            var connectionMethod = new ConnectionMethodIP(ipAddress, (ushort)port, ConnectionManager, _profileManager, playerName);
+            var connectionMethod = new ConnectionMethodIP(ipAddress, (ushort)port, ConnectionManager, playerName);
             ConnectionManager.ClientReconnecting.Configure(connectionMethod);
             ConnectionManager.ChangeState(ConnectionManager.ClientConnecting.Configure(connectionMethod));
         }
         public override void StartClientSession(string playerName)
         {
-            var connectionMethod = new ConnectionMethodRelay(_multiplayerServicesFacade, ConnectionManager, _profileManager, playerName);
+            var connectionMethod = new ConnectionMethodRelay(_multiplayerServicesFacade, ConnectionManager, playerName);
             ConnectionManager.ClientReconnecting.Configure(connectionMethod);
             ConnectionManager.ChangeState(ConnectionManager.ClientConnecting.Configure(connectionMethod));
         }
 
         public override void StartHostIP(string playerName, string ipAddress, int port)
         {
-            var connectionMethod = new ConnectionMethodIP(ipAddress, (ushort)port, ConnectionManager, _profileManager, playerName);
+            var connectionMethod = new ConnectionMethodIP(ipAddress, (ushort)port, ConnectionManager, playerName);
             ConnectionManager.ChangeState(ConnectionManager.StartingHost.Configure(connectionMethod));
         }
         public override void StartHostSession(string playerName)
         {
-            var connectionMethod = new ConnectionMethodRelay(_multiplayerServicesFacade, ConnectionManager, _profileManager, playerName);
+            var connectionMethod = new ConnectionMethodRelay(_multiplayerServicesFacade, ConnectionManager, playerName);
             ConnectionManager.ChangeState(ConnectionManager.StartingHost.Configure(connectionMethod));
         }
     }

@@ -7,11 +7,16 @@ using System.Collections.Generic;
 
 namespace Gameplay.UI.Popups
 {
-    public class ModalPopup : MonoBehaviour
+    public class ModalPopup : MonoBehaviour, IModalPopup
     {
-        public bool IsDisplaying { get; private set; }
+        private bool _isDisplaying;
+        public bool IsDisplaying
+        { 
+            get => _isDisplaying;
+            private set => _isDisplaying = value;
+        }
 
-        public System.Action<ModalPopup> OnClose;
+        public event System.Action<IModalPopup> OnClose;
 
 
         [Header("Header References")]

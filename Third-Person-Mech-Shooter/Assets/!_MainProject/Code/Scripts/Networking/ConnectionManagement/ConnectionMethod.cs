@@ -16,7 +16,6 @@ namespace Netcode.ConnectionManagement
     public abstract class ConnectionMethodBase
     {
         protected ConnectionManager ConnectionManager;
-        private readonly ProfileManager _profileManager;
         protected readonly string PlayerName;
 
 
@@ -41,10 +40,9 @@ namespace Netcode.ConnectionManagement
         public abstract Task<(bool Success, bool ShouldTryAgain)> SetupClientReconnectionAsync();
 
 
-        public ConnectionMethodBase(ConnectionManager connectionManager, ProfileManager profileManager, string playerName)
+        public ConnectionMethodBase(ConnectionManager connectionManager, string playerName)
         {
             this.ConnectionManager = connectionManager;
-            this._profileManager = profileManager;
             this.PlayerName = playerName;
         }
 
@@ -73,10 +71,10 @@ namespace Netcode.ConnectionManagement
         {
             if (Unity.Services.Core.UnityServices.State != ServicesInitializationState.Initialized)
             {
-                return ClientPrefs.GetGuid() + _profileManager.Profile;
+                return ClientPrefs.GetGuid() + ProfileManager.GetActiveProfile();
             }
 
-            return AuthenticationService.Instance.IsSignedIn ? AuthenticationService.Instance.PlayerId : ClientPrefs.GetGuid() + _profileManager.Profile;
+            return AuthenticationService.Instance.IsSignedIn ? AuthenticationService.Instance.PlayerId : ClientPrefs.GetGuid() + ProfileManager.GetActiveProfile();
         }
     }
 
@@ -90,8 +88,8 @@ namespace Netcode.ConnectionManagement
         private ushort _port;
 
 
-        public ConnectionMethodIP(string ip, ushort port, ConnectionManager connectionManager, ProfileManager profileManager, string playerName)
-            : base(connectionManager, profileManager, playerName)
+        public ConnectionMethodIP(string ip, ushort port, ConnectionManager connectionManager, string playerName)
+            : base(connectionManager, playerName)
         {
             _ipAddress = ip;
             _port = port;
@@ -128,8 +126,8 @@ namespace Netcode.ConnectionManagement
         MultiplayerServicesFacade _multiplayerServicesFacade;
 
 
-        public ConnectionMethodRelay(MultiplayerServicesFacade multiplayerServicesFacade, ConnectionManager connectionManager, ProfileManager profileManager, string playerName)
-            : base(connectionManager, profileManager, playerName)
+        public ConnectionMethodRelay(MultiplayerServicesFacade multiplayerServicesFacade, ConnectionManager connectionManager, string playerName)
+            : base(connectionManager, playerName)
         {
             _multiplayerServicesFacade = multiplayerServicesFacade;
             //ConnectionManager = connectionManager;

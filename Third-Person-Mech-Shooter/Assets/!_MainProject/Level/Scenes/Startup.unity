@@ -868,7 +868,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 1
@@ -2380,7 +2380,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 748079114602727783, guid: 29e7194f4eb22224bb567d0a4a611980, type: 3}
       propertyPath: m_PresetReference
-      value: 981910455911448710
+      value: 3324707805598580868
       objectReference: {fileID: 0}
     - target: {fileID: 748079114602727783, guid: 29e7194f4eb22224bb567d0a4a611980, type: 3}
       propertyPath: 'managedReferences[981910455911448708]'
@@ -2388,6 +2388,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 748079114602727783, guid: 29e7194f4eb22224bb567d0a4a611980, type: 3}
       propertyPath: 'managedReferences[981910455911448710]'
+      value: Unity.Multiplayer.Tools.NetworkSimulator.Runtime Unity.Multiplayer.Tools.NetworkSimulator.Runtime.NetworkSimulatorPreset
+      objectReference: {fileID: 0}
+    - target: {fileID: 748079114602727783, guid: 29e7194f4eb22224bb567d0a4a611980, type: 3}
+      propertyPath: 'managedReferences[3324707805598580868]'
       value: Unity.Multiplayer.Tools.NetworkSimulator.Runtime Unity.Multiplayer.Tools.NetworkSimulator.Runtime.NetworkSimulatorPreset
       objectReference: {fileID: 0}
     - target: {fileID: 748079114602727783, guid: 29e7194f4eb22224bb567d0a4a611980, type: 3}
@@ -2403,6 +2407,10 @@ PrefabInstance:
       value: None
       objectReference: {fileID: 0}
     - target: {fileID: 748079114602727783, guid: 29e7194f4eb22224bb567d0a4a611980, type: 3}
+      propertyPath: managedReferences[3324707805598580868].<Name>k__BackingField
+      value: None
+      objectReference: {fileID: 0}
+    - target: {fileID: 748079114602727783, guid: 29e7194f4eb22224bb567d0a4a611980, type: 3}
       propertyPath: managedReferences[6262634832280682583].<Name>k__BackingField
       value: None
       objectReference: {fileID: 0}
@@ -2412,6 +2420,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 748079114602727783, guid: 29e7194f4eb22224bb567d0a4a611980, type: 3}
       propertyPath: managedReferences[981910455911448710].<Description>k__BackingField
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 748079114602727783, guid: 29e7194f4eb22224bb567d0a4a611980, type: 3}
+      propertyPath: managedReferences[3324707805598580868].<Description>k__BackingField
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 748079114602727783, guid: 29e7194f4eb22224bb567d0a4a611980, type: 3}
@@ -2427,6 +2439,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 748079114602727783, guid: 29e7194f4eb22224bb567d0a4a611980, type: 3}
+      propertyPath: managedReferences[3324707805598580868].<PacketDelayMs>k__BackingField
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 748079114602727783, guid: 29e7194f4eb22224bb567d0a4a611980, type: 3}
       propertyPath: managedReferences[6262634832280682583].<PacketDelayMs>k__BackingField
       value: 0
       objectReference: {fileID: 0}
@@ -2436,6 +2452,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 748079114602727783, guid: 29e7194f4eb22224bb567d0a4a611980, type: 3}
       propertyPath: managedReferences[981910455911448710].<PacketJitterMs>k__BackingField
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 748079114602727783, guid: 29e7194f4eb22224bb567d0a4a611980, type: 3}
+      propertyPath: managedReferences[3324707805598580868].<PacketJitterMs>k__BackingField
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 748079114602727783, guid: 29e7194f4eb22224bb567d0a4a611980, type: 3}
@@ -2451,6 +2471,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 748079114602727783, guid: 29e7194f4eb22224bb567d0a4a611980, type: 3}
+      propertyPath: managedReferences[3324707805598580868].<PacketLossPercent>k__BackingField
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 748079114602727783, guid: 29e7194f4eb22224bb567d0a4a611980, type: 3}
       propertyPath: managedReferences[6262634832280682583].<PacketLossPercent>k__BackingField
       value: 0
       objectReference: {fileID: 0}
@@ -2460,6 +2484,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 748079114602727783, guid: 29e7194f4eb22224bb567d0a4a611980, type: 3}
       propertyPath: managedReferences[981910455911448710].<PacketLossInterval>k__BackingField
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 748079114602727783, guid: 29e7194f4eb22224bb567d0a4a611980, type: 3}
+      propertyPath: managedReferences[3324707805598580868].<PacketLossInterval>k__BackingField
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 748079114602727783, guid: 29e7194f4eb22224bb567d0a4a611980, type: 3}
