@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Name>k__BackingField: Apollo-Class
   <Sprite>k__BackingField: {fileID: 21300000, guid: 019f18af6c6278549a84e9e1479346e2, type: 3}
-  <Description>k__BackingField: 
+  <Description>k__BackingField: The smallest frame on display, the Apollo-Class utilises
+    classified technology to jump between dimensions, allowing for short-range teleportation.
   <FrameSize>k__BackingField: 0
   <MaxShields>k__BackingField: 15
   <MaxHealth>k__BackingField: 75

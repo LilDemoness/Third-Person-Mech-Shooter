@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Name>k__BackingField: Missile Launcher
   <Sprite>k__BackingField: {fileID: 21300000, guid: 92ed818592a60564da8c5f62542f2a88, type: 3}
-  <Description>k__BackingField: 
+  <Description>k__BackingField: Fires a short barrage of missiles for high explosive
+    damage.
   <ModuleSize>k__BackingField: 0
   <AssociatedAction>k__BackingField: {fileID: 11400000, guid: f3d267d6606c18b409b63f9da8f09559, type: 2}
