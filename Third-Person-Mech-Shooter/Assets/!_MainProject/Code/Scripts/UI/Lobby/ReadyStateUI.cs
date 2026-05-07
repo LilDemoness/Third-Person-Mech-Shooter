@@ -85,14 +85,6 @@ namespace UI.Lobby
 
                     // If this mark is the local client, ensure that it is positioned at the start of the list.
                     readyCheckMark.transform.SetAsFirstSibling();
-
-                    // Have the display text tell the player that this is their check mark.
-                    readyCheckMark.SetToggleText("(You)");
-                }
-                else
-                {
-                    // Set the check mark's name.
-                    readyCheckMark.SetToggleText("Player" + clientID.ToString());
                 }
 
 
