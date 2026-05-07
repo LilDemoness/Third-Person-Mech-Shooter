@@ -21,6 +21,7 @@ MonoBehaviour:
   <ChargingContinuousHeat>k__BackingField: 0
   <ContinuousHeat>k__BackingField: 0
   <RetriggerHeat>k__BackingField: 0
+  <OverrideHeatValue>k__BackingField: 0
   <WindupTime>k__BackingField: 0
   <RecoveryTime>k__BackingField: 0
   <CooldownTime>k__BackingField: 0

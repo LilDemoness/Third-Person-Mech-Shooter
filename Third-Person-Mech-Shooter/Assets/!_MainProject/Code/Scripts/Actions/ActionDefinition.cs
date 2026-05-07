@@ -89,6 +89,10 @@ namespace Gameplay.Actions.Definitions
             public float RetriggerHeat { get; private set; } = 0.0f;
 
 
+        [field: SerializeField, Tooltip("(Temp) The value that this action sets the user's heat to after activation. Values under 0 have no effect.")]
+            public float OverrideHeatValue { get; private set; } = -1.0f;
+
+
 
         [field: Header("Timings")]
         /// <summary>

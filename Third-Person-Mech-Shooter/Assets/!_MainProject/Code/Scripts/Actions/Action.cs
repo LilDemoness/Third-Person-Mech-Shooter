@@ -282,7 +282,9 @@ namespace Gameplay.Actions
             this._burstsRemaining = _definition.Bursts;
 
 
-            // Apply Immediate Heat.
+            // Apply Immediate Heat Changes.
+            if (_definition.OverrideHeatValue >= 0.0f)
+                owner.ReceiveCurrentHeatChange(owner, _definition.OverrideHeatValue);
             owner.ReceiveHeatChange(owner, _definition.ImmediateHeat);
 
             // Call our OnStart function.

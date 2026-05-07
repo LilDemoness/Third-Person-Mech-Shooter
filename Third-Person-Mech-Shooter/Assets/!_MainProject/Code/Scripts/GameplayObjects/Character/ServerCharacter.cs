@@ -403,6 +403,7 @@ namespace Gameplay.GameplayObjects.Character
             CurrentHeat.Value = 0.0f;
         }
 
+        public void ReceiveCurrentHeatChange(ServerCharacter inflicter, float newValue) => SetCurrentHeat(newValue);
 
         /// <summary>
         ///     Apply a heat change to the ServerCharacter.
