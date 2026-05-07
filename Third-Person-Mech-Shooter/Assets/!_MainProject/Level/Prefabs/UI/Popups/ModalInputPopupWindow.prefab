@@ -212,6 +212,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _headerRoot: {fileID: 123764148195924312}
   _titleText: {fileID: 1059692789078631760}
+  _contentLayoutGroup: {fileID: 7333384857182976541}
   _bodyTextRoot: {fileID: 6103191173762473653}
   _bodyText: {fileID: 8183667765519021646}
   _inputField: {fileID: 6765834201607086054}

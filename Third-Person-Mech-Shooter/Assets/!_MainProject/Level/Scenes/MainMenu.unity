@@ -578,7 +578,6 @@ MonoBehaviour:
   _firstSelectedElement: {fileID: 0}
   _profileListItemPrototype: {fileID: 1226097915}
   _emptyProfileListLabel: {fileID: 1403615887}
-  _createProfileMenu: {fileID: 0}
 --- !u!114 &31882729
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16092,6 +16091,8 @@ MonoBehaviour:
   _uiProfileSelector: {fileID: 31882728}
   _selectionIndicator: {fileID: 952423249}
   _profileNameText: {fileID: 922615632}
+  _selectProfileButton: {fileID: 1712264471}
+  _deleteProfileButton: {fileID: 1624126723}
 --- !u!1 &1227347754
 GameObject:
   m_ObjectHideFlags: 0
@@ -20435,11 +20436,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 4
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
-    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnLeft: {fileID: 1712264471}
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
@@ -21245,12 +21246,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 4
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
-    m_SelectOnRight: {fileID: 0}
+    m_SelectOnRight: {fileID: 1624126723}
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
@@ -25193,7 +25194,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_FirstSelected: {fileID: 709074460}
+  m_FirstSelected: {fileID: 0}
   m_sendNavigationEvents: 1
   m_DragThreshold: 10
 --- !u!4 &2011986347
@@ -26822,6 +26823,10 @@ PrefabInstance:
       propertyPath: _uiProfileSelector
       value: 
       objectReference: {fileID: 31882728}
+    - target: {fileID: 6208511596972497417, guid: 8eba5c4b2aaf56447b79e6e95c8c4939, type: 3}
+      propertyPath: _firstSelectedElement
+      value: 
+      objectReference: {fileID: 154173593}
     - target: {fileID: 6208511596972497417, guid: 8eba5c4b2aaf56447b79e6e95c8c4939, type: 3}
       propertyPath: _ugsSetupTooltipDetector
       value: 

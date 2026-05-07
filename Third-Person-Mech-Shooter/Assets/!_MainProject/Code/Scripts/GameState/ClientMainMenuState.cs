@@ -9,13 +9,10 @@ using Utils;
 using VContainer;
 using VContainer.Unity;
 using Gameplay.UI.Menus;
-using Gameplay.UI.Menus.Session;
 using Gameplay.UI.Tooltips;
-using UI;
 using ApplicationLifecycle.Messages;
 using Infrastructure;
 using Cysharp.Threading.Tasks;
-using Gameplay.UI.Menus.Profile;
 
 namespace Gameplay.GameState
 {
@@ -41,6 +38,9 @@ namespace Gameplay.GameState
 
         [Space(5)]
         [SerializeField] private CanvasGroup _rootCanvasGroup;
+
+        [Space(5)]
+        [SerializeField] private Button _firstSelectedElement;
 
 
         [Header("Menu References")]
@@ -83,6 +83,11 @@ namespace Gameplay.GameState
             TrySignIn();
 
             Cursor.lockState = CursorLockMode.None;
+        }
+        protected override void Start()
+        {
+            base.Start();
+            LoadActiveProfile();
         }
         protected override void OnDestroy()
         {
@@ -148,21 +153,13 @@ namespace Gameplay.GameState
         //private async UniTask LoadActiveProfile()
         private void LoadActiveProfile()
         {
-            throw new System.NotImplementedException("Change to instead utilise the Profile Menu to allow players to select an already created profile if any exist.");
-
-            /*// Try to load the active profile.
+            // Try to load the active profile.
             if (ProfileManager.TryLoadActiveProfile())
                 return; // Successfully loaded active profile.
 
             // Failed to load the active profile.
-            // Force the user to create a new profile.
-            bool success = false;
-            while (!success)
-                success = await CreateProfileUI.ShowCreatePromptUniTask();
-
-            // Successfully created a valid profile.
-            return;
-            */
+            // Force the user to create a new profile via the profile select menu.
+            OnProfilePressed(_firstSelectedElement);
         }
         private async void OnProfileChanged()
         {
@@ -214,11 +211,19 @@ namespace Gameplay.GameState
 
         private async UniTaskVoid TryQuickJoin()
         {
+            // Try to close all menus before sending the request to prevent players from bypassing close requirements through Quick Joins.
+            bool success = await MenuManager.CloseAllMenusUniTask();
+            if (!success)
+                return; // We can't close all our menus, so we cannot perform a quick join.
+
+            // Prevent the player from sending additional requests.
             _rootCanvasGroup.interactable = false;
             _loadingSpinner.SetActive(true);
 
+            // Send the request.
             await _lobbyUIMediator.QuickJoinRequest(ignoreFilters: true);
 
+            // If we are still in the Main Menu (E.g. Request Failed), re-enable interaction.
             if (_loadingSpinner != null)
                 _loadingSpinner.SetActive(false);
             if (_rootCanvasGroup != null)

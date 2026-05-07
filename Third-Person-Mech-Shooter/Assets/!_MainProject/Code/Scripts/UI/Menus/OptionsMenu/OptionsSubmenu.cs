@@ -38,7 +38,7 @@ namespace Gameplay.UI.Menus.Options
 
                 PopupManager.ShowPopup(
                     titleText: "Unsaved Changes", 
-                    bodyText: "You have unsaved changes", null, LayoutOption.Horizontal,
+                    bodyText: "You have unsaved changes", null, ModalPopup.LayoutOption.Horizontal,
                     new PopupButtonParameters("Cancel", OnCancel),
                     new PopupButtonParameters("Discard", OnDiscard),
                     new PopupButtonParameters("Apply", OnSave));
@@ -69,6 +69,8 @@ namespace Gameplay.UI.Menus.Options
             _hasChanges = false;
             BaseSetOption.OnAnyChanged -= OnAnyOptionChanged;
         }
+
+        public override bool CanBeClosed() => !_hasChanges;
 
 
         public void Init()

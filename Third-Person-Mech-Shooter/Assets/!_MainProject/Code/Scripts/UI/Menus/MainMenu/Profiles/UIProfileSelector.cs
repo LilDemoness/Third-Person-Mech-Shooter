@@ -22,6 +22,11 @@ namespace Gameplay.UI.Menus
         private IObjectResolver _resolver;
 
 
+        protected override GameObject FirstSelectedElement => _profileListItems.Count > 0 && _profileListItems[0].gameObject.activeSelf
+            ? _profileListItems[0].GetDefaultNavigationTarget()
+            : base.FirstSelectedElement;
+
+
 
         protected override void Awake()
         {
@@ -44,22 +49,30 @@ namespace Gameplay.UI.Menus
 
             return await base.Close();
         }
+        public override bool CanBeClosed() => ProfileManager.HasActiveProfile();
 
 
         public void UpdateUI()
         {
+            int requiredSlotsCount = ProfileManager.AvailableProfiles.Count;
+
             // Create & Setup UI Slots, instantiating & enabling/disabling as necessary.
-            EnsureNumberOfActiveUISlots(ProfileManager.AvailableProfiles.Count);
-            for(int i = 0; i < ProfileManager.AvailableProfiles.Count; ++i)
+            EnsureNumberOfActiveUISlots(requiredSlotsCount);
+            for(int i = 0; i < requiredSlotsCount; ++i)
             {
                 string profileName = ProfileManager.AvailableProfiles[i];
                 _profileListItems[i].SetProfileName(profileName);
             }
 
+            // Indicate which profile is currently active.
             HighlightSelectedProfile();
 
+            // Prepare navigation.
+            SetupProfileListNavigation(requiredSlotsCount);
+
+
             // Toggle empty list label as required.
-            _emptyProfileListLabel.enabled = ProfileManager.AvailableProfiles.Count == 0;
+            _emptyProfileListLabel.enabled = requiredSlotsCount == 0;
         }
 
         /// <summary>
@@ -81,8 +94,6 @@ namespace Gameplay.UI.Menus
                 _profileListItems[i].gameObject.SetActive(i < requiredNumber);
             }
         }
-
-
         /// <summary>
         ///     Create a new Profile List item from our prototype.
         /// </summary>
@@ -92,6 +103,23 @@ namespace Gameplay.UI.Menus
             _profileListItems.Add(listItem);
             listItem.gameObject.SetActive(true);
             _resolver.Inject(listItem);
+        }
+
+        private void SetupProfileListNavigation(int requiredNumber)
+        {
+            if (requiredNumber == 0)
+                return;
+            if (requiredNumber == 1)
+            {
+                _profileListItems[0].ClearNavigation();
+                return;
+            }
+
+            _profileListItems[0].SetupNavigation(_profileListItems[requiredNumber - 1], _profileListItems[1]);
+            _profileListItems[requiredNumber - 1].SetupNavigation(_profileListItems[requiredNumber - 2], _profileListItems[0]);
+            
+            for (int i = 1; i < requiredNumber - 1; i++)
+                _profileListItems[i].SetupNavigation(_profileListItems[i - 1], _profileListItems[i + 1]);
         }
 
 

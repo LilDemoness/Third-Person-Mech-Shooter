@@ -176,6 +176,31 @@ namespace Gameplay.UI.Menus
 
         #endregion
 
+        public static bool CanCloseToReachMenu(Menu menuToReach)
+        {
+            int indexToClose = menuToReach != null ? GetIndexOfMenu(menuToReach) : 0;
+            if (indexToClose == -1)
+            {
+                // Failed to find the menu in our open menus.
+                // For now, treat this as closing all menus and log to notify us when this occurs.
+                indexToClose = 0;
+                Debug.LogWarning($"Menu '{menuToReach.name}' doesn't exist within the menu hierarchy. Treating this as closing all menus.");
+            }
+
+            // Check all menus to the index we wish to close to see if they can be closed.
+            for (int i = indexToClose; i < s_openMenusCount; ++i)
+            {
+                if (!s_openMenuData[i].Menu.CanBeClosed())
+                    return false;   // We cannot close this menu, so cannot close to reach our desired one.
+            }
+
+            // Successfully closed all menus.
+            return true;
+        }
+        public static bool CanCloseCurrentMenu() => ActiveMenuData == null || ActiveMenuData.Menu.CanBeClosed();
+        
+
+
 
         /// <summary>
         ///     Swaps to the desired menu, closing all menus to reach the menu's parent menu (If it has one, otherwise closes all menus).
@@ -525,7 +550,7 @@ namespace Gameplay.UI.Menus
         }
 
 
-        private static async UniTask<bool> CloseAllMenusUniTask()
+        public static async UniTask<bool> CloseAllMenusUniTask()
         {
             if (s_openMenusCount == 0)
                 return true;    // No menus to close.

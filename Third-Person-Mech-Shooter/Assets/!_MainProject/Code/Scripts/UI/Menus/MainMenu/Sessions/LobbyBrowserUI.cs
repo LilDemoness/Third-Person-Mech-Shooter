@@ -134,11 +134,15 @@ namespace Gameplay.UI.Menus
             if (message.LocalSessions.Count == 0)
             {
                 // No sessions.
-                _noLobbiesLabel.enabled = message.LocalSessions.Count == 0;
+                _noLobbiesLabel.enabled = true;
                 EventSystem.current?.SetSelectedGameObject(null);
             }
             else if (_lobbyListItems.Count > 0 && _lobbyListItems[0] != null)
+            {
+                // At least 1 session.
+                _noLobbiesLabel.enabled = false;
                 EventSystem.current.SetSelectedGameObject(_lobbyListItems[0].gameObject);
+            }
         }
 
         /// <summary>

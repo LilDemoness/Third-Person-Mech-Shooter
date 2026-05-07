@@ -23,7 +23,7 @@ namespace Gameplay.UI.Menus.Profile
 
             PopupManager.ShowInputPopup(
                 titleText: "Create New Profile",
-                bodyText: string.Empty,
+                bodyText: "Valid Characters: a-z, A-Z, 0-9",
                 inputPlaceholderText: "New Profile Name",
 
                 onCancelCallback: OnCancel,

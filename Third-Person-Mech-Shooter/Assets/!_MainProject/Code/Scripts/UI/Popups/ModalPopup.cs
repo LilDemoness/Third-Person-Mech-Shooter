@@ -234,8 +234,8 @@ namespace Gameplay.UI.Popups
                 Destroy(button);
             _buttonInstances = null;
         }
-    }
 
-    [System.Serializable]
-    public enum LayoutOption { Horizontal, Vertical }
+        [System.Serializable]
+        public enum LayoutOption { Horizontal, Vertical }
+    }
 }

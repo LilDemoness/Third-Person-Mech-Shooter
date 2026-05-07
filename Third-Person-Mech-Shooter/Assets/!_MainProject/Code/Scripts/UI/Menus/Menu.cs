@@ -12,9 +12,8 @@ namespace Gameplay.UI.Menus
     {
         [field: SerializeField] protected CanvasGroup CanvasGroup { get; private set; }
         [SerializeField] private Selectable _firstSelectedElement;
-        protected GameObject FirstSelectedElement => _firstSelectedElement?.gameObject;
+        protected virtual GameObject FirstSelectedElement => _firstSelectedElement?.gameObject;
 
-        public GameObject NavigationTarget => FirstSelectedElement;
 
         protected virtual void Awake()
         {
@@ -61,6 +60,8 @@ namespace Gameplay.UI.Menus
             Hide();
             return true;
         }
+
+        public virtual bool CanBeClosed() => true;
 
 
         /// <summary>

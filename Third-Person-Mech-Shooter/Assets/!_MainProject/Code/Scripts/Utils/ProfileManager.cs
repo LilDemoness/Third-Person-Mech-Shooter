@@ -184,7 +184,7 @@ namespace Utils
         public static bool TryLoadActiveProfile()
         {
             if (_availableProfiles == null || _availableProfiles.Count == 0)
-                LoadProfiles();
+                LoadProfiles(); // Profiles haven't been loaded yet.
 
             int profilesCount = _availableProfiles.Count;
             if (profilesCount == 0)

@@ -84,7 +84,7 @@ namespace Utils
         ///     Retrieves the value of ActiveProfileIndex from PlayerPrefs.</br>
         ///     Returns -1 if unset.
         /// </summary>
-        public static int GetActiveProfileIndex() => PlayerPrefs.GetInt(AVAILABLE_PROFILES_KEY, -1);
-        public static void SetActiveProfileIndex(int activeProfileIndex) => PlayerPrefs.SetInt(AVAILABLE_PROFILES_KEY, activeProfileIndex);
+        public static int GetActiveProfileIndex() => PlayerPrefs.GetInt(ACTIVE_PROFILE_INDEX_KEY, -1);
+        public static void SetActiveProfileIndex(int activeProfileIndex) => PlayerPrefs.SetInt(ACTIVE_PROFILE_INDEX_KEY, activeProfileIndex);
     }
 }

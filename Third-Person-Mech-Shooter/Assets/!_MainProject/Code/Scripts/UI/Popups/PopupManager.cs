@@ -45,14 +45,14 @@ namespace Gameplay.UI.Popups
         /// <summary>
         ///     Shows a default popup with the button 'Close'.
         /// </summary>
-        public static ModalPopup ShowDefaultPopup(string titleText, string contentText, Sprite contentSprite = null, LayoutOption layout = LayoutOption.Horizontal) => ShowPopup(titleText, contentText, contentSprite, layout, new PopupButtonParameters("Close", null));
+        public static ModalPopup ShowDefaultPopup(string titleText, string contentText, Sprite contentSprite = null, ModalPopup.LayoutOption layout = ModalPopup.LayoutOption.Horizontal) => ShowPopup(titleText, contentText, contentSprite, layout, new PopupButtonParameters("Close", null));
 
         /// <summary>
         ///     Shows a default popup with no buttons.
         /// </summary>
-        public static ModalPopup ShowAutoClosingPopup(string titleText, string contentText, Sprite contentSprite = null, LayoutOption layout = LayoutOption.Horizontal) => ShowPopup(titleText, contentText, contentSprite, layout, null);
+        public static ModalPopup ShowAutoClosingPopup(string titleText, string contentText, Sprite contentSprite = null, ModalPopup.LayoutOption layout = ModalPopup.LayoutOption.Horizontal) => ShowPopup(titleText, contentText, contentSprite, layout, null);
 
-        public static ModalPopup ShowPopup(string titleText, string bodyText, params PopupButtonParameters[] popupButtons) => ShowPopup(titleText, bodyText, null, LayoutOption.Horizontal, popupButtons);
+        public static ModalPopup ShowPopup(string titleText, string bodyText, params PopupButtonParameters[] popupButtons) => ShowPopup(titleText, bodyText, null, ModalPopup.LayoutOption.Horizontal, popupButtons);
 
         /// <summary>
         ///     Shows a fully configurable popup.
@@ -62,7 +62,7 @@ namespace Gameplay.UI.Popups
         /// <param name="contentSprite"> Sprite for the body image of the Popup.<br/>Set to 'null' to hide the body image.</param>
         /// <param name="layout"> Layout Method for the Popup's Body.</param>
         /// <param name="popupButtons"> Information for the popup's buttons.<br/>All buttons automatically close the popup once performed.</param>
-        public static ModalPopup ShowPopup(string titleText, string bodyText, Sprite contentSprite = null, LayoutOption layout = LayoutOption.Horizontal, params PopupButtonParameters[] popupButtons)
+        public static ModalPopup ShowPopup(string titleText, string bodyText, Sprite contentSprite = null, ModalPopup.LayoutOption layout = ModalPopup.LayoutOption.Horizontal, params PopupButtonParameters[] popupButtons)
         {
             if (s_instance == null)
             {
@@ -80,6 +80,8 @@ namespace Gameplay.UI.Popups
 
 
         public static ModalInputPopup ShowInputPopup(string titleText, string bodyText, string inputPlaceholderText, System.Action onCancelCallback, System.Action<string> onSubmitCallback, System.Func<string, string> sanitiseTextFunc, System.Func<string, bool> isValidFunc)
+            => ShowInputPopup(titleText, bodyText, ModalInputPopup.LayoutOption.ContentsBelow, inputPlaceholderText, onCancelCallback, onSubmitCallback, sanitiseTextFunc, isValidFunc);
+        public static ModalInputPopup ShowInputPopup(string titleText, string bodyText, ModalInputPopup.LayoutOption layoutOption, string inputPlaceholderText, System.Action onCancelCallback, System.Action<string> onSubmitCallback, System.Func<string, string> sanitiseTextFunc, System.Func<string, bool> isValidFunc)
         {
             if (s_instance == null)
             {
@@ -90,7 +92,7 @@ namespace Gameplay.UI.Popups
             // Retrieve/Create a popup input panel and set it up with our desired values.
             ModalInputPopup popup = GetNextAvailablePanel<ModalInputPopup>(s_instance._popupInputPanels, s_instance._popupInputPanelPrefab);
             if (popup != null)
-                popup.SetupModalInputWindow(titleText, bodyText, inputPlaceholderText, onCancelCallback, onSubmitCallback, sanitiseTextFunc, isValidFunc);
+                popup.SetupModalInputWindow(titleText, bodyText, layoutOption, inputPlaceholderText, onCancelCallback, onSubmitCallback, sanitiseTextFunc, isValidFunc);
 
             return popup;
         }
@@ -134,17 +136,5 @@ namespace Gameplay.UI.Popups
 
             return popupPanel;
         }
-    }
-
-
-    public interface IModalPopup
-    {
-        public bool IsDisplaying { get; }
-
-        public event System.Action<IModalPopup> OnClose;
-
-
-        public void Open();
-        public void Close();
     }
 }
