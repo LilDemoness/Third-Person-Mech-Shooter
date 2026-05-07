@@ -86,7 +86,7 @@ namespace UnityServices.Sessions
         /// <summary>
         ///     Join the first available session.
         /// </summary>
-        public async Task<ISession> QuickJoinSession(Dictionary<string, PlayerProperty> localUserData, bool ignoreFilters = false)
+        public async Task<ISession> QuickJoinSession(string playerName, Dictionary<string, PlayerProperty> localUserData, bool ignoreFilters = false)
         {
             QuickJoinOptions quickJoinOptions = new QuickJoinOptions
             {
@@ -96,6 +96,7 @@ namespace UnityServices.Sessions
 
             SessionOptions sessionOptions = new SessionOptions
             {
+                Name = $"{playerName}'s Lobby",
                 MaxPlayers = MAX_PLAYERS,
                 PlayerProperties = localUserData,
             }.WithRelayNetwork();

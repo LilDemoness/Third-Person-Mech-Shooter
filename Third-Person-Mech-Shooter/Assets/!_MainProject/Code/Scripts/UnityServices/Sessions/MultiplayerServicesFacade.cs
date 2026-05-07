@@ -245,7 +245,7 @@ namespace UnityServices.Sessions
             // Attempt to join the first available session.
             try
             {
-                var session = await _multiplayerServicesInterface.QuickJoinSession(_localUser.GetDataForUnityServices());
+                var session = await _multiplayerServicesInterface.QuickJoinSession(_localUser.DisplayName, _localUser.GetDataForUnityServices());
                 return (true, session);
             }
             catch (Exception e)
