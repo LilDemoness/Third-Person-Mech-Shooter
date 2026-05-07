@@ -37,6 +37,9 @@ namespace Gameplay.UI
 
         private void UpdateJoinCode()
         {
+            if (_multiplayerServicesFacade.CurrentUnitySession == null)
+                return;
+
             _codeDisplayLabel.text = "Join Code: " + _multiplayerServicesFacade.CurrentUnitySession.Code;
         }
     }

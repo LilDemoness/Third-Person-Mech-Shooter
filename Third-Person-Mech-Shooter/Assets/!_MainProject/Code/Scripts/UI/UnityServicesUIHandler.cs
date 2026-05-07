@@ -82,7 +82,7 @@ namespace Gameplay.UI
                 //Debug.LogError(error.OriginalException);
             }
 
-            throw error.OriginalException;
+            //throw error.OriginalException;
         }
     }
 }

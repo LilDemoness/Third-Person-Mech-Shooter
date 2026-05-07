@@ -141,7 +141,7 @@ namespace Gameplay.UI.Menus
             {
                 // At least 1 session.
                 _noLobbiesLabel.enabled = false;
-                EventSystem.current.SetSelectedGameObject(_lobbyListItems[0].gameObject);
+                EventSystem.current?.SetSelectedGameObject(_lobbyListItems[0].gameObject);
             }
         }
 

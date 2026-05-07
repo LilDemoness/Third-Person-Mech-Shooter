@@ -312,7 +312,8 @@ namespace UnityServices.Sessions
 
         private void OnSessionChanged()
         {
-            _localSession.ApplyRemoteData(CurrentUnitySession);
+            if (CurrentUnitySession != null)
+                _localSession.ApplyRemoteData(CurrentUnitySession);
 
             // If we are a client, check if the host is still in session.
             if (!_localUser.IsHost)
