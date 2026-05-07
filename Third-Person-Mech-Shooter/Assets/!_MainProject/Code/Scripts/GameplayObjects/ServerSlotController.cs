@@ -132,12 +132,10 @@ namespace Gameplay.GameplayObjects.Character
 
         public void ActivateCoreSystem()
         {
-            if (_serverCharacter.CoreSystemChargePercentage < _serverCharacter.GetCoreSystemData().MinActivationPercentage)
+            if (!_serverCharacter.CanUseCoreSystem())
             {
-                if (_serverCharacter.GetCoreSystemData().ActiveActionDefinition.ActivationStyle == ActionActivationStyle.Toggle)
-                {
+                if (_serverCharacter.CompareCoreSystemActivationStyle(ActionActivationStyle.Toggle))
                     TryDisableTogglableCoreSystemServerRpc();
-                }
 
                 return;
             }
@@ -157,7 +155,7 @@ namespace Gameplay.GameplayObjects.Character
         {
             if (rpcParams.Receive.SenderClientId != this.OwnerClientId)
                 return; // Not sent by the correct client.
-            if (_serverCharacter.CoreSystemChargePercentage < _serverCharacter.GetCoreSystemData().MinActivationPercentage)
+            if (!_serverCharacter.CanUseCoreSystem())
                 return;
 
             // Valid activation input.
@@ -177,12 +175,12 @@ namespace Gameplay.GameplayObjects.Character
         {
             if (rpcParams.Receive.SenderClientId != this.OwnerClientId)
                 return; // Not sent by the correct client.
-            if (_serverCharacter.GetCoreSystemData().ActiveActionDefinition.ActivationStyle != ActionActivationStyle.Toggle)
+            if (!_serverCharacter.CompareCoreSystemActivationStyle(ActionActivationStyle.Toggle))
                 return; // Not a togglable action.
 
             // Valid Input.
             // Try to cancel the core action.
-            _serverCharacter.TryCancelCoreSystem();
+            _serverCharacter.CancelCoreSystemUse();
         }
 
         private void StartUsingCoreSystem()
@@ -211,7 +209,7 @@ namespace Gameplay.GameplayObjects.Character
         private void StopUsingCoreSystem()
         {
             _coreSystemActivationRequest = false;
-            if (_serverCharacter.GetCoreSystemData().ActiveActionDefinition.ActivationStyle != ActionActivationStyle.Held)
+            if (!_serverCharacter.CompareCoreSystemActivationStyle(ActionActivationStyle.Held))
                 return; // Don't cancel this action on release.
 
             // Cancel the action triggered from this slot.

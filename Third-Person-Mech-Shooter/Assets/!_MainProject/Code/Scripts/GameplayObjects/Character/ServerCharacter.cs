@@ -676,24 +676,26 @@ namespace Gameplay.GameplayObjects.Character
 
         public void StartCoreSystemUse(ref ActionRequestData data)
         {
+            if (!CanUseCoreSystem())
+                return;
+
             _coreSystemInUse = true;
             PlayAction_Server(ref data, OnCoreSystemEnded);
         }
         public void CancelCoreSystemUse()
         {
-            if (!_coreSystemInUse)
+            if (!CanCancelCoreSystem())
                 return;
 
             CancelAction_Server(BuildDataReference.GetCoreSystemData().ActiveActionDefinition.ActionID);
             OnCoreSystemEnded();
         }
-        public void TryCancelCoreSystem()
-        {
-            if (!_coreSystemInUse)
-                return;
 
-            ActionPlayer.CancelExistingActionsForToggle(BuildDataReference.GetCoreSystemData().ActiveActionDefinition.ActionID);
-        }
+
+        public bool CanUseCoreSystem() => !_coreSystemInUse && CoreSystemChargePercentage >= GetCoreSystemData().MinActivationPercentage;
+        public bool CanCancelCoreSystem() => _coreSystemInUse;
+        public bool CompareCoreSystemActivationStyle(ActionActivationStyle activationStyle) => GetCoreSystemData().ActiveActionDefinition.ActivationStyle == activationStyle;
+
 
         private void OnCoreSystemEnded(Action _) => OnCoreSystemEnded();
         private void OnCoreSystemEnded()
