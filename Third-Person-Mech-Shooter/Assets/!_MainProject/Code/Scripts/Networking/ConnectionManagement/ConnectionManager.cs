@@ -112,6 +112,14 @@ namespace Netcode.ConnectionManagement
         }
 
 
+        #if UNITY_EDITOR
+
+        [ContextMenu("Logging/Log Current State")]
+        private void Editor_LogCurrentState() => Debug.Log(_currentState.GetType().Name);
+
+        #endif
+
+
         internal void ChangeState(ConnectionState nextState)
         {
             Debug.Log($"{name}: Changed connection state from {_currentState.GetType().Name} to {nextState.GetType().Name}.");
@@ -147,6 +155,7 @@ namespace Netcode.ConnectionManagement
         public void StartClientIP(string playerName, string ipAddress, int port) => _currentState.StartClientIP(playerName, ipAddress, port);
         public void StartHostSession(string playerName) => _currentState.StartHostSession(playerName);
         public void StartHostIP(string playerName, string ipAddress, int port) => _currentState.StartHostIP(playerName, ipAddress, port);
+        public void StartQuickJoinSession(string playerName) => _currentState.StartQuickJoinSession(playerName);
 
 
         public void RequestShutdown() => _currentState.OnUserRequestedShutdown();

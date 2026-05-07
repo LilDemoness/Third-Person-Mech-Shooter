@@ -34,6 +34,41 @@ namespace Netcode.ConnectionManagement
         public override void Exit() { }
 
 
+        public override void OnClientConnected(ulong clientId) // When using QuickJoin, we enter the StartingHostState even if we then join a lobby.
+        {
+            if (clientId != NetworkManager.Singleton.LocalClientId)
+                return; // Not this client.
+
+            ConnectStatusPublisher.Publish(ConnectStatus.Success);
+            ConnectionManager.ChangeState(ConnectionManager.ClientConnected);
+        }
+        public override void OnClientDisconnect(ulong clientId) // When using QuickJoin, we enter the StartingHostState even if we then join a lobby.
+        {
+            if (clientId != NetworkManager.Singleton.LocalClientId)
+                return; // Not this client.
+
+            // Our client ID is always going to be ours for this.
+            StartingClientFailed();
+        }
+        private void StartingClientFailed()
+        {
+            string disconnectReason = ConnectionManager.NetworkManager.DisconnectReason;
+            if (string.IsNullOrEmpty(disconnectReason))
+            {
+                // Unknown failure reason.
+                ConnectStatusPublisher.Publish(ConnectStatus.StartClientFailed);
+            }
+            else
+            {
+                // Known disconnect reason. Parse and publish.
+                ConnectStatus connectStatus = JsonUtility.FromJson<ConnectStatus>(disconnectReason);
+                ConnectStatusPublisher.Publish(connectStatus);
+            }
+
+            ConnectionManager.ChangeState(ConnectionManager.Offline);
+        }
+
+
         public override void OnServerStarted()
         {
             ConnectStatusPublisher.Publish(ConnectStatus.Success);

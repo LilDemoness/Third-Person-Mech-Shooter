@@ -25,11 +25,15 @@ namespace Netcode.ConnectionManagement
         public virtual void OnServerStarted() { }
         public virtual void OnServerStopped() { }
 
+
         public virtual void StartClientIP(string playerName, string ipAddress, int port) { }
         public virtual void StartClientSession(string playerName) { }
 
         public virtual void StartHostIP(string playerName, string ipAddress, int port) { }
         public virtual void StartHostSession(string playerName) { }
+
+        public virtual void StartQuickJoinSession(string playerName) { }
+
 
         public virtual void OnUserRequestedShutdown() { }
 

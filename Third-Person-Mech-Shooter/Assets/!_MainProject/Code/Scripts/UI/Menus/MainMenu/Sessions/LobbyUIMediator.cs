@@ -150,7 +150,8 @@ namespace Gameplay.UI.Menus
                 return;
             }
 
-            _connectionManager.StartHostSession(_localUser.DisplayName);
+            Debug.Log(_localUser.DisplayName);
+            _connectionManager.StartQuickJoinSession(_localUser.DisplayName);
 
             var result = await _multiplayerServicesFacade.TryQuickJoinSessionAsync(ignoreFilters);
 

@@ -54,5 +54,12 @@ namespace Netcode.ConnectionManagement
             var connectionMethod = new ConnectionMethodRelay(_multiplayerServicesFacade, ConnectionManager, playerName);
             ConnectionManager.ChangeState(ConnectionManager.StartingHost.Configure(connectionMethod));
         }
+
+        public override void StartQuickJoinSession(string playerName)
+        {
+            var connectionMethod = new ConnectionMethodRelay(_multiplayerServicesFacade, ConnectionManager, playerName);
+            ConnectionManager.ClientReconnecting.Configure(connectionMethod);
+            ConnectionManager.ChangeState(ConnectionManager.StartingHost.Configure(connectionMethod));
+        }
     }
 }

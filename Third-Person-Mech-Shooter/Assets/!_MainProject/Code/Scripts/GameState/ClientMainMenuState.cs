@@ -148,9 +148,6 @@ namespace Gameplay.GameState
         }
 
 
-        [ContextMenu("Test/Load Active Profile")]
-        public void TestLoadActiveProfile() => LoadActiveProfile();
-        //private async UniTask LoadActiveProfile()
         private void LoadActiveProfile()
         {
             // Try to load the active profile.
