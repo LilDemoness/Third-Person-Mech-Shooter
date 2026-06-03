@@ -190,7 +190,7 @@ namespace Gameplay.Animations
 
 
         // The change in rotation and translation from the rest pose.
-        public Matrix3x3 GetBasisChange() => _originalBasis.transpose() * _basis;
+        public Matrix3x3 GetBasisChange() => _originalBasis.GetTransposition() * _basis;
         public Vector3 GetTranslationChange() => _translation - _originalTranslation;
 
 
@@ -289,7 +289,7 @@ namespace Gameplay.Animations
             _limitZ = false;
         }
 
-        public override Vector3 Axis(int dof) => _globalTransform.linear().col(dof);
+        public override Vector3 Axis(int dof) => _globalTransform.GetLinear().col(dof);
 
 
         public override bool UpdateAngle(IKJacobian jacobian, ref Vector3 delta, ref bool[] clamp)
@@ -419,7 +419,7 @@ namespace Gameplay.Animations
             // We clamped one of our angles.
 
             _newBasis = IKMath.ComputeSwingMatrix(angleX, angleZ) * IKMath.ComputeTwistMatrix(angleY);
-            delta = IKMath.MatrixToAxisAngle(_basis.transpose() * _newBasis);
+            delta = IKMath.MatrixToAxisAngle(_basis.GetTransposition() * _newBasis);
 
             if (!(_locked[0] || _locked[2]) && (clamp[0] || clamp[2]))
             {

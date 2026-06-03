@@ -166,7 +166,7 @@ namespace Gameplay.Animations
 
             Vector3 rootPos = root.GetGlobalStart();
             Vector3 endPos = root.GetGlobalEnd();
-            Matrix3x3 rootBasis = root.GetGlobalTransform().linear();
+            Matrix3x3 rootBasis = root.GetGlobalTransform().GetLinear();
 
 
             // Construct "LookAt" matrices based on a direction and an up vector.
@@ -208,7 +208,7 @@ namespace Gameplay.Animations
                 // Set the root matrix as the difference between the current and desired rotation based on the pole vector constraint.
                 // Transpose is used rather than inverse because we have orthogonal matrices anyway, and inverse would cause a NAN for a singular matrix.
                 Affine3 trans = new();
-                trans.SetLinear(poleMat.transpose() * mat);
+                trans.SetLinear(poleMat.GetTransposition() * mat);
                 trans.SetTranslation(new Vector3(0.0f, 0.0f, 0.0f));
                 _rootMatrix = trans * _rootMatrix;
             }
@@ -383,154 +383,7 @@ namespace Gameplay.Animations
             return isSolved;
         }
     }
-
-
-    public abstract class SVDBase
-    {
-
-    }
-    public class JacobiSVD : SVDBase
-    {
-        private bool _isInitialised;
-        private bool _isAllocated;
-
-        private int _rows;
-        private int _columns;
-        private int _diagonalSize;
-        private uint _computationOptions;
-
-        private bool _computeFullU, _computeThinU;
-        private bool _computeFullV, _computeThinV;
-
-        private MatrixX _matrixU, _matrixV;
-        private MatrixX _scaledMatrix, _workMatrix;
-
-
-
-        public JacobiSVD(int rows, int columns, uint computationOptions = 0)
-        {
-            Allocate(rows, columns, computationOptions);
-        }
-        public JacobiSVD(Matrix3x3 matrix, uint computationOptions = 0)
-        {
-            Compute(matrix, computationOptions);
-        }
-
-
-        private void Allocate(int rows, int columns, uint computationOptions)
-        {
-            Debug.Assert(rows >= 0 && columns >= 0);
-
-            if (_isAllocated && rows == _rows && columns == _columns && computationOptions == _computationOptions)
-                return; // Already allocated with the desired parameters.
-
-            _rows = rows;
-            _columns = columns;
-            _isInitialised = false;
-            _isAllocated = true;
-            _computationOptions = computationOptions;
-
-            _computeFullU = (computationOptions & ComputeFullU) != 0;
-            _computeThinU = (computationOptions & ComputeThinU) != 0;
-            _computeFullV = (computationOptions & ComputeFullV) != 0;
-            _computeThinV = (computationOptions & ComputeThinV) != 0;
-
-            Debug.Assert(!(_computeFullU && _computeThinU), "You can't ask for both Full and Thin U");
-            Debug.Assert(!(_computeFullV && _computeThinV), "You can't ask for both Full and Thin V");
-
-            _diagonalSize = Mathf.Min(_rows, _columns);
-            _singularValues.Resize(_diagonalSize);
-            _matrixU.Resize(_rows, _computeFullU ? _rows
-                                   : _computeThinU ? _diagonalSize
-                                   : 0);
-            _matrixV.Resize(_columns, _computeFullV ? _columns
-                                     : _computeThinV ? _diagonalSize
-                                     : 0);
-            _workMatrix.Resize(_diagonalSize, _diagonalSize);
-
-            if (_columns > _rows) _qrPrecondMoreColumns.Allocate(this); 
-            if (_rows > _columns) _qrPrecondMoreRows.Allocate(this); 
-            if (_rows != _columns) _scaledMatrix.Resize(rows, columns); 
-        }
-
-        public JacobiSVD Compute(MatrixX matrix) => Compute(matrix, _computationOptions);
-        public JacobiSVD Compute(MatrixX matrix, uint computationOptions)
-        {
-            Allocate(matrix.GetRowCount(), matrix.GetColumnCount(), computationOptions);
-
-            // Used to reduce iterations which would worsen the precision of U and V as more rotations are accumulated.
-            const float precision = 2.0f * float.Epsilon;
-
-            // Limit for denormal numbers to be considered zero in order to avoid infinite loops.
-            const float considerAsZero = ;
-
-            // Scaling factor to reduce over/under-flows.
-            float scale = ;
-
-            // Step 1 - R-SVD: Use a QR decomposition to reduce to the case of a square matrix.
-            if (_rows != _columns)
-            {
-                _scaledMatrix = matrix / scale;
-                _qrPrecondMoreColumns.Run(this, _scaledMatrix);
-                _qrPrecondMoreRows.Run(this, _scaledMatrix);
-            }
-            else
-            {
-                _workMatrix = matrix.GetBlock(0, 0, _diagonalSize, _diagonalSize) / scale;
-                if (_computeFullU)      { _matrixU.SetIdentity(_rows, _rows); }
-                else if (_computeThinU) { _matrixU.SetIdentity(_rows, _diagonalSize); }
-                if (_computeFullV)      { _matrixV.SetIdentity(_columns, _columns); }
-                else if (_computeThinV) { _matrixV.SetIdentity(_columns, _diagonalSize); }
-            }
-
-
-            // Step 2: The main Jacobi SVD iteration.
-            var maxDiagEntry = _workMatrix.cwiseAbs().diagonal().maxCoeff();
-
-            bool finished = false;
-            while(!finished)
-            {
-                finished = true;
-
-                // Do a sweep: For all index pairs (p,q), perform SVD of the corresponding 2x2 sub-matrix.
-                for (int p = 1; p < _diagonalSize; ++p)
-                {
-                    for (int q = 0; q < p; ++q)
-                    {
-                        float threshold = Mathf.Max(considerAsZero, precision * maxDiagEntry);
-                        if (Mathf.Abs(_workMatrix.Coeff(p, q)) > threshold || Mathf.Abs(_workMatrix.Coeff(q, p)) > threshold)
-                        {
-                            finished = false;
-
-                            // Perform SVD decomposition of the 2x2 sub-matrix corresponding to indicies p,q to make it diagonal.
-                            // The complex to real operation returns true if the updated 2x2 block is not already diagonal.
-                            if (Run(_workMatrix, this, p, q, maxDiagEntry))
-                            {
-
-                            }
-                        }
-                    }
-                }
-            }
-
-
-            // Step 3: The work matrix is now diagonal, so ensure it's positive so its diagonal entries are the singular values.
-
-
-            // Step 4: Sort singular values in descending order and compute the number of non-zero singular values.
-
-
-            _isInitialised = true;
-            return this;
-        }
-
-
-        // Aka: 'internal::svd_precondition_2x2_block_to_be_real<MatrixType, QRPreconditioner>::run'
-        private bool Run()
-        {
-
-        }
-    }
+    
 
 
     public class IKJacobian
@@ -683,21 +536,21 @@ namespace Gameplay.Animations
             {
                 // SVD will decompose Jt into V * W * Ut, with U,V orthogonal and W diagonal.
                 // So 'J = U * W * Vt' and 'JInverse = V * WInverse * Ut'.
-                JacobiSVD svd = new JacobiSVD(_jacobian.transpose(), JacobiSVD.ComputeThinU | JacobiSVD.ComputeThinV);
+                JacobiSVD svd = new JacobiSVD(_jacobian.GetTransposition(), JacobiSVD.ComputationOptions.ComputeThinU | JacobiSVD.ComputationOptions.ComputeThinV);
 
-                _svdU = svd.MatrixV();
-                _svdV = svd.MatrixU();
-                _svdW = svd.SingularValues();
+                _svdU = svd.GetMatrixV();
+                _svdV = svd.GetMatrixU();
+                _svdW = svd.GetSingularValues();
             }
             else
             {
                 // SVD will decompose J into U * W * Vt, with U,V orthogonal and W diagonal.
                 // So 'JInverse = V * WInverse * Ut'.
-                JacobiSVD svd = new JacobiSVD(_jacobian, JacobiSVD.ComputeThinU | JacobiSVD.ComputeThinV);
+                JacobiSVD svd = new JacobiSVD(_jacobian, JacobiSVD.ComputationOptions.ComputeThinU | JacobiSVD.ComputationOptions.ComputeThinV);
 
-                _svdU = svd.MatrixV();
-                _svdV = svd.MatrixU();
-                _svdW = svd.SingularValues();
+                _svdU = svd.GetMatrixV();
+                _svdV = svd.GetMatrixU();
+                _svdW = svd.GetSingularValues();
             }
 
             if (_useSDLS)
@@ -866,7 +719,7 @@ namespace Gameplay.Animations
 
             // Immediately multiply with Beta so we can do matrix * vector products,
             //  rather than matrix * matrix products.
-            _svdUBeta = _svdU.transpose() * _beta;
+            _svdUBeta = _svdU.GetTransposition() * _beta;
 
             _dTheta.SetZero();
             for (int i = 0; i < _svdW.GetSize(); i++)
@@ -949,7 +802,7 @@ namespace Gameplay.Animations
                 }
             }
 
-            _nullspace = basis * basis.transpose();
+            _nullspace = basis * basis.GetTransposition();
             for (int i = 0; i < _nullspace.GetRowCount(); i++)
                 for (int j = 0; j < _nullspace.GetColumnCount(); j++)
                     _nullspace[i, j] = i == j ? 1.0f - _nullspace[i, j] : -_nullspace[i, j];
@@ -984,419 +837,7 @@ namespace Gameplay.Animations
         }
     }
 
-    public struct Affine3
-    {
-
-    }
-    public struct Matrix3x3
-    {
-        // Row 0.
-        float m00;
-        float m01;
-        float m02;
-
-        // Row 1.
-        float m10;
-        float m11;
-        float m12;
-
-        // Row 2.
-        float m20;
-        float m21;
-        float m22;
-
-
-        public Matrix3x3(float m00, float m01, float m02, float m10, float m11, float m12, float m20, float m21, float m22)
-        {
-            this.m00 = m00;
-            this.m01 = m01;
-            this.m02 = m02;
-
-            this.m10 = m10;
-            this.m11 = m11;
-            this.m12 = m12;
-
-            this.m20 = m20;
-            this.m21 = m21;
-            this.m22 = m22;
-        }
-        public static Matrix3x3 Identity => new Matrix3x3(1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
-
-
-        public float this[int row, int column]
-        {
-            [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-            get
-            {
-                return this[row + column * 3];
-            }
-            [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-            set
-            {
-                this[row + column * 3] = value;
-            }
-        }
-        public float this[int index]
-        {
-            get
-            {
-                return index switch
-                {
-                    0 => m00,
-                    1 => m10,
-                    2 => m20,
-
-                    3 => m01,
-                    4 => m11,
-                    5 => m21,
-
-                    6 => m02,
-                    7 => m12,
-                    8 => m22,
-
-                    _ => throw new System.IndexOutOfRangeException("Invalid matrix index!")
-                };
-            }
-            set
-            {
-                switch (index)
-                {
-                    case 0: m00 = value; break;
-                    case 1: m10 = value; break;
-                    case 2: m20 = value; break;
-
-                    case 3: m01 = value; break;
-                    case 4: m11 = value; break;
-                    case 5: m21 = value; break;
-
-                    case 6: m02 = value; break;
-                    case 7: m12 = value; break;
-                    case 8: m22 = value; break;
-
-                    default: throw new System.IndexOutOfRangeException("Invalid matrix index!");
-                }
-            }
-        }
-
-
-        public Vector3 GetColumn(int columnIndex)
-        {
-            return columnIndex switch
-            {
-                0 => new Vector3(m00, m10, m20),
-                1 => new Vector3(m01, m11, m21),
-                2 => new Vector3(m02, m12, m22),
-
-                _ => throw new System.IndexOutOfRangeException("Invalid Column Index")
-            };
-        }
-        public void SetColumn(int columnIndex, Vector3 newValues) => SetColumn(columnIndex, newValues.x, newValues.y, newValues.z);
-        public void SetColumn(int columnIndex, float row0, float row1, float row2)
-        {
-            switch(columnIndex)
-            {
-                case 0: m00 = row0; m10 = row1; m20 = row2; break;
-                case 1: m01 = row0; m11 = row1; m21 = row2; break;
-                case 2: m02 = row0; m12 = row1; m22 = row2; break;
-
-                default:
-                    throw new System.IndexOutOfRangeException("Invalid Column Index");
-            }
-        }
-
-
-        public Vector3 GetRow(int rowIndex)
-        {
-            return rowIndex switch
-            {
-                0 => new Vector3(m00, m01, m02),
-                1 => new Vector3(m10, m11, m12),
-                2 => new Vector3(m20, m21, m22),
-
-                _ => throw new System.IndexOutOfRangeException("Invalid Row Index")
-            };
-        }
-        public void SetRow(int rowIndex, Vector3 newValues) => SetRow(rowIndex, newValues.x, newValues.y, newValues.z);
-        public void SetRow(int rowIndex, float col0, float col1, float col2)
-        {
-            switch (rowIndex)
-            {
-                case 0: m00 = col0; m01 = col1; m02 = col2; break;
-                case 1: m10 = col0; m11 = col1; m12 = col2; break;
-                case 2: m20 = col0; m21 = col1; m22 = col2; break;
-
-                default:
-                    throw new System.IndexOutOfRangeException("Invalid Row Index");
-            }
-        }
-    }
-    public struct MatrixX
-    {
-        private float[] _values;
-        private int _rowCount, _columnCount;
-        private int _totalCount => _rowCount * _columnCount;
-
-        public MatrixX(int rowCount, int columnCount)
-        {
-            _rowCount = rowCount;
-            _columnCount = columnCount;
-            _values = new float[rowCount * columnCount];
-
-            SetZero();
-        }
-
-        public float this[int row, int column]
-        {
-            get => this[row + column * row];
-            set => this[row + column * row] = value;
-        }
-        public float this[int index]
-        {
-            get => _values[index];
-            set => _values[index] = value;
-        }
-
-
-        public void Resize(int rowCount, int columnCount)
-        {
-            _rowCount = rowCount;
-            _columnCount = columnCount;
-            _values = new float[_totalCount];
-        }
-        public void SetZero()
-        {
-            for (int i = 0; i < _totalCount; i++)
-                _values[i] = 0.0f;
-        }
-        public void SetOnes()
-        {
-            for (int i = 0; i < _totalCount; i++)
-                _values[i] = 1.0f;
-        }
-
-        public int GetRowCount() => _rowCount;
-        public int GetColumnCount() => _columnCount;
-
-
-        public static VectorX operator *(MatrixX a, VectorX b)
-        {
-            if (a.GetRowCount() != b.GetSize())
-                throw new System.ArithmeticException($"Cannot Multiply a Matrix{a.GetRowCount()}x{a.GetColumnCount()} with a Vector{b.GetSize()}");
-
-            // Create an empty vector to hold our values (Initial values are 0).
-            VectorX returnedVector = new VectorX(b.GetSize());
-
-            // Multiply the two matrices together (Vectors are 1xX matrices).
-            for(int row = 0; row < a.GetRowCount(); ++row)
-                for(int column = 0; column < a.GetColumnCount(); ++column)
-                    returnedVector[row] += a[row, column] * b[row];
-                
-            return returnedVector;
-        }
-        public static MatrixX operator *(MatrixX a, MatrixX b)
-        {
-            if (a.GetRowCount() != b.GetColumnCount() || a.GetColumnCount() != b.GetRowCount())
-                throw new System.ArithmeticException($"Cannot Multiply a Matrix{a.GetRowCount()}x{a.GetColumnCount()} with a Matrix{b.GetRowCount()}x{b.GetColumnCount()}");
-
-            // Create an empty vector to hold our values (Initial values are 0).
-            MatrixX returnedMatrix = new MatrixX(a.GetRowCount(), b.GetRowCount());
-
-            // Multiply the two matrices together (Vectors are 1xX matrices).
-            for (int row = 0; row < a.GetRowCount(); ++row)
-                for (int column = 0; column < a.GetColumnCount(); ++column)
-                    returnedMatrix[row] += a[row, column] * b[column, row];
-
-            return returnedMatrix;
-        }
-    }
-    public struct VectorX : System.IEquatable<VectorX>, System.IEquatable<UnityEngine.Vector2>, System.IEquatable<UnityEngine.Vector3>
-    {
-        private float[] _values;
-        private int _size;
-
-        public VectorX(int size)
-        {
-            _values = new float[size];
-            _size = size;
-
-            SetZero();
-        }
-        public VectorX(VectorX other)
-            : this(other._size)
-        {
-            for(int i = 0; i < _size; ++i)
-                _values[i] = other._values[i];
-        }
-
-
-        public float this[int index]
-        {
-            get => index < _size ? _values[_size] : throw new System.IndexOutOfRangeException($"Invalid index '{index}' for VectorX with size '{_size}'");
-            [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-            set
-            {
-                if (index < _size)
-                    _values[_size] = value;
-                else
-                    throw new System.IndexOutOfRangeException($"Invalid index '{index}' for VectorX with size '{_size}'");
-            }
-        }
-        public int GetSize() => _size;
-
-        public void Resize(int newSize)
-        {
-            _values = new float[newSize];
-            _size = newSize;
-        }
-        public void SetZero()
-        {
-            for(int i = 0; i < _size; ++i)
-                _values[i] = 0.0f;
-        }
-        public void SetOnes()
-        {
-            for (int i = 0; i < _size; ++i)
-                _values[i] = 1.0f;
-        }
-
-
-        public static float Dot(VectorX a, VectorX b)
-        {
-
-        }
-
-
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public override bool Equals(object other)
-        {
-            return other switch
-            {
-                VectorX otherVectorX => Equals(otherVectorX),
-                Vector2 otherVector2 => Equals(otherVector2),
-                Vector3 otherVector3 => Equals(otherVector3),
-
-                _ => false
-            };
-        }
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public bool Equals(VectorX other)
-        {
-            if (_size != other._size)
-                return false; // Sizes differ to the two cannot be equal.
-
-            for(int i = 0; i < _size; ++i)
-                if (_values[i] != other._values[i])
-                    return false; // A value doesn't match.
-
-            return true; // Size and all values match.
-        }
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public bool Equals(Vector2 other)
-        {
-            if (_size != 2)
-                return false; // The size of the VectorX is incompatible with a Vector2.
-
-            // Return true if both values match.
-            return _values[0] == other.x && _values[1] == other.y;
-        }
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public bool Equals(Vector3 other)
-        {
-            if (_size != 3)
-                return false; // The size of the VectorX is incompatible with a Vector3.
-
-            // Return true if all values match.
-            return _values[0] == other.x && _values[1] == other.y && _values[2] == other.z;
-        }
-
-
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static VectorX operator +(VectorX a, float b)
-        {
-            VectorX returnedVector = new VectorX(a);
-            for (int i = 0; i < a._size; ++i)
-                returnedVector[i] = a[i] + b;
-
-            return returnedVector;
-        }
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static VectorX operator -(VectorX a, float b)
-        {
-            VectorX returnedVector = new VectorX(a);
-            for (int i = 0; i < a._size; ++i)
-                returnedVector[i] = a[i] -+ b;
-
-            return returnedVector;
-        }
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static VectorX operator *(VectorX a, float b)
-        {
-            VectorX returnedVector = new VectorX(a);
-            for (int i = 0; i < a._size; ++i)
-                returnedVector[i] = a[i] * b;
-
-            return returnedVector;
-        }
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static VectorX operator /(VectorX a, float b)
-        {
-            VectorX returnedVector = new VectorX(a);
-            for (int i = 0; i < a._size; ++i)
-                returnedVector[i] = a[i] / b;
-
-            return returnedVector;
-        }
-
-
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static VectorX operator +(VectorX a, VectorX b)
-        {
-            if (a.GetSize() != b.GetSize())
-                throw new System.ArithmeticException($"Cannot multiply a Vector{a.GetSize()} with a Vector{b.GetSize()}");
-
-            VectorX returnedVector = new VectorX(a);
-            for (int i = 0; i < a._size; ++i)
-                returnedVector[i] = a[i] + b[i];
-
-            return returnedVector;
-        }
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static VectorX operator -(VectorX a, VectorX b)
-        {
-            if (a.GetSize() != b.GetSize())
-                throw new System.ArithmeticException($"Cannot multiply a Vector{a.GetSize()} with a Vector{b.GetSize()}");
-
-            VectorX returnedVector = new VectorX(a);
-            for (int i = 0; i < a._size; ++i)
-                returnedVector[i] = a[i] - b[i];
-
-            return returnedVector;
-        }
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static VectorX operator *(VectorX a, VectorX b)
-        {
-            if (a.GetSize() != b.GetSize())
-                throw new System.ArithmeticException($"Cannot multiply a Vector{a.GetSize()} with a Vector{b.GetSize()}");
-
-            VectorX returnedVector = new VectorX(a);
-            for (int i = 0; i < a._size; ++i)
-                returnedVector[i] = a[i] * b[i];
-
-            return returnedVector;
-        }
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static VectorX operator /(VectorX a, VectorX b)
-        {
-            if (a.GetSize() != b.GetSize())
-                throw new System.ArithmeticException($"Cannot multiply a Vector{a.GetSize()} with a Vector{b.GetSize()}");
-
-            VectorX returnedVector = new VectorX(a);
-            for (int i = 0; i < a._size; ++i)
-                returnedVector[i] = a[i] / b[i];
-
-            return returnedVector;
-        }
-    }
+    
 
     public class Bone
     {
