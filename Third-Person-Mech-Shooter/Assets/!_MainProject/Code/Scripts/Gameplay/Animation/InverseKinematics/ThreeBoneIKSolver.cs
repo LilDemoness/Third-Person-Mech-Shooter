@@ -443,10 +443,10 @@ namespace Gameplay.Animations
             _taskSize = taskSize;
 
             _jacobian.Resize(taskSize, dofCount);
-            _jacobian.SetZero();
+            _jacobian.SetZeros();
 
             _alpha.Resize(dofCount);
-            _alpha.SetZero();
+            _alpha.SetZeros();
 
             _nullspace.Resize(dofCount, dofCount);
 
@@ -455,7 +455,7 @@ namespace Gameplay.Animations
             _dNormWeight.Resize(dofCount);
 
             _norm.Resize(dofCount);
-            _norm.SetZero();
+            _norm.SetZeros();
 
             _beta.Resize(taskSize);
 
@@ -579,7 +579,7 @@ namespace Gameplay.Animations
             float maxAngleChange = Mathf.PI / 4.0f;
             float epsilon = 1e-10f;
 
-            _dTheta.SetZero();
+            _dTheta.SetZeros();
             _minDamp = 1.0f;
 
             for (int i = 0; i < _dofCount; ++i)
@@ -721,7 +721,7 @@ namespace Gameplay.Animations
             //  rather than matrix * matrix products.
             _svdUBeta = _svdU.GetTransposition() * _beta;
 
-            _dTheta.SetZero();
+            _dTheta.SetZeros();
             for (int i = 0; i < _svdW.GetSize(); i++)
             {
                 if (_svdW[i] <= epsilon)

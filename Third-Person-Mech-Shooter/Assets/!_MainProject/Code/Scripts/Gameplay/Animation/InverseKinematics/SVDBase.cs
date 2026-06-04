@@ -444,7 +444,7 @@ namespace Gameplay.Animations
 
                 _qr.Compute(matrix);
 
-                svd._workMatrix = _qr.MatrixQR().GetSubmatrix(matrix.GetColumnCount(), matrix.GetColumnCount(), 0, 0).GetTriangularViewUpper();
+                svd._workMatrix = _qr.MatrixQR().GetSubmatrix(matrix.GetColumnCount(), matrix.GetColumnCount(), 0, 0).GetTriangularView(TriangularViewMode.Upper);
                 if (svd._computeFullU)
                     _qr.HouseholderQ().EvalTo(svd._matrixU, _workspace);
                 else if (svd._computeThinU)
@@ -483,7 +483,7 @@ namespace Gameplay.Animations
                 _adjoint = matrix.GetAdjoint();
                 _qr.Compute(_adjoint);
 
-                svd._workMatrix = _qr.MatrixQR().GetSubmatrix(matrix.GetRowCount(), matrix.GetRowCount(), 0, 0).GetTriangularViewUpper().GetAdjoint();
+                svd._workMatrix = _qr.MatrixQR().GetSubmatrix(matrix.GetRowCount(), matrix.GetRowCount(), 0, 0).GetTriangularView(TriangularViewMode.Upper).GetAdjoint();
                 if (svd._computeFullV)
                     _qr.HouseholderQ().EvalTo(svd._matrixV, _workspace);
                 else if (svd._computeThinV)
@@ -702,142 +702,6 @@ namespace Gameplay.Animations
 
         #endregion
 
-        /// <summary>
-        ///     Represents a permutation matrix, internally stored as a vector of integers.
-        /// </summary>
-        public class PermutationMatrix
-        {
-            VectorX _indices;
-
-
-            public PermutationMatrix(int size)
-            {
-                _indices = new VectorX(size);
-            }
-            public PermutationMatrix(PermutationMatrix other)
-            {
-                _indices = other._indices;
-            }
-            public PermutationMatrix(VectorX indices)
-            {
-                _indices = indices;
-            }
-
-
-            public VectorX GetIndices() => _indices;
-            public void SetIndices(VectorX newValue) => _indices = newValue;
-
-
-            public int GetRowCount() => _indices.GetSize();
-            public int GetColumnCount() => 1;
-        }
-
-        /// <summary>
-        ///     Represents a product sequence of Householder reflections where:
-        ///     - The first Householder reflection acts on the whole space
-        ///     - The second Householder reflection leaves the 1D subspace spanned by the first unit vector invariant
-        ///     - The third Householder reflection leaves the 2D subspace spanned by the first two unit vectors invariant
-        ///     - And so on up to the last reflection which leaves all but 1 dimensions invariant and acts only on the last dimension.
-        ///     
-        ///     Such sequences of Householder reflections are used in several algorithms to zero out certain parts of a matrix.
-        /// </summary>
-        public class HouseholderSequence
-        {
-            private MatrixX _vectors;
-            private MatrixX _coeffs;
-            private bool _trans;
-            private int _length;
-            private int _shift;
-
-
-            public HouseholderSequence(MatrixX v, MatrixX h)
-            {
-                _vectors = v;
-                _coeffs = h;
-                _trans = false;
-                _length = v.GetDiagonalSize();
-                _shift = 0;
-            }
-            public HouseholderSequence(HouseholderSequence other)
-            {
-                _vectors = other._vectors;
-                _coeffs = other._coeffs;
-                _trans = other._trans;
-                _length = other._length;
-                _shift = other._shift;
-            }
-
-
-            /// <summary>
-            ///     Returns the number of rows of transformation viewed as a matrix.
-            ///     This equals the dimension of the space that the transformation acts on.
-            /// </summary>
-            public int GetRowCount() => _vectors.GetRowCount(); /*[Compare Side == Left] ? _vectors.GetRowCount() : _vectors.GetColumnCount();*/
-            /// <summary>
-            ///     Returns the number of columns of transformation viewed as a matrix.
-            ///     This equals the dimension of the space that the transformation acts on.
-            /// </summary>
-            public int GetColumnCount() => _vectors.GetRowCount();
-
-
-            public HouseholderSequence GetTransposition() => new HouseholderSequence(this).SetTrans(!_trans);
-            public HouseholderSequence GetConjugate() => new HouseholderSequence(_vectors.GetConjugate(), _coeffs.GetConjugate()).SetTrans(_trans).SetLength(_length).SetShift(_shift);
-            public HouseholderSequence GetAdjoint() => GetConjugate().SetTrans(!_trans);
-            public HouseholderSequence GetInverse() => GetAdjoint();
-
-            /// <summary>
-            ///     Returns the essential part of a Householder vector.
-            /// </summary>
-            /// <param name="k"> Index of householder reflection.</param>
-            /// <returns> A Vector containing non-trivial entries of the k-th Householder vector.</returns>
-            /// <remarks>
-            ///     This function returns the non-essential part of the Householder Vector v_i.
-            ///     This is a vector of length (n - 1), containing the last (n - 1) entries of the vector
-            ///     
-            ///     The index 'i' equals k + shift, corresponding to the k-th column of the matrix passed to the constructor.
-            /// </remarks>
-            public VectorX EssentialVector(int k)
-            {
-                int start = k + 1 + _shift;
-                return _vectors.GetSubmatrix(1, GetRowCount() - start, k, start).GetTransposition();
-            }
-
-
-            public HouseholderSequence SetTrans(bool newTrans)
-            {
-                this._trans = newTrans;
-                return this;
-            }
-            public HouseholderSequence SetLength(int newLength)
-            {
-                this._length = newLength;
-                return this;
-            }
-            public HouseholderSequence SetShift(int newShift)
-            {
-                this._shift = newShift;
-                return this;
-            }
-
-
-            public void ApplyThisOnTheRight(ref MatrixX dest)
-            {
-                VectorX workspace = new VectorX(dest.GetRowCount());
-                ApplyThisOnTheRight(ref dest, workspace);
-            }
-            public void ApplyThisOnTheRight(ref MatrixX dest, VectorX workspace)
-            {
-                workspace.Resize(dest.GetRowCount());
-
-                for (int k = 0; k < _length; ++k)
-                {
-                    int actualK = _trans ? _length - k - 1 : k;
-                    dest.GetColumn(dest.GetColumnCount() - (this.GetRowCount() - _shift - actualK)).ApplyHouseholderOnTheRight(EssentialVector(actualK), _coeffs[actualK], workspace.GetData());
-                }
-            }
-        }
-
-
         #region Householder QR Preconditioners
 
         public abstract class HouseholderQRPreconditioner : QRPreconditioner
@@ -923,5 +787,164 @@ namespace Gameplay.Animations
 
 
         #endregion
+    }
+
+
+
+    /// <summary>
+    ///     Represents a permutation matrix, internally stored as a vector of integers.
+    /// </summary>
+    public class PermutationMatrix
+    {
+        VectorX _indices;
+
+
+        public PermutationMatrix(int size)
+        {
+            _indices = new VectorX(size);
+        }
+        public PermutationMatrix(PermutationMatrix other)
+        {
+            _indices = other._indices;
+        }
+        public PermutationMatrix(VectorX indices)
+        {
+            _indices = indices;
+        }
+
+
+        public VectorX GetIndices() => _indices;
+        public void SetIndices(VectorX newValue) => _indices = newValue;
+
+
+        public int GetRowCount() => _indices.GetSize();
+        public int GetColumnCount() => 1;
+    }
+
+    /// <summary>
+    ///     Represents a product sequence of Householder reflections where:
+    ///     - The first Householder reflection acts on the whole space
+    ///     - The second Householder reflection leaves the 1D subspace spanned by the first unit vector invariant
+    ///     - The third Householder reflection leaves the 2D subspace spanned by the first two unit vectors invariant
+    ///     - And so on up to the last reflection which leaves all but 1 dimensions invariant and acts only on the last dimension.
+    ///     
+    ///     Such sequences of Householder reflections are used in several algorithms to zero out certain parts of a matrix.
+    /// </summary>
+    public class HouseholderSequence
+    {
+        private MatrixX _vectors;
+        private MatrixX _coeffs;
+        private bool _trans;
+        private int _length;
+        private int _shift;
+
+
+        public HouseholderSequence(MatrixX v, MatrixX h)
+        {
+            _vectors = v;
+            _coeffs = h;
+            _trans = false;
+            _length = v.GetDiagonalSize();
+            _shift = 0;
+        }
+        public HouseholderSequence(HouseholderSequence other)
+        {
+            _vectors = other._vectors;
+            _coeffs = other._coeffs;
+            _trans = other._trans;
+            _length = other._length;
+            _shift = other._shift;
+        }
+
+
+        /// <summary>
+        ///     Returns the number of rows of transformation viewed as a matrix.
+        ///     This equals the dimension of the space that the transformation acts on.
+        /// </summary>
+        public int GetRowCount() => _vectors.GetRowCount(); /*[Compare Side == Left] ? _vectors.GetRowCount() : _vectors.GetColumnCount();*/
+        /// <summary>
+        ///     Returns the number of columns of transformation viewed as a matrix.
+        ///     This equals the dimension of the space that the transformation acts on.
+        /// </summary>
+        public int GetColumnCount() => _vectors.GetRowCount();
+
+
+        public HouseholderSequence GetTransposition() => new HouseholderSequence(this).SetTrans(!_trans);
+        public HouseholderSequence GetConjugate() => new HouseholderSequence(_vectors.GetConjugate(), _coeffs.GetConjugate()).SetTrans(_trans).SetLength(_length).SetShift(_shift);
+        public HouseholderSequence GetAdjoint() => GetConjugate().SetTrans(!_trans);
+        public HouseholderSequence GetInverse() => GetAdjoint();
+
+        /// <summary>
+        ///     Returns the essential part of a Householder vector.
+        /// </summary>
+        /// <param name="k"> Index of householder reflection.</param>
+        /// <returns> A Vector containing non-trivial entries of the k-th Householder vector.</returns>
+        /// <remarks>
+        ///     This function returns the non-essential part of the Householder Vector v_i.
+        ///     This is a vector of length (n - i), containing the last (n - i) entries of the vector
+        ///     
+        ///     The index 'i' equals k + shift, corresponding to the k-th column of the matrix passed to the constructor.
+        /// </remarks>
+        public VectorX EssentialVector(int k)
+        {
+            int start = k + 1 + _shift;
+            return _vectors.GetColumn(k).GetSubmatrix(start, GetRowCount() - start); // We've removed '.GetTransposition()'. If this causes issues, look into the source code again.
+        }
+
+
+        public HouseholderSequence SetTrans(bool newTrans)
+        {
+            this._trans = newTrans;
+            return this;
+        }
+        public HouseholderSequence SetLength(int newLength)
+        {
+            this._length = newLength;
+            return this;
+        }
+        public HouseholderSequence SetShift(int newShift)
+        {
+            this._shift = newShift;
+            return this;
+        }
+
+
+        public void ApplyThisOnTheRight(ref MatrixX dest)
+        {
+            VectorX workspace = new VectorX(dest.GetRowCount());
+            ApplyThisOnTheRight(ref dest, workspace);
+        }
+        public void ApplyThisOnTheRight(ref MatrixX dest, VectorX workspace)
+        {
+            workspace.Resize(dest.GetRowCount());
+
+            for (int k = 0; k < _length; ++k)
+            {
+                int actualK = _trans ? _length - k - 1 : k;
+                dest.GetColumn(dest.GetColumnCount() - (this.GetRowCount() - _shift - actualK)).ApplyHouseholderOnTheRight(EssentialVector(actualK), _coeffs[actualK], workspace.GetData());
+            }
+        }
+
+        public void ApplyThisOnTheLeft(ref MatrixX dest)
+        {
+            VectorX workspace = new VectorX(dest.GetRowCount());
+            ApplyThisOnTheLeft(ref dest, workspace);
+        }
+        public void ApplyThisOnTheLeft(ref MatrixX dest, VectorX workspace)
+        {
+            // Note: There is an optimisation here that we've excluded for implementation time-saving purposes.
+            workspace.Resize(dest.GetColumnCount());
+
+            for (int k = 0; k < _length; ++k)
+            {
+                int actualK = _trans ? _length - k - 1 : k;
+                dest.GetRow(dest.GetRowCount() - (this.GetRowCount() - _shift - actualK)).ApplyHouseholderOnTheLeft(EssentialVector(actualK), _coeffs[actualK], workspace.GetData());
+            }
+        }
+    }
+
+    public class JacobiRotation
+    {
+
     }
 }
