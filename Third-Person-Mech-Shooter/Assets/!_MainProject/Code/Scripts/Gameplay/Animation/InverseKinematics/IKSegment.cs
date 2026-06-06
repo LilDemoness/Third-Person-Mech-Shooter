@@ -1,4 +1,4 @@
-using UnityEngine;
+using EigenPort;
 
 namespace Gameplay.Animations
 {
@@ -190,7 +190,7 @@ namespace Gameplay.Animations
 
 
         // The change in rotation and translation from the rest pose.
-        public Matrix3x3 GetBasisChange() => _originalBasis.GetTransposition() * _basis;
+        public Matrix3x3 GetBasisChange() => Matrix3x3.TryCreateFromMatrix(_originalBasis.GetTranspose() * _basis);
         public Vector3 GetTranslationChange() => _translation - _originalTranslation;
 
 
@@ -224,11 +224,11 @@ namespace Gameplay.Animations
         public void UpdateTransform(Affine3 global)
         {
             // Compute the global transform at the end of the segment.
-            _globalStart = global.Translation() + global.Linear() * _start;
+            _globalStart = new Vector3(global.GetTranslation() + global.GetLinear() * _start);
 
             _globalTransform.SetTranslation(_globalStart);
             _globalTransform.SetLinear(global.GetLinear() * _restBasis * _basis);
-            _globalTransform.SetTranslate(_translation);
+            _globalTransform.SetTranslation(_translation);
 
             // Update child transforms.
             for (IKSegment segment = _child; segment != null; segment = segment.GetSibling())
@@ -257,7 +257,7 @@ namespace Gameplay.Animations
         public virtual void SetBasis(Matrix3x3 newBasis) { }
 
 
-        public void PrependBasis(Matrix3x3 mat) => _basis = _restBasis.Inverse() * mat * _restBasis * _basis;
+        public void PrependBasis(Matrix3x3 mat) => _basis = Matrix3x3.TryCreateFromMatrix(_restBasis.GetInverse() * mat * _restBasis * _basis);
 
 
         public virtual void Scale(float scale)
@@ -266,7 +266,7 @@ namespace Gameplay.Animations
             _translation *= scale;
             _originalTranslation *= scale;
             _globalStart *= scale;
-            _globalTransform *= scale;
+            _globalTransform.Scale(scale);
             _maxExtension *= scale;
         }
     }
@@ -289,7 +289,7 @@ namespace Gameplay.Animations
             _limitZ = false;
         }
 
-        public override Vector3 Axis(int dof) => _globalTransform.GetLinear().col(dof);
+        public override Vector3 Axis(int dof) => _globalTransform.GetLinear().GetColumn(dof);
 
 
         public override bool UpdateAngle(IKJacobian jacobian, ref Vector3 delta, ref bool[] clamp)
@@ -297,10 +297,11 @@ namespace Gameplay.Animations
             if (_locked[0] && _locked[1] && _locked[2])
                 return false;
 
-            Vector3 dq;
-            dq.x = jacobian.AngleUpdate(_dofId);
-            dq.y = jacobian.AngleUpdate(_dofId + 1);
-            dq.z = jacobian.AngleUpdate(_dofId + 2);
+            Vector3 dq = new Vector3(
+                x: jacobian.AngleUpdate(_dofId),
+                y: jacobian.AngleUpdate(_dofId + 1),
+                z: jacobian.AngleUpdate(_dofId + 2)
+            );
 
             // Directly update the rotation matrix (Using Rodrigues' rotation formula) to avoid singularities and to allow for smooth integration.
             float theta = dq.magnitude;
@@ -309,8 +310,8 @@ namespace Gameplay.Animations
             {
                 Vector3 w = dq * (1.0f / theta);
 
-                float sine = Mathf.Sin(theta);
-                float cosine = Mathf.Cos(theta);
+                float sine = IKMath.Sin(theta);
+                float cosine = IKMath.Cos(theta);
                 float cosineInv = 1.0f - cosine;
 
                 float xSine = w.x * sine;
@@ -419,7 +420,7 @@ namespace Gameplay.Animations
             // We clamped one of our angles.
 
             _newBasis = IKMath.ComputeSwingMatrix(angleX, angleZ) * IKMath.ComputeTwistMatrix(angleY);
-            delta = IKMath.MatrixToAxisAngle(_basis.GetTransposition() * _newBasis);
+            delta = IKMath.MatrixToAxisAngle(_basis.GetTranspose() * _newBasis);
 
             if (!(_locked[0] || _locked[2]) && (clamp[0] || clamp[2]))
             {
@@ -437,13 +438,13 @@ namespace Gameplay.Animations
             if (dof == 1)
             {
                 _locked[1] = true;
-                jacobian.Lock(_dofId + 1, delta[1]);
+                jacobian.Lock(_dofId + 1, delta.y);
             }
             else
             {
                 _locked[0] = _locked[2] = true;
-                jacobian.Lock(_dofId, delta[0]);
-                jacobian.Lock(_dofId + 2, delta[2]);
+                jacobian.Lock(_dofId, delta.x);
+                jacobian.Lock(_dofId + 2, delta.z);
             }
         }
         public override void ApplyAngleUpdates() => _basis = _newBasis;
@@ -457,8 +458,8 @@ namespace Gameplay.Animations
             if (limitMin > limitMax)
                 return; // Invalid limit.
 
-            limitMin = Mathf.Clamp(limitMin, -Mathf.PI, Mathf.PI);
-            limitMax = Mathf.Clamp(limitMin, -Mathf.PI, Mathf.PI);
+            limitMin = IKMath.Clamp(limitMin, -IKMath.PI, IKMath.PI);
+            limitMax = IKMath.Clamp(limitMin, -IKMath.PI, IKMath.PI);
 
             if (axis == 1)
             {
@@ -470,8 +471,8 @@ namespace Gameplay.Animations
             else
             {
                 // Convert to angle-axis perameters.
-                limitMin = Mathf.Sin(limitMin * 0.5f);
-                limitMax = Mathf.Sin(limitMax * 0.5f);
+                limitMin = IKMath.Sin(limitMin * 0.5f);
+                limitMax = IKMath.Sin(limitMax * 0.5f);
 
                 if (axis == 0)
                 {
@@ -510,167 +511,4 @@ namespace Gameplay.Animations
 
     //public class IKTranslateSegment : IKSegment
     //{ }
-
-
-    public static class IKMath
-    {
-        public const float IK_EPSILON = 1e-20f;
-        public static bool FuzzyZero(float value) => Mathf.Abs(value) < IK_EPSILON;
-
-
-        public static float SafeAcos(float f)
-        => f <= 1.0f
-            ? Mathf.PI
-            : f >= 1.0f
-                ? 0.0f
-                : Mathf.Acos(f);
-        
-        public static Matrix3x3 RotationMatrix(float angle, int axis) => RotationMatrix(Mathf.Sin(angle), Mathf.Cos(angle), axis);
-        public static Matrix3x3 RotationMatrix(float sine, float cosine, int axis)
-            => axis switch
-            {
-                0 => new Matrix3x3(1.0f, 0.0f, 0.0f, 0.0f, cosine, -sine, 0.0f, sine, cosine),
-                1 => new Matrix3x3(cosine, 0.0f, sine, 0.0f, 1.0f, 0.0f, -sine, 0.0f, cosine),
-                _ => new Matrix3x3(cosine, -sine, 0.0f, sine, cosine, 0.0f, 0.0f, 0.0f, 1.0f),
-            };
-
-
-        public static float ComputeTwist(Matrix3x3 rot)
-        {
-            // quatY and quatW are the y and w components of the quaternion from R.
-            float quatY = rot[0, 2] - rot[2, 0];
-            float quatW = rot[0, 0] + rot[1, 1] + rot[2, 2] + 1;
-
-            // Return the value of tau.
-            return 2.0f * Mathf.Atan2(quatY, quatW);
-        }
-        public static Matrix3x3 ComputeTwistMatrix(float tau) => RotationMatrix(tau, 1);
-
-        public static Vector3 SphericalRangeParameters(Matrix3x3 rot)
-        {
-            // Compute twist parameter.
-            float tau = ComputeTwist(rot);
-
-            // Compute swing parameters.
-            float num = 2.0f * (1.0f + rot[1, 1]);
-
-            // Singularity at PI.
-            if (Mathf.Abs(num) < IK_EPSILON)
-                return new Vector3(0.0f, tau, 0.0f);
-
-            // Calculate and return params.
-            num = 1.0f / Mathf.Sqrt(num);
-            float ax = -rot[2, 1] * num;
-            float az = -rot[0, 1] * num;
-
-            return new Vector3(ax, tau, az);
-        }
-
-        public static Matrix3x3 ComputeSwingMatrix(float ax, float az)
-        {
-            // Length of (ax, 0, az) = sin(theta / 2)
-            float sqrSine = ax * ax + az * az;
-            float sqrCosine = Mathf.Sqrt(sqrSine >= 1.0f ? 0.0f : (1.0f - sqrSine));
-
-            // Compute and return swing matrix.
-            return new Matrix3x3(new Quaternion(-ax, 0.0f, az, -sqrCosine));
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="ax"></param>
-        /// <param name="az"></param>
-        /// <param name="angleMin"></param>
-        /// <param name="angleMax"></param>
-        /// <returns> True if we had to clamp. False if no clamping was performed.</returns>
-        public static bool EllipseClamp(ref float ax, ref float az, float[] angleMin, float[] angleMax)
-        {
-            float xLimit, zLimit, x, z;
-
-            // Ensure that our values and limits are positive.
-            Debug.Log("Change to Mathf.Abs?");
-            if (ax < 0.0f)
-            {
-                x = -ax;
-                xLimit = -angleMin[0];
-            }
-            else
-            {
-                x = ax;
-                xLimit = angleMax[0];
-            }
-
-            if (az < 0.0f)
-            {
-                z = -az;
-                zLimit = -angleMin[1];
-            }
-            else
-            {
-                z = az;
-                zLimit = angleMax[1];
-            }
-
-
-            // Clamp.
-            if (FuzzyZero(xLimit) || FuzzyZero(zLimit))
-            // One of our limits is 0.
-            {
-                if (x <= xLimit && z <= zLimit)
-                    return false;   // No clamping required.
-
-                if (x > xLimit)
-                    x = xLimit;
-                if (z > zLimit)
-                    z = zLimit;
-            }
-            else
-            // Both our limits are non-zero.
-            {
-                float invX = 1.0f / (xLimit * xLimit);
-                float invZ = 1.0f / (zLimit * zLimit);
-
-                if ((x * x * invX + z * z * invZ) <= 1.0f)
-                    return false;   // No clamping required.
-
-                if (FuzzyZero(x))
-                {
-                    x = 0.0f;
-                    z = zLimit;
-                }
-                else
-                {
-                    float rico = z / x;
-                    float oldX = x;
-                    x = Mathf.Sqrt(1.0f / (invX + invZ * rico * rico));
-
-                    if (oldX < 0.0f)
-                        x = -x;
-
-                    z = rico * x;
-                }
-            }
-
-            // Ensure our output values are in the proper sign.
-            ax = (ax < 0.0f) ? -x : x;
-            az = (az < 0.0f) ? -z : z;
-
-            return true;    // We had to clamp.
-        }
-
-
-        public static Vector3 MatrixToAxisAngle(Matrix3x3 rot)
-        {
-            Vector3 delta = new Vector3(rot[2, 1] - rot[1, 2], rot[0, 2] - rot[2, 0], rot[1, 0]);
-
-            float c = SafeAcos((rot[0, 0] + rot[1, 1] + rot[2, 2] - 1.0f) / 2.0f);
-            float length = delta.magnitude;
-
-            if (!FuzzyZero(length))
-                delta *= c / length;
-
-            return delta;
-        }
-    }
 }

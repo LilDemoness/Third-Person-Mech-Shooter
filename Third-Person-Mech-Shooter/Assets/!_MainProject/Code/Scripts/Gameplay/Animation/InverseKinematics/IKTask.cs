@@ -1,4 +1,4 @@
-using UnityEngine;
+using EigenPort;
 
 namespace Gameplay.Animations
 {
@@ -135,7 +135,7 @@ namespace Gameplay.Animations
             // Compute Betas.
             Matrix3x3 rot = _segment.GetGlobalTransform().GetLinear();
 
-            Matrix3x3 dRotMatrix = (_goal * rot.GetTransposition()).transpose();
+            Matrix3x3 dRotMatrix = Matrix3x3.TryCreateFromMatrix((_goal * rot.GetTranspose()).GetTranspose());
 
             Vector3 dRot = -0.5f * new Vector3(dRotMatrix[2, 1] - dRotMatrix[1, 2], dRotMatrix[0, 2] - dRotMatrix[2, 0], dRotMatrix[1, 0] - dRotMatrix[0, 1]);
             _distance = dRot.magnitude;
