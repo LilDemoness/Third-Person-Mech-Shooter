@@ -1,47 +1,79 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Gameplay.Animations
 {
-    public static class IKSolver
+    /// <summary>
+    /// </summary>
+    /// <remarks>
+    ///     Blender Source Code Link: https://github.com/dfelinto/blender/blob/master/intern/iksolver/extern/IK_solver.h
+    ///     
+    ///     Allows you to create segments and form them into a tree.
+    ///     You can then define goal points that the end of a given segment should attempt to reach (Aka: An Inverse Kinematics problem).
+    ///     This class will then modify the segments in the tree in order to get them as near as possible to the goal.
+    ///     This solver uses an inverse jacobian method to find a solution.
+    ///     
+    ///     -----
+    ///     
+    ///     Typical calls for solving an IK problem (Blender):
+    ///     - Create a number of <see cref="IKSegment"/> instances and set their parents and transforms
+    ///     - Create an <see cref="IKSolver"/>
+    ///     - Set a number of goals for the <see cref="IKSolver"/> to solve.
+    ///     - Call IK_Solve
+    ///     - Free the IKSolver
+    ///     - Get basis and translation changes from segments
+    ///     - Free all segments
+    ///     
+    ///     This will differ in our implementation as we can't free elements the same as in C++.
+    ///     Additionally, repeatedly declaring and freeing elements would cause us to use more memory than we really need to (AFAIK)
+    ///     Instead, we'll likely alter this to have an IKSolver (Or a separate class like IKController) that is persistent for an IK task, with the elements within it maintained between frames.
+    /// </remarks>
+    public class IKSolver
     {
-        /// <summary>
-        ///     Aligns the first bone to the target axis, then resets rotation (And optionally position) of all sub-links from the root.
-        /// </summary>
-        /// <param name="chain"> The <see cref="IKChain"/> to affect.</param>
-        /// <param name="target"> The Target Transform we're aiming towards.</param>
-        /// <param name="resetPosition"> Should we reset the chain elements positions too?</param>
-        public static void FullDirection(IKChain chain, Transform target, bool resetPosition = false)
+        private const float IK_STRETCH_STIFF_EPS = 0.01f;
+        private const float IK_STRETCH_STIFF_MIN = 0.001f;
+        private const float IK_STRETCH_STIFF_MAX = 1e10f;
+
+        private IKJacobianSolver _solver;
+        private IKSegment _root;
+        private List<IKTask> _tasks;
+
+
+        public static IKSolver CreateIKSolver(IKSegment root)
         {
-            // Point the chain in the target's direction.
-            IKSolver.AimDirection(chain, target, true);
 
-            // Reset rotation (And optionally position) on all bones except the root.
-            for(int i = 1; i < chain.BoneCount; ++i)
-            {
-                chain.Bones[i].SetRotation(chain.Bones[i].InitialRotation);
+        }
+        public static IKSegment CreateSegment(int flag, bool translate)
+        {
+            
+        }
+        public void FreeIKSolver()
+        {
 
-                if (resetPosition)
-                {
-                    chain.Bones[i].SetPosition(chain.Bones[i].InitialPosition);
-                }
-            }
         }
 
-        /// <summary>
-        ///     Aligns the first link of the chain towards the target axis.
-        /// </summary>
-        /// <param name="chain"></param>
-        /// <param name="target"></param>
-        /// <param name="doOffset"></param>
-        public static void AimDirection(IKChain chain, Transform target, bool doOffset = false)
-        {
-            chain.Bones[0].SetRotation(target.rotation);
 
-            if (doOffset)
-            {
-                Quaternion forwardToUp = Quaternion.AngleAxis(90.0f * Mathf.Rad2Deg, Vector3.left);
-                chain.Bones[0].AddRotation(forwardToUp);
-            }
+        public void AddGoal(IKSegment tip, Vector3 goal, float weight)
+        {
+
+        }
+        public void AddGoalOrientation(IKSegment tip, Vector3 goal, float weight)
+        {
+
+        }
+        public void SetPoleVectorConstraint(IKSegment tip, Vector3 goal, Vector3 poleGoal, float poleAngle, int getAngle)
+        {
+
+        }
+        public float GetPoleAngle()
+        {
+
+        }
+
+
+        public int Solve(float tolerance, int maxIterations)
+        {
+
         }
     }
 }

@@ -8,14 +8,12 @@ namespace Gameplay.Animations
     /// </summary>
     /// <remarks>
     ///     The local coordinates of a joint are:
-    ///         X
-    ///         
+    ///         local_transform = translate(tr1) * rotation(A) * rotation(q) * translate(0, length, 0)
     ///     This can be read as:
-    ///         - A
-    ///         - A
-    ///         - A
-    ///         - A
-    ///     
+    ///         - Translate by (0, length, 0)
+    ///         - Multiply by the rotation matrix derived from the current angle parameterization 'q'.
+    ///         - Multiply byu our user defined matrix representing the rest position of the bone.
+    ///         - Translate by the user defined translation.
     ///     The ordering of these transformations is vital, and you must use exactly the same transformations when displaying the segments.
     /// </remarks>
     public abstract class IKSegment

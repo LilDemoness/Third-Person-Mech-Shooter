@@ -11,7 +11,7 @@ namespace Gameplay.Animations
      * Notes:
      * - Vector3d.norm() returns their magnitude (E.g. UnityEngine.Vector3.magnitude)
     */
-    public class JacobianIKSolver
+    public class IKJacobianSolver
     {
         private IKJacobian _jacobian;
         private IKJacobian _jacobianSub;
