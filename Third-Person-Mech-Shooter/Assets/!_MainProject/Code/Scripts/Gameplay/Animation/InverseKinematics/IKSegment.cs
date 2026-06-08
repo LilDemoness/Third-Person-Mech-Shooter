@@ -1,3 +1,4 @@
+using System.Data.SqlTypes;
 using EigenPort;
 
 namespace Gameplay.Animations
@@ -165,7 +166,7 @@ namespace Gameplay.Animations
                     segment._sibling = child._sibling;
             }
         }
-        private void SetComposite(IKSegment segment) => _composite = segment;
+        protected void SetComposite(IKSegment segment) => _composite = segment;
 
 
         /// <summary>
@@ -209,10 +210,10 @@ namespace Gameplay.Animations
         public virtual void Lock(int dof, IKJacobian jacobian, Vector3 delta) { }
 
 
-        public float GetWeight(int dof) => _weight[dof];
-        public void ScaleWeight(int dof, float scale) => _weight[dof] *= scale;
+        public float GetWeight(int axis) => _weight[axis];
+        public void ScaleWeight(int axis, float scale) => _weight[axis] *= scale;
         // Set Joint Weights (Per Axis).
-        public virtual void SetWeight(int dof, float newWeight) => _weight[dof] = newWeight;
+        public virtual void SetWeight(int axis, float newWeight) => _weight[axis] = newWeight;
 
 
         /// <summary>
@@ -248,7 +249,7 @@ namespace Gameplay.Animations
         /// <summary>
         ///     Returns the axis from the rotation matrix for derivative computation.
         /// </summary>
-        public abstract Vector3 Axis(int dof);
+        public abstract Vector3 GetAxis(int dof);
 
 
         public virtual void SetLimit(int axis, float minLimit, float maxLimit) { }
@@ -280,14 +281,15 @@ namespace Gameplay.Animations
         float _minY, _maxY, _maxX, _maxZ, _offsetX, _offsetZ;
         float _lockedAngleX, _lockedAngleY, _lockedAngleZ;
 
-        IKSphericalSegment() : base(3, false)
+        public IKSphericalSegment()
+            : base(3, false)
         {
             _limitX = false;
             _limitY = false;
             _limitZ = false;
         }
 
-        public override Vector3 Axis(int dof) => _globalTransform.GetLinear().GetColumn(dof);
+        public override Vector3 GetAxis(int dof) => _globalTransform.GetLinear().GetColumn(dof);
 
 
         public override bool UpdateAngle(IKJacobian jacobian, ref Vector3 delta, ref bool[] clamp)
@@ -491,22 +493,611 @@ namespace Gameplay.Animations
     }
 
 
-    //public class IKNullSegment : IKSegment
-    //{ }
+    public class IKNullSegment : IKSegment
+    {
+        public IKNullSegment()
+            : base(0, false)
+        { }
+
+        public override bool UpdateAngle(IKJacobian jacobian, ref Vector3 delta, ref bool[] clamp) => false;
+        public override void ApplyAngleUpdates() { }
+
+        public override Vector3 GetAxis(int _) => Vector3.zero;
+        public override void SetBasis(Matrix3x3 _) => _basis.SetIdentity();
+    }
 
 
-    //public class IKRevoluteSegment : IKSegment
-    //{ }
+    public class IKRevoluteSegment : IKSegment
+    {
+        private int _axis;
+
+        private float _angle;
+        private float _newAngle;
+
+        private bool _useLimit;
+        private float _minLimit;
+        private float _maxLimit;
 
 
-    //public class IKSwingSegment : IKSegment
-    //{ }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="axis"> The axis of the Degree of Freedom, in the range 0..2</param>
+        public IKRevoluteSegment(int axis)
+            : base(1, false)
+        {
+            _axis = axis;
+            _angle = 0.0f;
+            _useLimit = false;
+        }
 
 
-    //public class IKElbowSegment : IKSegment
-    //{ }
+        public override Vector3 GetAxis(int _) => _globalTransform.GetLinear().GetColumn(_axis);
 
 
-    //public class IKTranslateSegment : IKSegment
-    //{ }
+        public override bool UpdateAngle(IKJacobian jacobian, ref Vector3 delta, ref bool[] clamp)
+        {
+            if (_locked[0])
+                return false;
+
+            _newAngle = _angle + jacobian.AngleUpdate(_dofId);
+
+            clamp[0] = false;
+
+            if (_useLimit == false)
+                return false; // We don't need to apply limits.
+
+            if (_newAngle > _maxLimit)
+            {
+                delta[0] = _maxLimit - _angle;
+            }
+            else if (_newAngle < _minLimit)
+            {
+                delta[0] = _minLimit - _angle;
+            }
+            else
+                return false; // We don't need to apply limits.
+
+            clamp[0] = true;
+            _newAngle = _angle + delta[0];
+
+            return true; // We applied a limit.
+        }
+        public override void Lock(int _, IKJacobian jacobian, Vector3 delta)
+        {
+            _locked[0] = true;
+            jacobian.Lock(_dofId, delta[0]);
+        }
+        public override void ApplyAngleUpdates()
+        {
+            _angle = _newAngle;
+            _basis = IKMath.RotationMatrix(_angle, _axis);
+        }
+
+
+        public override void SetLimit(int axis, float minLimit, float maxLimit)
+        {
+            if (minLimit > maxLimit || axis != _axis)
+                return; // Invalid limit for this segment type.
+
+            // Clamp and convert to angle-axis parameters.
+            _minLimit = IKMath.Clamp(minLimit, -IKMath.PI, IKMath.PI);
+            _maxLimit = IKMath.Clamp(maxLimit, -IKMath.PI, IKMath.PI);
+
+            _useLimit = true;
+        }
+        public override void SetWeight(int axis, float newWeight)
+        {
+            if (axis == _axis)
+                _weight[0] = newWeight;
+        }
+        public override void SetBasis(Matrix3x3 newBasis)
+        {
+            if (_axis == 1)
+            {
+                _angle = IKMath.ComputeTwist(newBasis);
+                _basis = IKMath.ComputeTwistMatrix(_angle);
+            }
+            else
+            {
+                _angle = IKMath.EulerAngleFromMatrix(newBasis, _axis);
+                _basis = IKMath.RotationMatrix(_angle, _axis);
+            }
+        }
+    }
+
+
+    public class IKSwingSegment : IKSegment
+    {
+        private Matrix3x3 _newBasis;
+
+        private bool _useLimitX;
+        private bool _useLimitZ;
+        private float[] _minLimits;
+        private float[] _maxLimits;
+
+        private float _maxX;
+        private float _maxZ;
+        private float _offsetX;
+        private float _offsetZ;
+
+        /// <summary>
+        ///     Uses an XZ Degree of Freedom with a single direct rotation.
+        /// </summary>
+        public IKSwingSegment()
+            : base(2, false)
+        {
+            _useLimitX = false;
+            _useLimitZ = false;
+        }
+
+
+        public override Vector3 GetAxis(int dof) => _globalTransform.GetLinear().GetColumn((dof == 0) ? 0 : 2);
+
+
+        public override bool UpdateAngle(IKJacobian jacobian, ref Vector3 delta, ref bool[] clamp)
+        {
+            if (_locked[0] && _locked[1])
+                return false;
+
+            Vector3 dq = new Vector3(
+                x: jacobian.AngleUpdate(_dofId),
+                y: 0.0f,
+                z: jacobian.AngleUpdate(_dofId + 1)
+                );
+
+
+            // Directly update the rotation matrix with Rodrigues' rotation formula to avoid singularities and allow smooth rotation.
+            float theta = dq.magnitude;
+            if (!IKMath.FuzzyZero(theta))
+            {
+                Vector3 w = dq * (1.0f / theta);
+
+                float sine = IKMath.Sin(theta);
+                float cosine = IKMath.Cos(theta);
+                float cosineInv = 1.0f - cosine;
+
+                float xSine = w.x * sine;
+                float zSine = w.z * sine;
+
+                float xxCosine = w.x * w.x * cosineInv;
+                float xzCosine = w.x * w.z * cosineInv;
+                float zzCosine = w.z * w.z * cosineInv;
+
+                Matrix3x3 m = new Matrix3x3(
+                    cosine + xxCosine, -zSine, xzCosine,
+                    zSine, cosine, -xSine,
+                    xzCosine, xSine, cosine + zzCosine
+                );
+
+                _newBasis = _basis * m;
+                IKMath.RemoveTwist(ref _newBasis);
+            }
+            else
+                _newBasis = _basis;
+
+
+            if (!_useLimitX && !_useLimitZ)
+                return false; // We don't need to do any clamping.
+
+
+            // Check if we need to clamp, clamping as required.
+            Vector3 a = IKMath.SphericalRangeParameters(_newBasis);
+            float ax = 0.0f, az = 0.0f;
+
+            clamp[0] = clamp[1] = false;
+
+            if (_useLimitX && _useLimitZ)
+            {
+                ax = a.x;
+                az = a.z;
+
+                if (IKMath.EllipseClamp(ref ax, ref az, _minLimits, _maxLimits))
+                    clamp[0] = clamp[1] = true;
+            }
+            else if (_useLimitX)
+            {
+                if (ax < _minLimits[0])
+                {
+                    ax = _minLimits[0];
+                    clamp[0] = true;
+                }
+                else if (ax > _maxLimits[0])
+                {
+                    ax = _maxLimits[0];
+                    clamp[0] = true;
+                }
+            }
+            else if (_useLimitZ)
+            {
+                if (az < _minLimits[1])
+                {
+                    az = _minLimits[1];
+                    clamp[1] = true;
+                }
+                else if (az > _maxLimits[1])
+                {
+                    az = _maxLimits[1];
+                    clamp[1] = true;
+                }
+            }
+
+            if (!clamp[0] && !clamp[1])
+                return false; // We didn't need to clamp.
+
+            _newBasis = IKMath.ComputeSwingMatrix(ax, az);
+            delta = IKMath.MatrixToAxisAngle(_basis.GetTranspose() * _newBasis);
+            delta[1] = delta[2];
+            delta[2] = 0.0f;
+
+            return true; // We needed to clamp the rotation.
+        }
+        public override void Lock(int _, IKJacobian jacobian, Vector3 delta)
+        {
+            _locked[0] = _locked[1] = true;
+            jacobian.Lock(_dofId, delta[0]);
+            jacobian.Lock(_dofId + 1, delta[1]);
+        }
+        public override void ApplyAngleUpdates() => _basis = _newBasis;
+
+
+        public override void SetLimit(int axis, float minLimit, float maxLimit)
+        {
+            if (minLimit > maxLimit)
+                return; // Invalid limit for this IK Segment type.
+
+            // Clamp and convret to axis angle parameters.
+            minLimit = IKMath.Sin(IKMath.Clamp(minLimit, -IKMath.PI, IKMath.PI) * 0.5f);
+            maxLimit = IKMath.Sin(IKMath.Clamp(maxLimit, -IKMath.PI, IKMath.PI) * 0.5f);
+
+            // Put the centre of the ellipse in the midpoint of min and max.
+            float offset = 0.5f * (minLimit + maxLimit);
+
+            if (axis == 0)
+            {
+                _minLimits[0] = -maxLimit;
+                _maxLimits[0] = minLimit;
+
+                _useLimitX = true;
+                _offsetX = offset;
+                _maxX = maxLimit;
+            }
+            else if (axis == 2)
+            {
+                _minLimits[1] = -maxLimit;
+                _maxLimits[1] = -minLimit;
+
+                _useLimitZ = true;
+                _offsetZ = offset;
+                _maxZ = maxLimit;
+            }
+        }
+        public override void SetWeight(int axis, float newWeight)
+        {
+            if (axis == 0)
+                _weight[0] = newWeight;
+            else if (axis == 2)
+                _weight[1] = newWeight;
+        }
+        public override void SetBasis(Matrix3x3 newBasis)
+        {
+            _basis = newBasis;
+            IKMath.RemoveTwist(ref _basis);
+        }
+    }
+
+
+    public class IKElbowSegment : IKSegment
+    {
+        private int _axis;
+
+        private float _twist;
+        private float _angle;
+        private float _newTwist;
+        private float _newAngle;
+
+        private float _cosTwist;
+        private float _sinTwist;
+
+
+        private bool _useAngleLimit;
+        private float _minAngle;
+        private float _maxAngle;
+
+        private bool _useTwistLimit;
+        private float _minTwist;
+        private float _maxTwist;
+
+
+        /// <summary>
+        ///     Uses two sequential rotations:
+        ///     - First rotate around X or Z
+        ///     - Then rotate around Y (Twist).
+        /// </summary>
+        /// <param name="axis"> XY or ZY</param>
+        public IKElbowSegment(int axis)
+            : base(2, false)
+        {
+            _axis = axis;
+
+            _twist = 0.0f;
+            _angle = 0.0f;
+            _cosTwist = 0.0f;
+            _sinTwist = 0.0f;
+
+            _useAngleLimit = false;
+            _useTwistLimit = false;
+        }
+
+
+        public override Vector3 GetAxis(int dof)
+        {
+            if (dof != 0)
+                return _globalTransform.GetLinear().GetColumn(1);
+
+            Vector3 v = _axis == 0
+                ? new Vector3(_cosTwist, 0, _sinTwist)
+                : new Vector3(-_sinTwist, 0, _cosTwist);
+            return (EigenPort.Vector3)(_globalTransform.GetLinear() * v);
+        }
+
+
+        public override bool UpdateAngle(IKJacobian jacobian, ref Vector3 delta, ref bool[] clamp)
+        {
+            if (_locked[0] && _locked[1])
+                return false;
+
+            clamp[0] = clamp[1] = false;
+
+            if (_locked[0])
+            {
+                _newAngle = _angle + jacobian.AngleUpdate(_dofId);
+
+                if (_useAngleLimit)
+                {
+                    if (_newAngle > _maxAngle)
+                    {
+                        delta[0] = _maxAngle - _angle;
+                        _newAngle = _maxAngle;
+                        clamp[0] = true;
+                    }
+                    else if (_newAngle < _minAngle)
+                    {
+                        delta[0] = _minAngle - _angle;
+                        _newAngle = _minAngle;
+                        clamp[0] = true;
+                    }
+                }
+            }
+
+            if (_locked[1])
+            {
+                _newTwist = _twist + jacobian.AngleUpdate(_dofId + 1);
+
+                if (_useTwistLimit)
+                {
+                    if (_newTwist > _maxTwist)
+                    {
+                        delta[1] = _maxTwist - _twist;
+                        _newTwist = _maxTwist;
+                        clamp[1] = true;
+                    }
+                    else if (_newTwist < _minTwist)
+                    {
+                        delta[1] = _minTwist - _twist;
+                        _newTwist = _minTwist;
+                        clamp[1] = true;
+                    }
+                }
+            }
+
+            // Return true if we clamped, or false otherwise.
+            return clamp[0] || clamp[1];
+        }
+        public override void Lock(int dof, IKJacobian jacobian, Vector3 delta)
+        {
+            if (dof == 0)
+            {
+                _locked[0] = true;
+                jacobian.Lock(_dofId, delta[0]);
+            }
+            else
+            {
+                _locked[1] = true;
+                jacobian.Lock(_dofId + 1, delta[1]);
+            }
+        }
+        public override void ApplyAngleUpdates()
+        {
+            _angle = _newAngle;
+            _twist = _newTwist;
+
+            _sinTwist = IKMath.Sin(_twist);
+            _cosTwist = IKMath.Cos(_twist);
+
+            Matrix3x3 a = IKMath.RotationMatrix(_axis, _axis);
+            Matrix3x3 t = IKMath.RotationMatrix(_sinTwist, _cosTwist, 1);
+
+            _basis = a * t;
+        }
+
+
+        public override void SetLimit(int axis, float minLimit, float maxLimit)
+        {
+            if (minLimit > maxLimit)
+                return; // Invalid limit for this IK Segment type.
+
+            // Clamp and convert to axis angle parameters.
+            minLimit = IKMath.Clamp(minLimit, -IKMath.PI, IKMath.PI);
+            maxLimit = IKMath.Clamp(maxLimit, -IKMath.PI, IKMath.PI);
+
+            if (axis == 1)
+            {
+                _minTwist = minLimit;
+                _maxTwist = maxLimit;
+                _useTwistLimit = true;
+            }
+            else if (axis == _axis)
+            {
+                _minAngle = minLimit;
+                _maxAngle = maxLimit;
+                _useAngleLimit = true;
+            }
+        }
+        public override void SetWeight(int axis, float newWeight)
+        {
+            if (axis == _axis)
+                _weight[0] = newWeight;
+            else if (axis == 1)
+                _weight[1] = newWeight;
+        }
+        public override void SetBasis(Matrix3x3 newBasis)
+        {
+            _basis = newBasis;
+
+            _twist = IKMath.ComputeTwist(_basis);
+            IKMath.RemoveTwist(ref _basis);
+            _angle = IKMath.EulerAngleFromMatrix(newBasis, _axis);
+
+            _basis = IKMath.RotationMatrix(_angle, _axis) * IKMath.ComputeTwistMatrix(_twist);
+        }
+    }
+
+
+    public class IKTranslateSegment : IKSegment
+    {
+        private int[] _axis = new int[3];
+        private bool[] _axisEnabled = new bool[3];
+
+        private Vector3 _newTranslation;
+
+        private bool[] _useLimit = new bool[3];
+        private float[] _minLimit = new float[3];
+        private float[] _maxLimit = new float[3];
+
+
+        /// <summary>
+        ///     An <see cref="IKTranslateSegment"/> with 1 axis of freedom.
+        /// </summary>
+        /// <param name="axis1"> The axis of freedom (0 = X, 1 = Y, 2 = Z).</param>
+        public IKTranslateSegment(int axis1)
+            : base(1, true)
+        {
+            _axisEnabled[0] = _axisEnabled[1] = _axisEnabled[2] = false;
+            _axisEnabled[axis1] = true;
+
+            _axis[0] = axis1;
+
+            _useLimit[0] = _useLimit[1] = _useLimit[2] = false;
+        }
+        public IKTranslateSegment(int axis1, int axis2)
+            : base(2, true)
+        {
+            _axisEnabled[0] = _axisEnabled[1] = _axisEnabled[2] = false;
+            _axisEnabled[axis1] = _axisEnabled[axis2] = true;
+
+            _axis[0] = axis1;
+            _axis[1] = axis2;
+
+            _useLimit[0] = _useLimit[1] = _useLimit[2] = false;
+        }
+        public IKTranslateSegment()
+            : base(3, true)
+        {
+            _axisEnabled[0] = _axisEnabled[1] = _axisEnabled[2] = true;
+
+            _axis[0] = 0;
+            _axis[1] = 1;
+            _axis[2] = 2;
+
+            _useLimit[0] = _useLimit[1] = _useLimit[2] = false;
+        }
+
+
+        public override Vector3 GetAxis(int dof) => _globalTransform.GetLinear().GetColumn(_axis[dof]);
+
+
+        public override bool UpdateAngle(IKJacobian jacobian, ref Vector3 delta, ref bool[] clamp)
+        {
+            int dofId = _dofId;
+            int dof = 0;
+            bool hasClamped = false;
+
+            for (int i = 0; i < 3; ++i)
+            {
+                if (!_axisEnabled[i])
+                {
+                    _newTranslation[i] = _translation[i];
+                    continue;
+                }
+
+                clamp[dof] = false;
+
+                if (!_locked[dof])
+                {
+                    _newTranslation[i] = _translation[i] + jacobian.AngleUpdate(dofId);
+
+                    if (_useLimit[i])
+                    {
+                        if (_newTranslation[i] > _maxLimit[i])
+                        {
+                            delta[dof] = _maxLimit[i] - _translation[i];
+                            _newTranslation[i] = _maxLimit[i];
+                            hasClamped = clamp[dof] = true;
+                        }
+                        else if (_newTranslation[i] < _minLimit[i])
+                        {
+                            delta[dof] = _minLimit[i] - _translation[i];
+                            _newTranslation[i] = _minLimit[i];
+                            hasClamped = clamp[dof] = true;
+                        }
+                    }
+                }
+
+                ++dofId;
+                ++dof;
+            }
+
+            return hasClamped;
+        }
+        public override void Lock(int dof, IKJacobian jacobian, Vector3 delta)
+        {
+            _locked[dof] = true;
+            jacobian.Lock(_dofId + dof, delta[dof]);
+        }
+        public override void ApplyAngleUpdates() => _translation = _newTranslation;
+
+
+        public override void SetLimit(int axis, float minLimit, float maxLimit)
+        {
+            if (minLimit > maxLimit)
+                return; // Invalid limit for this IKSegment type.
+
+            _minLimit[axis] = minLimit;
+            _maxLimit[axis] = maxLimit;
+            _useLimit[axis] = true;
+        }
+        public override void SetWeight(int axis, float newWeight)
+        {
+            for (int i = 0; i < _numberOfDoF; ++i)
+            {
+                if (_axis[i] == axis)
+                    _weight[i] = newWeight;
+            }
+        }
+
+
+        public override void Scale(float scale)
+        {
+            base.Scale(scale);
+
+            for (int i = 0; i < 3; ++i)
+            {
+                _minLimit[0] *= scale;
+                _maxLimit[1] *= scale;
+            }
+
+            _newTranslation *= scale;
+        }
+    }
 }

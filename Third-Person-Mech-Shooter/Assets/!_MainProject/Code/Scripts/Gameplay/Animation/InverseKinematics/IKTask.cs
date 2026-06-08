@@ -86,7 +86,7 @@ namespace Gameplay.Animations
 
                 for(int i = 0; i < parent.GetNumberOfDoF(); ++i)
                 {
-                    Vector3 axis = parent.Axis(i) * _weight;
+                    Vector3 axis = parent.GetAxis(i) * _weight;
 
                     if (parent.IsTranslationalSegment())
                     {
@@ -154,7 +154,7 @@ namespace Gameplay.Animations
                     }
                     else
                     {
-                        Vector3 axis = segment.Axis(i) * _weight;
+                        Vector3 axis = segment.GetAxis(i) * _weight;
                         jacobian.SetDerivatives(_id, segment.GetDoFId() + i, axis, 1e0f);
                     }
                 }
@@ -226,7 +226,7 @@ namespace Gameplay.Animations
 
             for (int i = 0; i < _segment.GetNumberOfDoF(); ++i)
             {
-                Vector3 axis = _segment.Axis(i) * _weight;
+                Vector3 axis = _segment.GetAxis(i) * _weight;
                 axis *= /*_segment.GetMass() * */_totalMassInverse;
 
                 if (segment.IsTranslationalSegment())

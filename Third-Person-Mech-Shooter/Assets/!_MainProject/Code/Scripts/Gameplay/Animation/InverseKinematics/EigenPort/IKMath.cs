@@ -78,6 +78,10 @@ public static class IKMath
             ? 0.0f
             : Mathf.Acos(f);
 
+    public static float Atan2(float x, float y) => Mathf.Atan2(x, y);
+    
+
+
     public static EigenPort.Matrix3x3 RotationMatrix(float angle, int axis) => RotationMatrix(Mathf.Sin(angle), Mathf.Cos(angle), axis);
     public static EigenPort.Matrix3x3 RotationMatrix(float sine, float cosine, int axis)
         => axis switch
@@ -213,6 +217,30 @@ public static class IKMath
     }
 
 
+    public static float EulerAngleFromMatrix(EigenPort.Matrix3x3 rot, int axis)
+    {
+        float t = Sqrt(rot[0, 0] * rot[0, 0] + rot[0, 1] * rot[0, 1]);
+
+        if (t > 16.0f * IK_EPSILON)
+        {
+            if (axis == 0) // X.
+                return -Atan2(rot[1, 2], rot[2, 2]);
+            else if (axis == 1) // Y.
+                return Atan2(-rot[0, 2], t);
+            else
+                return -Atan2(rot[0, 1], rot[0, 0]);
+        }
+        else
+        {
+            if (axis == 0)
+                return -Atan2(-rot[2, 1], rot[1, 1]);
+            else if (axis == 2)
+                return Atan2(-rot[0, 2], t);
+            else
+                return 0.0f;
+        }
+    }
+
     public static EigenPort.Vector3 MatrixToAxisAngle(EigenPort.Matrix rot) => MatrixToAxisAngle(EigenPort.Matrix3x3.TryCreateFromMatrix(rot));
     public static EigenPort.Vector3 MatrixToAxisAngle(EigenPort.Matrix3x3 rot)
     {
@@ -225,6 +253,19 @@ public static class IKMath
             delta *= c / length;
 
         return delta;
+    }
+
+
+    public static void RemoveTwist(ref EigenPort.Matrix3x3 rot)
+    {
+        // Compute twist parameter.
+        float tau = ComputeTwist(rot);
+
+        // Compute twist matrix.
+        EigenPort.Matrix3x3 twist = ComputeTwistMatrix(tau);
+
+        // Remove twist.
+        rot = (EigenPort.Matrix3x3)(rot * twist.GetTranspose());
     }
 }
 
