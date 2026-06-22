@@ -55,6 +55,15 @@ namespace EigenPort
 
         public JacobiSVD(Matrix matrix, ComputationOptions computationOptions = ComputationOptions.None)
         {
+            _matrixU = new();
+            _matrixV = new();
+            _scaledMatrix = new();
+            _workMatrix = new();
+            _singularValues = new();
+
+            _qrPreconditionMoreRows = new();
+            _qrPreconditionMoreColumns = new();
+
             Compute(matrix, computationOptions);
         }
 
@@ -138,6 +147,7 @@ namespace EigenPort
             float maxDiagonalEntry = _workMatrix.GetCoefficientWiseAbs().GetDiagonal().GetMaxCoefficient();
 
             bool finished = false;
+            int iterations = 0;
             while(!finished)
             {
                 finished = true;
@@ -177,7 +187,13 @@ namespace EigenPort
                         maxDiagonalEntry = IKMath.Max(maxDiagonalEntry, IKMath.Abs(_workMatrix[p,p]), IKMath.Abs(_workMatrix[q,q]));
                     }
                 }
+
+                ++iterations;
+                if (iterations > 50)
+                    break;
             }
+            if (iterations >= 50)
+                UnityEngine.Debug.LogError("Prevented an Infinite Loop");
 
 
             // Step 3. The work matrix is now diagonal, so ensure that it is positive so that its diagonal entries are the singular values.

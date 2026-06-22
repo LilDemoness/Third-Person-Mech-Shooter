@@ -53,6 +53,9 @@ namespace EigenPort
             this.y = y;
             this.z = z;
         }
+        public Vector3()
+            : this(0.0f, 0.0f, 0.0f)
+        { }
         public Vector3(Vector other)
             : this(other as Matrix)
         { }

@@ -125,28 +125,20 @@ namespace Gameplay.Animations
         }
 
 
-        public void SetParent(IKSegment segment, IKSegment parent)
+        public static void SetParent(IKSegment segment, IKSegment parent)
         {
             if (parent != null && parent.GetComposite() != null)
                 segment.SetParent(parent.GetComposite());
             else
                 segment.SetParent(parent);
         }
-        public void SetTransform(IKSegment segment, Vector3 start, Vector3[] rest, Vector3[] basis, float length)
+        public static void SetTransform(IKSegment segment, Vector3 start, Quaternion rest, Quaternion basis, float length)
         {
             EigenPort.Vector3 mStart = new EigenPort.Vector3(start.x, start.y, start.z);
 
-            // Note: We may need to change this as blender is converting from using column major here.
-            EigenPort.Matrix3x3 mBasis = new EigenPort.Matrix3x3(
-                basis[0].x, basis[1].x, basis[2].x,
-                basis[0].y, basis[1].y, basis[2].y,
-                basis[0].z, basis[1].z, basis[2].z
-                );
-            EigenPort.Matrix3x3 mRest = new EigenPort.Matrix3x3(
-                rest[0].x, rest[1].x, rest[2].x,
-                rest[0].y, rest[1].y, rest[2].y,
-                rest[0].z, rest[1].z, rest[2].z
-                );
+            // Note: We may need to adjust to account for how blender's implementation changes from column major to row major here.
+            EigenPort.Matrix3x3 mRest = EigenPort.Matrix3x3Unity.FromUnityQuaternion(rest);
+            EigenPort.Matrix3x3 mBasis = EigenPort.Matrix3x3Unity.FromUnityQuaternion(basis);
 
 
             if (segment.GetComposite() != null)
@@ -161,7 +153,7 @@ namespace Gameplay.Animations
                 segment.SetTransform(mStart, mRest, mBasis, length);
         }
 
-        public void SetLimit(IKSegment segment, IKSegmentAxis axis, float limitMin, float limitMax)
+        public static void SetLimit(IKSegment segment, IKSegmentAxis axis, float limitMin, float limitMax)
         {
             if (axis >= IKSegmentAxis.TRANS_X)
             {
@@ -183,7 +175,7 @@ namespace Gameplay.Animations
 
             segment.SetLimit((int)axis, limitMin, limitMax);
         }
-        public void SetStiffness(IKSegment segment, IKSegmentAxis axis, float stiffness)
+        public static void SetStiffness(IKSegment segment, IKSegmentAxis axis, float stiffness)
         {
             if (stiffness < 0.0f)
                 return;
@@ -213,16 +205,90 @@ namespace Gameplay.Animations
 
             segment.SetWeight((int)axis, weight);
         }
-        public void GetBasisChange(IKSegment segment, Vector3[] basisChange)
+        public static void GetBasisChange(IKSegment segment, out Quaternion basisChange)
         {
             if (segment.IsTranslationalSegment() && segment.GetComposite() != null)
                 segment = segment.GetComposite();
 
             EigenPort.Matrix3x3 change = segment.GetBasisChange();
 
+            // Convert the change to a quaternion.
+            if (change[2,2] < 0.0f)
+            {
+                if (change[0, 0] > change[1, 1])
+                {
+                    float trace = 1.0f + change[0,0] - change[1,1] - change[2,2];
+                    float scale = 2.0f * Mathf.Sqrt(trace);
+                    if (change[1,2] < change[2,1])
+                        // Ensure w is non-negative.
+                        scale = -scale;
+                    float qx = 0.25f * scale;
+                    scale = 1.0f / scale;
+
+                    basisChange = new Quaternion(
+                        qx,
+                        (change[0,1] + change[1,0]) * scale,
+                        (change[2,0] + change[0,2]) * scale,
+                        (change[1,2] - change[2,1]) * scale
+                        );
+                }
+                else
+                {
+                    float trace = 1.0f - change[0, 0] + change[1, 1] - change[2, 2];
+                    float scale = 2.0f * Mathf.Sqrt(trace);
+                    if (change[2, 0] < change[0, 2])
+                        // Ensure w is non-negative.
+                        scale = -scale;
+                    float qy = 0.25f * scale;
+                    scale = 1.0f / scale;
+
+                    basisChange = new Quaternion(
+                        (change[0, 1] + change[1, 0]) * scale,
+                        qy,
+                        (change[1, 2] + change[2, 1]) * scale,
+                        (change[0, 2] - change[0, 2]) * scale
+                        );
+                }
+            }
+            else
+            {
+                if (change[0, 0] < -change[1, 1])
+                {
+                    float trace = 1.0f - change[0, 0] - change[1, 1] + change[2, 2];
+                    float scale = 2.0f * Mathf.Sqrt(trace);
+                    if (change[0, 1] < change[1, 0])
+                        // Ensure w is non-negative.
+                        scale = -scale;
+                    float qz = 0.25f * scale;
+                    scale = 1.0f / scale;
+
+                    basisChange = new Quaternion(
+                        (change[2, 0] + change[0, 2]) * scale,
+                        (change[1, 2] + change[2, 1]) * scale,
+                        qz,
+                        (change[0, 1] - change[1, 0]) * scale
+                        );
+                }
+                else
+                {
+                    float trace = 1.0f + change[0, 0] + change[1, 1] + change[2, 2];
+                    float scale = 2.0f * Mathf.Sqrt(trace);
+                    float qw = 0.25f * scale;
+                    scale = 1.0f / scale;
+
+                    basisChange = new Quaternion(
+                        (change[1, 2] - change[2, 1]) * scale,
+                        (change[2, 0] - change[0, 2]) * scale,
+                        (change[0, 1] - change[1, 0]) * scale,
+                        qw
+                        );
+                }
+            }
+
+
             // Note: Currently is converting to column major as per Blender's implementations.
             //  Research what Unity uses.
-            basisChange[0][0] = change[0, 0];
+            /*basisChange[0][0] = change[0, 0];
             basisChange[1][0] = change[0, 1];
             basisChange[2][0] = change[0, 2];
             basisChange[0][1] = change[1, 0];
@@ -230,9 +296,9 @@ namespace Gameplay.Animations
             basisChange[2][1] = change[1, 2];
             basisChange[0][2] = change[2, 0];
             basisChange[1][2] = change[2, 1];
-            basisChange[2][2] = change[2, 2];
+            basisChange[2][2] = change[2, 2];*/
         }
-        public void GetTranslationChange(IKSegment segment, Vector3 translationChange)
+        public static void GetTranslationChange(IKSegment segment, Vector3 translationChange)
         {
             if (!segment.IsTranslationalSegment() && segment.GetComposite() != null)
                 segment = segment.GetComposite();
@@ -297,6 +363,12 @@ namespace Gameplay.Animations
                 return false;
 
             return _solver.Solve(_root, _tasks, maxIterations);
+        }
+
+
+        public void FreeGoals()
+        {
+            _tasks.Clear();
         }
     }
 }

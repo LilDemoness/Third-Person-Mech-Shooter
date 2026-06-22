@@ -6,6 +6,9 @@ namespace EigenPort
         public Vector(int size)
             : base(size, 1)
         { }
+        public Vector()
+            : this(0)
+        { }
 
         private Vector(Matrix singleColumnMatrix)
             : base(singleColumnMatrix)
@@ -66,8 +69,10 @@ namespace EigenPort
 
         public static Vector operator*(Matrix lhs, Vector rhs)
         {
-            if (lhs.GetRowCount() != 1)
-                throw new System.ArithmeticException($"You cannot multiply a {lhs.GetRowCount()}x{lhs.GetColumnCount()} matrix with a {rhs.GetRowCount()}d vector.\nThe matrix's row count must equal 1.");
+            // Vectors are Xx1 matrices.
+            // Therefore, any matrices we're multiplying with a vector must be 1xX in size.
+            if (lhs.GetColumnCount() != rhs.GetSize())
+                throw new System.ArithmeticException($"You cannot multiply a {lhs.GetRowCount()}x{lhs.GetColumnCount()} matrix with a {rhs.GetSize()}d vector.\nThe matrix's row count must equal the vector's size.");
 
             Vector result = new Vector(rhs.GetSize());
             for (int i = 0; i < rhs.GetSize(); ++i)

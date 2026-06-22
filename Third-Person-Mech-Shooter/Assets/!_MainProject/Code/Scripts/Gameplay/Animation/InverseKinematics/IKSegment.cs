@@ -79,6 +79,9 @@ namespace Gameplay.Animations
 
             _originalBasis = _basis;
             _originalTranslation = _translation;
+
+            _globalStart = new();
+            _globalTransform = new();
         }
         ~IKSegment()
         {

@@ -19,9 +19,9 @@ namespace EigenPort
             : base(source, rowIndex, columnIndex, rowSize, columnSize)
         { }
         public static VectorBlock GetForRow(Matrix source, int rowIndex, int startIndex, int blockSize)
-            => new VectorBlock(source, rowIndex, startIndex, blockSize, 1);
+            => new VectorBlock(source, rowIndex, startIndex, 1, blockSize);
         public static VectorBlock GetForColumn(Matrix source, int columnIndex, int startIndex, int blockSize)
-            => new VectorBlock(source, startIndex, columnIndex, 1, blockSize);
+            => new VectorBlock(source, startIndex, columnIndex, blockSize, 1);
 
 
         public float this[int index]
@@ -33,6 +33,11 @@ namespace EigenPort
 
         public VectorBlock GetTailRef(int size)
         {
+            if (_isVertical)
+                UnityEngine.Debug.Log($"Vertical\nStart Row: {_startRow}\nBlock Rows: {_blockRows}\nDesired Size: {size}\nTail Start: {_startRow + (_blockRows - size)}\nTail End{(_startRow + (_blockRows - size)) + size}");
+            else
+                UnityEngine.Debug.Log($"Horizontal\nStart Row: {_startColumn}\nBlock Rows: {_blockColumns}\nDesired Size: {size}\nTail Start: {_startColumn + (_blockColumns - size)}\nTail End{(_startColumn + (_blockColumns - size)) + size}");
+
             // If vertical, create a vertical block of the desired size & start index from this's end row index. If horizontal, do so for columns.
             return _isVertical
                 ? new VectorBlock(_source, _startRow + (_blockRows - size), _startColumn, size, 1)

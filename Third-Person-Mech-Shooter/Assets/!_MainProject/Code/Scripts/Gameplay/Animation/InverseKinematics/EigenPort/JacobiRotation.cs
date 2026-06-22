@@ -59,7 +59,7 @@ namespace EigenPort
         public bool MakeJacobi(Matrix matrix, int p, int q) => MakeJacobi(matrix[p, p], matrix[p, q], matrix[q, q]);
 
 
-        public void ApplyRotationInThePlane(Vector xVector, Vector yVector)
+        public void ApplyRotationInThePlane(ref Vector xVector, ref Vector yVector)
         {
             if (xVector.GetSize() != yVector.GetSize())
                 throw new System.ArgumentException($"You cannot apply a JacobiRotation to two Vectors of different lengths (x: {xVector.GetSize()} vs y: {yVector.GetSize()}");
@@ -69,6 +69,24 @@ namespace EigenPort
             int size = xVector.GetSize();
 
             for(int i = 0; i < size; ++i)
+            {
+                float xi = xVector[i];
+                float yi = yVector[i];
+
+                xVector[i] = _cosine * xi + _sine * yi;
+                yVector[i] = -_sine * xi + _cosine * yi;
+            }
+        }
+        public void ApplyRotationInThePlane(ref VectorBlock xVector, ref VectorBlock yVector)
+        {
+            if (xVector.GetSize() != yVector.GetSize())
+                throw new System.ArgumentException($"You cannot apply a JacobiRotation to two Vectors of different lengths (x: {xVector.GetSize()} vs y: {yVector.GetSize()}");
+            if (_cosine == 1.0f && _sine == 0.0f)
+                return;
+
+            int size = xVector.GetSize();
+
+            for (int i = 0; i < size; ++i)
             {
                 float xi = xVector[i];
                 float yi = yVector[i];

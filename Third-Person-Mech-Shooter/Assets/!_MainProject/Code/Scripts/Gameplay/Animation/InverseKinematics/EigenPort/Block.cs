@@ -15,9 +15,9 @@ namespace EigenPort
         public Block(Matrix source, int startRow, int startColumn, int blockRows, int blockColumns)
         {
             // Index Checks.
-            if (startRow + blockRows >= source.GetRowCount())
+            if (startRow + blockRows > source.GetRowCount())
                 throw new System.IndexOutOfRangeException($"You are trying to retrieve more rows than there are in the source matrix.\nStart Row '{startRow}' + Size {blockRows} = '{startRow + blockRows}', exceeding Source Row Count '{source.GetRowCount()}'");
-            if (startColumn + blockColumns >= source.GetColumnCount())
+            if (startColumn + blockColumns > source.GetColumnCount())
                 throw new System.IndexOutOfRangeException($"You are trying to retrieve more rows than there are in the source matrix.\nStart Row '{startColumn}' + Size {blockColumns} = '{startColumn + blockColumns}', exceeding Source Row Count '{source.GetColumnCount()}'");
 
             // Set block values.
@@ -32,14 +32,14 @@ namespace EigenPort
         {
             get
             {
-                if (row >= _blockRows) throw new System.IndexOutOfRangeException($"Row Index ({row}) exceeds the row-size of the block {_blockRows}");
-                if (column >= _blockColumns) throw new System.IndexOutOfRangeException($"Column Index ({column}) exceeds the column-size of the block {_blockColumns}");
+                if (row > _blockRows) throw new System.IndexOutOfRangeException($"Row Index ({row}) exceeds the row-size of the block {_blockRows}");
+                if (column > _blockColumns) throw new System.IndexOutOfRangeException($"Column Index ({column}) exceeds the column-size of the block {_blockColumns}");
                 return _source[row + _startRow, column + _startColumn];
             }
             set
             {
-                if (row >= _blockRows) throw new System.IndexOutOfRangeException($"Row Index ({row}) exceeds the row-size of the block {_blockRows}");
-                if (column >= _blockColumns) throw new System.IndexOutOfRangeException($"Column Index ({column}) exceeds the column-size of the block {_blockColumns}");
+                if (row > _blockRows) throw new System.IndexOutOfRangeException($"Row Index ({row}) exceeds the row-size of the block {_blockRows}");
+                if (column > _blockColumns) throw new System.IndexOutOfRangeException($"Column Index ({column}) exceeds the column-size of the block {_blockColumns}");
                 _source[row + _startRow, column + _startColumn] = value; 
             }
         }

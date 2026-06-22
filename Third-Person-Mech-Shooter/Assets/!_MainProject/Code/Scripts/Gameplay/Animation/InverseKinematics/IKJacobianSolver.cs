@@ -32,6 +32,21 @@ namespace Gameplay.Animations
         private IKSegment _poleTip;
 
 
+        public IKJacobianSolver()
+        {
+            _jacobian = new();
+            _jacobianSub = new();
+            _secondaryEnabled = false;
+
+            _segments = new List<IKSegment>();
+
+            _rootMatrix = new();
+            _goal = new();
+            _poleGoal = new();
+            _poleTip = null;
+        }
+
+
         /// <summary>
         ///     Setup the Jacobian Solver.<br/>    
         ///     Call Setup once before Solve. If Setup fails, don't call Solve.
@@ -341,17 +356,17 @@ namespace Gameplay.Animations
                 float norm = 0.0f;
                 do
                 {
-                    try
-                    {
+                    //try
+                    //{
                         _jacobian.Invert();
                         if (_secondaryEnabled)
                             _jacobian.SubTask(_jacobianSub);
-                    }
-                    catch
+                    /*}
+                    catch (System.Exception e)
                     {
-                        UnityEngine.Debug.LogError("IK Exception");
+                        UnityEngine.Debug.LogAssertion("IK Exception\n" + e.Message);
                         return false;
-                    }
+                    }*/
 
                     // Update angles and check limits.
                 } while(UpdateAngles(ref norm));

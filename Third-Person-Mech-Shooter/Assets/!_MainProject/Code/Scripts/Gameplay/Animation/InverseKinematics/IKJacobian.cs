@@ -42,8 +42,28 @@ namespace Gameplay.Animations
 
         public IKJacobian()
         {
+            _jacobian = new();
+            _jacobianTemp = new();
+            _nullspace = new();
+
+            _beta = new();
+            _dTheta = new();
+            _dNormWeight = new();
+
+            _svdW = new();
+            _svdV = new();
+            _svdU = new();
+            _svdUBeta = new();
+
             _useSDLS = true;
+            _norm = new();
+            _dThetaTemp = new();
             _minDamp = 0.0f;
+
+            _alpha = new();
+
+            _weight = new();
+            _weightSqrt = new();
         }
 
 

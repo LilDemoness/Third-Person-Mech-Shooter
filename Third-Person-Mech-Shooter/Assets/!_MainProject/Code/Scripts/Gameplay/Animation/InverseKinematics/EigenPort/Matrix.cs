@@ -483,11 +483,15 @@ namespace EigenPort
 
         public void ApplyOnTheLeft(int p, int q, JacobiRotation j)
         {
-            j.ApplyRotationInThePlane(GetRow(p), GetRow(q));
+            VectorBlock pVector = GetRowRef(p);
+            VectorBlock qVector = GetRowRef(q);
+            j.ApplyRotationInThePlane(ref pVector, ref qVector);
         }
         public void ApplyOnTheRight(int p, int q, JacobiRotation j)
         {
-            j.GetTransposition().ApplyRotationInThePlane(GetRow(p), GetRow(q));
+            VectorBlock pVector = GetRowRef(p);
+            VectorBlock qVector = GetRowRef(q);
+            j.GetTransposition().ApplyRotationInThePlane(ref pVector, ref qVector);
         }
 
 
