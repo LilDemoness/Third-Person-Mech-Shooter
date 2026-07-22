@@ -181,8 +181,7 @@ namespace Gameplay.Animations.InverseKinematics
         [ShowIf(nameof(LimitationRightAxis), SecondaryDirection.Custom)] public Vector3 LimitationRightAxisVector = Vector3.right;
         public Quaternion LimitationRotationOffset;
 
-        public IKIterateBaseJoint(Transform jointTransform)
-            : base(jointTransform)
+        public IKIterateBaseJoint() : base()
         { }
 
 

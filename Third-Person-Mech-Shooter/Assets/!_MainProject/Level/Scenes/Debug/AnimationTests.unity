@@ -489,7 +489,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1017357591}
-  - component: {fileID: 1017357592}
   m_Layer: 0
   m_Name: Root
   m_TagString: Untagged
@@ -510,24 +509,41 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2061372649}
+  - {fileID: 1179012989}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1017357592
-MonoBehaviour:
+--- !u!1 &1179012988
+GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1017357590}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5eb61ee6ef62b85449bc0d743f2e04d7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _root: {fileID: 1017357591}
-  _tip: {fileID: 2061372649}
-  _target: {fileID: 964466631}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1179012989}
+  m_Layer: 0
+  m_Name: Intermediate
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1179012989
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1179012988}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2061372649}
+  m_Father: {fileID: 1017357591}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1233492375
 GameObject:
   m_ObjectHideFlags: 0
@@ -745,32 +761,39 @@ MonoBehaviour:
   Settings:
   - <SimulationDirty>k__BackingField: 1
     <JointsDirty>k__BackingField: 0
-    RootBone:
-      <name>k__BackingField: Root
-      <Bone>k__BackingField: {fileID: 1017357591}
-      <RestPosition>k__BackingField: {x: 0, y: 0, z: 0}
-      <RestRotation>k__BackingField: {x: 0, y: 0, z: 0, w: 1}
-    EndBone:
-      <name>k__BackingField: Tip
-      <Bone>k__BackingField: {fileID: 2061372649}
-      <RestPosition>k__BackingField: {x: 0, y: 0, z: 1}
-      <RestRotation>k__BackingField: {x: 0, y: 0, z: 0, w: 1}
+    _rootBone: {fileID: 1017357591}
+    _endBone: {fileID: 2061372649}
     ExtendEndBone: 0
     EndBoneDirection: 0
     EndBoneLength: 0
     Joints:
-    - <name>k__BackingField: 
-      <Bone>k__BackingField: {fileID: 0}
+    - <Bone>k__BackingField: {fileID: 1017357591}
       <RestPosition>k__BackingField: {x: 0, y: 0, z: 0}
-      <RestRotation>k__BackingField: {x: 0, y: 0, z: 0, w: 0}
-    - <name>k__BackingField: 
-      <Bone>k__BackingField: {fileID: 0}
+      <RestRotation>k__BackingField: {x: 0, y: 0, z: 0, w: 1}
+      RotationAxis: 3
+      RotationAxisVector: {x: 1, y: 0, z: 0}
+      LimitationRightAxis: 0
+      LimitationRightAxisVector: {x: 1, y: 0, z: 0}
+      LimitationRotationOffset: {x: 0, y: 0, z: 0, w: 0}
+    - <Bone>k__BackingField: {fileID: 1179012989}
       <RestPosition>k__BackingField: {x: 0, y: 0, z: 0}
-      <RestRotation>k__BackingField: {x: 0, y: 0, z: 0, w: 0}
+      <RestRotation>k__BackingField: {x: 0, y: 0, z: 0, w: 1}
+      RotationAxis: 3
+      RotationAxisVector: {x: 1, y: 0, z: 0}
+      LimitationRightAxis: 0
+      LimitationRightAxisVector: {x: 1, y: 0, z: 0}
+      LimitationRotationOffset: {x: 0, y: 0, z: 0, w: 0}
+    - <Bone>k__BackingField: {fileID: 2061372649}
+      <RestPosition>k__BackingField: {x: 0, y: 0, z: 1}
+      <RestRotation>k__BackingField: {x: -0, y: -0, z: -0, w: 1}
+      RotationAxis: 3
+      RotationAxisVector: {x: 1, y: 0, z: 0}
+      LimitationRightAxis: 0
+      LimitationRightAxisVector: {x: 1, y: 0, z: 0}
+      LimitationRotationOffset: {x: 0, y: 0, z: 0, w: 0}
     SolverInfoList: []
     Chain: []
     Target: {fileID: 1647634394}
-    JointSettings: []
     HasSimulated: 0
   _maxIterations: 4
   _minDistance: 0.001
@@ -975,12 +998,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2061372648}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1017357591}
+  m_Father: {fileID: 1179012989}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2105931073
 GameObject:

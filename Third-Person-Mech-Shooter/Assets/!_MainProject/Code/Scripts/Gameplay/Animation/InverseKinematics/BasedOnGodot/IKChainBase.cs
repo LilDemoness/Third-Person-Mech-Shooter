@@ -16,74 +16,29 @@ namespace Gameplay.Animations.InverseKinematics
             // Mark ourselves as dirty so we can update ourselves.
             MakeSimulationDirty(index);
 
-            Transform currentBone = Settings[index].EndBone.Bone;
-            Transform rootBone = Settings[index].RootBone.Bone;
-
-            // Validation: Null Check.
-            if (currentBone == null || rootBone == null)
-                // Should only occur if settings weren't properly filled out.
+            foreach(TBoneJoint boneJoint in Settings[index].Joints)
             {
-                SetJointCount(index, 0);
-                return;
+                boneJoint.UpdateRest();
             }
-
-            // Validation: EndBone is child of RootBone.
-            bool isValid = false;
-            while(currentBone != null)
-            {
-                if (currentBone == rootBone)
-                {
-                    isValid = true;
-                    break;
-                }
-                currentBone = currentBone.parent;
-            }
-
-            if (!isValid)
-                // EndBone is NOT a child of RootBone.
-            {
-                SetJointCount(index, 0);
-                UnityEngine.Debug.LogError($"EndBone '{Settings[index].EndBone.name}' of Chain IK is not a child of the RootBone '{Settings[index].RootBone.name}'");
-                return;
-            }
-
-
-            // Find all the joints in the chain.
-            List<Transform> newJoints = new();
-            currentBone = Settings[index].EndBone.Bone;
-            while(currentBone != rootBone)
-            {
-                newJoints.Add(currentBone);
-                currentBone = currentBone.parent;
-            }
-            newJoints.Add(currentBone); // Add the Root Bone.
-            newJoints.Reverse();
-
-            // Create our joint representations.
-            SetJointCount(index, newJoints.Count);
-            for (int i = 0; i < newJoints.Count; ++i)
-                SetJointBone(index, i, newJoints[i]);
         }
         protected override void MakeAllJointsDirty()
         {
             for (int i = 0; i < Settings.Count; ++i)
                 UpdateJoints(i);
         }
-
-        protected virtual void SetJointCount(int index, int jointCount) => Settings[index].Joints = new TBoneJoint[jointCount];
-        protected void SetJointBone(int index, int jointIndex, Transform bone) => Settings[index].Joints[jointIndex] = new TBoneJoint(bone);
     }
 
 
     [System.Serializable]
     public class IKChainBaseSetting<TBoneJoint> : IKBaseSetting where TBoneJoint : BoneJoint
     {
-        // Shoule we replace these with a private Transform for use in the inspector,
-        //  and have these be Getters for the first & last elements in 'Joints'?
+#if UNITY_EDITOR
+        [SerializeField, HideInInspector] private Transform _rootBone; // Editor Only: Only to be accessed by Inspector scripts.
+        [SerializeField, HideInInspector] private Transform _endBone; // Editor Only: Only to be accessed by Inspector scripts.
+#endif
+
         public TBoneJoint RootBone => Joints[0];
         public TBoneJoint EndBone => Joints[_jointCount - 1];
-
-        [Space(10)]
 
         // For making a virtual end joint.
         [SerializeField] public bool ExtendEndBone = false;
@@ -228,4 +183,6 @@ namespace Gameplay.Animations.InverseKinematics
             CacheCurrentVectors();
         }
     }
+    public class IKChainBaseSetting : IKChainBaseSetting<BoneJoint>
+    { }
 }

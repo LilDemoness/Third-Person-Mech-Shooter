@@ -32,7 +32,7 @@ namespace Gameplay.Animations.InverseKinematics
         {
             MakeAllJointsDirty();
 
-            throw new System.NotImplementedException();
+            //throw new System.NotImplementedException();
         }
 
         protected abstract void MakeAllJointsDirty();
@@ -55,28 +55,23 @@ namespace Gameplay.Animations.InverseKinematics
             
         }
     }
+    public abstract class IKBase : IKBase<IKBaseSetting>
+    { }
 
 
 
     [System.Serializable]
     public class BoneJoint
     {
-        [field: SerializeField, ReadOnly] public string name { get; private set; }
-        [field: SerializeField, OnValueChanged(nameof(OnBoneSet))] public Transform Bone { get; private set; }
+        [field: SerializeField, ReadOnly] public Transform Bone { get; private set; }
 
         [field:SerializeField, ReadOnly] public Vector3 RestPosition { get; private set; } // Rest position in local space.
         [field: SerializeField, ReadOnly] public Quaternion RestRotation { get; private set; } // Rest rotation in local space.
 
 
-        public BoneJoint(Transform jointTransform)
+        public BoneJoint(){ }
+        public virtual void Initialise(Transform jointTransform)
         {
-            name = jointTransform.name;
-            Bone = jointTransform;
-            UpdateRest();
-        }
-        public void SetValues(Transform jointTransform)
-        {
-            name = jointTransform.name;
             Bone = jointTransform;
             UpdateRest();
         }
@@ -86,25 +81,6 @@ namespace Gameplay.Animations.InverseKinematics
             RestPosition = Bone.localPosition;
             RestRotation = Bone.localRotation;
         }
-
-
-        #if UNITY_EDITOR
-        // Called when 'Bone' is set in the inspector.
-        private void OnBoneSet()
-        {
-            // Prevent null-reference exceptions when being unset.
-            if (Bone == null)
-            {
-                name = "";
-                RestPosition = Vector3.zero;
-                RestRotation = Quaternion.identity;
-                return;
-            }
-
-            name = Bone.name;
-            UpdateRest();
-        }
-#endif
     }
     public static class BoneJointExtensions
     {

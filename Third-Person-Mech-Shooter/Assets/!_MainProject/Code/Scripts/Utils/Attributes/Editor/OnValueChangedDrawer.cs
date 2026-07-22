@@ -29,7 +29,8 @@ public class OnValueChangedDrawer : PropertyDrawer
 
             // Retrieve and invoke the 'on value changed' method.
             var method = parentObject.GetType().GetMethod((attribute as OnValueChangedAttribute).Action) ?? parentObject.GetType().GetMethod((attribute as OnValueChangedAttribute).Action, BindingFlags.NonPublic | BindingFlags.Instance);
-            method.Invoke(parentObject, null);
+            if (method != null)
+                method.Invoke(parentObject, null);
         }
 
         EditorGUI.EndProperty();
