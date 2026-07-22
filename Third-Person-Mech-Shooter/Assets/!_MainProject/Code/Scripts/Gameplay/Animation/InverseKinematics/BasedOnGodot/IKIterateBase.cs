@@ -175,7 +175,7 @@ namespace Gameplay.Animations.InverseKinematics
     {
         public RotationAxis RotationAxis = RotationAxis.All;
         [ShowIf(nameof(RotationAxis), RotationAxis.Custom)] public Vector3 RotationAxisVector = Vector3.right;
-
+ 
         public JointLimitation Limitation;
         public SecondaryDirection LimitationRightAxis = SecondaryDirection.None;
         [ShowIf(nameof(LimitationRightAxis), SecondaryDirection.Custom)] public Vector3 LimitationRightAxisVector = Vector3.right;

@@ -27,6 +27,8 @@ namespace Gameplay.Animations.InverseKinematics
         [SerializeField] protected List<TSetting> Settings = new List<TSetting>();
 
 
+        private void Update() => ProcessIK(Time.deltaTime);
+
         public abstract void ProcessIK(float deltaTime);
         public void RestUpdated()
         {
@@ -63,6 +65,10 @@ namespace Gameplay.Animations.InverseKinematics
     [System.Serializable]
     public class BoneJoint
     {
+        #if UNITY_EDITOR
+        [HideInInspector] public bool Editor_Show = true;
+        #endif
+
         [field: SerializeField, ReadOnly] public Transform Bone { get; private set; }
 
         [field:SerializeField, ReadOnly] public Vector3 RestPosition { get; private set; } // Rest position in local space.

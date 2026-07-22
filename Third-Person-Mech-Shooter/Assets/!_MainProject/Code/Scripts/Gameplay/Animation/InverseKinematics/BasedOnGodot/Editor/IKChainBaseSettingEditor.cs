@@ -8,7 +8,7 @@ namespace Gameplay.Animations.InverseKinematics
     public class IKIterateBaseSettingDrawer : PropertyDrawer
     {
         private bool _foldout = true;
-        private bool _showJoints = false;
+        private bool _showJoints = true;
 
         private const string ROOT_BONE_EDITOR_PROPERTY_IDENTIFIER = "_rootBone";
         private const string END_BONE_EDITOR_PROPERTY_IDENTIFIER = "_endBone";
@@ -182,6 +182,105 @@ namespace Gameplay.Animations.InverseKinematics
                 }
                 --EditorGUI.indentLevel;
             }
+        }
+    }
+
+
+    [CustomPropertyDrawer(typeof(BoneJoint), true)]
+    public class BoneJointDrawer : PropertyDrawer
+    {
+        const float BUTTON_HEIGHT = 20.0f;
+        
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        {
+            if (!property.GetTargetObjectOfProperty().TryCastToType<BoneJoint>(out BoneJoint boneJoint))
+                return;
+
+            Rect originalPos = new Rect(position);
+            boneJoint.Editor_Show = EditorGUI.Foldout(position, boneJoint.Editor_Show, label, true);
+            if (!boneJoint.Editor_Show)
+                return;
+
+            // Account for indent.
+            position.x += 15.0f;
+            position.width -= 15.0f;
+            position.y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+
+            // Readonly Bone Property.
+            position = InspectorUtils.DrawWithCallback(position, SerializedPropertyType.ObjectReference, (Rect propertyPos) => EditorGUI.ObjectField(propertyPos, GUIContent.none, boneJoint.Bone, typeof(Transform), true), new GUIContent("Bone"), true);
+
+            // Draw button to update rest.
+            Rect buttonRect = new Rect(position);
+            buttonRect.height = BUTTON_HEIGHT;
+            if (GUI.Button(buttonRect, "Update Rest Pose"))
+            {
+                Debug.Log("To Implement - Update Rest");
+            }
+            ;
+            position.y += buttonRect.height + EditorGUIUtility.standardVerticalSpacing;
+
+
+            // Readonly Rest Properties.
+            position = InspectorUtils.DrawWithCallback(position, SerializedPropertyType.Vector3, (Rect propertyPos) => EditorGUI.Vector3Field(propertyPos, GUIContent.none, boneJoint.RestPosition), new GUIContent("Rest Position"), true);
+            position = InspectorUtils.DrawWithCallback(position, SerializedPropertyType.Quaternion, (Rect propertyPos) => EditorGUI.Vector3Field(propertyPos, GUIContent.none, boneJoint.RestRotation.eulerAngles), new GUIContent("Rest Rotation"), true);
+
+            // Have the editor register the space our elements take up.
+            EditorGUILayout.Space((position.y - originalPos.y) - position.height);
+        }
+    }
+    [CustomPropertyDrawer(typeof(IKIterateBaseJoint), true)]
+    public class IKIterateBaseJointDrawer : BoneJointDrawer
+    {
+        MackySoft.SerializeReferenceExtensions.Editor.SubclassSelectorDrawer _drawer = new();
+
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        {
+            if (!property.GetTargetObjectOfProperty().TryCastToType<IKIterateBaseJoint>(out IKIterateBaseJoint boneJoint))
+                return;
+
+            // Draw default GUI.
+            base.OnGUI(position, property, label);
+
+            // We're not wishing to show the element.
+            if (!boneJoint.Editor_Show)
+                return;
+
+            ++EditorGUI.indentLevel;
+
+            // Rotation Axis.
+            EditorGUILayout.PropertyField(property.FindPropertyRelative(nameof(IKIterateBaseJoint.RotationAxis)));
+            // Rotation Axis Vector (Only if Custom).
+            if (boneJoint.RotationAxis == RotationAxis.Custom)
+            {
+                ++EditorGUI.indentLevel;
+                EditorGUILayout.PropertyField(property.FindPropertyRelative(nameof(IKIterateBaseJoint.RotationAxisVector)));
+                --EditorGUI.indentLevel;
+            }
+
+
+            EditorGUILayout.Space(5);
+
+            // Limitation Reference.
+            EditorGUILayout.PropertyField(property.FindPropertyRelative(nameof(IKIterateBaseJoint.Limitation)));
+
+            EditorGUILayout.Space(5);
+
+            // LimitationRightAxis.
+            EditorGUILayout.PropertyField(property.FindPropertyRelative(nameof(IKIterateBaseJoint.LimitationRightAxis)));
+            // LimitationRightAxisVector (Only if Custom).
+            if (boneJoint.LimitationRightAxis == SecondaryDirection.Custom)
+            {
+                ++EditorGUI.indentLevel;
+                EditorGUILayout.PropertyField(property.FindPropertyRelative(nameof(IKIterateBaseJoint.LimitationRightAxisVector)));
+                --EditorGUI.indentLevel;
+            }
+
+            EditorGUILayout.Space(5);
+
+            // Limitation Rotation Offset.
+            EditorGUILayout.PropertyField(property.FindPropertyRelative(nameof(IKIterateBaseJoint.LimitationRotationOffset)));
+
+            --EditorGUI.indentLevel;
         }
     }
 }

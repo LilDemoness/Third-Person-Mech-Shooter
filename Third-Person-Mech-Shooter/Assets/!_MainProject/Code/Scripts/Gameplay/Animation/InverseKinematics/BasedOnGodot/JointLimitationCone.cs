@@ -2,6 +2,7 @@
 
 namespace Gameplay.Animations.InverseKinematics
 {
+    [System.Serializable]
     public class JointLimitationCone : JointLimitation
     {
         [field: SerializeField] public float Angle { get; private set; } = 90.0f;

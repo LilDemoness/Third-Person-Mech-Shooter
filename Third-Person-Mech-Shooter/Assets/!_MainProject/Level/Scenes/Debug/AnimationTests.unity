@@ -537,7 +537,7 @@ Transform:
   m_GameObject: {fileID: 1179012988}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -767,27 +767,33 @@ MonoBehaviour:
     EndBoneDirection: 0
     EndBoneLength: 0
     Joints:
-    - <Bone>k__BackingField: {fileID: 1017357591}
+    - Editor_Show: 1
+      <Bone>k__BackingField: {fileID: 1017357591}
       <RestPosition>k__BackingField: {x: 0, y: 0, z: 0}
       <RestRotation>k__BackingField: {x: 0, y: 0, z: 0, w: 1}
       RotationAxis: 3
       RotationAxisVector: {x: 1, y: 0, z: 0}
+      Limitation: {fileID: 0}
       LimitationRightAxis: 0
       LimitationRightAxisVector: {x: 1, y: 0, z: 0}
       LimitationRotationOffset: {x: 0, y: 0, z: 0, w: 0}
-    - <Bone>k__BackingField: {fileID: 1179012989}
+    - Editor_Show: 0
+      <Bone>k__BackingField: {fileID: 1179012989}
       <RestPosition>k__BackingField: {x: 0, y: 0, z: 0}
       <RestRotation>k__BackingField: {x: 0, y: 0, z: 0, w: 1}
       RotationAxis: 3
       RotationAxisVector: {x: 1, y: 0, z: 0}
+      Limitation: {fileID: 0}
       LimitationRightAxis: 0
       LimitationRightAxisVector: {x: 1, y: 0, z: 0}
       LimitationRotationOffset: {x: 0, y: 0, z: 0, w: 0}
-    - <Bone>k__BackingField: {fileID: 2061372649}
+    - Editor_Show: 0
+      <Bone>k__BackingField: {fileID: 2061372649}
       <RestPosition>k__BackingField: {x: 0, y: 0, z: 1}
       <RestRotation>k__BackingField: {x: -0, y: -0, z: -0, w: 1}
       RotationAxis: 3
       RotationAxisVector: {x: 1, y: 0, z: 0}
+      Limitation: {fileID: 0}
       LimitationRightAxis: 0
       LimitationRightAxisVector: {x: 1, y: 0, z: 0}
       LimitationRotationOffset: {x: 0, y: 0, z: 0, w: 0}
@@ -999,7 +1005,7 @@ Transform:
   m_GameObject: {fileID: 2061372648}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 1}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

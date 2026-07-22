@@ -10,7 +10,7 @@ namespace Gameplay.Animations.InverseKinematics
     ///     In the future this may change (E.g. To MonoBehaviours or ScriptableObjects).
     /// </remarks>
     [System.Serializable]
-    public abstract class JointLimitation
+    public abstract class JointLimitation : ScriptableObject
     {
         public Vector3 Solve(Vector3 localForward, Vector3 localRight, Quaternion rotationOffset, Vector3 localCurrent)
         {
