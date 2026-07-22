@@ -1,14 +1,14 @@
 public static class ObjectExtensions
 {
-    public static bool TryCastToType<T>(this object obj, out T castResult) where T : class
+    public static bool TryCastToType<T>(this object obj, out T castResult)
     {
-        if (obj.GetType().IsAssignableFrom(typeof(T)))
+        if (!obj.GetType().IsAssignableFrom(typeof(T)))
         {
             castResult = default(T);
             return false;
         }
 
-        castResult = (obj as T);
+        castResult = (T)obj;
         return true;
     }
 }

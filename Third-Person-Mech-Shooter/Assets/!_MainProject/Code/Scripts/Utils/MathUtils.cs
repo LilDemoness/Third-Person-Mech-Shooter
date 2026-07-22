@@ -24,6 +24,17 @@ public static class MathUtils
         else
             return value;
     }
+
+
+    /// <summary>
+    ///     Returns true if the passed value is within the Epsilon of zero.
+    /// </summary>
+    public static bool IsApproximatelyZero(float v) => Mathf.Abs(v) <= float.Epsilon;
+
+    /// <summary>
+    ///     Returns true if the two passed values are within the Epsilon value of each other.
+    /// </summary>
+    public static bool IsApproximatelyEqual(float a, float b) => Mathf.Abs(a - b) < float.Epsilon;
 }
 
 

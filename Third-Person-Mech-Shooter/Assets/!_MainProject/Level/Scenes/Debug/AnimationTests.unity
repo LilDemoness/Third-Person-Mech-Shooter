@@ -720,8 +720,62 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6588686290404952594, guid: 47c3766cc643c5747a733fdd500639ab, type: 3}
       insertIndex: -1
       addedObject: {fileID: 599082772}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3988944755768674177, guid: 47c3766cc643c5747a733fdd500639ab, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1587844695}
   m_SourcePrefab: {fileID: 100100000, guid: 47c3766cc643c5747a733fdd500639ab, type: 3}
+--- !u!1 &1587844694 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3988944755768674177, guid: 47c3766cc643c5747a733fdd500639ab, type: 3}
+  m_PrefabInstance: {fileID: 1587844693}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1587844695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1587844694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a23ce82e89017343ba722ed8f694cd1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Settings:
+  - <SimulationDirty>k__BackingField: 1
+    <JointsDirty>k__BackingField: 0
+    RootBone:
+      <name>k__BackingField: Root
+      <Bone>k__BackingField: {fileID: 1017357591}
+      <RestPosition>k__BackingField: {x: 0, y: 0, z: 0}
+      <RestRotation>k__BackingField: {x: 0, y: 0, z: 0, w: 1}
+    EndBone:
+      <name>k__BackingField: Tip
+      <Bone>k__BackingField: {fileID: 2061372649}
+      <RestPosition>k__BackingField: {x: 0, y: 0, z: 1}
+      <RestRotation>k__BackingField: {x: 0, y: 0, z: 0, w: 1}
+    ExtendEndBone: 0
+    EndBoneDirection: 0
+    EndBoneLength: 0
+    Joints:
+    - <name>k__BackingField: 
+      <Bone>k__BackingField: {fileID: 0}
+      <RestPosition>k__BackingField: {x: 0, y: 0, z: 0}
+      <RestRotation>k__BackingField: {x: 0, y: 0, z: 0, w: 0}
+    - <name>k__BackingField: 
+      <Bone>k__BackingField: {fileID: 0}
+      <RestPosition>k__BackingField: {x: 0, y: 0, z: 0}
+      <RestRotation>k__BackingField: {x: 0, y: 0, z: 0, w: 0}
+    SolverInfoList: []
+    Chain: []
+    Target: {fileID: 1647634394}
+    JointSettings: []
+    HasSimulated: 0
+  _maxIterations: 4
+  _minDistance: 0.001
+  _angularDeltaLimit: 0.034906585
+  _deterministic: 0
 --- !u!4 &1594816736 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3975433951055164528, guid: 47c3766cc643c5747a733fdd500639ab, type: 3}

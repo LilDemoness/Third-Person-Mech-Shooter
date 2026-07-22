@@ -95,4 +95,30 @@ public static class ComponentExtensions
     ///     Returns true if this component is any child, any parent, or is on the same object as the passed transform.
     /// </summary>
     public static bool IsParentOrChildOf(this Component activeComponent, Transform transformToCheck) => activeComponent.IsParentOf(transformToCheck) || activeComponent.IsChildOf(transformToCheck);
+
+
+    /// <summary>
+    ///     Returns the steps between the transform of <paramref name="component"/> to the transform of <paramref name="parent"/>.<br/>
+    ///     
+    ///     If <paramref name="parent"/> is not the parent of <paramref name="component"/>, then -1 is returned instead.
+    /// </summary>
+    /// <remarks>
+    ///     Same Object = 0; Immediate Parent = 1; 1 Intermediary Transform = 2; Etc
+    /// </remarks>
+    public static int GetStepsToParent(this Component component, Component parent)
+    {
+        Transform currentTransform = component.transform;
+        int steps = 0;
+        while(currentTransform != null)
+        {
+            if (currentTransform == parent.transform)
+                return steps;
+
+            currentTransform = currentTransform.parent;
+            ++steps;
+        }
+
+        // We never found the parent's transform.
+        return -1;
+    }
 }
