@@ -22,7 +22,6 @@ namespace Gameplay.Animations.InverseKinematics
             if (setting == null)
                 return;
 
-            //_cachedSpace = ;
             if (setting.SimulationDirty)
             {
                 ClearJoints(index);
@@ -30,6 +29,7 @@ namespace Gameplay.Animations.InverseKinematics
                 setting.SimulationDirty = false;
             }
             else if (_deterministic)
+                // To make our calculation deterministic, re-initialise our Chain so that we're operating from the default again (Bone Transform Position is reset at the start of each Update, so we don't need to do this here).
                 setting.InitJoints(_mutableBoneAxes);
         }
         public void ClearJoints(int index)
@@ -43,7 +43,10 @@ namespace Gameplay.Animations.InverseKinematics
                 setting.SolverInfoList[i] = null;
             
             setting.SolverInfoList.Clear();
-            setting.SolverInfoList.ResizeInitialised(setting.Joints.Length);
+            setting.SolverInfoList = new IKBaseSolverInfo[setting.Joints.Length];
+            for(int i = 0; i < setting.SolverInfoList.Length; ++i)
+                setting.SolverInfoList[i] = new();
+
             SubscribeToJointLimitationEvents(index);
         }
 
@@ -117,6 +120,8 @@ namespace Gameplay.Animations.InverseKinematics
         public override void ProcessIK(float deltaTime)
         {
             _sqrMinDistance = _minDistance * _minDistance;
+            for (int i = 0; i < Settings.Count; ++i)
+                Settings[i].ResetJoints();
 
             for (int i = 0; i < Settings.Count; ++i)
             {
@@ -139,7 +144,7 @@ namespace Gameplay.Animations.InverseKinematics
 
             // To prevent rapid oscillation, if we have processed at least once and the target was reached, don't iterate.
             if (setting.HasSimulated)
-                sqrDstToTarget = (setting.Chain[setting.Chain.Length - 1] - targetPos).sqrMagnitude;
+                sqrDstToTarget = (setting.Chain[setting.Chain.Count - 1] - targetPos).sqrMagnitude;
 
             while(sqrDstToTarget > _sqrMinDistance && iterationCount < _maxIterations)
             {
@@ -148,20 +153,12 @@ namespace Gameplay.Animations.InverseKinematics
 
                 // Update the virtual bone rest/poses.
                 setting.CacheCurrentJointRotations(_angularDeltaLimit);
-                sqrDstToTarget = (setting.Chain[setting.Chain.Length - 1] - targetPos).sqrMagnitude;
+                sqrDstToTarget = (setting.Chain[setting.Chain.Count - 1] - targetPos).sqrMagnitude;
                 ++iterationCount;
             }
 
             // Apply the virtual bone rest/poses to the actual bones.
-            for (int i = 0; i < setting.SolverInfoList.Length; ++i)
-            {
-                IKBaseSolverInfo solverInfo = setting.SolverInfoList[i];
-                if (solverInfo == null || MathUtils.IsApproximatelyZero(solverInfo.Length))
-                    continue; // Invalid info.
-
-                // Update the bone position.
-                throw new System.NotImplementedException("Update Bone Position");
-            }
+            setting.ApplyJointRotations();
 
             setting.HasSimulated = true;
         }
@@ -267,12 +264,13 @@ namespace Gameplay.Animations.InverseKinematics
 
         public void InitJoints(bool mutableBoneAxes)
         {
-            bool extendsEnd = ExtendEndBone && EndBoneLength > 0.0f;
-            Chain.Resize(Joints.Length + (extendsEnd ? 1 : 0));
+            Chain.Clear();
 
+            bool extendsEnd = ExtendEndBone && EndBoneLength > 0.0f;
             for (int i = 0; i < Joints.Length; ++i)
             {
-                Chain[i] = Joints[i].Bone.position;
+                Vector3 globalPos = Joints[i].Bone.position; // Skeleton3D.GetBoneGlobalPose();
+                Chain.Add(globalPos);
 
                 bool isLast = i == Joints.Length - 1;
                 if (isLast && extendsEnd)
@@ -285,7 +283,19 @@ namespace Gameplay.Animations.InverseKinematics
                     SolverInfoList[i] ??= new();
                     SolverInfoList[i].ForwardVector = axis.normalized.SnapToPlane(Joints[i].GetRotationAxisVector());
                     SolverInfoList[i].Length = EndBoneLength;
-                    Chain[i + 1] = Joints[i].Bone.position + Joints[i].Bone.rotation * (axis * EndBoneLength);
+                    Chain.Add(globalPos + Joints[i].Bone.rotation * (axis * EndBoneLength));
+                }
+                else if (isLast)
+                {
+                    Vector3 axis = _endBone.localPosition;
+                    if (axis.IsApproximatelyZero())
+                        continue;
+
+                    SolverInfoList[i] ??= new();
+                    SolverInfoList[i].ForwardVector = axis.normalized.SnapToPlane(Joints[i].GetRotationAxisVector());
+                    SolverInfoList[i].Length = axis.magnitude;
+                    //Chain.Add(_endBone.position);
+                    Chain.Add(_endBone.position);
                 }
                 else if (!isLast)
                     // Not the last bone.
@@ -310,7 +320,9 @@ namespace Gameplay.Animations.InverseKinematics
         /// </summary>
         public void CacheCurrentJointRotations(float angularDeltaLimit = Mathf.PI)
         {
-            Quaternion parentGPose = RootBone.Bone.rotation;
+            Quaternion parentGPose = Quaternion.identity;
+            if (RootBone.Bone.parent != null)
+                parentGPose = RootBone.Bone.parent.localRotation;
 
             for (int i = 0; i < Joints.Length; ++i)
             {
@@ -319,19 +331,21 @@ namespace Gameplay.Animations.InverseKinematics
                 if (solverInfo == null)
                     continue;
 
-                solverInfo.CurrentLRest = Joints[head].Bone.rotation;
-                solverInfo.CurrentGRest = (parentGPose * solverInfo.CurrentLRest).normalized;
+                solverInfo.CurrentLRest = Joints[head].Bone.localRotation;
+                solverInfo.CurrentGRest = parentGPose * solverInfo.CurrentLRest;
 
                 Vector3 from = solverInfo.ForwardVector;
                 Vector3 to = (Quaternion.Inverse(solverInfo.CurrentGRest) * solverInfo.CurrentVector).normalized;
                 Quaternion prev = solverInfo.CurrentLPose;
 
-                if (Joints[head].RotationAxis == RotationAxis.All)
+                //if (Joints[head].RotationAxis == RotationAxis.All)
                     // No rotation axis restrictions.
                     solverInfo.CurrentLPose = solverInfo.CurrentLRest * Quaternion.FromToRotation(from, to).GetSwing(from);
-                else
+                //else
                     // Stabilize the rotation path (Especially near 180 degrees).
-                    solverInfo.CurrentLPose = solverInfo.CurrentLRest * QuaternionExtensions.GetFromToRotationByAxis(from, to, Joints[head].GetRotationAxisVector());
+                //    solverInfo.CurrentLPose = solverInfo.CurrentLRest * QuaternionExtensions.GetFromToRotationByAxis(from, to, Joints[head].GetRotationAxisVector().normalized);
+
+                //Debug.DrawRay(Joints[head].Bone.position, QuaternionExtensions.GetFromToRotationByAxis(from, to, Joints[head].GetRotationAxisVector()) * Vector3.up, Color.red, 0.1f);
 
                 // Apply angular delta limit.
                 float diff = Quaternion.Angle(prev, solverInfo.CurrentLPose) * Mathf.Deg2Rad;

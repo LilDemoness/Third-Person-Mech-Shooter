@@ -34,8 +34,8 @@ namespace Gameplay.Animations.InverseKinematics
     {
 #if UNITY_EDITOR
         [SerializeField, HideInInspector] private Transform _rootBone; // Editor Only: Only to be accessed by Inspector scripts.
-        [SerializeField, HideInInspector] private Transform _endBone; // Editor Only: Only to be accessed by Inspector scripts.
 #endif
+        [SerializeField, HideInInspector] protected Transform _endBone; // Should be set in the inspector.
 
         public TBoneJoint RootBone => Joints[0];
         public TBoneJoint EndBone => Joints[_jointCount - 1];
@@ -48,10 +48,35 @@ namespace Gameplay.Animations.InverseKinematics
 
         [SerializeField] public TBoneJoint[] Joints = new TBoneJoint[0];
         private int _jointCount;
-        [HideInInspector] public IKBaseSolverInfo[] SolverInfoList = new IKBaseSolverInfo[0];
-        [HideInInspector] public Vector3[] Chain = new Vector3[0];
+        public IKBaseSolverInfo[] SolverInfoList = new IKBaseSolverInfo[0];
+        public List<Vector3> Chain { get; set; } = new List<Vector3>();
 
-        public void UpdateChainCoordinate(int index, Vector3 position)
+
+        /// <summary>
+        ///     Resets the Position and Rotation of every Joint's Bone transform.
+        /// </summary>
+        public void ResetJoints()
+        {
+            for(int i = 0; i < Joints.Length; ++i)
+            {
+                Joints[i].Bone.localPosition = Joints[i].RestPosition;
+                Joints[i].Bone.localRotation = Joints[i].RestRotation;
+            }
+        }
+        public void ApplyJointRotations()
+        {
+            for(int i = 0; i < SolverInfoList.Length; ++i)
+            {
+                IKBaseSolverInfo solverInfo = SolverInfoList[i];
+                if (solverInfo == null || MathUtils.IsApproximatelyZero(solverInfo.Length))
+                    continue; // Invalid info.
+
+                Joints[i].Bone.localRotation = solverInfo.CurrentLPose;
+            }
+        }
+
+
+        /*public void UpdateChainCoordinate(int index, Vector3 position)
         {
             // Don't update if the position is the same as the current position.
             // We're not using sqrMagnitude as we need more precision that it provides.
@@ -92,7 +117,7 @@ namespace Gameplay.Animations.InverseKinematics
 
             Chain[index] = result;
             CacheCurrentVector(index);
-        }
+        }*/
         public void UpdateChainCoordinateForward(int index, Vector3 targetPosition)
         {
             // Don't update if the target position is the same as the current position.
@@ -106,7 +131,7 @@ namespace Gameplay.Animations.InverseKinematics
             if (tail >= 0 && tail < SolverInfoList.Length)
             {
                 IKBaseSolverInfo solverInfo = SolverInfoList[head];
-                if (solverInfo != null)
+                if (solverInfo == null)
                 {
                     Vector3 oldHeadToTail = solverInfo.CurrentVector;
                     Vector3 newHeadToTail = (Chain[tail] - targetPosition).normalized;
@@ -138,8 +163,8 @@ namespace Gameplay.Animations.InverseKinematics
             }
 
             currentHead = index;
-            currentTail = index - 1;
-            if (currentTail < Chain.Length)
+            currentTail = index + 1;
+            if (currentTail < Chain.Count)
             {
                 IKBaseSolverInfo solverInfo = SolverInfoList[currentHead];
                 if (solverInfo != null)
@@ -163,7 +188,9 @@ namespace Gameplay.Animations.InverseKinematics
             if (RootBone == null || RootBone.Bone == null)
                 return; // Unset values.
 
-            Quaternion parentGPose = RootBone.Bone.rotation;
+            Quaternion parentGPose = Quaternion.identity;
+            if (RootBone.Bone.parent != null)
+                parentGPose = RootBone.Bone.parent.rotation;
 
             for (int i = 0; i < Joints.Length; ++i)
             {
@@ -171,16 +198,50 @@ namespace Gameplay.Animations.InverseKinematics
                 if (solverInfo == null)
                     continue;
 
-                solverInfo.CurrentLRest = Joints[i].Bone.localRotation;
+                Joints[i].Bone.localRotation = Joints[i].RestRotation;
+
+                solverInfo.CurrentLRest = Joints[i].Bone.rotation;
                 solverInfo.CurrentGRest = (parentGPose * solverInfo.CurrentLRest).normalized;
 
-                solverInfo.CurrentLPose = Joints[i].Bone.localRotation;
+                solverInfo.CurrentLPose = Joints[i].Bone.rotation;
                 solverInfo.CurrentGPose = (parentGPose * solverInfo.CurrentLPose).normalized;
 
                 parentGPose = solverInfo.CurrentGPose;
             }
 
             CacheCurrentVectors();
+        }
+
+
+        public override void DrawGizmos()
+        {
+            base.DrawGizmos();
+
+
+            // Draw Joints.
+            Gizmos.color = Color.red;
+            for (int i = 0; i < Joints.Length; ++i)
+                Gizmos.DrawSphere(Joints[i].Bone.position, 0.2f);
+
+            if (ExtendEndBone)
+            {
+                Vector3 axis = Joints[Joints.Length - 1].GetBoneAxis(EndBoneDirection, true);
+                Gizmos.DrawSphere(Joints[Joints.Length - 1].Bone.position + Joints[Joints.Length - 1].Bone.rotation * axis * EndBoneLength, 0.2f);
+            }
+
+            // Draw Bones.
+            Gizmos.color = Color.yellow;
+            Matrix4x4 originalMatrix = Gizmos.matrix;
+            for (int i = 0; i < Chain.Count - 1; ++i)
+            {
+                Vector3 boneVector = Chain[i + 1] - Chain[i];
+                Vector3 cubeCentre = Chain[i] + (boneVector / 2.0f);
+                Gizmos.matrix = Matrix4x4.TRS(cubeCentre, Quaternion.FromToRotation(Vector3.up, boneVector.normalized), Vector3.one);
+
+                Vector3 cubeSize = new Vector3(0.1f, boneVector.magnitude, 0.1f);
+                Gizmos.DrawCube(Vector3.zero, cubeSize);
+            }
+            Gizmos.matrix = originalMatrix;
         }
     }
     public class IKChainBaseSetting : IKChainBaseSetting<BoneJoint>

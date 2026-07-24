@@ -10,7 +10,7 @@ namespace Gameplay.Animations.InverseKinematics
         protected override void SolveIK(float deltaTime, IKIterateBaseSetting setting, Vector3 target)
         {
             int jointSize = setting.Joints.Length; // Joint Count.
-            int chainSize = setting.Chain.Length; // Chain Bone Count.
+            int chainSize = setting.Chain.Count; // Chain Bone Count.
 
             // Backward Pass.
             for (int ancestor = jointSize - 1; ancestor >= 0; --ancestor)
@@ -38,11 +38,13 @@ namespace Gameplay.Animations.InverseKinematics
                     Vector3 toTail = setting.Chain[tail] - currentHead;
 
                     // Rotate the joint.
-                    setting.UpdateChainCoordinateForward(tail, currentHead + toRot * toTail);
+                    Vector3 targetPos = currentHead + (toRot * toTail.normalized * setting.SolverInfoList[i].Length);
+                    setting.UpdateChainCoordinateForward(tail, targetPos);
 
                     // Apply rotation axis locks.
                     if (setting.Joints[head].RotationAxis != RotationAxis.All)
                         setting.UpdateChainCoordinateForward(tail, setting.Chain[head] + setting.Joints[head].GetProjectedRotation(solverInfo.CurrentGRest, setting.Chain[tail] - setting.Chain[head]));
+                    
                     // Apply rotation axis degree limitations.
                     if (setting.Joints[head].Limitation != null)
                         setting.UpdateChainCoordinateForward(tail, setting.Chain[head] + setting.Joints[head].GetLimitedRotation(solverInfo.CurrentGRest, setting.Chain[tail] - setting.Chain[head], solverInfo.ForwardVector));

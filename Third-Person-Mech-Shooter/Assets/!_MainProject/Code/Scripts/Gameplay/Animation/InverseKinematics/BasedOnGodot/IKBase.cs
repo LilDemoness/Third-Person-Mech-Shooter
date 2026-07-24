@@ -28,6 +28,7 @@ namespace Gameplay.Animations.InverseKinematics
 
 
         private void Update() => ProcessIK(Time.deltaTime);
+       
 
         public abstract void ProcessIK(float deltaTime);
         public void RestUpdated()
@@ -48,13 +49,11 @@ namespace Gameplay.Animations.InverseKinematics
         public bool AreBoneAxesMutable() => _mutableBoneAxes;
 
 
-        /// <summary>
-        ///     
-        ///     Only called while processing manually.?
-        /// </summary>
-        public void Reset()
+        private void OnDrawGizmos() => DrawGizmos();
+        public virtual void DrawGizmos()
         {
-            
+            for (int i = 0; i < Settings.Count; ++i)
+                Settings[i].DrawGizmos();
         }
     }
     public abstract class IKBase : IKBase<IKBaseSetting>
@@ -71,8 +70,14 @@ namespace Gameplay.Animations.InverseKinematics
 
         [field: SerializeField, ReadOnly] public Transform Bone { get; private set; }
 
-        [field:SerializeField, ReadOnly] public Vector3 RestPosition { get; private set; } // Rest position in local space.
-        [field: SerializeField, ReadOnly] public Quaternion RestRotation { get; private set; } // Rest rotation in local space.
+        /// <summary>
+        ///     Rest position in local space.
+        /// </summary>
+        [field:SerializeField, ReadOnly] public Vector3 RestPosition { get; private set; }
+        /// <summary>
+        ///     Rest rotation in local space.
+        /// </summary>
+        [field: SerializeField, ReadOnly] public Quaternion RestRotation { get; private set; }
 
 
         public BoneJoint(){ }
@@ -104,11 +109,11 @@ namespace Gameplay.Animations.InverseKinematics
     {
         public Quaternion CurrentLPose { get; set; } // Local Space.
         public Quaternion CurrentLRest { get; set; } // Local Space.
-        public Quaternion CurrentGPose { get; set; } // Local Space.
-        public Quaternion CurrentGRest { get; set; } // Local Space.
+        public Quaternion CurrentGPose { get; set; } // World Space?
+        public Quaternion CurrentGRest { get; set; } // World Space?
 
             
-        public Vector3 CurrentVector { get; set; } // Global Space.
+        public Vector3 CurrentVector { get; set; } // World Space?
         public Vector3 ForwardVector { get; set; } // Local Direction to the next bone in the IK Chain.
 
 
@@ -117,8 +122,10 @@ namespace Gameplay.Animations.InverseKinematics
     [System.Serializable]
     public class IKBaseSetting
     {
-        [field: SerializeField, ReadOnly] public bool SimulationDirty { get; set; } = true;
+        [field: SerializeField, ReadOnly] public bool SimulationDirty { get; set; } = true; // If true, our simulation parameters have changed.
         [field: SerializeField, ReadOnly] public bool JointsDirty { get; set; } = false;
+
+        public virtual void DrawGizmos() { }
     }
 
 
@@ -220,25 +227,6 @@ namespace Gameplay.Animations.InverseKinematics
     public static class ArrayExtensions
     {
         /// <summary>
-        ///     Resizes this <paramref name="array"/> with all values created using their default constructor.
-        /// </summary>
-        public static void ResizeInitialised<TType>(this TType[] array, int newSize) where TType : new()
-        {
-            array = new TType[newSize];
-            for (int i = 0; i < newSize; ++i)
-                array[i] = new TType();
-        }
-        /// <summary>
-        ///     Resizes this <paramref name="array"/> with all values as their default value.
-        /// </summary>
-        public static void Resize<TType>(this TType[] array, int newSize)
-        {
-            array = new TType[newSize];
-            for (int i = 0; i < newSize; ++i)
-                array[i] = default;
-        }
-
-        /// <summary>
         ///     Sets all values within <paramref name="array"/> to default.
         /// </summary>
         public static void Clear<TType>(this TType[] array)
@@ -315,9 +303,9 @@ namespace Gameplay.Animations.InverseKinematics
             float dot = Vector3.Dot(from, to);
 
             if (dot > ALMOST_ONE)
-                return new Quaternion(); // No rotation required.
+                return Quaternion.identity; // No rotation required.
             if (dot < -ALMOST_ONE)
-                return Quaternion.AngleAxis(Mathf.PI, axis); // Return a rotation to flip the vector.
+                return Quaternion.AngleAxis(360.0f, axis); // Return a rotation to flip the vector.
 
             float angle = Vector3.Angle(from, to);
             Vector3 cross = Vector3.Cross(from, to);

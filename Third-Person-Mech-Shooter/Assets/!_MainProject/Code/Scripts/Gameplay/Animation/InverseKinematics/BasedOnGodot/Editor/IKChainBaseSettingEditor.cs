@@ -70,14 +70,14 @@ namespace Gameplay.Animations.InverseKinematics
             EditorGUILayout.Space(5);
 
 
-            // Joints Array (Includes Root and End Bone Assignment).
-            DrawJoints(property);
+            // Joints Array.
+            DrawJoints(property, setting);
         }
 
 
-        private void DrawJoints(SerializedProperty property)
+        private void DrawJoints(SerializedProperty property, IKIterateBaseSetting settings)
         {
-            SerializedProperty jointsProp = property.FindPropertyRelative(nameof(IKChainBaseSetting.Joints));
+            SerializedProperty jointsProp = property.FindPropertyRelative(nameof(IKIterateBaseSetting.Joints));
             if (!jointsProp.GetTargetObjectOfProperty().TryCastToType<IKIterateBaseJoint[]>(out IKIterateBaseJoint[] boneJoints))
             {
                 EditorGUILayout.LabelField("Failed to access 'Joints' (BoneJoint[])");
@@ -108,18 +108,25 @@ namespace Gameplay.Animations.InverseKinematics
                 return;
             }
 
-            int desiredJointsCount = endBone.GetStepsToParent(rootBone) + 1;
-            if (desiredJointsCount == 0)
+            int desiredJointsCount = endBone.GetStepsToParent(rootBone);
+            if (desiredJointsCount == -1)
                 // Invalid: End is not a child of Root.
             {
                 EditorGUILayout.HelpBox($"End Bone {endBone.name} must be a child of {rootBone.name}", MessageType.Error);
                 return;
             }
 
+            // If we are extending the end bone, then the 'tip' transform is a joint too.
+            // Otherwise, it is just the end of our last bone.
+            if (settings.ExtendEndBone)
+                ++desiredJointsCount;
+            else
+                endBone = endBone.parent;
+
 
             // Update the BoneJoints array if our values no longer match.
             int currentJointsCount = boneJoints.Length;
-            if (currentJointsCount != desiredJointsCount || rootBone != boneJoints[0].Bone || endBone != boneJoints[currentJointsCount - 1].Bone)
+            if (currentJointsCount != desiredJointsCount || rootBone != boneJoints[0].Bone || endBone != boneJoints[currentJointsCount - 1].Bone || GUILayout.Button("Reset Joints"))
             {
                 // Update Bone Joints.
                 EditorGUILayout.HelpBox($"Needing to update Joints", MessageType.Info);
@@ -213,10 +220,8 @@ namespace Gameplay.Animations.InverseKinematics
             Rect buttonRect = new Rect(position);
             buttonRect.height = BUTTON_HEIGHT;
             if (GUI.Button(buttonRect, "Update Rest Pose"))
-            {
-                Debug.Log("To Implement - Update Rest");
-            }
-            ;
+                boneJoint.UpdateRest();
+            
             position.y += buttonRect.height + EditorGUIUtility.standardVerticalSpacing;
 
 
