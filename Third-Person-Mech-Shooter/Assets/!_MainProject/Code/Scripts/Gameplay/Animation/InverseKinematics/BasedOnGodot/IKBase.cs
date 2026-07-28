@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Unity.Services.Multiplay.Authoring.Core.MultiplayApi;
 using UnityEngine;
 
 namespace Gameplay.Animations.InverseKinematics
@@ -17,26 +18,19 @@ namespace Gameplay.Animations.InverseKinematics
 
     /// <summary>
     ///     A base class for IK Solvers.
+    ///     Do not inherit from this class. Instead, inherit from <see cref="IKBase{TSetting}"/> or one of its children.
     /// </summary>
-    /// <typeparam name="TSetting"> The container class used for this IK solver's settings.</typeparam>
-    public abstract class IKBase<TSetting> : MonoBehaviour where TSetting : IKBaseSetting
+    /// <remarks>
+    ///     A base, non-generic class for IK Solvers so that we can reference them without needing to know their specific type.
+    /// </remarks>
+    public abstract class IKBase : MonoBehaviour
     {
         protected bool _mutableBoneAxes = true;
         protected bool _jointsDirty = false;
 
-        [SerializeField] protected List<TSetting> Settings = new List<TSetting>();
-
-
-        private void Update() => ProcessIK(Time.deltaTime);
-       
 
         public abstract void ProcessIK(float deltaTime);
-        public void RestUpdated()
-        {
-            MakeAllJointsDirty();
-
-            //throw new System.NotImplementedException();
-        }
+        public void RestUpdated() => MakeAllJointsDirty();
 
         protected abstract void MakeAllJointsDirty();
         protected abstract void InitJoints(int index);
@@ -50,14 +44,23 @@ namespace Gameplay.Animations.InverseKinematics
 
 
         private void OnDrawGizmos() => DrawGizmos();
-        public virtual void DrawGizmos()
+        public abstract void DrawGizmos();
+    }
+
+    /// <summary>
+    ///     A base class for IK Solvers.
+    /// </summary>
+    /// <typeparam name="TSetting"> The container class used for this IK solver's settings.</typeparam>
+    public abstract class IKBase<TSetting> : IKBase where TSetting : IKBaseSetting
+    {
+        [SerializeField] protected List<TSetting> Settings = new List<TSetting>();
+
+        public override void DrawGizmos()
         {
             for (int i = 0; i < Settings.Count; ++i)
                 Settings[i].DrawGizmos();
         }
     }
-    public abstract class IKBase : IKBase<IKBaseSetting>
-    { }
 
 
 
@@ -109,15 +112,15 @@ namespace Gameplay.Animations.InverseKinematics
     {
         public Quaternion CurrentLPose { get; set; } // Local Space.
         public Quaternion CurrentLRest { get; set; } // Local Space.
-        public Quaternion CurrentGPose { get; set; } // World Space?
-        public Quaternion CurrentGRest { get; set; } // World Space?
-
-            
-        public Vector3 CurrentVector { get; set; } // World Space?
-        public Vector3 ForwardVector { get; set; } // Local Direction to the next bone in the IK Chain.
+        public Quaternion CurrentGPose { get; set; } // Root-Bone's Parent Local Space
+        public Quaternion CurrentGRest { get; set; } // Root-Bone's Parent Local Space
 
 
-        public float Length { get; set; } = 0.0f;
+        public Vector3 CurrentVector { get; set; } // Root-Bone's Parent Local Space
+        public Vector3 ForwardVector { get; set; } // Local Direction. Points to the next bone in the IK Chain.
+
+
+        public float Length { get; set; } = 0.0f; // Length of this bone (Distance to the next bone in the IK Chain).
     }
     [System.Serializable]
     public class IKBaseSetting
@@ -270,6 +273,12 @@ namespace Gameplay.Animations.InverseKinematics
             Vector3 normal = planeNormal.normalized;
             return (normalizedVec - (normal * Vector3.Dot(planeNormal, vector))) * length;
         }
+
+
+        public static Vector3 MultiplyElementwise(this Vector3 a, Vector3 b)
+        => new Vector3(a.x * b.x, a.y * b.y, a.z * b.z);
+        public static Vector3 DivideElementwise(this Vector3 a, Vector3 b)
+        => new Vector3(a.x / b.x, a.y / b.y, a.z / b.z);
     }
     public static class QuaternionExtensions
     {

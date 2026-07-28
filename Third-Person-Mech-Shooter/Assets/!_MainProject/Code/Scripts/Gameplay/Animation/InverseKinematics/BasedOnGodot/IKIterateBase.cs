@@ -9,10 +9,13 @@ namespace Gameplay.Animations.InverseKinematics
     public abstract class IKIterateBase<TSetting> : IKChainBase<TSetting, IKIterateBaseJoint> where TSetting : IKIterateBaseSetting
     {
         [SerializeField] protected int _maxIterations = 4;
+        
         [SerializeField] protected float _minDistance = 0.001f; // If the distance between the end joint and the target falls beneath this value, then finish the iteration.
         protected float _sqrMinDistance; // Cached.
-        [SerializeField] protected float _angularDeltaLimit = 2.0f * Mathf.Deg2Rad; // If the delta is too large, the results before and after iterating can change significantly, and divergence of calculations can easily occur.
-        
+
+        [SerializeField] private float m_angularDeltaLimit = 2.0f; // If the delta is too large, the results before and after iterating can change significantly, and divergence of calculations can easily occur.
+        protected float _angularDeltaLimit => m_angularDeltaLimit * Mathf.Deg2Rad;
+
         [SerializeField] protected bool _deterministic = false;
 
 
@@ -133,7 +136,8 @@ namespace Gameplay.Animations.InverseKinematics
 
                 Settings[i].CacheCurrentJointRotations(); // Iterate over first to detect parent (Outside of the chain) bone pose changes.
 
-                Vector3 destination = /*_cachedSpace * */target.position;
+                // Convert the target position from world space to relative to the root bone (Account for Position & Scale, but not Rotation).
+                Vector3 destination = (target.position - Settings[i].RootBone.Bone.position).DivideElementwise(Settings[i].RootBone.Bone.lossyScale);
                 ProcessJoints(deltaTime, Settings[i], destination);
             }
         }
@@ -269,7 +273,7 @@ namespace Gameplay.Animations.InverseKinematics
             bool extendsEnd = ExtendEndBone && EndBoneLength > 0.0f;
             for (int i = 0; i < Joints.Length; ++i)
             {
-                Vector3 globalPos = Joints[i].Bone.position; // Skeleton3D.GetBoneGlobalPose();
+                Vector3 globalPos = Joints[i].Bone.position - RootBone.Bone.position; // Position relative to the root bone.
                 Chain.Add(globalPos);
 
                 bool isLast = i == Joints.Length - 1;
@@ -294,7 +298,6 @@ namespace Gameplay.Animations.InverseKinematics
                     SolverInfoList[i] ??= new();
                     SolverInfoList[i].ForwardVector = axis.normalized.SnapToPlane(Joints[i].GetRotationAxisVector());
                     SolverInfoList[i].Length = axis.magnitude;
-                    //Chain.Add(_endBone.position);
                     Chain.Add(_endBone.position);
                 }
                 else if (!isLast)
@@ -320,9 +323,7 @@ namespace Gameplay.Animations.InverseKinematics
         /// </summary>
         public void CacheCurrentJointRotations(float angularDeltaLimit = Mathf.PI)
         {
-            Quaternion parentGPose = Quaternion.identity;
-            if (RootBone.Bone.parent != null)
-                parentGPose = RootBone.Bone.parent.localRotation;
+            Quaternion parentGPose = RootBone.Bone.parent != null ? RootBone.Bone.parent.localRotation : Quaternion.identity;
 
             for (int i = 0; i < Joints.Length; ++i)
             {
