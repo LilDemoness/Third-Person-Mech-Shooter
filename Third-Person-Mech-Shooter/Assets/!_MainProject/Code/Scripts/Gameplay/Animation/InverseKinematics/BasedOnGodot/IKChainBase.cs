@@ -85,12 +85,12 @@ namespace Gameplay.Animations.InverseKinematics
             // Allow flipping.
             Chain[index] = position;
             CacheCurrentVector(index);
-        }
+        }*/
         public void UpdateChainCoordinateBackward(int index, Vector3 position)
         {
             // Don't update if the position is the same as the current position.
             // We're not using sqrMagnitude as we need more precision that it provides.
-            if (MathUtils.IsApproximatelyZero((Chain[index] - position).sqrMagnitude))
+            if (MathUtils.IsApproximatelyZero((Chain[index] - position).magnitude))
                 return;
 
             // Prevent flipping from backwards.
@@ -116,7 +116,7 @@ namespace Gameplay.Animations.InverseKinematics
 
             Chain[index] = result;
             CacheCurrentVector(index);
-        }*/
+        }
         public void UpdateChainCoordinateForward(int index, Vector3 targetPosition)
         {
             // Don't update if the target position is the same as the current position.
