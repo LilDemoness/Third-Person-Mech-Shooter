@@ -3,14 +3,14 @@
 namespace Gameplay.Animations.InverseKinematics
 {
     /// <summary>
-    ///     Base class for Joint Limitations which can influence <see cref="IKChainBase"/> instances.
+    ///     Base class for Joint Limitations which can influence <see cref="IKChainBase<>"/> instances.
     /// </summary>
     /// <remarks>
     ///     For now, these are made with default class instances.
     ///     In the future this may change (E.g. To MonoBehaviours or ScriptableObjects).
     /// </remarks>
     [System.Serializable]
-    public abstract class JointLimitation : ScriptableObject
+    public abstract class JointLimitation
     {
         public Vector3 Solve(Vector3 localForward, Vector3 localRight, Quaternion rotationOffset, Vector3 localCurrent)
         {
@@ -37,8 +37,7 @@ namespace Gameplay.Animations.InverseKinematics
             return Quaternion.LookRotation(axisZ, axisY) * rotationOffset; // We may need to change the first quaternion creation.
         }
 
-        //#if UNITY_EDITOR
-        //public virtual void DrawShape()
-        //#endif
+
+        public abstract void DrawLimitationGizmos(Transform joint, Vector3 nextBoneDirection);
     }
 }

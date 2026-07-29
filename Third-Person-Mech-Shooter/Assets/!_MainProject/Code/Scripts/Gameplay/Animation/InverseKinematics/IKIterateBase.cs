@@ -177,7 +177,7 @@ namespace Gameplay.Animations.InverseKinematics
         public RotationAxis RotationAxis = RotationAxis.All;
         [ShowIf(nameof(RotationAxis), RotationAxis.Custom)] public Vector3 RotationAxisVector = Vector3.right;
  
-        public JointLimitation Limitation;
+        [SerializeReference, SubclassSelector] public JointLimitation Limitation;
         public SecondaryDirection LimitationRightAxis = SecondaryDirection.None;
         [ShowIf(nameof(LimitationRightAxis), SecondaryDirection.Custom)] public Vector3 LimitationRightAxisVector = Vector3.right;
         public Quaternion LimitationRotationOffset;
@@ -355,6 +355,41 @@ namespace Gameplay.Animations.InverseKinematics
 
                 solverInfo.CurrentGPose = (parentGPose * solverInfo.CurrentLPose).normalized;
                 parentGPose = solverInfo.CurrentGPose;
+            }
+        }
+
+
+        public override void DrawGizmos()
+        {
+            base.DrawGizmos();
+
+            // Dirty implementation: Draw limitations.
+            for (int i = 0; i < Joints.Length; ++i)
+            {
+                if (Joints[i].Limitation != null)
+                {
+                    #if UNITY_EDITOR
+                    if (Chain.Count == 0)
+                    {
+                        if (i == Joints.Length - 1)
+                        {
+                            if (ExtendEndBone)
+                                Joints[i].Limitation.DrawLimitationGizmos(Joints[i].Bone, EndBone.Bone.rotation * EndBone.GetBoneAxis(EndBoneDirection, true));
+                            else
+                                Joints[i].Limitation.DrawLimitationGizmos(Joints[i].Bone, (_endBone.position - Joints[i].Bone.position).normalized);
+                        }
+                        else
+                            Joints[i].Limitation.DrawLimitationGizmos(Joints[i].Bone, (Joints[i + 1].Bone.position - Joints[i].Bone.position).normalized);
+                    }
+                    else
+                    {
+                    #endif
+                        Joints[i].Limitation.DrawLimitationGizmos(Joints[i].Bone, (Chain[i + 1] - Chain[i]).normalized);
+                    #if UNITY_EDITOR
+                    }
+                    #endif
+
+                }
             }
         }
     }

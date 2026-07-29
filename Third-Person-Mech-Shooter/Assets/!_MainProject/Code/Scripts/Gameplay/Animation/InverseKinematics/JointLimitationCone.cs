@@ -45,5 +45,18 @@ namespace Gameplay.Animations.InverseKinematics
             // Return the limited direction.
             return limitedDir.normalized;
         }
+
+
+        public override void DrawLimitationGizmos(Transform joint, Vector3 nextBoneDirection)
+        {
+            // Basic Implementation.
+            Quaternion rightRot = Quaternion.AngleAxis(Angle, joint.forward);
+            Quaternion forwardRot = Quaternion.AngleAxis(Angle, joint.right);
+
+            Gizmos.DrawRay(joint.position, rightRot * nextBoneDirection);
+            Gizmos.DrawRay(joint.position, Quaternion.Inverse(rightRot) * nextBoneDirection);
+            Gizmos.DrawRay(joint.position, forwardRot * nextBoneDirection);
+            Gizmos.DrawRay(joint.position, Quaternion.Inverse(forwardRot) * nextBoneDirection);
+        }
     }
 }
