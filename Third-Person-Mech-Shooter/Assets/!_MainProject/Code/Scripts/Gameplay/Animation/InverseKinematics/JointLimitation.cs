@@ -38,6 +38,6 @@ namespace Gameplay.Animations.InverseKinematics
         }
 
 
-        public abstract void DrawLimitationGizmos(Transform joint, Vector3 nextBoneDirection);
+        public abstract void DrawLimitationGizmos(Transform joint, Quaternion jointRotation, Vector3 forward, Vector3 right, Vector3 up);
     }
 }

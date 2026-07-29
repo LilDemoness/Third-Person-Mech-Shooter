@@ -246,8 +246,7 @@ namespace Gameplay.Animations.InverseKinematics
             if (Limitation == null)
                 throw new System.Exception("You need a value for the limitation to retrieve a limited value");
 
-            UnityEngine.Debug.LogWarning("May be the opposite way round.");
-            Vector3 localVector = Quaternion.Inverse(offset) * vector;
+            Vector3 localVector = offset * vector;
             float length = localVector.magnitude;
 
             if (length < float.Epsilon)
@@ -368,27 +367,14 @@ namespace Gameplay.Animations.InverseKinematics
             {
                 if (Joints[i].Limitation != null)
                 {
-                    #if UNITY_EDITOR
-                    if (Chain.Count == 0)
-                    {
-                        if (i == Joints.Length - 1)
-                        {
-                            if (ExtendEndBone)
-                                Joints[i].Limitation.DrawLimitationGizmos(Joints[i].Bone, EndBone.Bone.rotation * EndBone.GetBoneAxis(EndBoneDirection, true));
-                            else
-                                Joints[i].Limitation.DrawLimitationGizmos(Joints[i].Bone, (_endBone.position - Joints[i].Bone.position).normalized);
-                        }
-                        else
-                            Joints[i].Limitation.DrawLimitationGizmos(Joints[i].Bone, (Joints[i + 1].Bone.position - Joints[i].Bone.position).normalized);
-                    }
-                    else
-                    {
-                    #endif
-                        Joints[i].Limitation.DrawLimitationGizmos(Joints[i].Bone, (Chain[i + 1] - Chain[i]).normalized);
-                    #if UNITY_EDITOR
-                    }
-                    #endif
+                    Vector3 jointDirection = i == 0
+                        ? Joints[i].RestRotation * Vector3.up
+                        : (Joints[i].Bone.position - Joints[i - 1].Bone.position).normalized;
 
+                    if (i == 0)
+                        Joints[i].Limitation.DrawLimitationGizmos(Joints[i].Bone, Joints[i].RestRotation, Joints[i].RestRotation * Vector3.forward, Joints[i].RestRotation * Vector3.right, Joints[i].RestRotation * Vector3.up);
+                    else
+                        Joints[i].Limitation.DrawLimitationGizmos(Joints[i].Bone, Joints[i - 1].Bone.rotation, Joints[i - 1].Bone.forward, Joints[i - 1].Bone.right, Joints[i - 1].Bone.up);
                 }
             }
         }

@@ -29,6 +29,14 @@ namespace Gameplay.Animations.InverseKinematics
 
                 // Update our bones by moving the head of the current bone towards their tail, pointing back to their current position.
                 setting.UpdateChainCoordinateBackward(head, setting.Chain[tail] + (setting.Chain[head] - setting.Chain[tail]).normalized * solverInfo.Length);
+
+                // Apply rotation axis locks.
+                if (setting.Joints[head].RotationAxis != RotationAxis.All)
+                    setting.UpdateChainCoordinateBackward(head, setting.Chain[tail] + setting.Joints[head].GetProjectedRotation(solverInfo.CurrentGRest, setting.Chain[head] - setting.Chain[tail]));
+
+                // Apply rotation axis degree limitations.
+                if (setting.Joints[head].Limitation != null)
+                    setting.UpdateChainCoordinateBackward(head, setting.Chain[tail] + setting.Joints[head].GetLimitedRotation(solverInfo.CurrentGRest, setting.Chain[head] - setting.Chain[tail], solverInfo.ForwardVector));
             }
 
 
@@ -52,6 +60,14 @@ namespace Gameplay.Animations.InverseKinematics
 
                 // Update our bones by moving the tail of the current bone towards their head, pointing back to their current position.
                 setting.UpdateChainCoordinateForward(tail, setting.Chain[head] + (setting.Chain[tail] - setting.Chain[head]).normalized * solverInfo.Length);
+
+                // Apply rotation axis locks.
+                if (setting.Joints[head].RotationAxis != RotationAxis.All)
+                    setting.UpdateChainCoordinateForward(tail, setting.Chain[head] + setting.Joints[head].GetProjectedRotation(solverInfo.CurrentGRest, setting.Chain[tail] - setting.Chain[head]));
+
+                // Apply rotation axis degree limitations.
+                if (setting.Joints[head].Limitation != null)
+                    setting.UpdateChainCoordinateForward(tail, setting.Chain[head] + setting.Joints[head].GetLimitedRotation(solverInfo.CurrentGRest, setting.Chain[tail] - setting.Chain[head], solverInfo.ForwardVector));
             }
         }
     }
