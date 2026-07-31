@@ -6,8 +6,6 @@ namespace Gameplay.Animations.InverseKinematics
     [CustomPropertyDrawer(typeof(IKIterateBaseJoint), true)]
     public class IKIterateBaseJointDrawer : BoneJointDrawer
     {
-        MackySoft.SerializeReferenceExtensions.Editor.SubclassSelectorDrawer _drawer = new();
-
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             if (!property.GetTargetObjectOfProperty().TryCastToType<IKIterateBaseJoint>(out IKIterateBaseJoint boneJoint))

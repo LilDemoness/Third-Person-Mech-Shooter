@@ -23,7 +23,7 @@ namespace Gameplay.Animations.InverseKinematics
         }
         protected override void MakeAllJointsDirty()
         {
-            for (int i = 0; i < Settings.Count; ++i)
+            for (int i = 0; i < Settings.Length; ++i)
                 UpdateJoints(i);
         }
     }
@@ -32,6 +32,10 @@ namespace Gameplay.Animations.InverseKinematics
     [System.Serializable]
     public class IKChainBaseSetting<TBoneJoint> : IKBaseSetting where TBoneJoint : BoneJoint
     {
+        #if UNITY_EDITOR
+        [SerializeField, HideInInspector] private bool _editorShowJoints = false;
+        #endif
+
 #if UNITY_EDITOR
         [SerializeField, HideInInspector] private Transform _rootBone; // Editor Only: Only to be accessed by Inspector scripts.
 #endif
@@ -214,6 +218,8 @@ namespace Gameplay.Animations.InverseKinematics
         {
             base.DrawGizmos();
 
+            if (Joints.Length == 0)
+                return;
 
             // Draw Spheres to represent our Joints.
             Gizmos.color = Color.red;
@@ -256,6 +262,4 @@ namespace Gameplay.Animations.InverseKinematics
             Gizmos.matrix = originalMatrix;
         }
     }
-    public class IKChainBaseSetting : IKChainBaseSetting<BoneJoint>
-    { }
 }

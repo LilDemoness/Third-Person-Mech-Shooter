@@ -1,34 +1,48 @@
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Gameplay.Animations.InverseKinematics
 {
     [CustomPropertyDrawer(typeof(IKIterateBaseSetting), true)]
-    [CanEditMultipleObjects]
     public class IKIterateBaseSettingDrawer : PropertyDrawer
     {
-        private bool _foldout = true;
-        private bool _showJoints = true;
-
         private const string ROOT_BONE_EDITOR_PROPERTY_IDENTIFIER = "_rootBone";
         private const string END_BONE_EDITOR_PROPERTY_IDENTIFIER = "_endBone";
-
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             if (!property.GetTargetObjectOfProperty().TryCastToType<IKIterateBaseSetting>(out IKIterateBaseSetting setting))
+            {
+                Debug.LogError("Failed to retrieve property reference");
                 return;
+            }
+
+            SerializedProperty foldoutProp = property.FindPropertyRelative("_editorFoldout");
 
             // Draw Element Label.
             string targetName = setting.Target != null ? setting.Target.name : "No Target";
             int jointCount = setting.Joints.Length;
-            _foldout = EditorGUI.Foldout(position, _foldout, $"{(jointCount == 1 ? "1 Joint" : $"{jointCount} Joints")} - Target: {targetName}", true);
-            if (!_foldout)
-                return;
+            foldoutProp.boolValue = EditorGUI.Foldout(position, foldoutProp.boolValue, $"{(jointCount == 1 ? "1 Joint" : $"{jointCount} Joints")} - Target: {targetName}", true);
 
             // Draw Underline.
-            DrawHorizontalLine(thickness: 1, abovePadding: 0, belowPadding: 5);
+            DrawHorizontalLine(thickness: 1);
+
+            // If we're not wanting to display our foldout info, stop here.
+            if (!foldoutProp.boolValue)
+                return;
+            
+
+            // Draw a background.
+            Rect rect = EditorGUILayout.BeginVertical();
+            rect.y -= 1;
+            rect.height += 1;
+
+            //EditorGUI.DrawRect(outlineRect, Color.grey); // Draw an outline rect.
+            EditorGUI.DrawRect(rect, new Color(0.175f, 0.175f, 0.175f, 1.0f)); // Draw a background rect.
+
+
+            EditorGUILayout.Space(2.0f);
+
 
             // Target.
             EditorGUILayout.PropertyField(property.FindPropertyRelative(nameof(IKIterateBaseSetting.Target)));
@@ -48,15 +62,21 @@ namespace Gameplay.Animations.InverseKinematics
 
             // Joints Array.
             HandleJointsArray(property, setting);
+
+            EditorGUILayout.Space(2.0f);
+            DrawHorizontalLine(thickness: 1);
+            EditorGUILayout.EndVertical();
         }
 
-        private void DrawHorizontalLine(float thickness, float abovePadding, float belowPadding)
+        private void DrawHorizontalLine(float thickness, float topPadding = 0.0f, float bottomPadding = 0.0f, float leftPadding = 0.0f, float rightPadding = 0.0f)
         {
-            Rect r = EditorGUILayout.GetControlRect(GUILayout.Height(abovePadding + belowPadding + thickness));
+            const float WIDTH_EXTEND = 6.0f; // Extends the underline to touch both sides of the inspector when the left & right margins are 0.
+
+            Rect r = EditorGUILayout.GetControlRect(GUILayout.Height(topPadding + bottomPadding + thickness));
             r.height = thickness;
-            r.y += abovePadding;
-            r.x -= 2;
-            //r.width += 6;
+            r.y += topPadding;
+            r.x -= (WIDTH_EXTEND / 2.0f) - leftPadding;
+            r.width += WIDTH_EXTEND - leftPadding - rightPadding;
             EditorGUI.DrawRect(r, Color.grey);
         }
 
@@ -74,22 +94,23 @@ namespace Gameplay.Animations.InverseKinematics
         }
 
 
-        private void HandleJointsArray(SerializedProperty property, IKIterateBaseSetting settings)
+        private void HandleJointsArray(SerializedProperty settingsProp, IKIterateBaseSetting settings)
         {
-            SerializedProperty jointsProp = property.FindPropertyRelative(nameof(IKIterateBaseSetting.Joints));
+            SerializedProperty jointsProp = settingsProp.FindPropertyRelative(nameof(IKIterateBaseSetting.Joints));
 
-            PerformJointsArrayValidation(property, jointsProp, settings);
+            if (!PerformJointsArrayValidation(settingsProp, jointsProp, settings))
+                return; // Array validation found invalid data.
 
             // Display Bone Joints.
-            DisplayJointsArray(jointsProp);
+            DisplayJointsArray(settingsProp, jointsProp);
         }
-        private void PerformJointsArrayValidation(SerializedProperty property, SerializedProperty jointsProp, IKIterateBaseSetting settings)
+        private bool PerformJointsArrayValidation(SerializedProperty property, SerializedProperty jointsProp, IKIterateBaseSetting settings)
         {
             // Retrieve Joints Array.
             if (!jointsProp.GetTargetObjectOfProperty().TryCastToType<IKIterateBaseJoint[]>(out IKIterateBaseJoint[] boneJoints))
             {
                 EditorGUILayout.LabelField("Failed to access 'Joints' (BoneJoint[])");
-                return;
+                return false;
             }
 
             // Retrieve Root and End Bone Values.
@@ -97,7 +118,7 @@ namespace Gameplay.Animations.InverseKinematics
                 || !property.FindPropertyRelative(END_BONE_EDITOR_PROPERTY_IDENTIFIER).GetTargetObjectOfProperty().TryCastToType<Transform>(out Transform endBone))
             {
                 EditorGUILayout.LabelField("Failed to retrieve value for '_rootBone' or '_endBone'");
-                return;
+                return false;
             }
 
 
@@ -106,13 +127,13 @@ namespace Gameplay.Animations.InverseKinematics
             // Invalid: No Root Bone.
             {
                 EditorGUILayout.HelpBox("Root Bone is unassigned", MessageType.Error);
-                return;
+                return false;
             }
             if (endBone == null)
             // Invalid: No End Bone.
             {
                 EditorGUILayout.HelpBox("End Bone is unassigned", MessageType.Error);
-                return;
+                return false;
             }
 
             int desiredJointsCount = endBone.GetStepsToParent(rootBone);
@@ -120,7 +141,7 @@ namespace Gameplay.Animations.InverseKinematics
             // Invalid: End is not a child of Root.
             {
                 EditorGUILayout.HelpBox($"End Bone {endBone.name} must be a child of {rootBone.name}", MessageType.Error);
-                return;
+                return false;
             }
 
             // If we are extending the end bone, then the 'tip' transform is a joint too.
@@ -175,22 +196,32 @@ namespace Gameplay.Animations.InverseKinematics
 
                 settings.Joints = boneJoints;
             }
-        }
-        private void DisplayJointsArray(SerializedProperty jointsProp)
-        {
-            _showJoints = EditorGUILayout.Foldout(_showJoints, "Joints", true);
-            if (_showJoints)
-            {
-                ++EditorGUI.indentLevel;
-                for (int i = 0; i < jointsProp.arraySize; ++i)
-                {
-                    SerializedProperty jointProp = jointsProp.GetArrayElementAtIndex(i);
-                    string boneName = jointProp.GetTargetObjectOfProperty().TryCastToType<IKIterateBaseJoint>(out var castResult) && castResult.Bone != null ? castResult.Bone.name : "Error";
 
-                    EditorGUILayout.PropertyField(jointProp, new GUIContent($"{i}: {boneName}"));
-                }
-                --EditorGUI.indentLevel;
+
+            return true;
+        }
+        private void DisplayJointsArray(SerializedProperty settingsProp, SerializedProperty jointsProp)
+        {
+            if (jointsProp.arraySize == 0)
+            {
+                EditorGUILayout.LabelField("No Joints to Display");
+                return;
             }
+
+            SerializedProperty showJointsProp = settingsProp.FindPropertyRelative("_editorShowJoints");
+            showJointsProp.boolValue = EditorGUILayout.Foldout(showJointsProp.boolValue, "Joints", true);
+            if (!showJointsProp.boolValue)
+                return;
+
+            ++EditorGUI.indentLevel;
+            for (int i = 0; i < jointsProp.arraySize; ++i)
+            {
+                SerializedProperty jointProp = jointsProp.GetArrayElementAtIndex(i);
+                string boneName = jointProp.GetTargetObjectOfProperty().TryCastToType<IKIterateBaseJoint>(out var castResult) && castResult.Bone != null ? castResult.Bone.name : "Error";
+
+                EditorGUILayout.PropertyField(jointProp, new GUIContent($"{i}: {boneName}"), true);
+            }
+            --EditorGUI.indentLevel;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Unity.Services.Multiplay.Authoring.Core.MultiplayApi;
 using UnityEngine;
+using Utils;
 
 namespace Gameplay.Animations.InverseKinematics
 {
@@ -53,12 +53,15 @@ namespace Gameplay.Animations.InverseKinematics
     /// <typeparam name="TSetting"> The container class used for this IK solver's settings.</typeparam>
     public abstract class IKBase<TSetting> : IKBase where TSetting : IKBaseSetting
     {
-        [SerializeField] protected List<TSetting> Settings = new List<TSetting>();
+        [SerializeField] protected ClassArray<TSetting> Settings = new ClassArray<TSetting>();
 
         public override void DrawGizmos()
         {
-            for (int i = 0; i < Settings.Count; ++i)
-                Settings[i].DrawGizmos();
+            for (int i = 0; i < Settings.Length; ++i)
+            {
+                if (Settings[i] != null)
+                    Settings[i].DrawGizmos();
+            }
         }
     }
 
@@ -68,7 +71,7 @@ namespace Gameplay.Animations.InverseKinematics
     public class BoneJoint
     {
         #if UNITY_EDITOR
-        [HideInInspector] public bool Editor_Show = true;
+        [HideInInspector] public bool Editor_Show = false;
         #endif
 
         [field: SerializeField, ReadOnly] public Transform Bone { get; private set; }
@@ -125,8 +128,12 @@ namespace Gameplay.Animations.InverseKinematics
     [System.Serializable]
     public class IKBaseSetting
     {
-        [field: SerializeField, ReadOnly] public bool SimulationDirty { get; set; } = true; // If true, our simulation parameters have changed.
-        [field: SerializeField, ReadOnly] public bool JointsDirty { get; set; } = false;
+        #if UNITY_EDITOR
+        [SerializeField, HideInInspector] private bool _editorFoldout = true;
+        #endif
+
+        [field: SerializeField] public bool SimulationDirty {get; set; } = true; // If true, our simulation parameters have changed.
+        [field: SerializeField] public bool JointsDirty { get; set; } = false;
 
         public virtual void DrawGizmos() { }
     }

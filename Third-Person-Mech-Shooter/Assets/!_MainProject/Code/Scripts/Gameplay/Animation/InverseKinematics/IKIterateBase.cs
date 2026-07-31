@@ -123,10 +123,10 @@ namespace Gameplay.Animations.InverseKinematics
         public override void ProcessIK(float deltaTime)
         {
             _sqrMinDistance = _minDistance * _minDistance;
-            for (int i = 0; i < Settings.Count; ++i)
+            for (int i = 0; i < Settings.Length; ++i)
                 Settings[i].ResetJoints();
 
-            for (int i = 0; i < Settings.Count; ++i)
+            for (int i = 0; i < Settings.Length; ++i)
             {
                 InitJoints(i);
 
