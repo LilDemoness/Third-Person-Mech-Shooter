@@ -191,7 +191,7 @@ namespace Gameplay.Animations.InverseKinematics
             if (RootBone == null || RootBone.Bone == null)
                 return; // Unset values.
 
-            Quaternion parentGPose = RootBone.Bone.parent != null ? RootBone.Bone.parent.localRotation : Quaternion.identity;
+            Quaternion parentGPose = RootBone.Bone.parent != null ? RootBone.Bone.parent.rotation : Quaternion.identity;
 
             for (int i = 0; i < Joints.Length; ++i)
             {
@@ -199,13 +199,11 @@ namespace Gameplay.Animations.InverseKinematics
                 if (solverInfo == null)
                     continue;
 
-                Joints[i].Bone.localRotation = Joints[i].RestRotation;
+                solverInfo.CurrentLRest = Joints[i].RestRotation;
+                solverInfo.CurrentGRest = parentGPose * solverInfo.CurrentLRest;
 
-                solverInfo.CurrentLRest = Joints[i].Bone.localRotation;
-                solverInfo.CurrentGRest = (parentGPose * solverInfo.CurrentLRest).normalized;
-
-                solverInfo.CurrentLPose = Joints[i].Bone.localRotation;
-                solverInfo.CurrentGPose = (parentGPose * solverInfo.CurrentLPose).normalized;
+                solverInfo.CurrentLPose = Joints[i].RestRotation;
+                solverInfo.CurrentGPose = parentGPose * solverInfo.CurrentLPose;
 
                 parentGPose = solverInfo.CurrentGPose;
             }
@@ -222,44 +220,49 @@ namespace Gameplay.Animations.InverseKinematics
                 return;
 
             // Draw Spheres to represent our Joints.
-            Gizmos.color = Color.red;
-            for (int i = 0; i < Joints.Length; ++i)
-                Gizmos.DrawSphere(Joints[i].Bone.position, 0.2f);
+            {
+                Gizmos.color = Color.red;
+                for (int i = 0; i < Joints.Length; ++i)
+                    Gizmos.DrawSphere(Joints[i].Bone.position, 0.2f);
+            }
 
 
             // Draw Bones (Actual Bone Positions).
-            Gizmos.color = Color.blue;
-            Transform currentBone = _endBone;
-            while(currentBone != null && currentBone != RootBone.Bone)
             {
-                Gizmos.DrawLine(currentBone.transform.position, currentBone.parent.position);
+                Gizmos.color = Color.blue;
+                Transform currentBone = _endBone;
+                while(currentBone != null && currentBone != RootBone.Bone)
+                {
+                    Gizmos.DrawLine(currentBone.transform.position, currentBone.parent.position);
 
-                // Continue up the chain.
-                currentBone = currentBone.parent;
+                    // Continue up the chain.
+                    currentBone = currentBone.parent;
+                }
+                // If we have a virtual end bone, draw a line to represent that.
+                if (ExtendEndBone)
+                    Gizmos.DrawLine(EndBone.Bone.position, EndBone.Bone.position + (EndBone.Bone.rotation * EndBone.GetBoneAxis(EndBoneDirection, true) * EndBoneLength).MultiplyElementwise(RootBone.Bone.lossyScale));
             }
-            // If we have a virtual end bone, draw a line to represent that.
-            if (ExtendEndBone)
-                Gizmos.DrawLine(EndBone.Bone.position, EndBone.Bone.position + (EndBone.Bone.rotation * EndBone.GetBoneAxis(EndBoneDirection, true) * EndBoneLength).MultiplyElementwise(RootBone.Bone.lossyScale));
             
 
-
             // Draw Chain (Expected Bone Positions).
-            Gizmos.color = Color.yellow;
-            Vector3 rootBonePos = RootBone.Bone.position;
-            Matrix4x4 originalMatrix = Gizmos.matrix;
-            for (int i = 0; i < Chain.Count - 1; ++i)
             {
-                Vector3 start = Chain[i].MultiplyElementwise(RootBone.Bone.lossyScale);
-                Vector3 end = Chain[i + 1].MultiplyElementwise(RootBone.Bone.lossyScale);
+                Gizmos.color = Color.yellow;
+                Vector3 rootBonePos = RootBone.Bone.position;
+                Matrix4x4 originalMatrix = Gizmos.matrix;
+                for (int i = 0; i < Chain.Count - 1; ++i)
+                {
+                    Vector3 start = Chain[i].MultiplyElementwise(RootBone.Bone.lossyScale);
+                    Vector3 end = Chain[i + 1].MultiplyElementwise(RootBone.Bone.lossyScale);
 
-                Vector3 boneVector = end - start;
-                Vector3 cubeCentre = rootBonePos + start + (boneVector / 2.0f);
-                Gizmos.matrix = Matrix4x4.TRS(cubeCentre, Quaternion.FromToRotation(Vector3.up, boneVector.normalized), Vector3.one);
+                    Vector3 boneVector = end - start;
+                    Vector3 cubeCentre = rootBonePos + start + (boneVector / 2.0f);
+                    Gizmos.matrix = Matrix4x4.TRS(cubeCentre, Quaternion.FromToRotation(Vector3.up, boneVector.normalized), Vector3.one);
 
-                Vector3 cubeSize = new Vector3(0.1f, boneVector.magnitude, 0.1f);
-                Gizmos.DrawCube(Vector3.zero, cubeSize);
+                    Vector3 cubeSize = new Vector3(0.1f, boneVector.magnitude, 0.1f);
+                    Gizmos.DrawCube(Vector3.zero, cubeSize);
+                }
+                Gizmos.matrix = originalMatrix;
             }
-            Gizmos.matrix = originalMatrix;
         }
     }
 }

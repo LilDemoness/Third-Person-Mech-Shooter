@@ -40,34 +40,13 @@ namespace Gameplay.Animations.InverseKinematics
             IKIterateBaseSetting setting = Settings[index];
             if (setting == null)
                 return;
-
-            UnsubscribeFromJointLimitationEvents(index);
-            for (int i = 0; i < setting.SolverInfoList.Length; ++i)
-                setting.SolverInfoList[i] = null;
             
             setting.SolverInfoList.Clear();
             setting.SolverInfoList = new IKBaseSolverInfo[setting.Joints.Length];
             for(int i = 0; i < setting.SolverInfoList.Length; ++i)
                 setting.SolverInfoList[i] = new();
-
-            SubscribeToJointLimitationEvents(index);
         }
 
-        protected void SubscribeToJointLimitationEvents(int index)
-        {
-            // When the joint limination is changed in the inspector, we want to trigger our Update Limitation function.
-            /*IKIterateBaseSetting setting = _iterateSettings[index];
-            for (int i = 0; i < setting.SolverInfoList.Length; ++i)
-                if (setting.JointSettings[i].Limitation != null)
-                    setting.JointSettings[i].Limitation.OnChanged += () => UpdateJointLimitation(index, i);*/
-        }
-        protected void UnsubscribeFromJointLimitationEvents(int index)
-        {
-            /*IKIterateBaseSetting setting = _iterateSettings[index];
-            for (int i = 0; i < setting.SolverInfoList.Length; ++i)
-                if (setting.JointSettings[i].Limitation != null)
-                    setting.JointSettings[i].Limitation.OnChanged -= () => UpdateJointLimitation(index, i);*/
-        }
         protected void UpdateJointLimitation(int index, int joint) => Settings[index].HasSimulated = false;
 
 
@@ -140,6 +119,8 @@ namespace Gameplay.Animations.InverseKinematics
                 Vector3 destination = (target.position - Settings[i].RootBone.Bone.position).DivideElementwise(Settings[i].RootBone.Bone.lossyScale);
                 ProcessJoints(deltaTime, Settings[i], destination);
             }
+
+
         }
         protected void ProcessJoints(float delta, IKIterateBaseSetting setting, Vector3 targetPos)
         {
@@ -322,7 +303,7 @@ namespace Gameplay.Animations.InverseKinematics
         /// </summary>
         public void CacheCurrentJointRotations(float angularDeltaLimit = Mathf.PI)
         {
-            Quaternion parentGPose = RootBone.Bone.parent != null ? RootBone.Bone.parent.localRotation : Quaternion.identity;
+            Quaternion parentGPose = RootBone.Bone.parent != null ? RootBone.Bone.parent.rotation : Quaternion.identity;
 
             for (int i = 0; i < Joints.Length; ++i)
             {
@@ -345,8 +326,6 @@ namespace Gameplay.Animations.InverseKinematics
                     // Stabilize the rotation path (Especially near 180 degrees).
                 //    solverInfo.CurrentLPose = solverInfo.CurrentLRest * QuaternionExtensions.GetFromToRotationByAxis(from, to, Joints[head].GetRotationAxisVector().normalized);
 
-                //Debug.DrawRay(Joints[head].Bone.position, QuaternionExtensions.GetFromToRotationByAxis(from, to, Joints[head].GetRotationAxisVector()) * Vector3.up, Color.red, 0.1f);
-
                 // Apply angular delta limit.
                 float diff = Quaternion.Angle(prev, solverInfo.CurrentLPose) * Mathf.Deg2Rad;
                 if (!MathUtils.IsApproximatelyZero(diff))
@@ -363,18 +342,20 @@ namespace Gameplay.Animations.InverseKinematics
             base.DrawGizmos();
 
             // Dirty implementation: Draw limitations.
-            for (int i = 0; i < Joints.Length; ++i)
             {
-                if (Joints[i].Limitation != null)
+                for (int i = 0; i < Joints.Length; ++i)
                 {
-                    Vector3 jointDirection = i == 0
-                        ? Joints[i].RestRotation * Vector3.up
-                        : (Joints[i].Bone.position - Joints[i - 1].Bone.position).normalized;
+                    if (Joints[i].Limitation != null)
+                    {
+                        Vector3 jointDirection = i == 0
+                            ? Joints[i].RestRotation * Vector3.up
+                            : (Joints[i].Bone.position - Joints[i - 1].Bone.position).normalized;
 
-                    if (i == 0)
-                        Joints[i].Limitation.DrawLimitationGizmos(Joints[i].Bone, Joints[i].RestRotation, Joints[i].RestRotation * Vector3.forward, Joints[i].RestRotation * Vector3.right, Joints[i].RestRotation * Vector3.up);
-                    else
-                        Joints[i].Limitation.DrawLimitationGizmos(Joints[i].Bone, Joints[i - 1].Bone.rotation, Joints[i - 1].Bone.forward, Joints[i - 1].Bone.right, Joints[i - 1].Bone.up);
+                        if (i == 0)
+                            Joints[i].Limitation.DrawLimitationGizmos(Joints[i].Bone, Joints[i].RestRotation, Joints[i].RestRotation * Vector3.forward, Joints[i].RestRotation * Vector3.right, Joints[i].RestRotation * Vector3.up);
+                        else
+                            Joints[i].Limitation.DrawLimitationGizmos(Joints[i].Bone, Joints[i - 1].Bone.rotation, Joints[i - 1].Bone.forward, Joints[i - 1].Bone.right, Joints[i - 1].Bone.up);
+                    }
                 }
             }
         }
