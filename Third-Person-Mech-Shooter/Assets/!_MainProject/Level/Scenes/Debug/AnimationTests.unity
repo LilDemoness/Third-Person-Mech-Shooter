@@ -1123,7 +1123,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a23ce82e89017343ba722ed8f694cd1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _activeGizmos: -1
   Settings:
     _array: []
   _maxIterations: 4
@@ -1749,7 +1748,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a23ce82e89017343ba722ed8f694cd1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _activeGizmos: -1
   Settings:
     _array:
     - _editorFoldout: 1
@@ -1896,7 +1894,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a23ce82e89017343ba722ed8f694cd1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _activeGizmos: -1
   Settings:
     _array:
     - _editorFoldout: 1
@@ -2829,11 +2826,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ebcb4e79c4c2184caf0ff773c5e2770, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _activeGizmos: 0
   Settings:
     _array:
     - _editorFoldout: 1
-      <SimulationDirty>k__BackingField: 0
+      <SimulationDirty>k__BackingField: 1
       <JointsDirty>k__BackingField: 0
       _editorShowJoints: 1
       _rootBone: {fileID: 1587844698}
@@ -2948,7 +2944,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ebcb4e79c4c2184caf0ff773c5e2770, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _activeGizmos: 0
   Settings:
     _array:
     - _editorFoldout: 1
@@ -3442,7 +3437,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ebcb4e79c4c2184caf0ff773c5e2770, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _activeGizmos: -1
   Settings:
     _array:
     - _editorFoldout: 1
