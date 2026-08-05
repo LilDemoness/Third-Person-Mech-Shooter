@@ -17,6 +17,9 @@ namespace Gameplay.Animations.InverseKinematics
         protected float _angularDeltaLimit => m_angularDeltaLimit * Mathf.Deg2Rad;
 
         [SerializeField] protected bool _deterministic = false;
+        [SerializeField, ShowIf(nameof(_deterministic))] protected RotationAxis _straightenToTarget = RotationAxis.None;
+        [SerializeField, ShowIf(nameof(_straightenToTarget), RotationAxis.Custom)] protected Vector3 _customStraightenDirection;
+        [SerializeField, HideIf(nameof(_straightenToTarget), RotationAxis.None)] protected Vector3 _straightenRotationOffset = Vector3.zero;
 
 
         protected override void InitJoints(int index)
@@ -107,11 +110,14 @@ namespace Gameplay.Animations.InverseKinematics
 
             for (int i = 0; i < Settings.Length; ++i)
             {
-                InitJoints(i);
-
                 Transform target = Settings[i].Target;
                 if (target == null)
                     continue; // No target. Abort.
+
+                if (_deterministic && _straightenToTarget != RotationAxis.None)
+                    Settings[i].StraightenDirection(target.position, _straightenToTarget, _straightenRotationOffset);
+                InitJoints(i);
+                
 
                 Settings[i].CacheCurrentJointRotations(); // Iterate over first to detect parent (Outside of the chain) bone pose changes.
 
@@ -119,8 +125,6 @@ namespace Gameplay.Animations.InverseKinematics
                 Vector3 destination = (target.position - Settings[i].RootBone.Bone.position).DivideElementwise(Settings[i].RootBone.Bone.lossyScale);
                 ProcessJoints(deltaTime, Settings[i], destination);
             }
-
-
         }
         protected void ProcessJoints(float delta, IKIterateBaseSetting setting, Vector3 targetPos)
         {
@@ -149,13 +153,22 @@ namespace Gameplay.Animations.InverseKinematics
         }
 
         protected abstract void SolveIK(float deltaTime, IKIterateBaseSetting setting, Vector3 targetPos);
+
+        public override void DrawGizmos()
+        {
+            base.DrawGizmos();
+
+            if (_straightenToTarget != RotationAxis.None)
+                for(int i = 0; i < Settings.Length; ++i)
+                    Settings[i].DrawStraightenGizmos(Settings[i].Target.position, _straightenToTarget, _straightenRotationOffset);
+        }
     }
 
 
     [System.Serializable]
     public class IKIterateBaseJoint : BoneJoint
     {
-        public RotationAxis RotationAxis = RotationAxis.All;
+        public RotationAxis RotationAxis = RotationAxis.Unrestricted;
         [ShowIf(nameof(RotationAxis), RotationAxis.Custom)] public Vector3 RotationAxisVector = Vector3.right;
  
         [SerializeReference, SubclassSelector] public JointLimitation Limitation;
@@ -175,7 +188,7 @@ namespace Gameplay.Animations.InverseKinematics
                 RotationAxis.X => Vector3.right,
                 RotationAxis.Y => Vector3.up,
                 RotationAxis.Z => Vector3.forward,
-                RotationAxis.All => Vector3.zero,
+                RotationAxis.Unrestricted => Vector3.zero,
                 _ => throw new System.NotImplementedException(),
             };
 
@@ -337,6 +350,45 @@ namespace Gameplay.Animations.InverseKinematics
         }
 
 
+        /// <summary>
+        ///     Straighten the chain from the base joint to point towards the target via the given axis.
+        /// </summary>
+        /// <param name="targetPos"> World position of the target.</param>
+        /// <param name="straightenAxis"> Axis to straighten through.</param>
+        /// <param name="straightenRotationOffset"> </param>
+        public void StraightenDirection(Vector3 targetPos, Vector3 straightenAxis, Vector3 straightenRotationOffset)
+        {
+            Vector3 toTarget = (targetPos - Joints[0].Bone.position).normalized;
+
+            Quaternion planeNormalOffset = Quaternion.FromToRotation(Joints[0].Bone.up, Vector3.up);
+            Vector3 planeNormal = planeNormalOffset * straightenAxis;
+
+            Vector3 horizontalToTarget = Vector3.ProjectOnPlane((targetPos - Joints[0].Bone.position), planeNormal).normalized;
+            Vector3 defaultDirection = Vector3.ProjectOnPlane(Joints[0].RestPosition - Joints[1].RestPosition, planeNormal).normalized;
+
+            Debug.DrawRay(Joints[0].Bone.position, horizontalToTarget);
+            DebugUtils.DrawPlane(Joints[0].Bone.position, planeNormal, 0.5f);
+
+            Quaternion rotation = Quaternion.FromToRotation(defaultDirection, horizontalToTarget) * Quaternion.Euler(straightenRotationOffset);
+            Joints[0].Bone.localRotation = rotation * Joints[0].RestRotation;
+        }
+        /// <inheritdoc cref="StraightenDirection(Vector3, Vector3, Vector3)"/>
+        /// <param name="pivotMode"> The axis to rotate around.</param>
+        public void StraightenDirection(Vector3 targetPos, RotationAxis pivotMode, Vector3 straightenRotationOffset)
+        {
+            if (pivotMode == RotationAxis.Unrestricted)
+            {
+                Vector3 toTarget = (targetPos - Joints[0].Bone.position).normalized;
+                Vector3 defaultDirection = (Joints[0].RestPosition - Joints[1].RestPosition).normalized;
+
+                Quaternion rotation = Quaternion.FromToRotation(defaultDirection, toTarget) * Quaternion.Euler(straightenRotationOffset);
+                Joints[0].Bone.localRotation = rotation * Joints[0].RestRotation;
+            }
+            else
+                StraightenDirection(targetPos, pivotMode.GetAxisFromTransform(Joints[0].Bone), straightenRotationOffset);
+        }
+
+
         public override void DrawGizmos()
         {
             base.DrawGizmos();
@@ -358,6 +410,77 @@ namespace Gameplay.Animations.InverseKinematics
                     }
                 }
             }
+        }
+        public void DrawStraightenGizmos(Vector3 targetPos, Vector3 straightenAxis, Vector3 straightenRotationOffset)
+        {
+            Vector3 toTarget = (targetPos - Joints[0].Bone.position).normalized;
+
+            Quaternion planeNormalOffset = Quaternion.FromToRotation(Joints[0].Bone.up, Vector3.up);
+            Vector3 planeNormal = planeNormalOffset * straightenAxis;
+
+            Vector3 horizontalToTarget = Vector3.ProjectOnPlane((targetPos - Joints[0].Bone.position), planeNormal).normalized;
+            Vector3 defaultDirection = Vector3.ProjectOnPlane(Joints[0].RestPosition - Joints[1].RestPosition, planeNormal).normalized;
+
+            Gizmos.DrawRay(Joints[0].Bone.position, horizontalToTarget);
+            GizmosUtils.DrawPlane(Joints[0].Bone.position, planeNormal, 0.5f);
+        }
+        public void DrawStraightenGizmos(Vector3 targetPos, RotationAxis pivotMode, Vector3 straightenRotationOffset)
+        {
+            if (pivotMode == RotationAxis.Unrestricted)
+            {
+                Vector3 toTarget = (targetPos - Joints[0].Bone.position).normalized;
+                Gizmos.DrawRay(Joints[0].Bone.position, toTarget);
+            }
+            else
+                DrawStraightenGizmos(targetPos, pivotMode.GetAxisFromTransform(Joints[0].Bone), straightenRotationOffset);
+        }
+    }
+
+
+    public static class DebugUtils
+    {
+        public static void DrawPlane(Vector3 planePosition, Vector3 planeNormal, float size) => DrawPlane(planePosition, planeNormal, size, Color.white, 0.0f);
+        public static void DrawPlane(Vector3 planePosition, Vector3 planeNormal, float size, Color color) => DrawPlane(planePosition, planeNormal, size, color, 0.0f);
+        public static void DrawPlane(Vector3 planePosition, Vector3 planeNormal, float size, Color color, float duration)
+        {
+            // Set our matrix to represent the plane transformation.
+            Matrix4x4 matrix = Matrix4x4.TRS(planePosition, Quaternion.LookRotation(planeNormal), Vector3.one * size);
+
+            // Calculate the corners of our display plane.
+            Vector3 topLeft = matrix.MultiplyPoint(new Vector2(-1, 1));
+            Vector3 topRight = matrix.MultiplyPoint(new Vector2(1, 1));
+            Vector3 bottomLeft = matrix.MultiplyPoint(new Vector2(-1, -1));
+            Vector3 bottomRight = matrix.MultiplyPoint(new Vector2(1, -1));
+
+            // Draw our plane.
+            Debug.DrawLine(topLeft, topRight, color, duration);
+            Debug.DrawLine(topRight, bottomRight, color, duration);
+            Debug.DrawLine(bottomRight, bottomLeft, color, duration);
+            Debug.DrawLine(bottomLeft, topLeft, color, duration);
+        }
+    }
+    public static class GizmosUtils
+    {
+        public static void DrawPlane(Vector3 planePosition, Vector3 planeNormal, float size)
+        {
+            Matrix4x4 oldMatrix = Gizmos.matrix;
+
+            // Set our matrix to represent the plane transformation.
+            Gizmos.matrix = Matrix4x4.TRS(planePosition, Quaternion.LookRotation(planeNormal), Vector3.one * size);
+
+            // Draw a unit plane (The matrix makes it our desired size & shape).
+            Vector3 topLeft = new Vector2(-1, 1);
+            Vector3 topRight = new Vector2(1, 1);
+            Vector3 bottomLeft = new Vector2(-1, -1);
+            Vector3 bottomRight = new Vector2(1, -1);
+
+            Gizmos.DrawLine(topLeft, topRight);
+            Gizmos.DrawLine(topRight, bottomRight);
+            Gizmos.DrawLine(bottomRight, bottomLeft);
+            Gizmos.DrawLine(bottomLeft, topLeft);
+
+            // Reset our matrix.
+            Gizmos.matrix = oldMatrix;
         }
     }
 }

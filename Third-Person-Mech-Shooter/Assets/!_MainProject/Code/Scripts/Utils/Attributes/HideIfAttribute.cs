@@ -4,7 +4,7 @@ using UnityEngine;
 
 [DontApplyToListElements]
 [Conditional("UNITY_EDITOR")]
-public class ShowIfAttribute : PropertyAttribute
+public class HideIfAttribute : PropertyAttribute
 {
     /// <summary>
     ///     The condition to evaluate.<br/>
@@ -18,12 +18,12 @@ public class ShowIfAttribute : PropertyAttribute
     public object Value;
 
 
-    public ShowIfAttribute(string condition)
+    public HideIfAttribute(string condition)
     {
         Condition = condition;
         Value = null;
     }
-    public ShowIfAttribute(string condition, object optionalValue)
+    public HideIfAttribute(string condition, object optionalValue)
     {
         Condition = condition;
         Value = optionalValue;

@@ -170,15 +170,18 @@ namespace Gameplay.Animations.InverseKinematics
         FromParent,
     }
 
+    [System.Serializable, System.Flags]
     public enum RotationAxis
     {
-        X,
-        Y,
-        Z,
+        None = 0,
 
-        All,
+        X = 1 << 0,
+        Y = 1 << 1,
+        Z = 1 << 2,
 
-        Custom,
+        Unrestricted = X | Y | Z,
+
+        Custom = 1 << 3,
     }
     public enum SecondaryDirection
     {
@@ -234,6 +237,26 @@ namespace Gameplay.Animations.InverseKinematics
                 _ => throw new System.NotImplementedException($"There is no corresponding BoneAxis for the BoneDirection {boneDirection.ToString()}")
             };
     }
+
+    public static class RotationAxisExtensions
+    {
+        public static Vector3 GetAxisFromTransform(this RotationAxis axisOptions, Transform transform)
+        {
+            Vector3 axis = Vector3.zero;
+
+            if (axisOptions.HasFlag(RotationAxis.X))
+                axis += transform.right;
+            if (axisOptions.HasFlag(RotationAxis.Y))
+                axis += transform.up;
+            if (axisOptions.HasFlag(RotationAxis.Z))
+                axis += transform.forward;
+
+            if (axis == Vector3.zero || axis == Vector3.one)
+                throw new System.Exception($"Cannot retrieve axis for {nameof(RotationAxis)}: {axisOptions}");
+            return axis.normalized;
+        }
+    }
+
     public static class ArrayExtensions
     {
         /// <summary>

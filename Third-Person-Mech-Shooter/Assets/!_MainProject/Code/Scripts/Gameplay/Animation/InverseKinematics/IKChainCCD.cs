@@ -42,7 +42,7 @@ namespace Gameplay.Animations.InverseKinematics
                     setting.UpdateChainCoordinateForward(tail, targetPos);
 
                     // Apply rotation axis locks.
-                    if (setting.Joints[head].RotationAxis != RotationAxis.All)
+                    if (setting.Joints[head].RotationAxis != RotationAxis.Unrestricted)
                         setting.UpdateChainCoordinateForward(tail, setting.Chain[head] + setting.Joints[head].GetProjectedRotation(solverInfo.CurrentGRest, setting.Chain[tail] - setting.Chain[head]));
                     
                     // Apply rotation axis degree limitations.

@@ -31,7 +31,7 @@ namespace Gameplay.Animations.InverseKinematics
                 setting.UpdateChainCoordinateBackward(head, setting.Chain[tail] + (setting.Chain[head] - setting.Chain[tail]).normalized * solverInfo.Length);
 
                 // Apply rotation axis locks.
-                if (setting.Joints[head].RotationAxis != RotationAxis.All)
+                if (setting.Joints[head].RotationAxis != RotationAxis.Unrestricted)
                     setting.UpdateChainCoordinateBackward(head, setting.Chain[tail] + setting.Joints[head].GetProjectedRotation(solverInfo.CurrentGRest, setting.Chain[head] - setting.Chain[tail]));
 
                 // Apply rotation axis degree limitations.
@@ -62,7 +62,7 @@ namespace Gameplay.Animations.InverseKinematics
                 setting.UpdateChainCoordinateForward(tail, setting.Chain[head] + (setting.Chain[tail] - setting.Chain[head]).normalized * solverInfo.Length);
 
                 // Apply rotation axis locks.
-                if (setting.Joints[head].RotationAxis != RotationAxis.All)
+                if (setting.Joints[head].RotationAxis != RotationAxis.Unrestricted)
                     setting.UpdateChainCoordinateForward(tail, setting.Chain[head] + setting.Joints[head].GetProjectedRotation(solverInfo.CurrentGRest, setting.Chain[tail] - setting.Chain[head]));
 
                 // Apply rotation axis degree limitations.
