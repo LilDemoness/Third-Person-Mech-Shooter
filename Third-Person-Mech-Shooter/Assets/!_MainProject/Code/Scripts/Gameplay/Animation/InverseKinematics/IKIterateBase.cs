@@ -254,9 +254,9 @@ namespace Gameplay.Animations.InverseKinematics
     [System.Serializable]
     public class IKIterateBaseSetting : IKChainBaseSetting<IKIterateBaseJoint>
     {
-        [SerializeField] public Transform Target;
-
         [HideInInspector] public bool HasSimulated = false;
+
+        [SerializeField] public Transform Target;
 
 
         public void InitJoints(bool mutableBoneAxes)
@@ -358,19 +358,20 @@ namespace Gameplay.Animations.InverseKinematics
         /// <param name="straightenRotationOffset"> </param>
         public void StraightenDirection(Vector3 targetPos, Vector3 straightenAxis, Vector3 straightenRotationOffset)
         {
-            Vector3 toTarget = (targetPos - Joints[0].Bone.position).normalized;
-
             Quaternion planeNormalOffset = Quaternion.FromToRotation(Joints[0].Bone.up, Vector3.up);
-            Vector3 planeNormal = planeNormalOffset * straightenAxis;
+            Vector3 planeNormal = planeNormalOffset * straightenAxis; // Transform the straightenAxis to local space.
 
-            Vector3 horizontalToTarget = Vector3.ProjectOnPlane((targetPos - Joints[0].Bone.position), planeNormal).normalized;
+            Vector3 horizontalToTarget = Vector3.ProjectOnPlane(targetPos - Joints[0].Bone.position, planeNormal).normalized;
             Vector3 defaultDirection = Vector3.ProjectOnPlane(Joints[0].RestPosition - Joints[1].RestPosition, planeNormal).normalized;
 
             Debug.DrawRay(Joints[0].Bone.position, horizontalToTarget);
             DebugUtils.DrawPlane(Joints[0].Bone.position, planeNormal, 0.5f);
 
-            Quaternion rotation = Quaternion.FromToRotation(defaultDirection, horizontalToTarget) * Quaternion.Euler(straightenRotationOffset);
-            Joints[0].Bone.localRotation = rotation * Joints[0].RestRotation;
+            Quaternion fromTo = MathUtils.IsApproximatelyEqual(Vector3.Dot(defaultDirection, horizontalToTarget), 1.0f)
+                ? Quaternion.identity   // Protect from invalid quaternion results when the two vectors are perfectly aligned.
+                : Quaternion.FromToRotation(defaultDirection, horizontalToTarget);
+            Quaternion rotation = fromTo * Quaternion.Euler(straightenRotationOffset);
+            Joints[0].Bone.rotation = rotation * Joints[0].RestRotation;
         }
         /// <inheritdoc cref="StraightenDirection(Vector3, Vector3, Vector3)"/>
         /// <param name="pivotMode"> The axis to rotate around.</param>
@@ -378,11 +379,17 @@ namespace Gameplay.Animations.InverseKinematics
         {
             if (pivotMode == RotationAxis.Unrestricted)
             {
-                Vector3 toTarget = (targetPos - Joints[0].Bone.position).normalized;
+                Vector3 toTarget = Joints[0].Bone.InverseTransformDirection(targetPos - Joints[0].Bone.position).normalized;
                 Vector3 defaultDirection = (Joints[0].RestPosition - Joints[1].RestPosition).normalized;
 
-                Quaternion rotation = Quaternion.FromToRotation(defaultDirection, toTarget) * Quaternion.Euler(straightenRotationOffset);
-                Joints[0].Bone.localRotation = rotation * Joints[0].RestRotation;
+                Debug.DrawRay(Joints[0].Bone.position, toTarget, Color.red);
+                Debug.DrawRay(Joints[0].Bone.position, defaultDirection, Color.yellow);
+
+                Quaternion fromTo = MathUtils.IsApproximatelyEqual(Vector3.Dot(defaultDirection, toTarget), 1.0f)
+                    ? Quaternion.identity   // Protect from invalid quaternion results when the two vectors are perfectly aligned.
+                    : Quaternion.FromToRotation(defaultDirection, toTarget);
+                Quaternion rotation = fromTo * Quaternion.Euler(straightenRotationOffset);
+                Joints[0].Bone.rotation = rotation * Joints[0].RestRotation;
             }
             else
                 StraightenDirection(targetPos, pivotMode.GetAxisFromTransform(Joints[0].Bone), straightenRotationOffset);
@@ -399,10 +406,6 @@ namespace Gameplay.Animations.InverseKinematics
                 {
                     if (Joints[i].Limitation != null)
                     {
-                        Vector3 jointDirection = i == 0
-                            ? Joints[i].RestRotation * Vector3.up
-                            : (Joints[i].Bone.position - Joints[i - 1].Bone.position).normalized;
-
                         if (i == 0)
                             Joints[i].Limitation.DrawLimitationGizmos(Joints[i].Bone, Joints[i].RestRotation, Joints[i].RestRotation * Vector3.forward, Joints[i].RestRotation * Vector3.right, Joints[i].RestRotation * Vector3.up);
                         else
@@ -413,13 +416,10 @@ namespace Gameplay.Animations.InverseKinematics
         }
         public void DrawStraightenGizmos(Vector3 targetPos, Vector3 straightenAxis, Vector3 straightenRotationOffset)
         {
-            Vector3 toTarget = (targetPos - Joints[0].Bone.position).normalized;
-
             Quaternion planeNormalOffset = Quaternion.FromToRotation(Joints[0].Bone.up, Vector3.up);
             Vector3 planeNormal = planeNormalOffset * straightenAxis;
 
             Vector3 horizontalToTarget = Vector3.ProjectOnPlane((targetPos - Joints[0].Bone.position), planeNormal).normalized;
-            Vector3 defaultDirection = Vector3.ProjectOnPlane(Joints[0].RestPosition - Joints[1].RestPosition, planeNormal).normalized;
 
             Gizmos.DrawRay(Joints[0].Bone.position, horizontalToTarget);
             GizmosUtils.DrawPlane(Joints[0].Bone.position, planeNormal, 0.5f);

@@ -25,8 +25,13 @@ namespace Gameplay.Animations.InverseKinematics
     /// </remarks>
     public abstract class IKBase : MonoBehaviour
     {
+        [SerializeField] private bool _drawGizmos = true;
+
         protected bool _mutableBoneAxes = true;
         protected bool _jointsDirty = false;
+
+
+        private void LateUpdate() => ProcessIK(Time.deltaTime);
 
 
         public abstract void ProcessIK(float deltaTime);
@@ -43,7 +48,11 @@ namespace Gameplay.Animations.InverseKinematics
         public bool AreBoneAxesMutable() => _mutableBoneAxes;
 
 
-        private void OnDrawGizmos() => DrawGizmos();
+        private void OnDrawGizmos()
+        {
+            if (_drawGizmos)
+                DrawGizmos();
+        }
         public abstract void DrawGizmos();
     }
 

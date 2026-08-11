@@ -203,3 +203,13 @@ public static class SerializedPropertyUtils
         return enumerator.Current;
     }
 }
+
+
+public static class SerializedObjectUtils
+{
+    public static bool TryFindProperty(this SerializedObject serializedObject, string propertyName, out SerializedProperty property)
+    {
+        property = serializedObject.FindProperty(propertyName);
+        return property != null;
+    }
+}

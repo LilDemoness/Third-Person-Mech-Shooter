@@ -160,7 +160,7 @@ GameObject:
   m_Component:
   - component: {fileID: 33244888}
   m_Layer: 0
-  m_Name: ModelIKTarget_Base_1
+  m_Name: ModelIKTarget_Base_BR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -861,7 +861,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 369389074}
-  - component: {fileID: 369389075}
   m_Layer: 0
   m_Name: ExampleBody
   m_TagString: Untagged
@@ -885,20 +884,6 @@ Transform:
   - {fileID: 1187554915}
   m_Father: {fileID: 45330092}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &369389075
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 369389073}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 357ebe4af8fef2e4aa96b73893fd7910, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _ikInstances:
-  - {fileID: 1187554916}
 --- !u!1 &369541328
 GameObject:
   m_ObjectHideFlags: 0
@@ -1321,7 +1306,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 627761643}
-  - component: {fileID: 627761642}
   m_Layer: 0
   m_Name: ExampleBody_FABRIK
   m_TagString: Untagged
@@ -1329,20 +1313,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &627761642
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 627761641}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 357ebe4af8fef2e4aa96b73893fd7910, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _ikInstances:
-  - {fileID: 1860205360}
 --- !u!4 &627761643
 Transform:
   m_ObjectHideFlags: 0
@@ -1586,7 +1556,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 795623314}
-  - component: {fileID: 795623313}
   - component: {fileID: 795623312}
   m_Layer: 0
   m_Name: Root_CCD
@@ -1607,6 +1576,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a23ce82e89017343ba722ed8f694cd1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _drawGizmos: 0
   Settings:
     _array: []
   _maxIterations: 4
@@ -1619,20 +1589,6 @@ MonoBehaviour:
   references:
     version: 2
     RefIds: []
---- !u!114 &795623313
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 795623311}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 357ebe4af8fef2e4aa96b73893fd7910, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _ikInstances:
-  - {fileID: 795623312}
 --- !u!4 &795623314
 Transform:
   m_ObjectHideFlags: 0
@@ -1662,7 +1618,7 @@ GameObject:
   - component: {fileID: 842366026}
   - component: {fileID: 842366025}
   - component: {fileID: 842366024}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1754,8 +1710,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 10, y: 10, z: 10}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2010,7 +1966,7 @@ GameObject:
   m_Component:
   - component: {fileID: 999102861}
   m_Layer: 0
-  m_Name: ModelIKTarget_Base_3
+  m_Name: ModelIKTarget_Base_FR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2308,6 +2264,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a23ce82e89017343ba722ed8f694cd1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _drawGizmos: 0
   Settings:
     _array:
     - _editorFoldout: 1
@@ -2365,8 +2322,8 @@ MonoBehaviour:
         LimitationRightAxisVector: {x: 1, y: 0, z: 0}
         LimitationRotationOffset: {x: 0, y: 0, z: 0, w: 0}
       SolverInfoList: []
-      Target: {fileID: 1194129747}
       HasSimulated: 0
+      Target: {fileID: 1194129747}
   _maxIterations: 4
   _minDistance: 0.001
   m_angularDeltaLimit: 180
@@ -2732,9 +2689,6 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3988944755768674177, guid: 47c3766cc643c5747a733fdd500639ab, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1197177560}
-    - targetCorrespondingSourceObject: {fileID: 3988944755768674177, guid: 47c3766cc643c5747a733fdd500639ab, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 1197177559}
   m_SourcePrefab: {fileID: 100100000, guid: 47c3766cc643c5747a733fdd500639ab, type: 3}
 --- !u!1 &1197177541 stripped
@@ -2809,6 +2763,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ebcb4e79c4c2184caf0ff773c5e2770, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _drawGizmos: 0
   Settings:
     _array:
     - _editorFoldout: 0
@@ -2844,8 +2799,8 @@ MonoBehaviour:
         LimitationRightAxisVector: {x: 1, y: 0, z: 0}
         LimitationRotationOffset: {x: 0, y: 0, z: 0, w: 0}
       SolverInfoList: []
-      Target: {fileID: 315792499}
       HasSimulated: 0
+      Target: {fileID: 315792499}
     - _editorFoldout: 0
       <SimulationDirty>k__BackingField: 1
       <JointsDirty>k__BackingField: 0
@@ -2879,8 +2834,8 @@ MonoBehaviour:
         LimitationRightAxisVector: {x: 1, y: 0, z: 0}
         LimitationRotationOffset: {x: 0, y: 0, z: 0, w: 0}
       SolverInfoList: []
-      Target: {fileID: 369541329}
       HasSimulated: 0
+      Target: {fileID: 369541329}
     - _editorFoldout: 0
       <SimulationDirty>k__BackingField: 1
       <JointsDirty>k__BackingField: 0
@@ -2914,8 +2869,8 @@ MonoBehaviour:
         LimitationRightAxisVector: {x: 1, y: 0, z: 0}
         LimitationRotationOffset: {x: 0, y: 0, z: 0, w: 0}
       SolverInfoList: []
-      Target: {fileID: 70739414}
       HasSimulated: 0
+      Target: {fileID: 70739414}
     - _editorFoldout: 0
       <SimulationDirty>k__BackingField: 1
       <JointsDirty>k__BackingField: 0
@@ -2949,13 +2904,13 @@ MonoBehaviour:
         LimitationRightAxisVector: {x: 1, y: 0, z: 0}
         LimitationRotationOffset: {x: 0, y: 0, z: 0, w: 0}
       SolverInfoList: []
-      Target: {fileID: 369911535}
       HasSimulated: 0
+      Target: {fileID: 369911535}
   _maxIterations: 4
   _minDistance: 0.001
   m_angularDeltaLimit: 180
   _deterministic: 1
-  _straightenToTarget: 1
+  _straightenToTarget: 2
   _customStraightenDirection: {x: 0, y: 0, z: 0}
   _straightenRotationOffset: {x: 0, y: 0, z: 0}
   references:
@@ -2963,20 +2918,6 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
---- !u!114 &1197177560
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1197177541}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 357ebe4af8fef2e4aa96b73893fd7910, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _ikInstances:
-  - {fileID: 1197177559}
 --- !u!1 &1198999850
 GameObject:
   m_ObjectHideFlags: 0
@@ -3054,12 +2995,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a23ce82e89017343ba722ed8f694cd1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _drawGizmos: 0
   Settings:
     _array:
     - _editorFoldout: 1
       <SimulationDirty>k__BackingField: 1
       <JointsDirty>k__BackingField: 0
-      _editorShowJoints: 1
+      _editorShowJoints: 0
       _rootBone: {fileID: 1203632658}
       _endBone: {fileID: 906260642}
       ExtendEndBone: 1
@@ -3111,8 +3053,8 @@ MonoBehaviour:
         LimitationRightAxisVector: {x: 1, y: 0, z: 0}
         LimitationRotationOffset: {x: 0, y: 0, z: 0, w: 0}
       SolverInfoList: []
-      Target: {fileID: 693102295}
       HasSimulated: 0
+      Target: {fileID: 693102295}
   _maxIterations: 4
   _minDistance: 0.001
   m_angularDeltaLimit: 180
@@ -3256,7 +3198,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1242174809}
   m_Layer: 0
-  m_Name: ModelIKTarget_Base_2
+  m_Name: ModelIKTarget_Base_FL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3319,7 +3261,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1328871383}
   m_Layer: 0
-  m_Name: ModelIKTarget_Base
+  m_Name: ModelIKTarget_Base_BL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3412,7 +3354,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1378425664}
-  - component: {fileID: 1378425665}
   m_Layer: 0
   m_Name: ExampleBody_ExtendEndTest
   m_TagString: Untagged
@@ -3436,20 +3377,6 @@ Transform:
   - {fileID: 1203632658}
   m_Father: {fileID: 1649321692}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1378425665
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1378425663}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 357ebe4af8fef2e4aa96b73893fd7910, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _ikInstances:
-  - {fileID: 1203632659}
 --- !u!1 &1413650813
 GameObject:
   m_ObjectHideFlags: 0
@@ -4216,16 +4143,16 @@ PrefabInstance:
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 4328034774918602043, guid: 47c3766cc643c5747a733fdd500639ab, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1328871383}
-    - targetCorrespondingSourceObject: {fileID: 4328034774918602043, guid: 47c3766cc643c5747a733fdd500639ab, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 33244888}
-    - targetCorrespondingSourceObject: {fileID: 4328034774918602043, guid: 47c3766cc643c5747a733fdd500639ab, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 1242174809}
     - targetCorrespondingSourceObject: {fileID: 4328034774918602043, guid: 47c3766cc643c5747a733fdd500639ab, type: 3}
       insertIndex: -1
       addedObject: {fileID: 999102861}
+    - targetCorrespondingSourceObject: {fileID: 4328034774918602043, guid: 47c3766cc643c5747a733fdd500639ab, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1328871383}
+    - targetCorrespondingSourceObject: {fileID: 4328034774918602043, guid: 47c3766cc643c5747a733fdd500639ab, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 33244888}
     - targetCorrespondingSourceObject: {fileID: 2853459120756177216, guid: 47c3766cc643c5747a733fdd500639ab, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1009154133}
@@ -4235,7 +4162,7 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3988944755768674177, guid: 47c3766cc643c5747a733fdd500639ab, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1587844704}
+      addedObject: {fileID: 1587844709}
     - targetCorrespondingSourceObject: {fileID: 3988944755768674177, guid: 47c3766cc643c5747a733fdd500639ab, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1587844705}
@@ -4255,20 +4182,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4596404828241593289, guid: 47c3766cc643c5747a733fdd500639ab, type: 3}
   m_PrefabInstance: {fileID: 1587844693}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1587844704
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1587844694}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 357ebe4af8fef2e4aa96b73893fd7910, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _ikInstances:
-  - {fileID: 1587844705}
 --- !u!114 &1587844705
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4281,6 +4194,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ebcb4e79c4c2184caf0ff773c5e2770, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _drawGizmos: 0
   Settings:
     _array:
     - _editorFoldout: 0
@@ -4327,8 +4241,8 @@ MonoBehaviour:
         LimitationRightAxisVector: {x: 1, y: 0, z: 0}
         LimitationRotationOffset: {x: 0, y: 0, z: 0, w: 0}
       SolverInfoList: []
-      Target: {fileID: 1328871383}
       HasSimulated: 0
+      Target: {fileID: 1328871383}
     - _editorFoldout: 0
       <SimulationDirty>k__BackingField: 1
       <JointsDirty>k__BackingField: 0
@@ -4373,8 +4287,8 @@ MonoBehaviour:
         LimitationRightAxisVector: {x: 1, y: 0, z: 0}
         LimitationRotationOffset: {x: 0, y: 0, z: 0, w: 0}
       SolverInfoList: []
-      Target: {fileID: 33244888}
       HasSimulated: 0
+      Target: {fileID: 33244888}
     - _editorFoldout: 0
       <SimulationDirty>k__BackingField: 1
       <JointsDirty>k__BackingField: 0
@@ -4419,12 +4333,12 @@ MonoBehaviour:
         LimitationRightAxisVector: {x: 1, y: 0, z: 0}
         LimitationRotationOffset: {x: 0, y: 0, z: 0, w: 0}
       SolverInfoList: []
-      Target: {fileID: 1242174809}
       HasSimulated: 0
+      Target: {fileID: 1242174809}
     - _editorFoldout: 0
       <SimulationDirty>k__BackingField: 1
       <JointsDirty>k__BackingField: 0
-      _editorShowJoints: 1
+      _editorShowJoints: 0
       _rootBone: {fileID: 1583861062}
       _endBone: {fileID: 683094219}
       ExtendEndBone: 0
@@ -4465,13 +4379,13 @@ MonoBehaviour:
         LimitationRightAxisVector: {x: 1, y: 0, z: 0}
         LimitationRotationOffset: {x: 0, y: 0, z: 0, w: 0}
       SolverInfoList: []
-      Target: {fileID: 999102861}
       HasSimulated: 0
+      Target: {fileID: 999102861}
   _maxIterations: 4
   _minDistance: 0.001
   m_angularDeltaLimit: 180
   _deterministic: 1
-  _straightenToTarget: 1
+  _straightenToTarget: 2
   _customStraightenDirection: {x: 0, y: 0, z: 0}
   _straightenRotationOffset: {x: 0, y: 0, z: 0}
   references:
@@ -4484,6 +4398,51 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4328034774918602043, guid: 47c3766cc643c5747a733fdd500639ab, type: 3}
   m_PrefabInstance: {fileID: 1587844693}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1587844709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1587844694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e81a63460ec429428ce100604cf5ac8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Legs:
+  - _ikTargetTransform: {fileID: 1242174809}
+  - _ikTargetTransform: {fileID: 999102861}
+  - _ikTargetTransform: {fileID: 1328871383}
+  - _ikTargetTransform: {fileID: 33244888}
+  GroundLayers:
+    serializedVersion: 2
+    m_Bits: 64
+  DefaultGait:
+    Settings: {fileID: 11400000, guid: c9352d2fd1a8a0b4cbf3f8d909ad0059, type: 2}
+    LegSetupInfo:
+    - Reference:
+        _ikTargetTransform: {fileID: 1242174809}
+      LegIndex: 0
+      GroupIndex: 0
+    - Reference:
+        _ikTargetTransform: {fileID: 999102861}
+      LegIndex: 1
+      GroupIndex: 1
+    - Reference:
+        _ikTargetTransform: {fileID: 70739414}
+      LegIndex: 2
+      GroupIndex: 1
+    - Reference:
+        _ikTargetTransform: {fileID: 33244888}
+      LegIndex: 3
+      GroupIndex: 0
+    GroupSetupInfo: []
+  ConditionalGaits: []
+  _target: {fileID: 1814540244}
+  _moveToTarget: 0
+  _moveSpeed: 1
+  _rotateToTarget: 1
 --- !u!1 &1591084615
 GameObject:
   m_ObjectHideFlags: 0
@@ -4493,7 +4452,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1591084617}
-  - component: {fileID: 1591084618}
   - component: {fileID: 1591084619}
   m_Layer: 0
   m_Name: Root_FABRIK
@@ -4519,20 +4477,6 @@ Transform:
   - {fileID: 626128676}
   m_Father: {fileID: 1649321692}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1591084618
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1591084615}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 357ebe4af8fef2e4aa96b73893fd7910, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _ikInstances:
-  - {fileID: 1591084619}
 --- !u!114 &1591084619
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4545,6 +4489,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ebcb4e79c4c2184caf0ff773c5e2770, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _drawGizmos: 0
   Settings:
     _array:
     - _editorFoldout: 1
@@ -4580,8 +4525,8 @@ MonoBehaviour:
         LimitationRightAxisVector: {x: 1, y: 0, z: 0}
         LimitationRotationOffset: {x: 0, y: 0, z: 0, w: 0}
       SolverInfoList: []
-      Target: {fileID: 964466631}
       HasSimulated: 0
+      Target: {fileID: 964466631}
   _maxIterations: 1
   _minDistance: 0.001
   m_angularDeltaLimit: 180
@@ -5003,6 +4948,37 @@ Transform:
   - {fileID: 1566690292}
   m_Father: {fileID: 1849092509}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 120}
+--- !u!1 &1814540243
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1814540244}
+  m_Layer: 0
+  m_Name: Target
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1814540244
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1814540243}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 10}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1849092508
 GameObject:
   m_ObjectHideFlags: 0
@@ -5082,12 +5058,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ebcb4e79c4c2184caf0ff773c5e2770, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _drawGizmos: 0
   Settings:
     _array:
     - _editorFoldout: 1
       <SimulationDirty>k__BackingField: 1
       <JointsDirty>k__BackingField: 0
-      _editorShowJoints: 0
+      _editorShowJoints: 1
       _rootBone: {fileID: 1860205359}
       _endBone: {fileID: 2073196595}
       ExtendEndBone: 0
@@ -5139,8 +5116,8 @@ MonoBehaviour:
         LimitationRightAxisVector: {x: 1, y: 0, z: 0}
         LimitationRotationOffset: {x: 0, y: 0, z: 0, w: 0}
       SolverInfoList: []
-      Target: {fileID: 1194129747}
       HasSimulated: 0
+      Target: {fileID: 1194129747}
   _maxIterations: 4
   _minDistance: 0.001
   m_angularDeltaLimit: 180
@@ -5641,3 +5618,4 @@ SceneRoots:
   - {fileID: 1197177540}
   - {fileID: 1647634394}
   - {fileID: 1649321692}
+  - {fileID: 1814540244}
