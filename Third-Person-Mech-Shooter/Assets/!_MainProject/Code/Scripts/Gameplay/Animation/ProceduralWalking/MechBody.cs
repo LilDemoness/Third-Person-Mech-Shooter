@@ -1,6 +1,3 @@
-using Gameplay.Animations.InverseKinematics;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace Gameplay.Animations.ProceduralAnimations
@@ -13,19 +10,18 @@ namespace Gameplay.Animations.ProceduralAnimations
 
         public LayerMask GroundLayers;
 
-        public Gait Gait { get; private set; }
-        public Gait DefaultGait;
+        public Gait Gait { get; private set; }      // Current Gait.
+        public Gait DefaultGait;                    // Fallback if no ConditionalGaits are valid.
         public ConditionalGait[] ConditionalGaits;  // Priority from Index 0 (Highest) to Index n (Lowest).
 
-        public LerpGait StationaryLerpGait => new LerpGait(1.1f, 0.25f);
-        public LerpGait MovingLerpGait => new LerpGait(1.1f, 0.8f);
+        public LerpGait StationaryLerpGait  => new LerpGait(bodyHeight: 1.1f, triggerZoneRadius: 0.25f);
+        public LerpGait MovingLerpGait      => new LerpGait(bodyHeight: 1.1f, triggerZoneRadius: 0.8f);
 
-        public Vector3 Velocity { get; private set; }
-        public Vector3 RotationalVelocity { get; private set; }
+        public Vector3 Velocity { get; private set; }           // Velocity in units/sec.
+        public Vector3 RotationalVelocity { get; private set; } // Rotational Velocity in Deg/sec.
 
-        public int LegCount { get; }
-        public bool IsGrounded { get; }
-        public bool IsMoving { get; }
+        public bool IsGrounded { get; private set; }
+        public bool IsMoving { get; private set; }
 
         public float MaxSpeed => _moveSpeed;
         public float CurrentSpeedFraction => Velocity.magnitude / MaxSpeed;
@@ -83,14 +79,26 @@ namespace Gameplay.Animations.ProceduralAnimations
             Velocity = (transform.position - _previousPosition) / Time.deltaTime;
             RotationalVelocity = (Quaternion.Inverse(_previousRotation) * transform.rotation).eulerAngles / Time.deltaTime;
 
+            const float MIN_SQR_VELOCITY_FOR_MOVEMENT = 0.1f * 0.1f;
+            IsMoving = Velocity.sqrMagnitude >= MIN_SQR_VELOCITY_FOR_MOVEMENT;
+            IsGrounded = Physics.Raycast(transform.position + transform.up * 0.1f, -transform.up, 0.2f, GroundLayers);
+
+
             UpdateGait();
 
+
+            // Update the legs.
             foreach(MechLeg leg in Legs) leg.UpdateMemory();
             foreach(MechLeg leg in Legs) leg.UpdateMovement(Time.deltaTime);
+
 
             _previousPosition = transform.position;
             _previousRotation = transform.rotation;
         }
+        /// <summary>
+        ///     Checks ConditionalGaits to determine which should be the active Gait.<br/>
+        ///     Uses DefaultGait if no ConditionalGaits are valid.
+        /// </summary>
         private void UpdateGait()
         {
             for(int i = 0; i < ConditionalGaits.Length; ++i)
