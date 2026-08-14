@@ -1,10 +1,12 @@
-﻿namespace Gameplay.Animations.ProceduralAnimations
+﻿using UnityEngine;
+
+namespace Gameplay.Animations.ProceduralAnimations
 {
     [System.Serializable]
     public class ConditionalGait
     {
         public Gait Gait;
-        public GaitCondition[] Conditions;
+        [SerializeReference, SubclassSelector] public GaitCondition[] Conditions;
 
         public bool TestCondition(MechBody body)
         {

@@ -2,6 +2,7 @@
 
 namespace Gameplay.Animations.ProceduralAnimations
 {
+    [System.Serializable]
     public class MaxVelocityGaitCondition : GaitCondition
     {
         [SerializeField] private float _maxVelocity;

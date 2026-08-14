@@ -102,7 +102,6 @@ namespace Gameplay.Animations.ProceduralAnimations
         public List<GaitLegInfo> LegSetupInfo = new();
         public List<GaitGroupInfo> GroupSetupInfo = new();
 
-
         public void UpdateValues()
         {
             // Populate leg info.
@@ -119,17 +118,13 @@ namespace Gameplay.Animations.ProceduralAnimations
             }
 
             // Populate the [group index : leg indicies in adjace groups] dict.
-            /*_adjacentLegs = new();
+            _adjacentLegs = new();
             foreach(GaitGroupInfo groupInfo in GroupSetupInfo)
             {
                 _adjacentLegs.Add(groupInfo.GroupIndex, new List<int>());
                 foreach (int adjacentGroupIndex in groupInfo.AdjacentGroups)
                     _adjacentLegs[groupInfo.GroupIndex].AddRange(_legGroups[adjacentGroupIndex]);
-            }*/
-            // Temp: Populate the Adjacent Legs manually until we've setup the inspector for the GroupSetupInfo.
-            _adjacentLegs = new();
-            _adjacentLegs.Add(0, _legGroups[1]);
-            _adjacentLegs.Add(1, _legGroups[0]);
+            }
         }
 
         [System.Serializable]
@@ -151,12 +146,18 @@ namespace Gameplay.Animations.ProceduralAnimations
         {
             public int GroupIndex;
             public List<int> AdjacentGroups;
+
+            public GaitGroupInfo(int groupIndex)
+            {
+                GroupIndex = groupIndex;
+                AdjacentGroups = new();
+            }
         }
     }
 
 
 #if UNITY_EDITOR
-    [CustomPropertyDrawer(typeof(Gait))]
+    [CustomPropertyDrawer(typeof(Gait), true)]
     [CanEditMultipleObjects]
     public class GaitDrawer : PropertyDrawer
     {
@@ -181,8 +182,8 @@ namespace Gameplay.Animations.ProceduralAnimations
                     EditorUtility.SetDirty(property.serializedObject.targetObject);
                     // Undo?
                 }
-
             }
+
             EditorGUI.EndProperty();
         }
         private void DrawProperty(SerializedProperty property)
@@ -202,9 +203,11 @@ namespace Gameplay.Animations.ProceduralAnimations
 
             // Draw Settings field.
             EditorGUILayout.PropertyField(property.FindPropertyRelative("Settings"));
+            EditorGUILayout.Space(2.5f);
 
             // Draw Legs & Group IDs.
             UpdateLegs(gait, body);
+            EditorGUILayout.Space(2.5f);
 
             // Draw Groups & Adjacent Group IDs.
             DrawGroupInfo(gait, body);
@@ -308,8 +311,12 @@ namespace Gameplay.Animations.ProceduralAnimations
         }
         private void DrawLegInfo(Gait gait)
         {
+            // Draw a header for the leg info section.
+            EditorGUILayout.LabelField("Leg Groups", new GUIStyle("HeaderLabel"));
+            EditorGUIUtils.DrawHorizontalLine(thickness: 1.0f, leftPadding: 10.0f);
+
             // For each leg, display their array index & target name (Both readonly) next to their group index (Editable).
-            foreach(Gait.GaitLegInfo legInfo in gait.LegSetupInfo)
+            foreach (Gait.GaitLegInfo legInfo in gait.LegSetupInfo)
             {
                 EditorGUILayout.BeginHorizontal();
 
@@ -324,7 +331,178 @@ namespace Gameplay.Animations.ProceduralAnimations
 
         private void DrawGroupInfo(Gait gait, MechBody body)
         {
+            EnsureGroupInfoIsCorrect(gait);
+            int groupCount = gait.GroupSetupInfo.Count;
 
+            // Draw a header for the group adjacency section.
+            EditorGUILayout.LabelField("Group Adjacency Matrix", new GUIStyle("HeaderLabel"));
+            EditorGUIUtils.DrawHorizontalLine(thickness: 1.0f, leftPadding: 10.0f);
+
+
+            const float GROUP_LABEL_WIDTH = 60.0f;
+            const float GROUP_BUTTON_WIDTH = 30.0f;
+            float tableRowHeight = EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+            GUIStyle labelStyle = new GUIStyle("AM HeaderStyle") { alignment = TextAnchor.MiddleCenter };
+
+
+            Rect fullRect = EditorGUILayout.BeginVertical();
+            const float PER_INDENT_SIZE = 10.0f;
+            fullRect.x += EditorGUI.indentLevel * PER_INDENT_SIZE;
+            fullRect.width -= EditorGUI.indentLevel * PER_INDENT_SIZE;
+
+            // Draw a background.
+            const float BACKGROUND_COLOR = 0.3f;
+            EditorGUI.DrawRect(fullRect, new Color(BACKGROUND_COLOR, BACKGROUND_COLOR, BACKGROUND_COLOR));
+
+            // Draw table headers.
+            {
+                Rect rect = EditorGUILayout.BeginHorizontal();
+                
+                // Draw 'Group' header.
+                rect.width = GROUP_LABEL_WIDTH;
+                EditorGUI.LabelField(rect, "Group", labelStyle);
+                rect.x += GROUP_LABEL_WIDTH;
+
+                // Draw group index headers.
+                for (int i = 0; i < groupCount; ++i)
+                {
+                    rect.width = GROUP_BUTTON_WIDTH;
+                    EditorGUI.LabelField(rect, gait.GroupSetupInfo[i].GroupIndex.ToString(), labelStyle);
+
+                    rect.x += GROUP_BUTTON_WIDTH;
+                }
+
+                EditorGUILayout.Space(tableRowHeight);
+                EditorGUILayout.EndHorizontal();
+            }
+
+
+            // Draw table elements (Group Index | Other Group Adjacency Toggles).
+            for (int i = 0; i < groupCount; ++i)
+            {
+                Rect rect = EditorGUILayout.BeginHorizontal();
+
+                rect.width = GROUP_LABEL_WIDTH;
+                EditorGUI.LabelField(rect, gait.GroupSetupInfo[i].GroupIndex.ToString(), labelStyle);
+                rect.x += GROUP_LABEL_WIDTH;
+
+                for (int j = 0; j < groupCount; ++j)
+                {
+                    rect.width = GROUP_BUTTON_WIDTH;
+
+                    if (i == j)
+                    {
+                        // Groups cannot be adjacent to themselves.
+                        // Display a non-editable, always-off toggle box.
+                        bool previousEnabledState = GUI.enabled;
+                        GUI.enabled = false;
+                        EditorGUI.Toggle(rect, false);
+                        GUI.enabled = previousEnabledState;
+                    }
+                    else
+                    {
+                        bool oldValue = gait.GroupSetupInfo[i].AdjacentGroups.Contains(j);
+                        bool toggle = EditorGUI.Toggle(rect, oldValue);
+
+                        if (toggle != oldValue)
+                        {
+                            if (oldValue == true)
+                            {
+                                gait.GroupSetupInfo[i].AdjacentGroups.Remove(j);
+                                gait.GroupSetupInfo[j].AdjacentGroups.Remove(i);
+                            }
+                            else
+                            {
+                                gait.GroupSetupInfo[i].AdjacentGroups.Add(j);
+                                gait.GroupSetupInfo[j].AdjacentGroups.Add(i);
+                            }
+                        }
+                    }
+
+                    rect.x += GROUP_BUTTON_WIDTH;
+                }
+
+                EditorGUILayout.Space(tableRowHeight);
+                EditorGUILayout.EndHorizontal();
+            }
+
+            EditorGUILayout.EndVertical();
+        }
+
+        private void EnsureGroupInfoIsCorrect(Gait gait)
+        {
+            List<int> legGroups = GetLegGroups(gait);
+
+            // Check already existing groups to ensure that all are valid.
+            for(int i = 0; i < gait.GroupSetupInfo.Count; ++i)
+            {
+                int legGroupIndex = legGroups.IndexOf(gait.GroupSetupInfo[i].GroupIndex);
+
+                if (legGroupIndex == -1)
+                {
+                    // This Leg Group no longer exists. Clear it.
+
+                    // Remove references to this group in other GroupSetupInfo instances.
+                    for (int j = 0; j < gait.GroupSetupInfo.Count; ++j)
+                    {
+                        int indexToRemove = gait.GroupSetupInfo[j].AdjacentGroups.IndexOf(gait.GroupSetupInfo[i].GroupIndex);
+                        if (indexToRemove != -1)
+                            gait.GroupSetupInfo[j].AdjacentGroups.RemoveAt(indexToRemove);
+                    }
+
+                    // Remove the group setup info instance for this group.
+                    gait.GroupSetupInfo.RemoveAt(i);
+
+                    --i;
+                    continue;
+                }
+
+                // Mark this group index as having been validated by removing it from the list so we don't check it again.
+                legGroups.RemoveAt(legGroupIndex);
+            }
+
+            // Add new groups.
+            for(int i = 0; i < legGroups.Count; ++i)
+                gait.GroupSetupInfo.Add(new Gait.GaitGroupInfo(legGroups[i]));
+        }
+
+        /// <summary>
+        ///     Returns all the Leg Groups present in this Gait, in ascending index order.
+        /// </summary>
+        private List<int> GetLegGroups(Gait gait)
+        {
+            List<int> groups = new List<int>();
+            int largestValue = -1;
+            foreach(var legSetup in gait.LegSetupInfo)
+            {
+                if (legSetup.GroupIndex < 0)
+                    continue; // Group indicies below 0 are used to represent 'no group'.
+
+                if (legSetup.GroupIndex > largestValue)
+                {
+                    groups.Add(legSetup.GroupIndex);
+                    largestValue = legSetup.GroupIndex;
+                }
+                else
+                {
+                    for(int i = 0; i < groups.Count; ++i)
+                    {
+                        if (groups[i] == legSetup.GroupIndex)
+                            break;  // We've already got this group in the list.
+
+                        if (groups[i] > legSetup.GroupIndex)
+                        {
+                            // We've passed where the group should be and haven't yet found it.
+                            // All future elements will be larger than the group index,
+                            //  so insert it before this one and stop searching.
+                            groups.Insert(i, legSetup.GroupIndex);   
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return groups;
         }
     }
 #endif
