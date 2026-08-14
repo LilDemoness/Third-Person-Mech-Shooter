@@ -16,7 +16,7 @@ namespace Gameplay.Animations.ProceduralAnimations
 
 
         private Capsule _triggerZoneLocal;          // In Local space. Outside of this capsule, the leg should step to reach the _target position.
-        private Capsule _comfortZoneLocal;          // In Local space. Outside of this capsule, ...
+        private Capsule _comfortZoneLocal;          // In Local space. Outside of this capsule, the leg's target will be set to the 'StrandedTarget' and will automatically try to move even if it normally couldn't.
 
         private Vector3 _restLocalPosition;         // Rest position of the IK Target, in Local-Space.
         private Vector3 _lookAheadLocalPosition;    // Current Look-Ahead position for the IK Target, in Local-Space. Used for determining our actual target position.
@@ -44,7 +44,7 @@ namespace Gameplay.Animations.ProceduralAnimations
 
 
         private bool _isOutsideTriggerZone => !_triggerZoneLocal.Contains(_body.transform.InverseTransformPoint(_ikTargetPosition));    // If true, the IKTarget is outwith our trigger zone (We're wanting to start a step to get back inside).
-        private bool _isOutsideComfortZone => !_comfortZoneLocal.Contains(_body.transform.InverseTransformPoint(_ikTargetPosition));    // If true...
+        private bool _isOutsideComfortZone => !_comfortZoneLocal.Contains(_body.transform.InverseTransformPoint(_ikTargetPosition));    // If true, the IKTarget is outwith our comfort zone (The leg is 'stranded' and will automatically try to move even if we normally couldn't).
 
         #endregion
 
@@ -208,10 +208,7 @@ namespace Gameplay.Animations.ProceduralAnimations
         private void ApplyBodyMotion(ref Vector3 pos)
         {
             pos += _body.Velocity * Time.deltaTime;
-            pos = RotateAroundY(pos, _body.RotationalVelocity.y * Time.deltaTime, _body.transform.position);
-
-            // Separated for readability.
-            Vector3 RotateAroundY(Vector3 point, float angle, Vector3 origin) => (Quaternion.AngleAxis(angle, Vector3.up) * (point - origin)) + origin;
+            pos = pos.RotateAroundY(_body.RotationalVelocity.y * Time.deltaTime, _body.transform.position);
         }
 
 
@@ -222,13 +219,18 @@ namespace Gameplay.Animations.ProceduralAnimations
         /// </summary>
         private void BeginStep()
         {
+            /*bool wantsToMove = IsOutsideTriggerZone || !IsTouchingGround;
+            bool alreadyAtTarget = (IKTargetPosition - Target.Position).sqrMagnitude < 0.01f;
+            //bool onGround = _body.Legs.Any(bodyLeg => bodyLeg.IsGrounded()) || _body.IsGrounded;
+            Debug.Log($"Step Started (Target Name: {_ikTargetTransform.name})" +
+                $"\nWants to Move: {wantsToMove} (Outside Trigger: {IsOutsideTriggerZone}; Not Touching Ground {!IsTouchingGround});" +
+                $"\nAlready at target: {alreadyAtTarget} (Sqr dst: {(IKTargetPosition - Target.Position).sqrMagnitude})");*/
+
             _isMoving = true;
             _timeSinceLastMoveStarted = 0.0f;
             _stepStartPosition = _ikTargetPosition;
             _stepProgress = 0.0f;
             _isTouchingGround = false;
-
-            Debug.Log($"Step Started (Target Name: {_ikTargetTransform.name})");
         }
         /// <summary>
         ///     Completes the current step.
@@ -240,7 +242,8 @@ namespace Gameplay.Animations.ProceduralAnimations
             _timeSinceLastMoveCompleted = 0.0f;
             _ikTargetPosition = _target.Position; // Ensure we're at the target.
             _isTouchingGround = GetIsTouchingGround();
-            Debug.Log($"Step Complete (Target Name: {_ikTargetTransform.name})");
+            
+            //Debug.Log($"Step Complete (Target Name: {_ikTargetTransform.name})");
             return _isTouchingGround;
         }
         /// <summary>
@@ -290,23 +293,39 @@ namespace Gameplay.Animations.ProceduralAnimations
         /// <summary>
         ///     Sends a short raycast to determine if the body is on the ground or not.
         /// </summary>
-        private bool GetIsTouchingGround() => Physics.Raycast(_body.transform.position + _body.transform.up * 0.01f, -_body.transform.up, 0.02f);
+        private bool GetIsTouchingGround() => Physics.Raycast(_ikTargetPosition + _body.transform.up * 0.1f, -_body.transform.up, 0.2f, _body.GroundLayers);
+        /// <summary>
+        ///     The 'look-ahead' position is where the leg should move its IKTarget to
+        ///     during a step to account for velocity & rotational velocity.
+        /// </summary>
         private Vector3 GetLookAheadPosition(Vector3 restPosition, float triggerZoneRadius)
         {
-            if (_body.IsMoving)
-                return restPosition; // Check notes as to why we're doing this.
+            if (!_body.IsMoving)
+                return restPosition; // If we're not moving, then we shouldn't look ahead.
 
-            // Get the direction we are moving in.
+            // Get the direction we are moving in, in local-space.
             Vector3 direction = MathUtils.IsApproximatelyZero(_body.Velocity.sqrMagnitude) ? Vector3.forward : _body.transform.InverseTransformDirection(_body.Velocity.normalized);
 
-            Vector3 lookAheadOffset = direction * triggerZoneRadius * _body.Gait.Settings.LegLookAheadFraction;
-            //lookAhead = Quaternion.AngleAxis(-_body.RotationalVelocity.y, Vector3.up) * lookAhead; // We are already casting from local space to world space, so this would mess up our position. (Double Check).
-            return restPosition + lookAheadOffset;
+            // Calculate our look ahead position.
+            // Note: Scale direction by percentage speed? Does our lerped gait (Used for triggerZoneRadius) account for this well enough already?
+            //float lookAheadOffset = (_accountForSpeed ? (_body.Velocity.magnitude / _body.MaxSpeed) : 1.0f) * triggerZoneRadius * _body.Gait.Settings.LegLookAheadFraction;
+            float lookAheadOffset = triggerZoneRadius * _body.Gait.Settings.LegLookAheadFraction;
+            Vector3 lookAheadPosition = restPosition + (direction * lookAheadOffset);
+
+            // Account for rotations when moving.
+            // Disabled as we couldn't find a method for getting this looking good.
+            //lookAheadPosition = lookAheadPosition.RotateAroundY(_body.RotationalVelocity.y * Time.deltaTime, Vector3.zero);
+
+            return lookAheadPosition;
         }
 
 
         #region Leg Targets
 
+        /// <summary>
+        ///     Using the Look-Ahead Position & Scan Line, calculate the leg's grounded target.
+        /// </summary>
+        /// <returns> The new ground target for the leg, or null if none was found.</returns>
         private LegTarget LocateGroundTarget()
         {
             Vector3 lookAhead = _body.transform.TransformPoint(_lookAheadLocalPosition);
@@ -314,11 +333,10 @@ namespace Gameplay.Animations.ProceduralAnimations
             Vector3 rayDir = _scanLineLocal.GetVector().normalized;
             float rayLength = _scanLineLocal.GetVector().magnitude;
 
-            // A.
+            // Performs a raycast at the given X & Z, returning a Leg Target for the result (Or null if there was no hit).
             LegTarget Raycast(float testX, float testZ)
             {
                 Vector3 start = new Vector3(testX, rayStart.y, testZ);
-                Debug.DrawRay(start, rayDir * rayLength, Color.red, 0.01f);
 
                 if (Physics.Raycast(start, rayDir, out RaycastHit hitInfo, rayLength, _body.GroundLayers))
                     return new LegTarget(position: hitInfo.point, isGrounded: true);
@@ -334,8 +352,16 @@ namespace Gameplay.Animations.ProceduralAnimations
             return mainTargetCandidate;
         }
 
+        /// <summary>
+        ///     Returns the default LegTarget for if the leg is stranded.<br/>
+        ///     This target always has 'isGrounded' set to false.
+        /// </summary>
         private LegTarget GetStrandedTarget() => new LegTarget(position: _body.transform.TransformPoint(_lookAheadLocalPosition), isGrounded: false);
 
+        /// <summary>
+        ///     Returns the target for the leg when it is disabled.<br/>
+        ///     If <paramref name="groundPosition"/> is not null, ensures that the leg is positioned above the ground.
+        /// </summary>
         private LegTarget GetDisabledTarget(Vector3? groundPosition)
         {
             LerpGait lerpedGait = _body.GetLerpedGait();
@@ -347,7 +373,7 @@ namespace Gameplay.Animations.ProceduralAnimations
             float minY = (groundPosition.HasValue ? groundPosition.Value.y : float.MinValue) + lerpedGait.BodyHeight * 0.1f;
             target.Position = new Vector3(
                 target.Position.x,
-                Mathf.Min(target.Position.y, minY),
+                Mathf.Max(target.Position.y, minY),
                 target.Position.z);
 
             return target;
@@ -455,7 +481,7 @@ namespace Gameplay.Animations.ProceduralAnimations
             float apX = point.x - Point1.x;
             float apY = point.y - Point1.y;
             float apZ = point.z - Point1.z;
-            float t = MathUtils.IsApproximatelyZero(sqrLength) ? 0.0f : ((apX * abX) + (apY * abY) + (apZ * abZ)) / sqrLength;
+            float t = MathUtils.IsApproximatelyZero(sqrLength) ? 0.0f : Mathf.Clamp01(((apX * abX) + (apY * abY) + (apZ * abZ)) / sqrLength);
 
             float dX = point.x - (Point1.x + abX * t);
             float dY = point.y - (Point1.y + abY * t);

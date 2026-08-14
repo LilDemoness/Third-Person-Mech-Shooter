@@ -23,18 +23,20 @@ namespace Gameplay.Animations.ProceduralAnimations
         public bool IsGrounded { get; private set; }
         public bool IsMoving { get; private set; }
 
-        public float MaxSpeed => _moveSpeed;
-        public float CurrentSpeedFraction => Velocity.magnitude / MaxSpeed;
+        [field: SerializeField] public float MaxSpeed { get; private set; }
 
-        public LerpGait GetLerpedGait() => LerpGait.Lerp(StationaryLerpGait, MovingLerpGait, CurrentSpeedFraction);
+        public LerpGait GetLerpedGait()
+        {
+            if (!MathUtils.IsApproximatelyZero(RotationalVelocity.y))
+                return new LerpGait(MovingLerpGait);
+
+            float speedFraction = Velocity.magnitude / MaxSpeed;
+            return LerpGait.Lerp(StationaryLerpGait, MovingLerpGait, speedFraction);
+        }
 
 
-        [Header("Testing")]
-        [SerializeField] private Transform _target;
-        [SerializeField] private bool _moveToTarget = true;
-        [SerializeField] private float _moveSpeed = 5.0f;
-        [SerializeField] private bool _rotateToTarget = true;
-        [SerializeField] private float _rotationRate = 270.0f;
+        [Header("Gizmos")]
+        [SerializeField] private bool _drawGizmos = true;
 
 
         /// <summary>
@@ -70,12 +72,7 @@ namespace Gameplay.Animations.ProceduralAnimations
         }
         private void Update()
         {
-            if (_moveToTarget)
-                transform.position = Vector3.MoveTowards(transform.position, new Vector3(_target.position.x, transform.position.y, _target.position.z), MaxSpeed * Time.deltaTime);
-            if (_rotateToTarget)
-                transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation((_target.position - transform.position).normalized), _rotationRate * Time.deltaTime);
-
-
+            // Update cached values.
             Velocity = (transform.position - _previousPosition) / Time.deltaTime;
             RotationalVelocity = (Quaternion.Inverse(_previousRotation) * transform.rotation).eulerAngles / Time.deltaTime;
 
@@ -83,11 +80,11 @@ namespace Gameplay.Animations.ProceduralAnimations
             IsMoving = Velocity.sqrMagnitude >= MIN_SQR_VELOCITY_FOR_MOVEMENT;
             IsGrounded = Physics.Raycast(transform.position + transform.up * 0.1f, -transform.up, 0.2f, GroundLayers);
 
-
+            // Update our cached gait based on our current state.
             UpdateGait();
 
 
-            // Update the legs.
+            // Update the legs in order.
             foreach(MechLeg leg in Legs) leg.UpdateMemory();
             foreach(MechLeg leg in Legs) leg.UpdateMovement(Time.deltaTime);
 
@@ -116,8 +113,11 @@ namespace Gameplay.Animations.ProceduralAnimations
 
         private void OnDrawGizmos()
         {
-            foreach(MechLeg leg in Legs)
-                leg.DrawGizmos(this);
+            if (_drawGizmos)
+            {
+                foreach (MechLeg leg in Legs)
+                    leg.DrawGizmos(this);
+            }
         }
     }
 }

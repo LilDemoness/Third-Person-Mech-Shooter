@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TestGaitSettings
   m_EditorClassIdentifier: 
   <MaxBodyDistanceFromGround>k__BackingField: 0.25
-  <LegSpeedMultiplier>k__BackingField: 2.5
+  <LegSpeedMultiplier>k__BackingField: 5
   <LegLiftHeight>k__BackingField: 0.35
   <ComfortZoneRadius>k__BackingField: 1.2
   <LegScanAlternativeGround>k__BackingField: 1
