@@ -355,7 +355,7 @@ namespace Gameplay.Animations.InverseKinematics
         /// </summary>
         /// <param name="targetPos"> World position of the target.</param>
         /// <param name="straightenAxis"> Axis to straighten through.</param>
-        /// <param name="straightenRotationOffset"> </param>
+        /// <param name="straightenRotationOffset"> Euler angle local-space offset applied to the rotation.</param>
         public void StraightenDirection(Vector3 targetPos, Vector3 straightenAxis, Vector3 straightenRotationOffset)
         {
             Quaternion planeNormalOffset = Quaternion.FromToRotation(Joints[0].Bone.up, Vector3.up);
@@ -363,15 +363,10 @@ namespace Gameplay.Animations.InverseKinematics
 
             Vector3 horizontalToTarget = Vector3.ProjectOnPlane(targetPos - Joints[0].Bone.position, planeNormal).normalized;
             Vector3 defaultDirection = Vector3.ProjectOnPlane(Joints[0].RestPosition - Joints[1].RestPosition, planeNormal).normalized;
-
             Debug.DrawRay(Joints[0].Bone.position, horizontalToTarget);
             DebugUtils.DrawPlane(Joints[0].Bone.position, planeNormal, 0.5f);
 
-            Quaternion fromTo = MathUtils.IsApproximatelyEqual(Vector3.Dot(defaultDirection, horizontalToTarget), 1.0f)
-                ? Quaternion.identity   // Protect from invalid quaternion results when the two vectors are perfectly aligned.
-                : Quaternion.FromToRotation(defaultDirection, horizontalToTarget);
-            Quaternion rotation = fromTo * Quaternion.Euler(straightenRotationOffset);
-            Joints[0].Bone.rotation = rotation * Joints[0].RestRotation;
+            Joints[0].Bone.rotation = GetStraightenRotation(horizontalToTarget, defaultDirection, straightenRotationOffset);
         }
         /// <inheritdoc cref="StraightenDirection(Vector3, Vector3, Vector3)"/>
         /// <param name="pivotMode"> The axis to rotate around.</param>
@@ -381,18 +376,37 @@ namespace Gameplay.Animations.InverseKinematics
             {
                 Vector3 toTarget = Joints[0].Bone.InverseTransformDirection(targetPos - Joints[0].Bone.position).normalized;
                 Vector3 defaultDirection = (Joints[0].RestPosition - Joints[1].RestPosition).normalized;
-
-                Debug.DrawRay(Joints[0].Bone.position, toTarget, Color.red);
+                Debug.DrawRay(Joints[0].Bone.position, toTarget, Color.green);
                 Debug.DrawRay(Joints[0].Bone.position, defaultDirection, Color.yellow);
 
-                Quaternion fromTo = MathUtils.IsApproximatelyEqual(Vector3.Dot(defaultDirection, toTarget), 1.0f)
-                    ? Quaternion.identity   // Protect from invalid quaternion results when the two vectors are perfectly aligned.
-                    : Quaternion.FromToRotation(defaultDirection, toTarget);
-                Quaternion rotation = fromTo * Quaternion.Euler(straightenRotationOffset);
-                Joints[0].Bone.rotation = rotation * Joints[0].RestRotation;
+                Joints[0].Bone.rotation = GetStraightenRotation(toTarget, defaultDirection, straightenRotationOffset);
             }
             else
                 StraightenDirection(targetPos, pivotMode.GetAxisFromTransform(Joints[0].Bone), straightenRotationOffset);
+        }
+        /// <summary>
+        ///     Calculate the world-space rotation of our base joint so that it points towards the target direction.
+        /// </summary>
+        /// <returns> The world-space rotation for the root joint.</returns>
+        /// <remarks>
+        ///     Calculates the rotation to go from <paramref name="defaultDirection"/> to <paramref name="toTarget"/>,
+        ///     then applies the supplied <paramref name="straightenRotationOffset"/> & the root joint's rest offset.<br/>
+        ///     Also accounts for the invalid rotation returned if the two directions are perfectly or oppositely aligned.
+        /// </remarks>
+        private Quaternion GetStraightenRotation(Vector3 toTarget, Vector3 defaultDirection, Vector3 straightenRotationOffset)
+        {
+            const float PERFECT_ALIGNMENT_THRESHOLD = 0.999995f;
+            bool perfectlyAligned = Mathf.Abs(Vector3.Dot(defaultDirection, toTarget)) >= PERFECT_ALIGNMENT_THRESHOLD;
+
+            // If the two vectors are perfectly aligned, we wish to use the default rotation as our fromTo.
+            //  As we are using this rotation as a world-space base, this default must be in world-space,
+            //  so we cannot use Joints[0].RestPosition, instead retrieving the world-space version of
+            //  the rest position (Parent rotation if one exists, otherwise the identity).
+            Quaternion fromTo = perfectlyAligned
+                ? (Joints[0].Bone.parent?.rotation ?? Quaternion.identity)
+                : Quaternion.FromToRotation(defaultDirection, toTarget);
+
+            return (fromTo * Quaternion.Euler(straightenRotationOffset)) * Joints[0].RestRotation;
         }
 
 

@@ -208,7 +208,7 @@ namespace Gameplay.Animations.ProceduralAnimations
         private void ApplyBodyMotion(ref Vector3 pos)
         {
             pos += _body.Velocity * Time.deltaTime;
-            pos = pos.RotateAroundY(_body.RotationalVelocity.y * Time.deltaTime, _body.transform.position);
+            pos = pos.RotateAroundY(_body.RotationalVelocity.y * Mathf.Rad2Deg * Time.deltaTime, _body.transform.position);
         }
 
 
@@ -394,23 +394,25 @@ namespace Gameplay.Animations.ProceduralAnimations
         public void DrawGizmos(MechBody body)
         {
             // Account for the fact that not everything is set before play mode.
-            Vector3 restLocalPos = Application.isPlaying ? _restLocalPosition : _ikTargetTransform.position;
+            Vector3 restWorldPos = Application.isPlaying ? body.transform.TransformPoint(_restLocalPosition) : _ikTargetTransform.position;
             Vector3 targetWorldPos = Application.isPlaying ? _ikTargetPosition : _ikTargetTransform.position;
 
-            // Translate necessary local-space values to world-space.
-            Vector3 restWorldPos = body.transform.TransformPoint(restLocalPos);
+            #if UNITY_EDITOR
+            Gait bodyGait = body.Editor_GetGaitWithApplicationFallback();
+            #else
+            Gait bodyGait = body.Gait;
+            #endif
 
             // Draw Gizmos.
-
             Gizmos.color = Color.yellow;
             Gizmos.DrawSphere(restWorldPos, 0.1f);
             Gizmos.color = Color.black;
             Gizmos.DrawSphere(targetWorldPos, 0.1f);
 
             Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(restWorldPos, body.DefaultGait.Settings.ComfortZoneRadius);
+            Gizmos.DrawWireSphere(restWorldPos, bodyGait.Settings.ComfortZoneRadius);
             Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(restWorldPos, body.MovingLerpGait.TriggerZoneRadius);
+            Gizmos.DrawWireSphere(restWorldPos, body.GetLerpedGait().TriggerZoneRadius);
         }
     }
 

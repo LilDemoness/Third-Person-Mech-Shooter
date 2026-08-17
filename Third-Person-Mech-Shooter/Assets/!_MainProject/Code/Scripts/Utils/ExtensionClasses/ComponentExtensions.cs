@@ -121,4 +121,14 @@ public static class ComponentExtensions
         // We never found the parent's transform.
         return -1;
     }
+
+
+    public static Transform GetRootParent(this Component component)
+    {
+        Transform parent = component.transform;
+        while(parent.parent != null)
+            parent = parent.parent;
+
+        return parent;
+    }
 }
