@@ -35,6 +35,41 @@ public static class MathUtils
     ///     Returns true if the two passed values are within the Epsilon value of each other.
     /// </summary>
     public static bool IsApproximatelyEqual(float a, float b) => Mathf.Abs(a - b) < float.Epsilon;
+
+
+
+    /// <summary>
+    ///     Returns the pitch of a normalised vector, in radians.
+    /// </summary>
+    public static float GetPitch(this Vector3 v) => -Mathf.Atan2(v.y, Mathf.Sqrt(v.x * v.x + v.z * v.z));
+    /// <summary>
+    ///     Returns the yaw of a normalised vector, in radians.
+    /// </summary>
+    public static float GetYaw(this Vector3 v) => -Mathf.Atan2(-v.x, v.z);
+    /// <summary>
+    ///     Returns the horizontal/yaw-only quaternion of this quaternion.
+    /// </summary>
+    public static Quaternion GetHorizontal(this Quaternion q)
+    {
+        Vector3 forward = q * Vector3.forward;
+        forward.y = 0.0f; // Remove vertical rotation.
+        if (MathUtils.IsApproximatelyZero(forward.sqrMagnitude))
+            return Quaternion.identity;
+
+        return Quaternion.FromToRotation(Vector3.forward, forward.normalized);
+    }
+    /// <summary>
+    ///     Returns the horizontal/yaw-only quaternion of this quaternion from the given forward vector.
+    /// </summary>
+    public static Quaternion GetHorizontal(this Quaternion q, Vector3 referenceForward)
+    {
+        Vector3 forward = q * referenceForward;
+        forward.y = 0.0f; // Remove vertical rotation.
+        if (MathUtils.IsApproximatelyZero(forward.sqrMagnitude))
+            return Quaternion.identity;
+
+        return Quaternion.FromToRotation(referenceForward, forward.normalized);
+    }
 }
 
 

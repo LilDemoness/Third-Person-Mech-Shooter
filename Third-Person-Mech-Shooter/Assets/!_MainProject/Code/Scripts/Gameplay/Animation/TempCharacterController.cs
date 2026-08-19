@@ -1,3 +1,4 @@
+using Gameplay.Animations.ProceduralAnimations;
 using UnityEngine;
 using UserInput;
 
@@ -11,6 +12,8 @@ public class TempCharacterController : MonoBehaviour
 
 
     private Vector3 _desiredVelocity;
+    [SerializeField] private MechBody _bodyRef;
+    [SerializeField] private Transform _cameraParent;
 
 
     [Header("Movement")]
@@ -115,7 +118,12 @@ public class TempCharacterController : MonoBehaviour
 
         _rotation.x = Mathf.Clamp(_rotation.x, MIN_VERTICAL_ROTATION, MAX_VERTICAL_ROTATION);
 
-        _rotationPivot.rotation = Quaternion.Euler(_rotation);
+        // Apply our rotation, accounting for the angle of the current slope & our rotation relative to that.
+        // 1 - Account for the grounded normal of the mech (For slopes/inclines).
+        _rotationPivot.parent.up = _bodyRef.GroundedNormal;
+        // 2 - Rotate locally so that our rotation input makes sense in the given context.
+        _rotationPivot.localRotation = Quaternion.Euler(0.0f, _rotation.y, 0.0f);
+        _rotationPivot.GetChild(0).localRotation = Quaternion.Euler(_rotation.x, 0.0f, 0.0f);
 
 
         // Rotate root GFX.
@@ -124,7 +132,7 @@ public class TempCharacterController : MonoBehaviour
 
 
         // Rotate GFX.
-        _rootTransform.rotation = Quaternion.RotateTowards(rootRot, Quaternion.Euler(0.0f, _rotation.y, 0.0f) * _rootRotationOffset, _rootRotationRate * Time.deltaTime);
+        _rootTransform.rotation = Quaternion.RotateTowards(rootRot, Quaternion.Euler(rootRot.eulerAngles.x, _rotation.y, rootRot.eulerAngles.z) * _rootRotationOffset, _rootRotationRate * Time.deltaTime);
         _neckRootTransform.rotation = Quaternion.RotateTowards(neckRot, _rotationPivot.rotation * _neckRotationOffset, _neckRotationRate * Time.deltaTime);
 
         // Constrain the neck's rotation.

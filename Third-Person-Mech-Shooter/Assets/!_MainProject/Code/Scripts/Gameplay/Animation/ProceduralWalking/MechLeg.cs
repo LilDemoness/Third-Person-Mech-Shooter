@@ -52,7 +52,13 @@ namespace Gameplay.Animations.ProceduralAnimations
 
         public Transform IKTargetTransform => _ikTargetTransform;
         public Vector3 IKTargetPosition => _ikTargetPosition;
+        public Vector3 RestLocalPosition => _restLocalPosition;
+        public Vector3 RestPosition => _body.transform.TransformPoint(_restLocalPosition);
 
+        public Vector3 LastGroundedPosition { get; private set; }
+
+
+        public LegTarget GroundTarget => _groundTarget;
         public LegTarget Target => _target;
 
         public bool IsTouchingGround => _isTouchingGround;
@@ -86,6 +92,7 @@ namespace Gameplay.Animations.ProceduralAnimations
             _target = _groundTarget ?? GetStrandedTarget();
             _ikTargetPosition = _ikTargetTransform.position;
             _previousIKTargetPosition = _ikTargetPosition;
+            LastGroundedPosition = _ikTargetPosition;
         }
         /// <summary>
         ///     Update the current cached values for this leg.
@@ -144,13 +151,6 @@ namespace Gameplay.Animations.ProceduralAnimations
             // Handle Step.
             bool stepCompleted = HandleStep(deltaTime);
 
-            // Resolve ground collisions to avoid the leg phasing through objects.
-            //var collision = ;
-            //if (collision != null)
-            //{
-                // Ignore the collision if it would push the IKTarget further from the target.
-            //}
-
 
             // Update the target transform.
             _ikTargetTransform.position = _ikTargetPosition;
@@ -158,7 +158,7 @@ namespace Gameplay.Animations.ProceduralAnimations
             // Play "On Step End" effects (C# Event? UnityEvent? Hard-coded elements?).
             if (stepCompleted)
             {
-                Debug.Log("Step");
+                //Debug.Log("Step");
             }
         }
         /// <summary>
@@ -229,6 +229,7 @@ namespace Gameplay.Animations.ProceduralAnimations
             _isMoving = true;
             _timeSinceLastMoveStarted = 0.0f;
             _stepStartPosition = _ikTargetPosition;
+            LastGroundedPosition = _ikTargetPosition;
             _stepProgress = 0.0f;
             _isTouchingGround = false;
         }
@@ -244,6 +245,9 @@ namespace Gameplay.Animations.ProceduralAnimations
             _isTouchingGround = GetIsTouchingGround();
             
             //Debug.Log($"Step Complete (Target Name: {_ikTargetTransform.name})");
+            if (_isTouchingGround)
+                LastGroundedPosition = _ikTargetPosition;
+
             return _isTouchingGround;
         }
         /// <summary>
@@ -339,7 +343,7 @@ namespace Gameplay.Animations.ProceduralAnimations
                 Vector3 start = new Vector3(testX, rayStart.y, testZ);
 
                 if (Physics.Raycast(start, rayDir, out RaycastHit hitInfo, rayLength, _body.GroundLayers))
-                    return new LegTarget(position: hitInfo.point, isGrounded: true);
+                    return new LegTarget(position: hitInfo.point, normal: hitInfo.normal, isGrounded: true);
                 return null;
             }
             
@@ -356,7 +360,7 @@ namespace Gameplay.Animations.ProceduralAnimations
         ///     Returns the default LegTarget for if the leg is stranded.<br/>
         ///     This target always has 'isGrounded' set to false.
         /// </summary>
-        private LegTarget GetStrandedTarget() => new LegTarget(position: _body.transform.TransformPoint(_lookAheadLocalPosition), isGrounded: false);
+        private LegTarget GetStrandedTarget() => new LegTarget(position: _body.transform.TransformPoint(_lookAheadLocalPosition), normal: _body.transform.up, isGrounded: false);
 
         /// <summary>
         ///     Returns the target for the leg when it is disabled.<br/>
@@ -423,12 +427,14 @@ namespace Gameplay.Animations.ProceduralAnimations
     public class LegTarget
     {
         public Vector3 Position { get; set; } = Vector3.zero;
+        public Vector3 Normal { get; set; } = Vector3.zero;
         public bool IsGrounded { get; set; } = false;
 
 
-        public LegTarget(Vector3 position, bool isGrounded)
+        public LegTarget(Vector3 position, Vector3 normal, bool isGrounded)
         {
             Position = position;
+            Normal = normal;
             IsGrounded = isGrounded;
         }
     }

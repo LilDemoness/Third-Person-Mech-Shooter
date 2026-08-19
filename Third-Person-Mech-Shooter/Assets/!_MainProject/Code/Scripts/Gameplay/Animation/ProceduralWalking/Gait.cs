@@ -31,6 +31,8 @@ namespace Gameplay.Animations.ProceduralAnimations
 
         public List<MechLeg> GetLegsInGroup(int groupIndex)
         {
+            if (groupIndex == -1) return new();
+
             List<MechLeg> legsToReturn = new List<MechLeg>(_legGroups[groupIndex].Count);
             foreach(int legIndex in _legGroups[groupIndex])
                 legsToReturn.Add(_body.Legs[legIndex]);
@@ -39,6 +41,8 @@ namespace Gameplay.Animations.ProceduralAnimations
         }
         public List<MechLeg> GetLegsInGroup(int groupIndex, params MechLeg[] excluding)
         {
+            if (groupIndex == -1) return new();
+
             List<MechLeg> legsToReturn = new List<MechLeg>(_legGroups[groupIndex].Count - excluding.Length);
             foreach(int legIndex in _legGroups[groupIndex])
             {
@@ -52,6 +56,8 @@ namespace Gameplay.Animations.ProceduralAnimations
         }
         public List<MechLeg> GetLegsInAdjacentGroups(int groupIndex) 
         {
+            if (groupIndex == -1) return new();
+
             List<MechLeg> legsToReturn = new List<MechLeg>(_adjacentLegs[groupIndex].Count);
             foreach(int legIndex in _adjacentLegs[groupIndex])
                 legsToReturn.Add(_body.Legs[legIndex]);
@@ -87,7 +93,7 @@ namespace Gameplay.Animations.ProceduralAnimations
             if (crossPair.Any(leg2 => leg2.Target.IsGrounded && leg2.TimeSinceLastMoveCompleted < Settings.AdjacentPairCooldown))
                 return false;   // On Cooldown: Blocking leg moved too recently.
             List<MechLeg> samePair = GetLegsInGroup(groupIndex, excluding: leg);
-            if (samePair.Any(leg2 => leg2.Target.IsGrounded && leg2.TimeSinceLastMoveStarted < Settings.SamePairCooldown))
+            if (samePair.Any(leg2 => leg2.Target.IsGrounded && leg2.TimeSinceLastMoveCompleted < Settings.SamePairCooldown))
                 return false;   // On Cooldown: Paired leg started too recently.
 
 
@@ -118,12 +124,19 @@ namespace Gameplay.Animations.ProceduralAnimations
             }
 
             // Populate the [group index : leg indicies in adjace groups] dict.
-            _adjacentLegs = new();
-            foreach(GaitGroupInfo groupInfo in GroupSetupInfo)
+            try
             {
-                _adjacentLegs.Add(groupInfo.GroupIndex, new List<int>());
-                foreach (int adjacentGroupIndex in groupInfo.AdjacentGroups)
-                    _adjacentLegs[groupInfo.GroupIndex].AddRange(_legGroups[adjacentGroupIndex]);
+                _adjacentLegs = new();
+                foreach(GaitGroupInfo groupInfo in GroupSetupInfo)
+                {
+                    _adjacentLegs.Add(groupInfo.GroupIndex, new List<int>());
+                    foreach (int adjacentGroupIndex in groupInfo.AdjacentGroups)
+                        _adjacentLegs[groupInfo.GroupIndex].AddRange(_legGroups[adjacentGroupIndex]);
+                }
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Error occured while updating adjacent legs:\n{e.Message}");
             }
         }
 
